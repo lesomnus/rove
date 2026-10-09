@@ -1,6 +1,6 @@
 # Rove 개발 계획
 
-> 상태: v1 (2026-10-10)  
+> 상태: v1.1 (2026-10-10) — self-host, 테넌트 라벨 도메인, payday 이슈 반영  
 > 기준 설계: [design.md](design.md). 이 문서는 무엇을 어떤 순서로 만들고, 무엇으로 끝났다고 판단하는지를 정한다.  
 > 설계 결정을 바꿀 때는 design.md 12장(결정 기록)을 먼저 고치고, 이 문서는 그에 맞춘다.
 
@@ -8,7 +8,7 @@
 
 코드를 쓰기 전에 설계가 기대는 전제를 실제로 돌려 확인했다.
 
-- **확인 환경**: payday `5fb4c99`의 복사본(`internal/apptest`, 로컬 체크아웃), PostgreSQL 18.6 컨테이너, pg_bigm 1.2(소스 빌드), 각 관리형 DB의 공식 문서.
+- **확인 환경**: payday의 복사본(`internal/apptest`), PostgreSQL 18.6 컨테이너, pg_bigm 1.2(소스 빌드), 각 관리형 DB의 공식 문서. payday는 처음에 로컬 체크아웃 `5fb4c99`로 돌렸고, 최신 main `daa35c0`에서 다시 돌려 같은 결과를 얻었다.
 - 확인용 코드는 payday 내부 패키지에 기대므로 이 저장소에 넣지 않았다. 여기에는 결과만 남긴다.
 
 | # | 확인한 것 | 방법 | 결과 | 반영 |
@@ -25,7 +25,7 @@
 | V10 | 배치 트리의 동시 순환 | psql 두 세션에서 a→b, c→d 동시 이동 | 행 잠금만 하면 둘 다 성공해 순환이 생긴다. 테넌트 잠금 행을 먼저 잡으면 두 번째가 거부된다 | design 3.2, D9 |
 | V11 | `EXCLUDE`와 부분 유일 인덱스 | psql | 대체 후 삽입은 성공하고 순서를 바꾸면 거부된다. 차단·독점 할당만 겹침이 금지되고, 반열린 구간이 맞닿는 것은 허용된다. Fact는 같은 시각의 현재 값 중복이 거부된다 | design 3.3·4장 |
 | V12 | 한국어 검색 | PG 18 + pg_bigm GIN, 20만 행 | `%의자%`는 인덱스 사용, `%의%`(1음절)는 순차 탐색 | design 9.5, D22 |
-| V13 | 관리형 DB 확장 지원 | AWS·GCP·Azure·네이버·NHN 공식 문서 | btree_gist·pg_bigm을 모두 지원하는 곳은 AWS RDS와 Cloud SQL이다 | design 9.5, D21 |
+| V13 | 관리형 DB 확장 지원 | AWS·GCP·Azure·네이버·NHN 공식 문서 | btree_gist·pg_bigm을 모두 지원하는 곳은 AWS RDS와 Cloud SQL이다 | design 9.5(관리형으로 옮길 때 참고) |
 
 1차 검토 때 확인한 것: PostgreSQL FK 검사는 RLS를 우회한다. `pg_trgm`은 2음절 질의에 인덱스를 쓰지 못하고, libc `C` 로케일에서는 한글을 무시한다.
 
@@ -52,7 +52,8 @@ rove/
 ├── cmd/rove-admin/          운영자 진입점 (내부망)
 ├── migrations/ent/          ent Plan 결과 (리뷰 후 커밋)
 ├── migrations/pg-extra/     직접 쓰는 PostgreSQL DDL
-├── deploy/postgres/         pg_bigm을 넣은 PostgreSQL 18 이미지 (개발·CI)
+├── deploy/postgres/         pg_bigm을 넣은 PostgreSQL 18 이미지 (개발·CI·운영 공용)
+├── deploy/compose/          self-host 구성 (리버스 프록시, rove, rove-admin, PostgreSQL, 백업)
 ├── ts/                      React PWA
 ├── scripts/                 with-postgres, seed
 ├── design.md
@@ -61,11 +62,11 @@ rove/
 
 ## 4. 엔터티와 도메인 번호
 
-pdid 도메인 번호는 한 번 정하면 바꾸거나 재사용하지 않는다. payday가 1~6을 쓰고(Tenant 1, Holder 2, Audit 3, Outbox 4), Rove는 7부터 아래 순서로 만든다. Phase 2 이후의 엔터티는 만드는 순서대로 24부터 이어 간다.
+pdid 도메인 번호는 한 번 정하면 바꾸거나 재사용하지 않는다. payday가 1~6을 쓰고(Tenant 1, Holder 2, Audit 3, Outbox 4), Rove는 7부터 아래 순서로 만든다. Phase 2 이후의 엔터티는 만드는 순서대로 25부터 이어 간다.
 
 | 엔터티 | 도메인 | Phase | Erase | watch | 외부에 여는 생성 RPC |
 | --- | --- | --- | --- | --- | --- |
-| `Asset` | 7 | 0 | soft (`Void`) | ✓ | Get, List, Watch |
+| `Asset` | 7 | 0 | soft | ✓ | Add(완성: 등록), Get, List, Watch, Erase(완성: 오입력 취소) |
 | `AssetType` | 8 | 0 | soft | | Add, Get, List, Erase + `Update` |
 | `ItemModel` | 9 | 0 | soft | | Add, Get, List, Erase + `Update` |
 | `Party` | 10 | 0 | soft | | Add, Get, List, Erase + `Update`, `Pseudonymize` |
@@ -76,14 +77,15 @@ pdid 도메인 번호는 한 번 정하면 바꾸거나 재사용하지 않는�
 | `Stewardship` | 15 | 0 | hard (보존 잡) | | 없음 |
 | `Fact` | 16 | 0 | hard (보존 잡) | | 없음 |
 | `Event` | 17 | 0 | hard (보존 잡) | | 없음 (`Timeline`으로 읽는다) |
-| `Label` | 18 | 0 | soft | | Get + `Resolve` |
+| `Label` | 18 | 0 | soft | | Get + `Print`, `Bind`, `Unbind`, `Resolve` (테넌트 라벨 도메인이 있을 때만) |
 | `Attachment` | 19 | 0 | soft | | Get, List |
 | `UsageSnapshot` | 20 | 0 | hard | | 운영자 스택에서만 |
-| `Custody` | 21 | 1 | soft | ✓ | Get, List, Watch |
+| `Custody` | 21 | 1 | soft | ✓ | Add(완성: 지급), Get, List, Watch |
 | `CustodyLine` | 22 | 1 | hard | | Get, List |
 | `SpaceProfile` | 23 | 1 | hard | | Get + `Update` |
+| `TenantDomain` | 24 | 1 | soft | | Add, Get, List + `Verify`, `Activate`, `Retire` |
 
-- "외부에 여는 생성 RPC"에 없는 생성 메서드는 `seal`이 닫는다. 그 밖의 상태 변경은 모두 도메인 RPC다(design 9.8절).
+- "외부에 여는 생성 RPC"에 없는 생성 메서드는 `seal`이 닫는다. "(완성)"은 도메인 레이어가 생성 동사를 완성한 것이고, 그 밖의 상태 변경은 새 도메인 RPC다(design 6장·9.8절).
 - 테넌트 행을 가리키는 엣지는 불변으로 두고 `agrees`에 선언한다. 바뀌는 참조(`Asset.parent`, `custodian`, `type`, `model`, `Party.parent`, `Party.account`)에는 pg-extra에 테넌트 일치 트리거를 둔다.
 
 ## 5. 마일스톤
@@ -92,7 +94,7 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 
 ### M0 — 기반 (약 1주)
 
-- devcontainer 정리: 이름을 `lesomnus/rove`로 고치고, `deploy/postgres` 이미지로 PostgreSQL 서비스를 붙인다(payday처럼 docker-in-docker를 써도 된다). `scripts/with-postgres.sh`를 둔다.
+- devcontainer: 이름 오타는 고쳤다(`lesomnus/rove`). `deploy/postgres` 이미지로 PostgreSQL 서비스를 붙이고(payday처럼 docker-in-docker를 써도 된다), `scripts/with-postgres.sh`를 둔다.
 - `pd new`로 골격을 만들고, proto 패키지를 `rove`로, payday 버전을 고정한다.
 - 마이그레이션 적용 명령: ent 디렉터리 다음 pg-extra 디렉터리, 그 뒤 `entschema.Check`.
 - CI 골격(7장).
@@ -103,7 +105,8 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 - 엔터티: Asset, AssetType, ItemModel, Party, TreeLock, Placement, Link, Stewardship, Fact, Event.
 - `server/domain`: 트랜잭션 헬퍼(`BeginTx` + `Rebind`), 잠금 헬퍼(테넌트 잠금 행, id 순서), 대체 후 삽입 헬퍼, Event 기록, Event ID 기반 멱등성.
 - `server/seal`.
-- 도메인 RPC: Register, Move, Install, Remove, Assign, Unassign, SetAttributes, ChangeType, Correct, Void.
+- 생성 동사 완성: 자산 `Add`(초기 배치·Fact·Event와 함께 등록), 자산 `Erase`(열린 시간 행을 대체하는 오입력 취소).
+- 새 도메인 RPC: Move, Install, Remove, Assign, Unassign, SetAttributes, ChangeType, Correct.
 - 이력 RPC: Timeline, QueryAt, AsOf, Diff (조회 창 적용).
 - pg-extra: btree_gist, `EXCLUDE`(물리 부모 하나, 슬롯, 랙 U 범위, 담당 역할), Fact 부분 유일 인덱스, 테넌트 일치 트리거.
 - **완료 기준**
@@ -126,15 +129,28 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 ### M3 — 웹 UI·QR·가져오기 (약 3~4주)
 
 - React PWA: 자산 목록·상세·타임라인·시점 슬라이더·Diff, 공간 트리, 검색(`Search` RPC, pg_bigm).
-- Label: 인쇄(PDF 시트), Bind·Unbind·Resolve. 카메라 스캔은 `BarcodeDetector`를 쓰고, 지원하지 않는 브라우저는 JS 디코더로 넘긴다.
+- TenantDomain(design 9.9절):
+  - 자체 도메인과 Rove 기본 하위 도메인 중 선택.
+  - 확인용 TXT 토큰 발급과, spin 루프의 DNS 확인.
+  - 활성화하면 이전 도메인은 `LEGACY`가 되어 계속 해석된다.
+  - 운영자 진입점에 on-demand TLS 확인 엔드포인트를 둔다.
+  - 공개 진입점에 Host 기준 라벨 리다이렉트를 둔다.
+- Label: 인쇄(PDF 시트), Bind·Unbind·Resolve. 확인된 라벨 도메인이 없으면 화면에서 숨기고 RPC는 `FailedPrecondition`으로 답한다. 카메라 스캔은 `BarcodeDetector`를 쓰고, 지원하지 않는 브라우저는 JS 디코더로 넘긴다.
 - 과거 시각을 포함한 CSV/Excel 가져오기와 내보내기.
-- Attachment: S3 presigned 업로드, sha256, 악성 파일 검사 연결 지점.
+- Attachment: 저장소 인터페이스와 로컬 파일시스템 구현, 앱이 서명한 다운로드 URL, sha256, 악성 파일 검사 연결 지점.
 - 뷰 플러그인 슬롯과 랙 U·하드웨어 구성 뷰.
-- **완료 기준**: 가져오기 직후 과거 시점이 재현된다. 휴대폰으로 라벨을 찍으면 자산이 열린다. 2음절 한글 검색이 인덱스를 쓴다. 주요 흐름의 Playwright e2e가 통과한다.
+- **완료 기준**
+  - 가져오기 직후 과거 시점이 재현된다.
+  - 휴대폰 기본 카메라로 라벨을 찍으면 테넌트가 선택된 채 자산이 열린다.
+  - 도메인이 없는 테넌트에는 라벨 기능이 보이지 않는다.
+  - 도메인을 바꾼 뒤에도 이전 도메인으로 인쇄한 라벨이 열린다.
+  - 확인되지 않은 도메인에는 TLS 인증서가 발급되지 않는다.
+  - 2음절 한글 검색이 인덱스를 쓴다.
+  - 주요 흐름의 Playwright e2e가 통과한다.
 
 ### M4 — 지급·반납 (약 2주)
 
-- Custody·CustodyLine. Issue, Acknowledge, Return, Extend가 `CUSTODIAN` Stewardship을 열고 닫는다.
+- Custody·CustodyLine. Custody `Add`(완성: 지급), Acknowledge, Return, Extend가 `CUSTODIAN` Stewardship을 열고 닫는다.
 - 부분 반납, 셀프서비스(스캔 → 인수 확인), 연체 계산(알림은 Phase 2).
 - **완료 기준**: 지급 → 반납 → 정정 시나리오의 `AsOf` 결과가 기대와 같다. 부분 반납과 `member` 셀프서비스 e2e가 통과한다.
 
@@ -142,8 +158,13 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 
 - `UsageSnapshot` spin 루프.
 - trail 보존 설정: Holder·Identity는 `pipa` 이상, 이력 도메인은 제품의 가장 짧은 보존 기간 이하(design 8.2절).
-- 고른 관리형 DB에서 PITR 백업과 복구 리허설, 스테이징 배포, 관측 대시보드.
-- 보안 점검: payday 권한 가이드 13절 체크리스트와 Rove 항목.
+- self-host 운영 환경(`deploy/compose`):
+  - 서버 준비, 리버스 프록시(ACME, 테넌트 도메인용 on-demand TLS), 공개·운영자 진입점, PostgreSQL.
+  - 운영자 진입점은 VPN에서만 닿게 한다.
+- 백업: pgBackRest(또는 WAL-G)로 WAL 보관 PITR을 하고, 첨부 디렉터리 백업과 함께 다른 장소로 보낸다. 복구 리허설로 RPO·RTO를 측정한다.
+- 관측: OTel 수집기와 대시보드, 디스크·백업·인증서 만료 경보.
+- 스테이징(같은 compose를 다른 호스트나 포트에)과 운영 배포 절차.
+- 보안 점검: payday 권한 가이드 13절 체크리스트, Rove 항목, 서버 하드닝(자동 보안 업데이트, 방화벽 80/443, 디스크·백업 암호화).
 - 파일럿 고객 온보딩(기존 스프레드시트 가져오기).
 - **완료 기준**: 파일럿 테넌트가 실제로 쓰고 있다. 복구 리허설을 마쳤고, design 1.2절의 비기능 목표 측정값을 기록했다.
 
@@ -191,7 +212,7 @@ MVP 이후에 파일럿 피드백으로 순서를 다시 정한다.
   1. 트랜잭션 헬퍼로 시작한다.
   2. 잠금은 테넌트 잠금 행이 먼저, 그다음 자원·자산 행을 id 순서로 잡는다.
   3. 대상은 테넌트 경계를 통해 읽는다.
-  4. 기존 시간 행을 먼저 대체하고, 그다음 새 행을 넣는다.
+  4. 기존 시간 행을 먼저 대체하고, 그다음 새 행을 넣는다. 생성 동사를 완성할 때는 본 행을 아래(`next`)로, 추가 행을 이 레이어를 다시 묶은 것(`at`)으로 쓴다.
   5. 변경이 '지금'에 영향을 주면 Asset 현재 상태를 갱신하고, 컨테이너·자원 행의 버전을 올린다.
   6. Event를 기록한다(클라이언트가 발급한 ID가 멱등 키).
   7. 커밋한다.
@@ -206,28 +227,46 @@ MVP 이후에 파일럿 피드백으로 순서를 다시 정한다.
 | payday 변경(`dev` 라벨, protobuf-orm과 함께 바뀜) | 재생성·마이그레이션이 깨진다 | 버전 고정, CI의 `pd gen --check`, 업그레이드는 별도 작업으로 |
 | 시간 모델의 복잡도 | 버그와 지연 | M1에서 오라클 테스트를 먼저 만들고, UI 전에 API를 굳힌다 |
 | SQLite에서만 통과 | 운영 장애 | 도메인 테스트는 PostgreSQL 필수 |
-| pg_bigm이 없는 환경 | 검색 품질 저하 | `Search` RPC 뒤에 폴백(design 9.5절) |
+| 관리형 DB로 옮길 때 pg_bigm이 없는 경우 | 검색 품질 저하 | `Search` RPC 뒤에 폴백(design 9.5절) |
 | 테넌트 잠금 행 경합 | 대형 테넌트의 이동 지연 | 계측하고, 필요하면 사업장 단위 잠금으로 나눈다 |
 | 1인 개발 범위 | 일정 초과 | MVP 범위를 고정하고, Phase 2부터는 파일럿 피드백으로 다시 정한다 |
-| QR 라벨 도메인 변경 | 인쇄한 라벨이 무효가 된다 | M3 전에 영구 도메인을 정한다 |
+| 서버 한 대(self-host) | 하드웨어 고장이 곧 장애 | 다른 장소의 PITR 백업, 분기 복구 리허설, compose로 재구축하는 절차 문서 |
+| 운영 부담(보안 업데이트, 인증서, 디스크) | 사고와 장애 | 자동 보안 업데이트, 인증서 만료·디스크·백업 실패 경보 |
+| 테넌트 도메인 인증서 남발 | ACME 발급 한도 소진 | 확인된 도메인에만 발급(on-demand TLS 확인 엔드포인트), 인증서 저장소 보존 |
+| Rove 기본 도메인 변경 | 기본 하위 도메인으로 인쇄한 라벨과 OIDC 등록이 깨진다 | 처음에 영구 도메인을 정하고 바꾸지 않는다 |
 
 ## 10. 정해야 할 것
 
-| 결정 | 언제까지 | 선택지 |
+정한 것: 인프라는 self-host(design D21), QR 라벨 도메인은 테넌트마다 설정(D23), 첨부는 로컬 파일시스템으로 시작(D25).
+
+| 결정 | 언제까지 | 내용 |
 | --- | --- | --- |
-| 클라우드 | M5 전 | AWS(RDS 서울) 또는 GCP(Cloud SQL 서울) |
-| QR 라벨용 영구 도메인 | M3 전 | 제품 도메인의 하위 도메인 또는 짧은 전용 도메인 |
-| 파일럿 고객 | M3 중 | design 1.1절의 가설 고객 중 하나 |
-| 객체 저장소 | M3 전 | 클라우드 선택을 따른다(S3 또는 GCS의 S3 호환 API) |
+| 저장소 공개 여부와 라이선스 | 코드를 올리기 전(M0) | 지금 공개 저장소이고 LICENSE가 없다. 상용 SaaS의 소스를 공개할지, 공개한다면 어떤 라이선스인지 |
+| Rove 기본 도메인 | M2 전 | 앱 호스트, OIDC 리다이렉트 주소, 라벨 CNAME 대상, 기본 하위 도메인. 한 번 정하면 바꾸지 않는다 |
+| 운영 서버와 백업 위치 | M5 전 | 서버를 어디에 둘지(자체 장비, 코로케이션, VPS), 백업을 보낼 다른 장소 |
+| 파일럿 | M3 중 | 아래 |
+
+**파일럿에서 정할 것**: 파일럿은 MVP를 실제 업무에 4~8주 써 보는 첫 조직이고, design 1.1절의 가설을 검증하는 대상이다.
+
+- **대상**: 조직 1~2곳. 연구실, 스튜디오, 메이커스페이스, 또는 내가 속한 팀(직접 써 보기)도 된다.
+- **범위**: 자산 수(수백 개 규모), 사용자 수, 쓸 기능(등록, QR, 지급·반납, 이력 조회).
+- **일정**: M3 중에 실제 데이터를 받아 가져오기 형식을 맞추고, M5에 시작한다.
+- **성공 기준**: 예를 들어 4주 안에 자산의 80%에 라벨 부착, 지급·반납을 Rove로만 처리, "그때 어디 있었나"에 실제로 답한 사례.
+- **데이터와 동의**: 지금 쓰는 스프레드시트 사본, 개인정보 처리 동의(서버 위치와 보관 기간 명시).
+- **라벨 도메인**: 조직이 DNS를 바꿀 수 있는지. 못 바꾸면 Rove 기본 하위 도메인을 쓴다.
+- **피드백**: 연락 창구와 피드백 주기.
 
 ## 11. payday로 올릴 것
 
-Rove에서 우회하고 있지만 payday에서 고치면 우회가 필요 없어지는 것들이다.
+Rove에서 우회하고 있지만 payday에서 고치면 우회가 필요 없어지는 것들이다. 2026-10-10에 이슈로 올렸다.
 
-- **문서 불일치**: `docs/guide/permissions.md` 3절 표, `docs/guide/schema.md`의 `agrees` 절, `proto/payday/entity.proto`의 `agrees` 주석은 "Gate는 경로의 첫 홉과 필드 3만 읽는다"고 한다. 하지만 코드(`emitAdmit`, `emitAdmitPatch`)와 테스트(`TestAnEdgeIsARead`)는 Add 때 모든 엣지, Patch 때 바뀌는 엣지를 읽는다.
-- **엔터티별 생성 RPC 공개 범위 선언**: 지금 Rove는 `seal` 레이어로 막는다.
-- **여러 행을 쓰는 RPC용 트랜잭션 헬퍼**: 레이어마다 `BeginTx` + `Rebind`를 직접 쓰지 않게 한다.
-- **ent 밖 DDL 지원**: Plan·Check가 무시할 객체 선언, 또는 extra 디렉터리를 공식으로 지원. 지금은 복합 FK가 Check를 실패시킨다(V1).
-- **trail 보존**: 테넌트 단위 보존 정책과, DB에 있는 trail에서 특정인 정보를 지우는 기능.
-- **overlay로 인덱스 추가**(V9).
-- **클라이언트 쓰기 큐**(오프라인 실사용).
+| 이슈 | 내용 | Rove의 우회 |
+| --- | --- | --- |
+| [#32](https://github.com/lesomnus/payday/issues/32) | Gate의 엣지 확인에 관한 문서 네 곳이 코드와 다르다 | 코드 기준으로 설계(6장) |
+| [#33](https://github.com/lesomnus/payday/issues/33) | `entschema.Check`가 ent 밖 FK를 거부하고, Plan이 같은 디렉터리의 ent 밖 객체를 지우려 한다 | pg-extra 디렉터리, 복합 FK 대신 트리거 |
+| [#34](https://github.com/lesomnus/payday/issues/34) | 앱 레이어는 부를 수 있고 호출자는 못 부르는 생성 동사를 선언할 방법이 없다 | `seal` 레이어 |
+| [#35](https://github.com/lesomnus/payday/issues/35) | trail 보존에 테넌트 차원이 없고, DB의 trail에서 특정인 정보를 지울 수 없다 | trail 파기를 제품 최단 보존 이하로, 특정인 삭제는 직접 |
+| [#36](https://github.com/lesomnus/payday/issues/36) | overlay로 payday 엔터티에 인덱스를 더할 수 없고, 거부 없이 버려진다 | `Identity` 엔터티 |
+| [#37](https://github.com/lesomnus/payday/issues/37) | 클라이언트 store에 오프라인 쓰기 큐가 없다 | Phase 2에 직접 구현 |
+
+처음 목록에 있던 "여러 행을 쓰는 RPC의 트랜잭션"은 이슈로 올리지 않았다. 최신 payday main의 서버 가이드에 "completing a generated verb"로 문서화되어 있고(`1308774`), `composite_test.go`가 그 패턴을 확인한다.

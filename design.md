@@ -34,8 +34,8 @@ Rove는 컴퓨터, 부품, 책상, 의자, 공구, 연구·촬영 장비, 차량
 | --- | --- |
 | 테넌트 규모 | 자산 10만 개, 시간 행 연 100만 건, 동시 사용자 200명 |
 | 응답 시간 | 단건 조회·목록 p95 300ms 미만, 1,000노드 이하 하위 트리의 시점 조회 p95 1초 미만 |
-| 가용성 | 99.5% (단일 리전, 단일 복제본으로 시작) |
-| 복구 | RPO 1시간(PITR), RTO 4시간, 분기마다 복구 리허설 |
+| 가용성 | 99.5% (자체 서버 한 대, 단일 복제본으로 시작) |
+| 복구 | RPO 1시간(WAL 보관 기반 PITR, 다른 장소에 백업), RTO 4시간, 분기마다 복구 리허설 |
 | 지역화 | 한국어 우선, 영어 병행. 테넌트별 시간대와 통화, 저장은 UTC |
 | 클라이언트 | 최신 데스크톱·모바일 브라우저(PWA), 카메라 QR 스캔 |
 
@@ -82,7 +82,8 @@ Phase 번호는 10장의 구현 단계와 같다.
 | `Fact` | Asset 속성 이력. "이 시각부터 이 키의 값은 V"라는 단언 |
 | `Event` | 업무 작업 하나의 기록. 종류, 수행자, 발생 시각, 사유, 만들고 대체한 시간 행 |
 | `TreeLock` | 테넌트마다 하나인 잠금 행. 배치 트리를 바꾸는 작업을 직렬화한다(3.2절) |
-| `Label` | QR/바코드 라벨. 미리 인쇄한 뒤 연결하고, 교체할 수 있다 |
+| `Label` | QR/바코드 라벨. 테넌트의 라벨 도메인으로 인쇄하고, 미리 인쇄한 뒤 연결하거나 교체할 수 있다 |
+| `TenantDomain` | 테넌트가 쓰는 도메인. 지금은 QR 라벨용이며, 확인을 마친 도메인이 있어야 라벨 기능이 켜진다(9.9절) |
 | `Attachment` | 사진·계약서·증빙의 메타데이터와 객체 저장소 키 |
 | `Custody` / `CustodyLine` | 지급·대여 문서와 품목 줄. 인수 확인, 반납 기한, 부분 반납 |
 | `Bookable` | Asset의 예약 정책 프로파일 |
@@ -158,7 +159,8 @@ Fact(id, tenant, asset, key, value, valid_from, event, superseded_at?, supersede
 Event(id, tenant, kind, actor_id, occurred_at, reason, trace_id, payload, date_created)
 TreeLock(id, tenant, version)
 
-Label(id, tenant, subject_id?, state, bound_at?)
+Label(id, tenant, domain, subject_id?, state, bound_at?, printed_at?)
+TenantDomain(id, tenant, host, purpose, state, token, verified_at?)
 Attachment(id, tenant, subject_id, object_key, size_bytes, content_type, sha256)
 Custody(id, tenant, kind, party, reservation?, issued_at, due_at?, acknowledged_at?, status)
 CustodyLine(id, tenant, custody, asset? | stock? + quantity, out_at, returned_at?,
@@ -222,7 +224,10 @@ StockMovement(id, tenant, stock, delta, reason, ref_id?, occurred_at)
 - **인증**: Phase 0부터 OIDC(Google Workspace, Microsoft Entra)와 브라우저 세션(payday `authoidc`, `authsession`)을 쓴다. 테넌트는 로그인 단계에서 고른다(테넌트 alias 경로 또는 서브도메인). IdP 계정 하나가 여러 테넌트의 Holder에 대응할 수 있으므로 매핑은 `Identity` 엔터티가 갖는다. SAML·SCIM은 Phase 3이다.
 - **권한**: payday에는 역할이 없으므로 Rove가 `gate.Policy`에서 구현한다. Holder에 `role`(`owner`, `admin`, `asset_manager`, `member`, `auditor`)을 덧붙이고, 메서드별 최소 역할 표로 판단한다. 같은 Policy를 batch guard에도 넘긴다(넘기지 않으면 batch 안의 작업이 권한 검사를 건너뛴다). 일반 직원 역할(`member`)은 자산 보기, 셀프 실사, 요청, 인수 확인을 할 수 있다. 사업장 단위 권한은 Phase 3에서 payday 필드 3(Site)으로 도입한다.
 - **역할과 가격 정책을 결합하지 않는다.** 요금제는 한도를 정하고, 권한은 무엇을 할 수 있는지를 정한다.
-- **쓰기는 도메인 RPC로만 한다.** payday는 일반 쓰기(Patch/Apply)를 기본으로 닫는다. Rove는 여기에 더해 `seal` 레이어(9.3절)로 Asset·시간 행·Event·문서 엔터티의 생성 Add/Erase와, 시간 행의 생성 Get/List를 외부 호출에 닫는다. 자산은 `Register`로 만들고 `Void`로 취소한다. 이력 조회는 조회 창을 적용하는 `Timeline`·`QueryAt`·`AsOf`·`Diff`로만 한다. 설정성 엔터티(`AssetType`, `ItemModel`, `Party`, `Bookable` 정책 등)는 생성 Add/Get/List/Erase를 쓰고, 수정은 짧은 도메인 RPC(예: `AssetTypeService/Update`)로 한다.
+- **쓰기는 도메인 작업으로만 한다.** payday는 일반 쓰기(Patch/Apply)를 기본으로 닫는다. Rove의 도메인 작업은 두 가지다.
+  1. **생성 동사 완성**: 생성 동사가 이미 뜻하는 일이면, 도메인 레이어가 그 동사를 완성한다(payday의 "completing a generated verb"). 자산 `Add`는 초기 배치·Fact·Event를 함께 써서 등록을 마친다. 자산 `Erase`는 열린 시간 행을 대체해 오입력을 취소한다. Custody `Add`는 담당 행을 열어 지급을 마친다.
+  2. **새 RPC**: 생성 동사가 이름 붙이지 않는 일만 새로 만든다(`Move`, `Return`, `Correct` 등).
+- **`seal` 레이어**(9.3절)는 시간 행·Event·할당처럼 도메인 작업만 쓰는 엔터티의 생성 Add/Erase와, 시간 행의 생성 Get/List를 외부 호출에 닫는다. 이력 조회는 조회 창을 적용하는 `Timeline`·`QueryAt`·`AsOf`·`Diff`로만 한다. 설정성 엔터티(`AssetType`, `ItemModel`, `Party`, `Bookable` 정책 등)는 생성 Add/Get/List/Erase를 쓰고, 수정은 짧은 도메인 RPC(예: `AssetTypeService/Update`)로 한다.
 - **동시성과 멱등성**: 현재 상태 행은 payday 버전 필드(`date_updated`)로 낙관적 동시성을 지킨다. 도메인 RPC는 클라이언트가 미리 발급한 pdid를 작업 ID로 받아 Event ID로 쓴다. 재시도하면 이미 있는 Event를 찾아 같은 결과를 돌려준다.
 - **트랜잭션**: 도메인 RPC 하나가 트랜잭션 하나다. payday trail·outbox가 같은 트랜잭션에 기록되므로 데이터와 감사 기록은 함께 성립하거나 함께 취소된다.
 - **연동(Phase 3)**: Webhook은 payday Outbox에서 `Event` 추가만 골라 전달한다. OIDC·SAML·SCIM, 조직 디렉터리, 회계·ERP·HR, 캘린더, 자동 수집 에이전트를 확장 경계로 둔다.
@@ -302,6 +307,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
   1. 제품 이력은 Rove의 시간 행과 Event가 테넌트별 정책으로 보존한다.
   2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 DB에 90일, 아카이브 파기는 제품의 가장 짧은 보존 기간 이하로 둔다. 그러지 않으면 제품에서 지운 이력이 trail에 값으로 남는다.
   3. 계정·권한 도메인(Holder, Identity)의 trail과 접근 기록 로그(9.7절)는 payday `pipa` 프로필(최소 1년) 이상으로 보존한다.
+  4. trail 용량이 문제가 되면, 그 자체로 기록 시각을 가진 불변 기록인 시간 행·Event의 쓰기를 recorder에서 빼는 것을 검토한다(payday의 "Changing what the trail records").
 - **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party를 대상으로 한 trail 행의 `value`·`patch`를 비우고(DB에 있는 trail은 Rove가 직접 처리), 아카이브는 payday `trail.Forget`으로 지운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.
 - **분할**: 시간 행과 Event는 테넌트와 시각 기준으로 지울 수 있게 인덱스를 둔다. 테넌트마다 보존 기간이 다르므로 파티션 통째 삭제는 가장 긴 보존 기간에만 쓸 수 있고, 나머지는 배치 삭제다.
 - 만료 예정 데이터 관리자 대시보드와 사전 알림, 고객 내보내기(CSV/JSON/첨부 패키지) 경로와 유예 기간을 제공한다.
@@ -339,7 +345,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 | Outbox · Watch | 현재 상태 화면 갱신, Webhook(Phase 3) |
 | pdid (UUIDv8 + 도메인 바이트, 클라이언트에서도 발급) | 멱등 키, batch에서 미리 정한 ID, 오프라인 큐, 여러 종류를 가리키는 참조 열 |
 | `auth`(OIDC·세션·Bearer), `gate.Policy`, batch guard | 로그인과 역할 권한 |
-| `spin` | 홀드 만료, no-show, 연체 알림, 사용량 스냅샷, 보존 잡 |
+| `spin` | 홀드 만료, no-show, 연체 알림, 테넌트 도메인 확인, 사용량 스냅샷, 보존 잡 |
 | 두 진입점(경계 있는 스택 / 운영자 스택) | 공개 바이너리와 운영자 바이너리 |
 
 **payday에 없어서 Rove가 직접 만드는 것**
@@ -355,19 +361,27 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 ### 9.2 스택과 배포
 
 - **백엔드**: Go 1.27 + payday. 전송은 gRPC와 Connect/gRPC-Web(payday `web`).
-- **DB**: 운영은 PostgreSQL 18이고, 관리형은 AWS RDS for PostgreSQL 또는 Google Cloud SQL(서울 리전)을 쓴다. 둘 다 btree_gist·pg_trgm·pg_bigm을 지원한다(9.5절). SQLite는 빠른 단위 테스트와 브라우저 데모(payday sandbox)에만 쓴다. 규칙은 도메인 레이어에 있으므로 두 DB에서 같게 동작하고, PostgreSQL 제약은 마지막 방어선이다. SQLite는 타입·NULL 정렬·잠금이 관대해서 PostgreSQL에서만 드러나는 버그가 있으므로, 시간 행·예약·동시성 테스트는 PostgreSQL에서 돌린다.
-- **객체 저장소**: S3 호환, presigned URL. 업로드 후 해시와 악성 파일 검사를 거친 뒤 `Attachment`를 확정한다.
+- **DB**: 운영은 자체 서버의 PostgreSQL 18이다. `deploy/postgres` 이미지에 btree_gist(기본 포함)와 pg_bigm을 넣어 개발·CI·운영에서 같은 이미지를 쓴다. 관리형으로 옮길 때의 선택지는 9.5절 표에 있다. SQLite는 빠른 단위 테스트와 브라우저 데모(payday sandbox)에만 쓴다. 규칙은 도메인 레이어에 있으므로 두 DB에서 같게 동작하고, PostgreSQL 제약은 마지막 방어선이다. SQLite는 타입·NULL 정렬·잠금이 관대해서 PostgreSQL에서만 드러나는 버그가 있으므로, 시간 행·예약·동시성 테스트는 PostgreSQL에서 돌린다.
+- **첨부 저장소**: 첨부는 저장소 인터페이스 뒤에 둔다.
+  - 서버 한 대에서는 로컬 파일시스템에 저장하고, 앱이 서명한 짧은 만료의 다운로드 URL로 내준다.
+  - 서버를 나눌 때 S3 호환 저장소(SeaweedFS, Garage 등)로 옮긴다.
+  - MinIO 커뮤니티판은 2025년 10월 바이너리·이미지 배포를 멈췄고 2026년 4월 저장소가 보관 처리되어 쓰지 않는다.
+  - 업로드 후 해시와 악성 파일 검사를 거친 뒤 `Attachment`를 확정한다.
 - **프런트엔드**: React + `@lesomnus/payday`(store, query, watch). 모바일은 PWA이고 카메라로 QR을 스캔한다.
 - **비동기**: payday spin 루프와 Outbox 드레인. 별도 메시지 브로커는 필요해질 때 채택한다.
-- **관측**: OpenTelemetry(payday `otx`).
-- **배포**: 이미지 하나에 진입점 둘(공개, 운영자) + PostgreSQL + S3. watch broker는 단일 복제본에서 `memory`로 시작하고, 복제본을 늘릴 때 PostgreSQL broker로 바꾼다.
+- **관측**: OpenTelemetry(payday `otx`). 수집기와 대시보드도 같은 서버에서 직접 운영한다.
+- **배포(self-host)**: 클라우드 없이 서버 한 대에 Docker Compose로 올린다.
+  - 구성: 리버스 프록시(TLS, ACME), 공개 진입점, 운영자 진입점(내부망·VPN에서만 접근), PostgreSQL, 백업. 이미지는 하나이고 진입점이 둘이다.
+  - watch broker는 단일 복제본이므로 `memory`로 시작하고, 복제본을 늘릴 때 PostgreSQL broker로 바꾼다.
+- **백업**: PostgreSQL은 WAL 보관 기반 PITR(pgBackRest 등)로, 첨부 파일은 파일 백업으로 다른 장소에 보낸다. 복구 리허설은 분기마다 한다.
+- **Rove 기본 도메인**: 앱 호스트, OIDC 리다이렉트 주소, 테넌트 라벨 도메인의 CNAME 대상, 기본 하위 도메인이 모두 이 도메인 아래에 있다. 그래서 한 번 정하면 바꾸지 않는다(9.9절).
 
 ### 9.3 서버 레이어
 
 ```text
 grpc.Server
   └ 인터셉터: auth(OIDC/세션 → frame) → 테넌트별 제한·호출 계측 → gate.Policy(역할) → watch 발행
-    └ seal   (Rove) Asset·시간 행·Event·문서의 생성 Add/Erase, 시간 행의 생성 Get/List를 외부 호출에 닫음
+    └ seal   (Rove) 시간 행·Event·할당·문서 줄의 생성 Add/Erase, 시간 행의 생성 Get/List를 외부 호출에 닫음
       └ domain (Rove) 도메인 RPC: 트랜잭션, 잠금, 시간 행 규칙, 충돌·순환 검사, Event 기록
         └ Gate     (payday 생성) Add·Patch가 가리키는 행이 호출자에게 보이는지 확인
           └ Audit  (payday 생성) trail 자체의 RPC
@@ -378,6 +392,7 @@ grpc.Server
 - **`domain`을 Gate 위에 두는 이유**: payday 테스트 앱은 자기 레이어를 Gate 아래에 둔다. Rove는 도메인 작업의 내부 쓰기까지 Gate의 엣지 확인을 받게 하려고 위에 둔다. 대가는 쓰기마다 엣지 하나당 읽기 하나가 늘어나는 것이고, Rove의 쓰기량에서는 감당할 수 있다.
 - **PostgreSQL에서 확인한 것**: 생성 쓰기는 직접 호출과 batch 안의 호출 모두 `seal`이 거부하고, batch 오류는 몇 번째 작업인지 알려 준다. 두 행을 쓰는 도메인 작업은 함께 커밋되고, 실패하면 trail까지 함께 취소된다. batch 안에서는 도메인 작업의 트랜잭션이 바깥 트랜잭션에 합류하므로, 뒤 작업이 실패하면 앞의 도메인 작업도 취소된다. Gate 위의 도메인 작업이 다른 테넌트로 Add하려 하면 NotFound가 된다.
 - **도메인 RPC의 순서**: 트랜잭션 시작 → 잠금 행 갱신(배치 트리는 테넌트 잠금 행, 예약은 `Bookable` 행, 담당은 Asset 행, 여러 개면 id 순서) → 대상 읽기와 검사 → 기존 시간 행 대체 + 새 시간 행 추가 → Asset 현재 상태 갱신 → Event 추가 → 커밋. 모든 쓰기의 trail·outbox 행이 같은 트랜잭션에 들어간다. batch 안에서 호출되면 바깥 트랜잭션에 합류한다.
+- **생성 동사를 완성할 때**: 본 행은 아래 서버(`next`)로, 추가 행은 이 레이어를 다시 묶은 것(`at`)으로 쓴다. 그래야 이 레이어의 규칙이 스스로 쓰는 행에도 적용된다. 본 행을 `at`으로 쓰면 자기 자신을 다시 호출하게 된다(payday 서버 가이드).
 - 모든 Rove 레이어는 `WithDriver`를 구현한다. 빠뜨리면 트랜잭션을 열 때 그 레이어가 빠진 스택이 만들어진다. `pd doctor`와 컴파일 시점 확인(`enttx.Binder`)을 둘 다 쓴다.
 
 ### 9.4 PostgreSQL 전용 DDL과 마이그레이션
@@ -430,15 +445,15 @@ CREATE TRIGGER asset_parent_same_tenant BEFORE INSERT OR UPDATE OF parent_id, te
 ### 9.5 검색
 
 - PostgreSQL 기본 전문 검색은 한국어 형태소를 다루지 못하고, `pg_trgm` GIN 인덱스는 3글자 미만 질의에 쓰이지 않는다. 의자·책상·조명처럼 2음절 이름이 흔하므로 **`pg_bigm`을 쓴다.** PostgreSQL 18에서 pg_bigm 1.2의 GIN 인덱스는 `%의자%`를 인덱스로 찾는다. 1음절 질의는 결과가 많아 순차 탐색이 되므로, 1글자 입력은 태그·이름 접두 일치로 처리한다(확인함).
-- **관리형 DB의 확장 지원**(각 서비스 공식 문서 기준, 2026-10 확인):
+- 자체 서버에서는 pg_bigm을 이미지에 직접 넣으므로 항상 쓸 수 있다. 아래 표는 나중에 관리형 DB로 옮길 때 참고할 확장 지원 현황이다(각 서비스 공식 문서 기준, 2026-10 확인).
 
-| 서비스 | btree_gist | pg_trgm | pg_bigm | Rove에서 |
+| 서비스 | btree_gist | pg_trgm | pg_bigm | 옮길 때 |
 | --- | --- | --- | --- | --- |
-| AWS RDS for PostgreSQL 18 | 1.8 | 1.6 | 1.2_20250903 | 1순위 |
-| Google Cloud SQL | 1.8 (PG 18) | 1.6 | 지원 | 1순위 |
+| AWS RDS for PostgreSQL 18 | 1.8 | 1.6 | 1.2_20250903 | 그대로 옮길 수 있다 |
+| Google Cloud SQL | 1.8 (PG 18) | 1.6 | 지원 | 그대로 옮길 수 있다 |
 | Azure Database for PostgreSQL | 1.8 (PG 18) | 지원 | 없음 | 검색 폴백 필요 |
-| 네이버 클라우드 Cloud DB for PostgreSQL | 사용자 설치 | 사용자 설치 | 없음 | 국내 클라우드가 필요할 때. 검색 폴백 |
-| NHN Cloud RDS for PostgreSQL (14, 17) | 목록에 없음 | 1.6 | 없음 | DB 방어선을 쓸 수 없어 제외 |
+| 네이버 클라우드 Cloud DB for PostgreSQL | 사용자 설치 | 사용자 설치 | 없음 | 검색 폴백 필요 |
+| NHN Cloud RDS for PostgreSQL (14, 17) | 목록에 없음 | 1.6 | 없음 | DB 방어선을 쓸 수 없다 |
 
 - **pg_bigm이 없을 때의 폴백**: `pg_trgm`(3글자 이상)과 접두 일치(1~2글자)를 합쳐 검색한다. 같은 `Search` RPC 뒤에 두므로 클라이언트는 차이를 모른다.
 - DB 로케일은 UTF-8이어야 한다. libc `C` 로케일에서는 `pg_trgm`이 한글을 통째로 무시한다.
@@ -454,23 +469,25 @@ CREATE TRIGGER asset_parent_same_tenant BEFORE INSERT OR UPDATE OF parent_id, te
 ### 9.7 보안
 
 - UI를 포함한 모든 조회·내보내기에 테넌트와 역할 검증을 적용하고, 예약 승인·관리 권한을 분리한다.
-- 공개·운영자 진입점을 다른 바이너리로 나눈다(6장).
-- 첨부는 짧게 만료되는 presigned URL로만 주고, 업로드 후 악성 파일 검사를 한다.
+- 공개·운영자 진입점을 다른 바이너리로 나눈다(6장). 운영자 진입점은 VPN 같은 내부망에서만 닿게 한다.
+- 자체 서버 운영: OS·컨테이너 보안 업데이트를 자동화하고, 방화벽은 80/443만 연다. 디스크와 백업은 암호화하고, 비밀값은 저장소에 넣지 않는다.
+- 첨부는 앱이 서명한 짧은 만료의 다운로드 URL로만 주고, 업로드 후 악성 파일 검사를 한다.
 - 읽기 감사(내보내기, 개인정보 열람)는 trail이 아니라 별도 OTel 로그 스트림에 동기 방식으로 내보낸다. payday trail은 쓰기만 기록한다.
 - 저장 데이터와 전송 구간을 암호화하고, 백업·복구를 정기적으로 테스트하고, 플러그인을 격리한다.
 - 공용 기기(현장 태블릿)에서는 클라이언트 복제본(IndexedDB)의 보관 기간을 줄이고 로그아웃할 때 지운다.
 
 ### 9.8 API 경계 예시
 
-payday가 생성한 서비스에 덧붙이는 도메인 RPC다(예: `AssetService/Move`). 생성된 Get/List/Watch는 현재 상태 엔터티에서만 연다.
+payday가 생성한 서비스와, 거기에 덧붙이는 도메인 RPC다(예: `AssetService/Move`). "(완성)"은 도메인 레이어가 생성 동사를 완성한 것이다(6장). 생성된 Get/List/Watch는 현재 상태 엔터티에서만 연다.
 
 ```text
-Assets:       Register / Get / List / Watch / Search / SetAttributes / ChangeType / Dispose / Void
+Assets:       Add(완성: 등록) / Get / List / Watch / Erase(완성: 오입력 취소) / Search / SetAttributes / ChangeType / Dispose
 Placement:    Move / Install / Remove / Correct
 Stewardship:  Assign / Unassign / Correct
 History:      Timeline / QueryAt / AsOf / Diff / Export
 Labels:       Print / Bind / Unbind / Resolve
-Custody:      Issue / Acknowledge / Return / Extend
+Custody:      Add(완성: 지급) / Get / List / Watch / Acknowledge / Return / Extend
+Domains:      Add / Get / List / Verify / Activate / Retire
 Reservations: Availability / Hold / Request / Approve / Reject / Cancel / CheckIn / Override
 Inventory:    Receive / Move / Consume / Adjust / ConvertToAssets
 Counts:       Start / Scan / Reconcile / Close
@@ -479,19 +496,31 @@ Usage:        GetCurrent / GetDaily
 Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 ```
 
-QR 라벨에는 `https://<host>/l/<라벨 ID>`를 인코딩한다. 휴대폰 기본 카메라로 찍어도 앱이 열리고, 자산 번호가 바뀌어도 라벨은 그대로 유효하다. 라벨 ID는 테넌트 경계를 통해 해석하므로, 다른 테넌트의 라벨은 찾을 수 없음(NotFound)으로 응답한다. 인쇄한 라벨의 호스트는 나중에 바꿀 수 없으므로, 라벨 인쇄를 시작하기 전에 영구적으로 쓸 도메인을 정한다.
+### 9.9 테넌트 도메인과 QR 라벨
+
+- **라벨 기능은 테넌트 도메인이 있어야 켜진다.** 테넌트가 라벨용 도메인을 등록하고 확인을 마치기 전에는 라벨 인쇄·연결·해석이 꺼져 있다. 화면은 메뉴를 숨기고, 라벨 RPC는 `FailedPrecondition`으로 답한다. 자산 번호, 검색, 앱 안의 화면은 도메인과 상관없이 쓸 수 있다.
+- **도메인 고르기**: 테넌트는 둘 중 하나를 고른다.
+  1. **자체 도메인**(예: `assets.acme.co.kr`): 테넌트가 Rove의 라벨 호스트를 가리키는 CNAME과 확인용 TXT 레코드를 만든다.
+  2. **Rove 기본 도메인 아래 하위 도메인**(예: `acme.l.<기본 도메인>`): DNS 작업이 필요 없다. 대신 Rove가 기본 도메인을 영구히 유지해야 한다.
+- **확인**: spin 루프가 TXT 레코드를 주기적으로 조회하고, 일치하면 `verified_at`을 찍는다(payday `stamped`). 확인하기 전에는 TLS 인증서도 발급하지 않는다.
+- **TLS**: 리버스 프록시가 첫 요청이 올 때 인증서를 받는다(ACME on-demand TLS). 받기 전에 운영자 진입점의 내부 엔드포인트에 "확인된 테넌트 도메인인가"를 묻고, 아니면 받지 않는다. 그래서 아무 도메인이나 이 서버를 가리켜 인증서를 받아 갈 수 없다.
+- **라벨 URL**: `https://<테넌트 도메인>/l/<라벨 ID>`. 이 주소는 Host로 테넌트를 찾아 앱 주소(`https://<앱 호스트>/t/<테넌트>/l/<라벨 ID>`)로 넘기기만 한다.
+  - 라벨 해석은 로그인한 뒤 앱이 테넌트 경계를 통해 한다. 그래서 라벨 URL 자체는 자산에 대해 아무것도 드러내지 않고, 다른 테넌트의 라벨은 NotFound가 된다.
+  - 휴대폰 기본 카메라로 찍어도 앱이 열리고, 로그인할 때 테넌트가 미리 선택된다. 자산 번호가 바뀌어도 라벨은 그대로 유효하다.
+- **도메인 바꾸기**: 인쇄한 라벨의 호스트는 바꿀 수 없다. 그래서 새 도메인을 활성화하면 이전 도메인은 `LEGACY`가 되어 계속 해석되고, 새로 인쇄하는 라벨만 새 도메인을 쓴다. 라벨은 인쇄할 때 쓴 도메인을 기록한다. 이전 도메인을 지우려 하면 그 도메인으로 인쇄한 라벨 수를 보여 주고 확인을 받는다.
+- **제약**: 호스트는 배포 전체에서 유일하고, 테넌트마다 활성 라벨 도메인은 하나다(`purpose = LABEL AND state = ACTIVE` 부분 유일 인덱스).
 
 ## 10. 구현 단계 및 검증 기준
 
-**Phase 0 스파이크 — 완료(2026-10-10)**: (1) 마이그레이션은 디렉터리를 나누고 복합 FK 대신 트리거를 쓴다(9.4절). (2) `seal`과 도메인 트랜잭션은 batch 안에서도 동작하며, 도메인 레이어는 Gate 위에 둔다(9.3절). (3) Gate의 엣지 확인과 `agrees`는 다른 테넌트로의 참조를 거부한다(6장). (4) 관리형 DB는 AWS RDS 또는 Cloud SQL로 한다(9.5절). (5) 테넌트 잠금 행 없이는 동시 순환이 실제로 생긴다(3.2절). 방법과 근거는 [plan.md](plan.md) 1장에 있다.
+**Phase 0 스파이크 — 완료(2026-10-10)**: (1) 마이그레이션은 디렉터리를 나누고 복합 FK 대신 트리거를 쓴다(9.4절). (2) `seal`과 도메인 트랜잭션은 batch 안에서도 동작하며, 도메인 레이어는 Gate 위에 둔다(9.3절). (3) Gate의 엣지 확인과 `agrees`는 다른 테넌트로의 참조를 거부한다(6장). (4) 관리형 DB의 확장 지원을 조사했다. 지금은 self-host이고, 표는 관리형으로 옮길 때 참고한다(9.5절). (5) 테넌트 잠금 행 없이는 동시 순환이 실제로 생긴다(3.2절). 방법과 근거는 [plan.md](plan.md) 1장에 있다.
 
-**Phase 0 — 기반**: payday 앱 골격, OIDC 로그인·세션·`Identity`, 역할 Policy, 공개·운영자 진입점, `Asset`·`AssetType`·`ItemModel`·`Party`, 시간 행(`Placement`·`Stewardship`·`Fact`·`Link`)과 `Event`, 도메인 RPC(Register, Move, Install, Remove, Assign, SetAttributes, Correct), `Timeline`·`QueryAt`·`AsOf`·`Diff`, `Label`, `Attachment`, 두 갈래 마이그레이션, `UsageSnapshot`. *검증*:
+**Phase 0 — 기반**: payday 앱 골격, OIDC 로그인·세션·`Identity`, 역할 Policy, 공개·운영자 진입점, `Asset`·`AssetType`·`ItemModel`·`Party`, 시간 행(`Placement`·`Stewardship`·`Fact`·`Link`)과 `Event`, 도메인 작업(자산 `Add`·`Erase` 완성, Move, Install, Remove, Assign, SetAttributes, Correct), `Timeline`·`QueryAt`·`AsOf`·`Diff`, `Label`, `Attachment`, 두 갈래 마이그레이션, `UsageSnapshot`. *검증*:
 - 교차 테넌트: 모든 RPC에 다른 테넌트의 ID를 넣으면 NotFound, `agrees` 위반 엣지는 거부.
 - 시간 오라클: 무작위 이동·정정 시퀀스를 생성해 `QueryAt(T)`·`AsOf(T, K)`가 단순 재생 구현의 결과와 같은지 속성 기반 테스트로 확인.
 - 동시성: 같은 자산의 동시 이동 N건 중 하나만 성공, 동시 순환 생성 시도는 거부, 같은 슬롯 동시 장착은 하나만 성공.
 - PostgreSQL과 SQLite 모두 통과, 1.2절의 성능 목표 측정.
 
-**Phase 1 — MVP**: 웹 UI(자산 목록·상세·타임라인·시점 슬라이더·Diff), 공간 계층, QR 라벨 인쇄·스캔(PWA), 과거 시각을 포함한 CSV/Excel 가져오기·내보내기, Custody(지급·인수 확인·반납), 검색, 기본 뷰 플러그인 2~3종(랙 U, 하드웨어 구성). *검증*: 가져오기 직후 과거 시점 재현, 지급 → 반납 → 정정 시나리오의 `AsOf` 결과, 일반 직원 셀프서비스(스캔 → 인수 확인), 가설 고객 파일럿.
+**Phase 1 — MVP**: 웹 UI(자산 목록·상세·타임라인·시점 슬라이더·Diff), 공간 계층, 테넌트 라벨 도메인(등록·확인·교체)과 QR 라벨 인쇄·스캔(PWA), 과거 시각을 포함한 CSV/Excel 가져오기·내보내기, Custody(지급·인수 확인·반납), 검색, 기본 뷰 플러그인 2~3종(랙 U, 하드웨어 구성). *검증*: 가져오기 직후 과거 시점 재현, 지급 → 반납 → 정정 시나리오의 `AsOf` 결과, 일반 직원 셀프서비스(스캔 → 인수 확인), 가설 고객 파일럿.
 
 **Phase 2 — 예약과 운영**: `Bookable`·`Allocation`·단건 예약(홀드, 승인, buffer, override), 공간 배타 그룹, 키트, 풀 자원 예약, 실사(오프라인 큐 포함), 재고, 작업 지시·정비 블록, 구매, 알림, 기본 리포트, 반복 예약, 도메인 모듈 구조. *검증*: 같은 자원에 대한 동시 예약 100건에서 겹침 0, 키트 구성품 충돌 감지, 재고와 대여 수량의 일관성, 늦게 도착한 오프라인 스캔의 처리, 일괄 작업의 롤백·재시도.
 
@@ -539,5 +568,8 @@ QR 라벨에는 `https://<host>/l/<라벨 ID>`를 인코딩한다. 휴대폰 기
 | D18 | 자산 번호는 별도 필드(한글 허용), 처분은 상태, Erase는 오입력 취소용 | payday alias 문법과 맞지 않고, 처분한 자산의 번호를 재사용하지 않는다 |
 | D19 | 공간 예약은 캘린더 밖 공간과 장비 중심. 회의실 대체는 비목표 | 회의실은 기존 캘린더가 권위다 |
 | D20 | 도메인 레이어는 payday Gate 위에, `seal`은 그보다 위에 둔다 | 도메인 작업의 내부 쓰기까지 Gate의 엣지 확인을 받고, 생성 쓰기는 batch 안에서도 닫힌다 |
-| D21 | 운영 DB는 AWS RDS for PostgreSQL 또는 Google Cloud SQL(서울). 국내 클라우드가 필요하면 검색 폴백으로 네이버 클라우드 | btree_gist·pg_bigm을 모두 지원하는 곳은 이 둘이다. NHN Cloud는 btree_gist가 없어 DB 방어선을 쓸 수 없다 |
+| D21 | 클라우드 없이 self-host로 시작한다. 서버 한 대에 Docker Compose, PostgreSQL은 pg_bigm을 넣은 자체 이미지 | 운영을 직접 통제하고, 확장 지원을 관리형 서비스에 기대지 않는다. 관리형으로 옮길 때의 선택지는 9.5절 표에 남긴다 |
 | D22 | 한국어 검색은 pg_bigm, 1글자 질의는 접두 일치 | 2음절 이름이 흔하고, pg_trgm은 3글자 미만에 인덱스를 쓰지 못한다 |
+| D23 | QR 라벨 도메인은 테넌트마다 설정한다. 확인된 도메인이 없으면 라벨 기능을 끄고, 바꾼 뒤에도 이전 도메인은 계속 해석한다 | 인쇄한 라벨의 호스트는 바꿀 수 없으므로, 그 결정을 테넌트에게 맡기고 이전 라벨이 깨지지 않게 한다 |
+| D24 | 생성 동사가 뜻하는 일은 도메인 레이어가 그 동사를 완성하고, 새 RPC는 생성 동사가 이름 붙이지 않는 일에만 만든다 | payday가 권하는 방식이고, "제대로 하기"가 "하기" 옆의 두 번째 이름이 되지 않는다 |
+| D25 | 첨부는 저장소 인터페이스 뒤에 두고 로컬 파일시스템으로 시작한다. 서버를 나눌 때 S3 호환 저장소로 옮긴다. MinIO는 쓰지 않는다 | 서버 한 대에서는 별도 저장소가 필요 없다. MinIO 커뮤니티판은 배포를 멈추고 보관 처리되었다 |
