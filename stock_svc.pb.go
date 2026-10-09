@@ -34,6 +34,7 @@ type StockAddRequest struct {
 	xxx_hidden_Threshold   int64                  `protobuf:"varint,11,opt,name=threshold"`
 	xxx_hidden_Unit        string                 `protobuf:"bytes,12,opt,name=unit"`
 	xxx_hidden_DateCreated *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
+	xxx_hidden_Op          []byte                 `protobuf:"bytes,100,opt,name=op"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -135,12 +136,19 @@ func (x *StockAddRequest) GetDateCreated() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *StockAddRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
 func (x *StockAddRequest) SetId(v []byte) {
 	if v == nil {
 		v = []byte{}
 	}
 	x.xxx_hidden_Id = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
 }
 
 func (x *StockAddRequest) SetTenant(v *TenantRef) {
@@ -179,6 +187,14 @@ func (x *StockAddRequest) SetDateCreated(v *timestamppb.Timestamp) {
 	x.xxx_hidden_DateCreated = v
 }
 
+func (x *StockAddRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
+}
+
 func (x *StockAddRequest) HasId() bool {
 	if x == nil {
 		return false
@@ -214,6 +230,13 @@ func (x *StockAddRequest) HasDateCreated() bool {
 	return x.xxx_hidden_DateCreated != nil
 }
 
+func (x *StockAddRequest) HasOp() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
 func (x *StockAddRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -235,6 +258,11 @@ func (x *StockAddRequest) ClearDateCreated() {
 	x.xxx_hidden_DateCreated = nil
 }
 
+func (x *StockAddRequest) ClearOp() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_Op = nil
+}
+
 type StockAddRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -248,6 +276,7 @@ type StockAddRequest_builder struct {
 	Threshold   int64
 	Unit        string
 	DateCreated *timestamppb.Timestamp
+	Op          []byte
 }
 
 func (b0 StockAddRequest_builder) Build() *StockAddRequest {
@@ -255,7 +284,7 @@ func (b0 StockAddRequest_builder) Build() *StockAddRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Tenant = b.Tenant
@@ -267,6 +296,10 @@ func (b0 StockAddRequest_builder) Build() *StockAddRequest {
 	x.xxx_hidden_Threshold = b.Threshold
 	x.xxx_hidden_Unit = b.Unit
 	x.xxx_hidden_DateCreated = b.DateCreated
+	if b.Op != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
+		x.xxx_hidden_Op = b.Op
+	}
 	return m0
 }
 
@@ -1902,6 +1935,505 @@ func (b0 StockWatchItem_builder) Build() *StockWatchItem {
 	return m0
 }
 
+type StockChangeRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref      *StockRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Quantity int64                  `protobuf:"varint,2,opt,name=quantity"`
+	xxx_hidden_Reason   string                 `protobuf:"bytes,3,opt,name=reason"`
+	xxx_hidden_At       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=at"`
+	xxx_hidden_Op       []byte                 `protobuf:"bytes,5,opt,name=op"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *StockChangeRequest) Reset() {
+	*x = StockChangeRequest{}
+	mi := &file_rove_stock_svc_g_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StockChangeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StockChangeRequest) ProtoMessage() {}
+
+func (x *StockChangeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_stock_svc_g_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *StockChangeRequest) GetRef() *StockRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *StockChangeRequest) GetQuantity() int64 {
+	if x != nil {
+		return x.xxx_hidden_Quantity
+	}
+	return 0
+}
+
+func (x *StockChangeRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *StockChangeRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *StockChangeRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *StockChangeRequest) SetRef(v *StockRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *StockChangeRequest) SetQuantity(v int64) {
+	x.xxx_hidden_Quantity = v
+}
+
+func (x *StockChangeRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *StockChangeRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *StockChangeRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *StockChangeRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *StockChangeRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *StockChangeRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *StockChangeRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type StockChangeRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref      *StockRef
+	Quantity int64
+	Reason   string
+	At       *timestamppb.Timestamp
+	Op       []byte
+}
+
+func (b0 StockChangeRequest_builder) Build() *StockChangeRequest {
+	m0 := &StockChangeRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Quantity = b.Quantity
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type StockTransferRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref      *StockRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_To       *AssetRef              `protobuf:"bytes,2,opt,name=to"`
+	xxx_hidden_Quantity int64                  `protobuf:"varint,3,opt,name=quantity"`
+	xxx_hidden_Reason   string                 `protobuf:"bytes,4,opt,name=reason"`
+	xxx_hidden_At       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=at"`
+	xxx_hidden_Op       []byte                 `protobuf:"bytes,6,opt,name=op"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *StockTransferRequest) Reset() {
+	*x = StockTransferRequest{}
+	mi := &file_rove_stock_svc_g_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StockTransferRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StockTransferRequest) ProtoMessage() {}
+
+func (x *StockTransferRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_stock_svc_g_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *StockTransferRequest) GetRef() *StockRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *StockTransferRequest) GetTo() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_To
+	}
+	return nil
+}
+
+func (x *StockTransferRequest) GetQuantity() int64 {
+	if x != nil {
+		return x.xxx_hidden_Quantity
+	}
+	return 0
+}
+
+func (x *StockTransferRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *StockTransferRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *StockTransferRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *StockTransferRequest) SetRef(v *StockRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *StockTransferRequest) SetTo(v *AssetRef) {
+	x.xxx_hidden_To = v
+}
+
+func (x *StockTransferRequest) SetQuantity(v int64) {
+	x.xxx_hidden_Quantity = v
+}
+
+func (x *StockTransferRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *StockTransferRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *StockTransferRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *StockTransferRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *StockTransferRequest) HasTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_To != nil
+}
+
+func (x *StockTransferRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *StockTransferRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *StockTransferRequest) ClearTo() {
+	x.xxx_hidden_To = nil
+}
+
+func (x *StockTransferRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type StockTransferRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref      *StockRef
+	To       *AssetRef
+	Quantity int64
+	Reason   string
+	At       *timestamppb.Timestamp
+	Op       []byte
+}
+
+func (b0 StockTransferRequest_builder) Build() *StockTransferRequest {
+	m0 := &StockTransferRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_To = b.To
+	x.xxx_hidden_Quantity = b.Quantity
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type StockConvertRequest struct {
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref       *StockRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Quantity  int64                  `protobuf:"varint,2,opt,name=quantity"`
+	xxx_hidden_TagPrefix string                 `protobuf:"bytes,3,opt,name=tag_prefix,json=tagPrefix"`
+	xxx_hidden_Op        []byte                 `protobuf:"bytes,4,opt,name=op"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *StockConvertRequest) Reset() {
+	*x = StockConvertRequest{}
+	mi := &file_rove_stock_svc_g_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StockConvertRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StockConvertRequest) ProtoMessage() {}
+
+func (x *StockConvertRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_stock_svc_g_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *StockConvertRequest) GetRef() *StockRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *StockConvertRequest) GetQuantity() int64 {
+	if x != nil {
+		return x.xxx_hidden_Quantity
+	}
+	return 0
+}
+
+func (x *StockConvertRequest) GetTagPrefix() string {
+	if x != nil {
+		return x.xxx_hidden_TagPrefix
+	}
+	return ""
+}
+
+func (x *StockConvertRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *StockConvertRequest) SetRef(v *StockRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *StockConvertRequest) SetQuantity(v int64) {
+	x.xxx_hidden_Quantity = v
+}
+
+func (x *StockConvertRequest) SetTagPrefix(v string) {
+	x.xxx_hidden_TagPrefix = v
+}
+
+func (x *StockConvertRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *StockConvertRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *StockConvertRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type StockConvertRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref      *StockRef
+	Quantity int64
+	// A prefix the new assets' tags start with; numbers follow.
+	TagPrefix string
+	Op        []byte
+}
+
+func (b0 StockConvertRequest_builder) Build() *StockConvertRequest {
+	m0 := &StockConvertRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Quantity = b.Quantity
+	x.xxx_hidden_TagPrefix = b.TagPrefix
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type StockConvertResponse struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Stock  *Stock                 `protobuf:"bytes,1,opt,name=stock"`
+	xxx_hidden_Assets *[]*Asset              `protobuf:"bytes,2,rep,name=assets"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *StockConvertResponse) Reset() {
+	*x = StockConvertResponse{}
+	mi := &file_rove_stock_svc_g_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StockConvertResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StockConvertResponse) ProtoMessage() {}
+
+func (x *StockConvertResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_stock_svc_g_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *StockConvertResponse) GetStock() *Stock {
+	if x != nil {
+		return x.xxx_hidden_Stock
+	}
+	return nil
+}
+
+func (x *StockConvertResponse) GetAssets() []*Asset {
+	if x != nil {
+		if x.xxx_hidden_Assets != nil {
+			return *x.xxx_hidden_Assets
+		}
+	}
+	return nil
+}
+
+func (x *StockConvertResponse) SetStock(v *Stock) {
+	x.xxx_hidden_Stock = v
+}
+
+func (x *StockConvertResponse) SetAssets(v []*Asset) {
+	x.xxx_hidden_Assets = &v
+}
+
+func (x *StockConvertResponse) HasStock() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Stock != nil
+}
+
+func (x *StockConvertResponse) ClearStock() {
+	x.xxx_hidden_Stock = nil
+}
+
+type StockConvertResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Stock  *Stock
+	Assets []*Asset
+}
+
+func (b0 StockConvertResponse_builder) Build() *StockConvertResponse {
+	m0 := &StockConvertResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Stock = b.Stock
+	x.xxx_hidden_Assets = &b.Assets
+	return m0
+}
+
 type StockMovementAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -1922,7 +2454,7 @@ type StockMovementAddRequest struct {
 
 func (x *StockMovementAddRequest) Reset() {
 	*x = StockMovementAddRequest{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[13]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1934,7 +2466,7 @@ func (x *StockMovementAddRequest) String() string {
 func (*StockMovementAddRequest) ProtoMessage() {}
 
 func (x *StockMovementAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[13]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2182,7 +2714,7 @@ type StockMovementGetRequest struct {
 
 func (x *StockMovementGetRequest) Reset() {
 	*x = StockMovementGetRequest{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[14]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2194,7 +2726,7 @@ func (x *StockMovementGetRequest) String() string {
 func (*StockMovementGetRequest) ProtoMessage() {}
 
 func (x *StockMovementGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[14]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2274,7 +2806,7 @@ type StockMovementRef struct {
 
 func (x *StockMovementRef) Reset() {
 	*x = StockMovementRef{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[15]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2286,7 +2818,7 @@ func (x *StockMovementRef) String() string {
 func (*StockMovementRef) ProtoMessage() {}
 
 func (x *StockMovementRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[15]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2374,7 +2906,7 @@ func (b0 StockMovementRef_builder) Build() *StockMovementRef {
 type case_StockMovementRef_Key protoreflect.FieldNumber
 
 func (x case_StockMovementRef_Key) String() string {
-	md := file_rove_stock_svc_g_proto_msgTypes[15].Descriptor()
+	md := file_rove_stock_svc_g_proto_msgTypes[19].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -2412,7 +2944,7 @@ type StockMovementSelect struct {
 
 func (x *StockMovementSelect) Reset() {
 	*x = StockMovementSelect{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[16]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2424,7 +2956,7 @@ func (x *StockMovementSelect) String() string {
 func (*StockMovementSelect) ProtoMessage() {}
 
 func (x *StockMovementSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[16]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2776,7 +3308,7 @@ type StockMovementPatchRequest struct {
 
 func (x *StockMovementPatchRequest) Reset() {
 	*x = StockMovementPatchRequest{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[17]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2788,7 +3320,7 @@ func (x *StockMovementPatchRequest) String() string {
 func (*StockMovementPatchRequest) ProtoMessage() {}
 
 func (x *StockMovementPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[17]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3121,7 +3653,7 @@ type StockMovementApplyRequest struct {
 
 func (x *StockMovementApplyRequest) Reset() {
 	*x = StockMovementApplyRequest{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[18]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3133,7 +3665,7 @@ func (x *StockMovementApplyRequest) String() string {
 func (*StockMovementApplyRequest) ProtoMessage() {}
 
 func (x *StockMovementApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[18]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3215,7 +3747,7 @@ type StockMovementEraseResponse struct {
 
 func (x *StockMovementEraseResponse) Reset() {
 	*x = StockMovementEraseResponse{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[19]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3227,7 +3759,7 @@ func (x *StockMovementEraseResponse) String() string {
 func (*StockMovementEraseResponse) ProtoMessage() {}
 
 func (x *StockMovementEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[19]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3295,7 +3827,7 @@ type StockMovementListRequest struct {
 
 func (x *StockMovementListRequest) Reset() {
 	*x = StockMovementListRequest{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[20]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3307,7 +3839,7 @@ func (x *StockMovementListRequest) String() string {
 func (*StockMovementListRequest) ProtoMessage() {}
 
 func (x *StockMovementListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[20]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3390,7 +3922,7 @@ type StockMovementListResponse struct {
 
 func (x *StockMovementListResponse) Reset() {
 	*x = StockMovementListResponse{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[21]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3402,7 +3934,7 @@ func (x *StockMovementListResponse) String() string {
 func (*StockMovementListResponse) ProtoMessage() {}
 
 func (x *StockMovementListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[21]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3473,7 +4005,7 @@ type StockMovementFilter struct {
 
 func (x *StockMovementFilter) Reset() {
 	*x = StockMovementFilter{}
-	mi := &file_rove_stock_svc_g_proto_msgTypes[22]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3485,7 +4017,7 @@ func (x *StockMovementFilter) String() string {
 func (*StockMovementFilter) ProtoMessage() {}
 
 func (x *StockMovementFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_stock_svc_g_proto_msgTypes[22]
+	mi := &file_rove_stock_svc_g_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3592,7 +4124,7 @@ var File_rove_stock_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_stock_svc_g_proto_rawDesc = "" +
 	"\n" +
-	"\x16rove/stock_svc.g.proto\x12\x04rove\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11patch/patch.proto\x1a\x16rove/asset_svc.g.proto\x1a\x18rove/catalog_svc.g.proto\x1a\x1erove/payday/tenant_svc.g.proto\x1a\x10rove/stock.proto\"\xcd\x03\n" +
+	"\x16rove/stock_svc.g.proto\x12\x04rove\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11patch/patch.proto\x1a\x10rove/asset.proto\x1a\x16rove/asset_svc.g.proto\x1a\x18rove/catalog_svc.g.proto\x1a\x1erove/payday/tenant_svc.g.proto\x1a\x10rove/stock.proto\"\xdd\x03\n" +
 	"\x0fStockAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
@@ -3604,7 +4136,8 @@ const file_rove_stock_svc_g_proto_rawDesc = "" +
 	" \x01(\x03B\x05\xaa\x01\x02\b\x02R\bquantity\x12#\n" +
 	"\tthreshold\x18\v \x01(\x03B\x05\xaa\x01\x02\b\x02R\tthreshold\x12\x19\n" +
 	"\x04unit\x18\f \x01(\tB\x05\xaa\x01\x02\b\x02R\x04unit\x12=\n" +
-	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\x1a9\n" +
+	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\x12\x0e\n" +
+	"\x02op\x18d \x01(\fR\x02op\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"^\n" +
@@ -3666,7 +4199,29 @@ const file_rove_stock_svc_g_proto_rawDesc = "" +
 	"\x0eStockWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12!\n" +
 	"\x05value\x18\x02 \x01(\v2\v.rove.StockR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x8a\x03\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xbb\x01\n" +
+	"\x12StockChangeRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.StockRefR\x03ref\x12!\n" +
+	"\bquantity\x18\x02 \x01(\x03B\x05\xaa\x01\x02\b\x02R\bquantity\x12\x1d\n" +
+	"\x06reason\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12*\n" +
+	"\x02at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x15\n" +
+	"\x02op\x18\x05 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\xdd\x01\n" +
+	"\x14StockTransferRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.StockRefR\x03ref\x12\x1e\n" +
+	"\x02to\x18\x02 \x01(\v2\x0e.rove.AssetRefR\x02to\x12!\n" +
+	"\bquantity\x18\x03 \x01(\x03B\x05\xaa\x01\x02\b\x02R\bquantity\x12\x1d\n" +
+	"\x06reason\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12*\n" +
+	"\x02at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x15\n" +
+	"\x02op\x18\x06 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\x97\x01\n" +
+	"\x13StockConvertRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.StockRefR\x03ref\x12!\n" +
+	"\bquantity\x18\x02 \x01(\x03B\x05\xaa\x01\x02\b\x02R\bquantity\x12$\n" +
+	"\n" +
+	"tag_prefix\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\ttagPrefix\x12\x15\n" +
+	"\x02op\x18\x04 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"^\n" +
+	"\x14StockConvertResponse\x12!\n" +
+	"\x05stock\x18\x01 \x01(\v2\v.rove.StockR\x05stock\x12#\n" +
+	"\x06assets\x18\x02 \x03(\v2\v.rove.AssetR\x06assets\"\x8a\x03\n" +
 	"\x17StockMovementAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12$\n" +
@@ -3727,7 +4282,7 @@ const file_rove_stock_svc_g_proto_rawDesc = "" +
 	"\x13StockMovementFilter\x12(\n" +
 	"\x03ref\x18\x01 \x01(\v2\x16.rove.StockMovementRefR\x03ref\x12$\n" +
 	"\x05stock\x18\x02 \x01(\v2\x0e.rove.StockRefR\x05stock\x12\x16\n" +
-	"\x06reason\x18\x03 \x01(\tR\x06reason2\xec\x02\n" +
+	"\x06reason\x18\x03 \x01(\tR\x06reason2\xf8\x04\n" +
 	"\fStockService\x12)\n" +
 	"\x03Add\x12\x15.rove.StockAddRequest\x1a\v.rove.Stock\x12)\n" +
 	"\x03Get\x12\x15.rove.StockGetRequest\x1a\v.rove.Stock\x12-\n" +
@@ -3735,7 +4290,12 @@ const file_rove_stock_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x17.rove.StockApplyRequest\x1a\v.rove.Stock\x121\n" +
 	"\x05Erase\x12\x0e.rove.StockRef\x1a\x18.rove.StockEraseResponse\x127\n" +
 	"\x04List\x12\x16.rove.StockListRequest\x1a\x17.rove.StockListResponse\x12<\n" +
-	"\x05Watch\x12\x17.rove.StockWatchRequest\x1a\x18.rove.StockWatchResponse0\x012\x96\x03\n" +
+	"\x05Watch\x12\x17.rove.StockWatchRequest\x1a\x18.rove.StockWatchResponse0\x01\x120\n" +
+	"\aReceive\x12\x18.rove.StockChangeRequest\x1a\v.rove.Stock\x120\n" +
+	"\aConsume\x12\x18.rove.StockChangeRequest\x1a\v.rove.Stock\x12/\n" +
+	"\x06Adjust\x12\x18.rove.StockChangeRequest\x1a\v.rove.Stock\x123\n" +
+	"\bTransfer\x12\x1a.rove.StockTransferRequest\x1a\v.rove.Stock\x12@\n" +
+	"\aConvert\x12\x19.rove.StockConvertRequest\x1a\x1a.rove.StockConvertResponse2\x96\x03\n" +
 	"\x14StockMovementService\x129\n" +
 	"\x03Add\x12\x1d.rove.StockMovementAddRequest\x1a\x13.rove.StockMovement\x129\n" +
 	"\x03Get\x12\x1d.rove.StockMovementGetRequest\x1a\x13.rove.StockMovement\x12=\n" +
@@ -3744,7 +4304,7 @@ const file_rove_stock_svc_g_proto_rawDesc = "" +
 	"\x05Erase\x12\x16.rove.StockMovementRef\x1a .rove.StockMovementEraseResponse\x12G\n" +
 	"\x04List\x12\x1e.rove.StockMovementListRequest\x1a\x1f.rove.StockMovementListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_stock_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_rove_stock_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_rove_stock_svc_g_proto_goTypes = []any{
 	(*StockAddRequest)(nil),            // 0: rove.StockAddRequest
 	(*StockGetRequest)(nil),            // 1: rove.StockGetRequest
@@ -3759,101 +4319,124 @@ var file_rove_stock_svc_g_proto_goTypes = []any{
 	(*StockWatchRequest)(nil),          // 10: rove.StockWatchRequest
 	(*StockWatchResponse)(nil),         // 11: rove.StockWatchResponse
 	(*StockWatchItem)(nil),             // 12: rove.StockWatchItem
-	(*StockMovementAddRequest)(nil),    // 13: rove.StockMovementAddRequest
-	(*StockMovementGetRequest)(nil),    // 14: rove.StockMovementGetRequest
-	(*StockMovementRef)(nil),           // 15: rove.StockMovementRef
-	(*StockMovementSelect)(nil),        // 16: rove.StockMovementSelect
-	(*StockMovementPatchRequest)(nil),  // 17: rove.StockMovementPatchRequest
-	(*StockMovementApplyRequest)(nil),  // 18: rove.StockMovementApplyRequest
-	(*StockMovementEraseResponse)(nil), // 19: rove.StockMovementEraseResponse
-	(*StockMovementListRequest)(nil),   // 20: rove.StockMovementListRequest
-	(*StockMovementListResponse)(nil),  // 21: rove.StockMovementListResponse
-	(*StockMovementFilter)(nil),        // 22: rove.StockMovementFilter
-	nil,                                // 23: rove.StockAddRequest.LabelsEntry
-	nil,                                // 24: rove.StockPatchRequest.LabelsEntry
-	(*TenantRef)(nil),                  // 25: rove.TenantRef
-	(*ItemModelRef)(nil),               // 26: rove.ItemModelRef
-	(*AssetRef)(nil),                   // 27: rove.AssetRef
-	(*timestamppb.Timestamp)(nil),      // 28: google.protobuf.Timestamp
-	(*TenantSelect)(nil),               // 29: rove.TenantSelect
-	(*ItemModelSelect)(nil),            // 30: rove.ItemModelSelect
-	(*AssetSelect)(nil),                // 31: rove.AssetSelect
-	(*patchpb.Patch)(nil),              // 32: patch.Patch
-	(*Stock)(nil),                      // 33: rove.Stock
-	(*StockMovement)(nil),              // 34: rove.StockMovement
+	(*StockChangeRequest)(nil),         // 13: rove.StockChangeRequest
+	(*StockTransferRequest)(nil),       // 14: rove.StockTransferRequest
+	(*StockConvertRequest)(nil),        // 15: rove.StockConvertRequest
+	(*StockConvertResponse)(nil),       // 16: rove.StockConvertResponse
+	(*StockMovementAddRequest)(nil),    // 17: rove.StockMovementAddRequest
+	(*StockMovementGetRequest)(nil),    // 18: rove.StockMovementGetRequest
+	(*StockMovementRef)(nil),           // 19: rove.StockMovementRef
+	(*StockMovementSelect)(nil),        // 20: rove.StockMovementSelect
+	(*StockMovementPatchRequest)(nil),  // 21: rove.StockMovementPatchRequest
+	(*StockMovementApplyRequest)(nil),  // 22: rove.StockMovementApplyRequest
+	(*StockMovementEraseResponse)(nil), // 23: rove.StockMovementEraseResponse
+	(*StockMovementListRequest)(nil),   // 24: rove.StockMovementListRequest
+	(*StockMovementListResponse)(nil),  // 25: rove.StockMovementListResponse
+	(*StockMovementFilter)(nil),        // 26: rove.StockMovementFilter
+	nil,                                // 27: rove.StockAddRequest.LabelsEntry
+	nil,                                // 28: rove.StockPatchRequest.LabelsEntry
+	(*TenantRef)(nil),                  // 29: rove.TenantRef
+	(*ItemModelRef)(nil),               // 30: rove.ItemModelRef
+	(*AssetRef)(nil),                   // 31: rove.AssetRef
+	(*timestamppb.Timestamp)(nil),      // 32: google.protobuf.Timestamp
+	(*TenantSelect)(nil),               // 33: rove.TenantSelect
+	(*ItemModelSelect)(nil),            // 34: rove.ItemModelSelect
+	(*AssetSelect)(nil),                // 35: rove.AssetSelect
+	(*patchpb.Patch)(nil),              // 36: patch.Patch
+	(*Stock)(nil),                      // 37: rove.Stock
+	(*Asset)(nil),                      // 38: rove.Asset
+	(*StockMovement)(nil),              // 39: rove.StockMovement
 }
 var file_rove_stock_svc_g_proto_depIdxs = []int32{
-	25, // 0: rove.StockAddRequest.tenant:type_name -> rove.TenantRef
-	23, // 1: rove.StockAddRequest.labels:type_name -> rove.StockAddRequest.LabelsEntry
-	26, // 2: rove.StockAddRequest.model:type_name -> rove.ItemModelRef
-	27, // 3: rove.StockAddRequest.space:type_name -> rove.AssetRef
-	28, // 4: rove.StockAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	29, // 0: rove.StockAddRequest.tenant:type_name -> rove.TenantRef
+	27, // 1: rove.StockAddRequest.labels:type_name -> rove.StockAddRequest.LabelsEntry
+	30, // 2: rove.StockAddRequest.model:type_name -> rove.ItemModelRef
+	31, // 3: rove.StockAddRequest.space:type_name -> rove.AssetRef
+	32, // 4: rove.StockAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 5: rove.StockGetRequest.ref:type_name -> rove.StockRef
 	3,  // 6: rove.StockGetRequest.select:type_name -> rove.StockSelect
-	29, // 7: rove.StockSelect.tenant:type_name -> rove.TenantSelect
-	30, // 8: rove.StockSelect.model:type_name -> rove.ItemModelSelect
-	31, // 9: rove.StockSelect.space:type_name -> rove.AssetSelect
+	33, // 7: rove.StockSelect.tenant:type_name -> rove.TenantSelect
+	34, // 8: rove.StockSelect.model:type_name -> rove.ItemModelSelect
+	35, // 9: rove.StockSelect.space:type_name -> rove.AssetSelect
 	2,  // 10: rove.StockPatchRequest.ref:type_name -> rove.StockRef
-	24, // 11: rove.StockPatchRequest.labels:type_name -> rove.StockPatchRequest.LabelsEntry
-	28, // 12: rove.StockPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	28, // 11: rove.StockPatchRequest.labels:type_name -> rove.StockPatchRequest.LabelsEntry
+	32, // 12: rove.StockPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 13: rove.StockApplyRequest.ref:type_name -> rove.StockRef
-	32, // 14: rove.StockApplyRequest.patch:type_name -> patch.Patch
+	36, // 14: rove.StockApplyRequest.patch:type_name -> patch.Patch
 	9,  // 15: rove.StockListRequest.filters:type_name -> rove.StockFilter
-	33, // 16: rove.StockListResponse.items:type_name -> rove.Stock
+	37, // 16: rove.StockListResponse.items:type_name -> rove.Stock
 	2,  // 17: rove.StockFilter.ref:type_name -> rove.StockRef
-	26, // 18: rove.StockFilter.model:type_name -> rove.ItemModelRef
-	27, // 19: rove.StockFilter.space:type_name -> rove.AssetRef
+	30, // 18: rove.StockFilter.model:type_name -> rove.ItemModelRef
+	31, // 19: rove.StockFilter.space:type_name -> rove.AssetRef
 	9,  // 20: rove.StockWatchRequest.filters:type_name -> rove.StockFilter
 	12, // 21: rove.StockWatchResponse.items:type_name -> rove.StockWatchItem
-	33, // 22: rove.StockWatchItem.value:type_name -> rove.Stock
-	25, // 23: rove.StockMovementAddRequest.tenant:type_name -> rove.TenantRef
-	2,  // 24: rove.StockMovementAddRequest.stock:type_name -> rove.StockRef
-	28, // 25: rove.StockMovementAddRequest.occurred_at:type_name -> google.protobuf.Timestamp
-	28, // 26: rove.StockMovementAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	15, // 27: rove.StockMovementGetRequest.ref:type_name -> rove.StockMovementRef
-	16, // 28: rove.StockMovementGetRequest.select:type_name -> rove.StockMovementSelect
-	29, // 29: rove.StockMovementSelect.tenant:type_name -> rove.TenantSelect
-	3,  // 30: rove.StockMovementSelect.stock:type_name -> rove.StockSelect
-	15, // 31: rove.StockMovementPatchRequest.ref:type_name -> rove.StockMovementRef
-	28, // 32: rove.StockMovementPatchRequest.occurred_at:type_name -> google.protobuf.Timestamp
-	28, // 33: rove.StockMovementPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	15, // 34: rove.StockMovementApplyRequest.ref:type_name -> rove.StockMovementRef
-	32, // 35: rove.StockMovementApplyRequest.patch:type_name -> patch.Patch
-	22, // 36: rove.StockMovementListRequest.filters:type_name -> rove.StockMovementFilter
-	34, // 37: rove.StockMovementListResponse.items:type_name -> rove.StockMovement
-	15, // 38: rove.StockMovementFilter.ref:type_name -> rove.StockMovementRef
-	2,  // 39: rove.StockMovementFilter.stock:type_name -> rove.StockRef
-	0,  // 40: rove.StockService.Add:input_type -> rove.StockAddRequest
-	1,  // 41: rove.StockService.Get:input_type -> rove.StockGetRequest
-	4,  // 42: rove.StockService.Patch:input_type -> rove.StockPatchRequest
-	5,  // 43: rove.StockService.Apply:input_type -> rove.StockApplyRequest
-	2,  // 44: rove.StockService.Erase:input_type -> rove.StockRef
-	7,  // 45: rove.StockService.List:input_type -> rove.StockListRequest
-	10, // 46: rove.StockService.Watch:input_type -> rove.StockWatchRequest
-	13, // 47: rove.StockMovementService.Add:input_type -> rove.StockMovementAddRequest
-	14, // 48: rove.StockMovementService.Get:input_type -> rove.StockMovementGetRequest
-	17, // 49: rove.StockMovementService.Patch:input_type -> rove.StockMovementPatchRequest
-	18, // 50: rove.StockMovementService.Apply:input_type -> rove.StockMovementApplyRequest
-	15, // 51: rove.StockMovementService.Erase:input_type -> rove.StockMovementRef
-	20, // 52: rove.StockMovementService.List:input_type -> rove.StockMovementListRequest
-	33, // 53: rove.StockService.Add:output_type -> rove.Stock
-	33, // 54: rove.StockService.Get:output_type -> rove.Stock
-	33, // 55: rove.StockService.Patch:output_type -> rove.Stock
-	33, // 56: rove.StockService.Apply:output_type -> rove.Stock
-	6,  // 57: rove.StockService.Erase:output_type -> rove.StockEraseResponse
-	8,  // 58: rove.StockService.List:output_type -> rove.StockListResponse
-	11, // 59: rove.StockService.Watch:output_type -> rove.StockWatchResponse
-	34, // 60: rove.StockMovementService.Add:output_type -> rove.StockMovement
-	34, // 61: rove.StockMovementService.Get:output_type -> rove.StockMovement
-	34, // 62: rove.StockMovementService.Patch:output_type -> rove.StockMovement
-	34, // 63: rove.StockMovementService.Apply:output_type -> rove.StockMovement
-	19, // 64: rove.StockMovementService.Erase:output_type -> rove.StockMovementEraseResponse
-	21, // 65: rove.StockMovementService.List:output_type -> rove.StockMovementListResponse
-	53, // [53:66] is the sub-list for method output_type
-	40, // [40:53] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	37, // 22: rove.StockWatchItem.value:type_name -> rove.Stock
+	2,  // 23: rove.StockChangeRequest.ref:type_name -> rove.StockRef
+	32, // 24: rove.StockChangeRequest.at:type_name -> google.protobuf.Timestamp
+	2,  // 25: rove.StockTransferRequest.ref:type_name -> rove.StockRef
+	31, // 26: rove.StockTransferRequest.to:type_name -> rove.AssetRef
+	32, // 27: rove.StockTransferRequest.at:type_name -> google.protobuf.Timestamp
+	2,  // 28: rove.StockConvertRequest.ref:type_name -> rove.StockRef
+	37, // 29: rove.StockConvertResponse.stock:type_name -> rove.Stock
+	38, // 30: rove.StockConvertResponse.assets:type_name -> rove.Asset
+	29, // 31: rove.StockMovementAddRequest.tenant:type_name -> rove.TenantRef
+	2,  // 32: rove.StockMovementAddRequest.stock:type_name -> rove.StockRef
+	32, // 33: rove.StockMovementAddRequest.occurred_at:type_name -> google.protobuf.Timestamp
+	32, // 34: rove.StockMovementAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	19, // 35: rove.StockMovementGetRequest.ref:type_name -> rove.StockMovementRef
+	20, // 36: rove.StockMovementGetRequest.select:type_name -> rove.StockMovementSelect
+	33, // 37: rove.StockMovementSelect.tenant:type_name -> rove.TenantSelect
+	3,  // 38: rove.StockMovementSelect.stock:type_name -> rove.StockSelect
+	19, // 39: rove.StockMovementPatchRequest.ref:type_name -> rove.StockMovementRef
+	32, // 40: rove.StockMovementPatchRequest.occurred_at:type_name -> google.protobuf.Timestamp
+	32, // 41: rove.StockMovementPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	19, // 42: rove.StockMovementApplyRequest.ref:type_name -> rove.StockMovementRef
+	36, // 43: rove.StockMovementApplyRequest.patch:type_name -> patch.Patch
+	26, // 44: rove.StockMovementListRequest.filters:type_name -> rove.StockMovementFilter
+	39, // 45: rove.StockMovementListResponse.items:type_name -> rove.StockMovement
+	19, // 46: rove.StockMovementFilter.ref:type_name -> rove.StockMovementRef
+	2,  // 47: rove.StockMovementFilter.stock:type_name -> rove.StockRef
+	0,  // 48: rove.StockService.Add:input_type -> rove.StockAddRequest
+	1,  // 49: rove.StockService.Get:input_type -> rove.StockGetRequest
+	4,  // 50: rove.StockService.Patch:input_type -> rove.StockPatchRequest
+	5,  // 51: rove.StockService.Apply:input_type -> rove.StockApplyRequest
+	2,  // 52: rove.StockService.Erase:input_type -> rove.StockRef
+	7,  // 53: rove.StockService.List:input_type -> rove.StockListRequest
+	10, // 54: rove.StockService.Watch:input_type -> rove.StockWatchRequest
+	13, // 55: rove.StockService.Receive:input_type -> rove.StockChangeRequest
+	13, // 56: rove.StockService.Consume:input_type -> rove.StockChangeRequest
+	13, // 57: rove.StockService.Adjust:input_type -> rove.StockChangeRequest
+	14, // 58: rove.StockService.Transfer:input_type -> rove.StockTransferRequest
+	15, // 59: rove.StockService.Convert:input_type -> rove.StockConvertRequest
+	17, // 60: rove.StockMovementService.Add:input_type -> rove.StockMovementAddRequest
+	18, // 61: rove.StockMovementService.Get:input_type -> rove.StockMovementGetRequest
+	21, // 62: rove.StockMovementService.Patch:input_type -> rove.StockMovementPatchRequest
+	22, // 63: rove.StockMovementService.Apply:input_type -> rove.StockMovementApplyRequest
+	19, // 64: rove.StockMovementService.Erase:input_type -> rove.StockMovementRef
+	24, // 65: rove.StockMovementService.List:input_type -> rove.StockMovementListRequest
+	37, // 66: rove.StockService.Add:output_type -> rove.Stock
+	37, // 67: rove.StockService.Get:output_type -> rove.Stock
+	37, // 68: rove.StockService.Patch:output_type -> rove.Stock
+	37, // 69: rove.StockService.Apply:output_type -> rove.Stock
+	6,  // 70: rove.StockService.Erase:output_type -> rove.StockEraseResponse
+	8,  // 71: rove.StockService.List:output_type -> rove.StockListResponse
+	11, // 72: rove.StockService.Watch:output_type -> rove.StockWatchResponse
+	37, // 73: rove.StockService.Receive:output_type -> rove.Stock
+	37, // 74: rove.StockService.Consume:output_type -> rove.Stock
+	37, // 75: rove.StockService.Adjust:output_type -> rove.Stock
+	37, // 76: rove.StockService.Transfer:output_type -> rove.Stock
+	16, // 77: rove.StockService.Convert:output_type -> rove.StockConvertResponse
+	39, // 78: rove.StockMovementService.Add:output_type -> rove.StockMovement
+	39, // 79: rove.StockMovementService.Get:output_type -> rove.StockMovement
+	39, // 80: rove.StockMovementService.Patch:output_type -> rove.StockMovement
+	39, // 81: rove.StockMovementService.Apply:output_type -> rove.StockMovement
+	23, // 82: rove.StockMovementService.Erase:output_type -> rove.StockMovementEraseResponse
+	25, // 83: rove.StockMovementService.List:output_type -> rove.StockMovementListResponse
+	66, // [66:84] is the sub-list for method output_type
+	48, // [48:66] is the sub-list for method input_type
+	48, // [48:48] is the sub-list for extension type_name
+	48, // [48:48] is the sub-list for extension extendee
+	0,  // [0:48] is the sub-list for field type_name
 }
 
 func init() { file_rove_stock_svc_g_proto_init() }
@@ -3861,6 +4444,7 @@ func file_rove_stock_svc_g_proto_init() {
 	if File_rove_stock_svc_g_proto != nil {
 		return
 	}
+	file_rove_asset_proto_init()
 	file_rove_asset_svc_g_proto_init()
 	file_rove_catalog_svc_g_proto_init()
 	file_rove_payday_tenant_svc_g_proto_init()
@@ -3868,7 +4452,7 @@ func file_rove_stock_svc_g_proto_init() {
 	file_rove_stock_svc_g_proto_msgTypes[2].OneofWrappers = []any{
 		(*stockRef_Id)(nil),
 	}
-	file_rove_stock_svc_g_proto_msgTypes[15].OneofWrappers = []any{
+	file_rove_stock_svc_g_proto_msgTypes[19].OneofWrappers = []any{
 		(*stockMovementRef_Id)(nil),
 	}
 	type x struct{}
@@ -3877,7 +4461,7 @@ func file_rove_stock_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_stock_svc_g_proto_rawDesc), len(file_rove_stock_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   25,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

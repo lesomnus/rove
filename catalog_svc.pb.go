@@ -2067,6 +2067,172 @@ func (b0 AssetTypeWatchItem_builder) Build() *AssetTypeWatchItem {
 	return m0
 }
 
+type AssetTypeUpdateRequest struct {
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref        *AssetTypeRef          `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Name       string                 `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_Desc       string                 `protobuf:"bytes,3,opt,name=desc"`
+	xxx_hidden_ParentId   []byte                 `protobuf:"bytes,4,opt,name=parent_id,json=parentId"`
+	xxx_hidden_ParentNull bool                   `protobuf:"varint,5,opt,name=parent_null,json=parentNull"`
+	xxx_hidden_Kind       string                 `protobuf:"bytes,6,opt,name=kind"`
+	xxx_hidden_Spec       *TypeSpec              `protobuf:"bytes,7,opt,name=spec"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *AssetTypeUpdateRequest) Reset() {
+	*x = AssetTypeUpdateRequest{}
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetTypeUpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetTypeUpdateRequest) ProtoMessage() {}
+
+func (x *AssetTypeUpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetTypeUpdateRequest) GetRef() *AssetTypeRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetTypeUpdateRequest) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *AssetTypeUpdateRequest) GetDesc() string {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return ""
+}
+
+func (x *AssetTypeUpdateRequest) GetParentId() []byte {
+	if x != nil {
+		return x.xxx_hidden_ParentId
+	}
+	return nil
+}
+
+func (x *AssetTypeUpdateRequest) GetParentNull() bool {
+	if x != nil {
+		return x.xxx_hidden_ParentNull
+	}
+	return false
+}
+
+func (x *AssetTypeUpdateRequest) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *AssetTypeUpdateRequest) GetSpec() *TypeSpec {
+	if x != nil {
+		return x.xxx_hidden_Spec
+	}
+	return nil
+}
+
+func (x *AssetTypeUpdateRequest) SetRef(v *AssetTypeRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetTypeUpdateRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *AssetTypeUpdateRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = v
+}
+
+func (x *AssetTypeUpdateRequest) SetParentId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_ParentId = v
+}
+
+func (x *AssetTypeUpdateRequest) SetParentNull(v bool) {
+	x.xxx_hidden_ParentNull = v
+}
+
+func (x *AssetTypeUpdateRequest) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *AssetTypeUpdateRequest) SetSpec(v *TypeSpec) {
+	x.xxx_hidden_Spec = v
+}
+
+func (x *AssetTypeUpdateRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetTypeUpdateRequest) HasSpec() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Spec != nil
+}
+
+func (x *AssetTypeUpdateRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetTypeUpdateRequest) ClearSpec() {
+	x.xxx_hidden_Spec = nil
+}
+
+type AssetTypeUpdateRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref        *AssetTypeRef
+	Name       string
+	Desc       string
+	ParentId   []byte
+	ParentNull bool
+	Kind       string
+	Spec       *TypeSpec
+}
+
+func (b0 AssetTypeUpdateRequest_builder) Build() *AssetTypeUpdateRequest {
+	m0 := &AssetTypeUpdateRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Desc = b.Desc
+	x.xxx_hidden_ParentId = b.ParentId
+	x.xxx_hidden_ParentNull = b.ParentNull
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_Spec = b.Spec
+	return m0
+}
+
 type ItemModelAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -2087,7 +2253,7 @@ type ItemModelAddRequest struct {
 
 func (x *ItemModelAddRequest) Reset() {
 	*x = ItemModelAddRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[13]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2099,7 +2265,7 @@ func (x *ItemModelAddRequest) String() string {
 func (*ItemModelAddRequest) ProtoMessage() {}
 
 func (x *ItemModelAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[13]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2325,7 +2491,7 @@ type ItemModelGetRequest struct {
 
 func (x *ItemModelGetRequest) Reset() {
 	*x = ItemModelGetRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[14]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2337,7 +2503,7 @@ func (x *ItemModelGetRequest) String() string {
 func (*ItemModelGetRequest) ProtoMessage() {}
 
 func (x *ItemModelGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[14]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2417,7 +2583,7 @@ type ItemModelRef struct {
 
 func (x *ItemModelRef) Reset() {
 	*x = ItemModelRef{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[15]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2429,7 +2595,7 @@ func (x *ItemModelRef) String() string {
 func (*ItemModelRef) ProtoMessage() {}
 
 func (x *ItemModelRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[15]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2517,7 +2683,7 @@ func (b0 ItemModelRef_builder) Build() *ItemModelRef {
 type case_ItemModelRef_Key protoreflect.FieldNumber
 
 func (x case_ItemModelRef_Key) String() string {
-	md := file_rove_catalog_svc_g_proto_msgTypes[15].Descriptor()
+	md := file_rove_catalog_svc_g_proto_msgTypes[16].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -2556,7 +2722,7 @@ type ItemModelSelect struct {
 
 func (x *ItemModelSelect) Reset() {
 	*x = ItemModelSelect{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[16]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2568,7 +2734,7 @@ func (x *ItemModelSelect) String() string {
 func (*ItemModelSelect) ProtoMessage() {}
 
 func (x *ItemModelSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[16]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2951,7 +3117,7 @@ type ItemModelPatchRequest struct {
 
 func (x *ItemModelPatchRequest) Reset() {
 	*x = ItemModelPatchRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[17]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2963,7 +3129,7 @@ func (x *ItemModelPatchRequest) String() string {
 func (*ItemModelPatchRequest) ProtoMessage() {}
 
 func (x *ItemModelPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[17]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3340,7 +3506,7 @@ type ItemModelApplyRequest struct {
 
 func (x *ItemModelApplyRequest) Reset() {
 	*x = ItemModelApplyRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[18]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3352,7 +3518,7 @@ func (x *ItemModelApplyRequest) String() string {
 func (*ItemModelApplyRequest) ProtoMessage() {}
 
 func (x *ItemModelApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[18]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3434,7 +3600,7 @@ type ItemModelEraseResponse struct {
 
 func (x *ItemModelEraseResponse) Reset() {
 	*x = ItemModelEraseResponse{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[19]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3446,7 +3612,7 @@ func (x *ItemModelEraseResponse) String() string {
 func (*ItemModelEraseResponse) ProtoMessage() {}
 
 func (x *ItemModelEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[19]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3514,7 +3680,7 @@ type ItemModelListRequest struct {
 
 func (x *ItemModelListRequest) Reset() {
 	*x = ItemModelListRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[20]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3526,7 +3692,7 @@ func (x *ItemModelListRequest) String() string {
 func (*ItemModelListRequest) ProtoMessage() {}
 
 func (x *ItemModelListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[20]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3609,7 +3775,7 @@ type ItemModelListResponse struct {
 
 func (x *ItemModelListResponse) Reset() {
 	*x = ItemModelListResponse{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[21]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3621,7 +3787,7 @@ func (x *ItemModelListResponse) String() string {
 func (*ItemModelListResponse) ProtoMessage() {}
 
 func (x *ItemModelListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[21]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3689,7 +3855,7 @@ type ItemModelFilter struct {
 
 func (x *ItemModelFilter) Reset() {
 	*x = ItemModelFilter{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[22]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3701,7 +3867,7 @@ func (x *ItemModelFilter) String() string {
 func (*ItemModelFilter) ProtoMessage() {}
 
 func (x *ItemModelFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[22]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3782,7 +3948,7 @@ type ItemModelWatchRequest struct {
 
 func (x *ItemModelWatchRequest) Reset() {
 	*x = ItemModelWatchRequest{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[23]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3794,7 +3960,7 @@ func (x *ItemModelWatchRequest) String() string {
 func (*ItemModelWatchRequest) ProtoMessage() {}
 
 func (x *ItemModelWatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[23]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3866,7 +4032,7 @@ type ItemModelWatchResponse struct {
 
 func (x *ItemModelWatchResponse) Reset() {
 	*x = ItemModelWatchResponse{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[24]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3878,7 +4044,7 @@ func (x *ItemModelWatchResponse) String() string {
 func (*ItemModelWatchResponse) ProtoMessage() {}
 
 func (x *ItemModelWatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[24]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3930,7 +4096,7 @@ type ItemModelWatchItem struct {
 
 func (x *ItemModelWatchItem) Reset() {
 	*x = ItemModelWatchItem{}
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[25]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3942,7 +4108,7 @@ func (x *ItemModelWatchItem) String() string {
 func (*ItemModelWatchItem) ProtoMessage() {}
 
 func (x *ItemModelWatchItem) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_catalog_svc_g_proto_msgTypes[25]
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4051,6 +4217,194 @@ func (b0 ItemModelWatchItem_builder) Build() *ItemModelWatchItem {
 	return m0
 }
 
+type ItemModelUpdateRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref      *ItemModelRef          `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Name     string                 `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_Desc     string                 `protobuf:"bytes,3,opt,name=desc"`
+	xxx_hidden_Maker    string                 `protobuf:"bytes,4,opt,name=maker"`
+	xxx_hidden_Code     string                 `protobuf:"bytes,5,opt,name=code"`
+	xxx_hidden_Type     *AssetTypeRef          `protobuf:"bytes,6,opt,name=type"`
+	xxx_hidden_TypeNull bool                   `protobuf:"varint,7,opt,name=type_null,json=typeNull"`
+	xxx_hidden_Spec     *ModelSpec             `protobuf:"bytes,8,opt,name=spec"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ItemModelUpdateRequest) Reset() {
+	*x = ItemModelUpdateRequest{}
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ItemModelUpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ItemModelUpdateRequest) ProtoMessage() {}
+
+func (x *ItemModelUpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_catalog_svc_g_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ItemModelUpdateRequest) GetRef() *ItemModelRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *ItemModelUpdateRequest) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *ItemModelUpdateRequest) GetDesc() string {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return ""
+}
+
+func (x *ItemModelUpdateRequest) GetMaker() string {
+	if x != nil {
+		return x.xxx_hidden_Maker
+	}
+	return ""
+}
+
+func (x *ItemModelUpdateRequest) GetCode() string {
+	if x != nil {
+		return x.xxx_hidden_Code
+	}
+	return ""
+}
+
+func (x *ItemModelUpdateRequest) GetType() *AssetTypeRef {
+	if x != nil {
+		return x.xxx_hidden_Type
+	}
+	return nil
+}
+
+func (x *ItemModelUpdateRequest) GetTypeNull() bool {
+	if x != nil {
+		return x.xxx_hidden_TypeNull
+	}
+	return false
+}
+
+func (x *ItemModelUpdateRequest) GetSpec() *ModelSpec {
+	if x != nil {
+		return x.xxx_hidden_Spec
+	}
+	return nil
+}
+
+func (x *ItemModelUpdateRequest) SetRef(v *ItemModelRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *ItemModelUpdateRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *ItemModelUpdateRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = v
+}
+
+func (x *ItemModelUpdateRequest) SetMaker(v string) {
+	x.xxx_hidden_Maker = v
+}
+
+func (x *ItemModelUpdateRequest) SetCode(v string) {
+	x.xxx_hidden_Code = v
+}
+
+func (x *ItemModelUpdateRequest) SetType(v *AssetTypeRef) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *ItemModelUpdateRequest) SetTypeNull(v bool) {
+	x.xxx_hidden_TypeNull = v
+}
+
+func (x *ItemModelUpdateRequest) SetSpec(v *ModelSpec) {
+	x.xxx_hidden_Spec = v
+}
+
+func (x *ItemModelUpdateRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *ItemModelUpdateRequest) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Type != nil
+}
+
+func (x *ItemModelUpdateRequest) HasSpec() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Spec != nil
+}
+
+func (x *ItemModelUpdateRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *ItemModelUpdateRequest) ClearType() {
+	x.xxx_hidden_Type = nil
+}
+
+func (x *ItemModelUpdateRequest) ClearSpec() {
+	x.xxx_hidden_Spec = nil
+}
+
+type ItemModelUpdateRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref      *ItemModelRef
+	Name     string
+	Desc     string
+	Maker    string
+	Code     string
+	Type     *AssetTypeRef
+	TypeNull bool
+	Spec     *ModelSpec
+}
+
+func (b0 ItemModelUpdateRequest_builder) Build() *ItemModelUpdateRequest {
+	m0 := &ItemModelUpdateRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Desc = b.Desc
+	x.xxx_hidden_Maker = b.Maker
+	x.xxx_hidden_Code = b.Code
+	x.xxx_hidden_Type = b.Type
+	x.xxx_hidden_TypeNull = b.TypeNull
+	x.xxx_hidden_Spec = b.Spec
+	return m0
+}
+
 var File_rove_catalog_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_catalog_svc_g_proto_rawDesc = "" +
@@ -4133,7 +4487,16 @@ const file_rove_catalog_svc_g_proto_rawDesc = "" +
 	"\x12AssetTypeWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12%\n" +
 	"\x05value\x18\x02 \x01(\v2\x0f.rove.AssetTypeR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xc2\x03\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xff\x01\n" +
+	"\x16AssetTypeUpdateRequest\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.AssetTypeRefR\x03ref\x12\x19\n" +
+	"\x04name\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
+	"\x04desc\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04desc\x12\"\n" +
+	"\tparent_id\x18\x04 \x01(\fB\x05\xaa\x01\x02\b\x02R\bparentId\x12&\n" +
+	"\vparent_null\x18\x05 \x01(\bB\x05\xaa\x01\x02\b\x02R\n" +
+	"parentNull\x12\x19\n" +
+	"\x04kind\x18\x06 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12\"\n" +
+	"\x04spec\x18\a \x01(\v2\x0e.rove.TypeSpecR\x04spec\"\xc2\x03\n" +
 	"\x13ItemModelAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
@@ -4210,7 +4573,16 @@ const file_rove_catalog_svc_g_proto_rawDesc = "" +
 	"\x12ItemModelWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12%\n" +
 	"\x05value\x18\x02 \x01(\v2\x0f.rove.ItemModelR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action2\xa8\x03\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x9d\x02\n" +
+	"\x16ItemModelUpdateRequest\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.ItemModelRefR\x03ref\x12\x19\n" +
+	"\x04name\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
+	"\x04desc\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04desc\x12\x1b\n" +
+	"\x05maker\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05maker\x12\x19\n" +
+	"\x04code\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04code\x12&\n" +
+	"\x04type\x18\x06 \x01(\v2\x12.rove.AssetTypeRefR\x04type\x12\"\n" +
+	"\ttype_null\x18\a \x01(\bB\x05\xaa\x01\x02\b\x02R\btypeNull\x12#\n" +
+	"\x04spec\x18\b \x01(\v2\x0f.rove.ModelSpecR\x04spec2\xe1\x03\n" +
 	"\x10AssetTypeService\x121\n" +
 	"\x03Add\x12\x19.rove.AssetTypeAddRequest\x1a\x0f.rove.AssetType\x121\n" +
 	"\x03Get\x12\x19.rove.AssetTypeGetRequest\x1a\x0f.rove.AssetType\x125\n" +
@@ -4218,7 +4590,8 @@ const file_rove_catalog_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x1b.rove.AssetTypeApplyRequest\x1a\x0f.rove.AssetType\x129\n" +
 	"\x05Erase\x12\x12.rove.AssetTypeRef\x1a\x1c.rove.AssetTypeEraseResponse\x12?\n" +
 	"\x04List\x12\x1a.rove.AssetTypeListRequest\x1a\x1b.rove.AssetTypeListResponse\x12D\n" +
-	"\x05Watch\x12\x1b.rove.AssetTypeWatchRequest\x1a\x1c.rove.AssetTypeWatchResponse0\x012\xa8\x03\n" +
+	"\x05Watch\x12\x1b.rove.AssetTypeWatchRequest\x1a\x1c.rove.AssetTypeWatchResponse0\x01\x127\n" +
+	"\x06Update\x12\x1c.rove.AssetTypeUpdateRequest\x1a\x0f.rove.AssetType2\xe1\x03\n" +
 	"\x10ItemModelService\x121\n" +
 	"\x03Add\x12\x19.rove.ItemModelAddRequest\x1a\x0f.rove.ItemModel\x121\n" +
 	"\x03Get\x12\x19.rove.ItemModelGetRequest\x1a\x0f.rove.ItemModel\x125\n" +
@@ -4226,9 +4599,10 @@ const file_rove_catalog_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x1b.rove.ItemModelApplyRequest\x1a\x0f.rove.ItemModel\x129\n" +
 	"\x05Erase\x12\x12.rove.ItemModelRef\x1a\x1c.rove.ItemModelEraseResponse\x12?\n" +
 	"\x04List\x12\x1a.rove.ItemModelListRequest\x1a\x1b.rove.ItemModelListResponse\x12D\n" +
-	"\x05Watch\x12\x1b.rove.ItemModelWatchRequest\x1a\x1c.rove.ItemModelWatchResponse0\x01B\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
+	"\x05Watch\x12\x1b.rove.ItemModelWatchRequest\x1a\x1c.rove.ItemModelWatchResponse0\x01\x127\n" +
+	"\x06Update\x12\x1c.rove.ItemModelUpdateRequest\x1a\x0f.rove.ItemModelB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_catalog_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_rove_catalog_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_rove_catalog_svc_g_proto_goTypes = []any{
 	(*AssetTypeAddRequest)(nil),    // 0: rove.AssetTypeAddRequest
 	(*AssetTypeGetRequest)(nil),    // 1: rove.AssetTypeGetRequest
@@ -4243,108 +4617,119 @@ var file_rove_catalog_svc_g_proto_goTypes = []any{
 	(*AssetTypeWatchRequest)(nil),  // 10: rove.AssetTypeWatchRequest
 	(*AssetTypeWatchResponse)(nil), // 11: rove.AssetTypeWatchResponse
 	(*AssetTypeWatchItem)(nil),     // 12: rove.AssetTypeWatchItem
-	(*ItemModelAddRequest)(nil),    // 13: rove.ItemModelAddRequest
-	(*ItemModelGetRequest)(nil),    // 14: rove.ItemModelGetRequest
-	(*ItemModelRef)(nil),           // 15: rove.ItemModelRef
-	(*ItemModelSelect)(nil),        // 16: rove.ItemModelSelect
-	(*ItemModelPatchRequest)(nil),  // 17: rove.ItemModelPatchRequest
-	(*ItemModelApplyRequest)(nil),  // 18: rove.ItemModelApplyRequest
-	(*ItemModelEraseResponse)(nil), // 19: rove.ItemModelEraseResponse
-	(*ItemModelListRequest)(nil),   // 20: rove.ItemModelListRequest
-	(*ItemModelListResponse)(nil),  // 21: rove.ItemModelListResponse
-	(*ItemModelFilter)(nil),        // 22: rove.ItemModelFilter
-	(*ItemModelWatchRequest)(nil),  // 23: rove.ItemModelWatchRequest
-	(*ItemModelWatchResponse)(nil), // 24: rove.ItemModelWatchResponse
-	(*ItemModelWatchItem)(nil),     // 25: rove.ItemModelWatchItem
-	nil,                            // 26: rove.AssetTypeAddRequest.LabelsEntry
-	nil,                            // 27: rove.AssetTypePatchRequest.LabelsEntry
-	nil,                            // 28: rove.ItemModelAddRequest.LabelsEntry
-	nil,                            // 29: rove.ItemModelPatchRequest.LabelsEntry
-	(*TenantRef)(nil),              // 30: rove.TenantRef
-	(*TypeSpec)(nil),               // 31: rove.TypeSpec
-	(*timestamppb.Timestamp)(nil),  // 32: google.protobuf.Timestamp
-	(*TenantSelect)(nil),           // 33: rove.TenantSelect
-	(*patchpb.Patch)(nil),          // 34: patch.Patch
-	(*AssetType)(nil),              // 35: rove.AssetType
-	(*ModelSpec)(nil),              // 36: rove.ModelSpec
-	(*ItemModel)(nil),              // 37: rove.ItemModel
+	(*AssetTypeUpdateRequest)(nil), // 13: rove.AssetTypeUpdateRequest
+	(*ItemModelAddRequest)(nil),    // 14: rove.ItemModelAddRequest
+	(*ItemModelGetRequest)(nil),    // 15: rove.ItemModelGetRequest
+	(*ItemModelRef)(nil),           // 16: rove.ItemModelRef
+	(*ItemModelSelect)(nil),        // 17: rove.ItemModelSelect
+	(*ItemModelPatchRequest)(nil),  // 18: rove.ItemModelPatchRequest
+	(*ItemModelApplyRequest)(nil),  // 19: rove.ItemModelApplyRequest
+	(*ItemModelEraseResponse)(nil), // 20: rove.ItemModelEraseResponse
+	(*ItemModelListRequest)(nil),   // 21: rove.ItemModelListRequest
+	(*ItemModelListResponse)(nil),  // 22: rove.ItemModelListResponse
+	(*ItemModelFilter)(nil),        // 23: rove.ItemModelFilter
+	(*ItemModelWatchRequest)(nil),  // 24: rove.ItemModelWatchRequest
+	(*ItemModelWatchResponse)(nil), // 25: rove.ItemModelWatchResponse
+	(*ItemModelWatchItem)(nil),     // 26: rove.ItemModelWatchItem
+	(*ItemModelUpdateRequest)(nil), // 27: rove.ItemModelUpdateRequest
+	nil,                            // 28: rove.AssetTypeAddRequest.LabelsEntry
+	nil,                            // 29: rove.AssetTypePatchRequest.LabelsEntry
+	nil,                            // 30: rove.ItemModelAddRequest.LabelsEntry
+	nil,                            // 31: rove.ItemModelPatchRequest.LabelsEntry
+	(*TenantRef)(nil),              // 32: rove.TenantRef
+	(*TypeSpec)(nil),               // 33: rove.TypeSpec
+	(*timestamppb.Timestamp)(nil),  // 34: google.protobuf.Timestamp
+	(*TenantSelect)(nil),           // 35: rove.TenantSelect
+	(*patchpb.Patch)(nil),          // 36: patch.Patch
+	(*AssetType)(nil),              // 37: rove.AssetType
+	(*ModelSpec)(nil),              // 38: rove.ModelSpec
+	(*ItemModel)(nil),              // 39: rove.ItemModel
 }
 var file_rove_catalog_svc_g_proto_depIdxs = []int32{
-	30, // 0: rove.AssetTypeAddRequest.tenant:type_name -> rove.TenantRef
-	26, // 1: rove.AssetTypeAddRequest.labels:type_name -> rove.AssetTypeAddRequest.LabelsEntry
-	31, // 2: rove.AssetTypeAddRequest.spec:type_name -> rove.TypeSpec
-	32, // 3: rove.AssetTypeAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	32, // 0: rove.AssetTypeAddRequest.tenant:type_name -> rove.TenantRef
+	28, // 1: rove.AssetTypeAddRequest.labels:type_name -> rove.AssetTypeAddRequest.LabelsEntry
+	33, // 2: rove.AssetTypeAddRequest.spec:type_name -> rove.TypeSpec
+	34, // 3: rove.AssetTypeAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 4: rove.AssetTypeGetRequest.ref:type_name -> rove.AssetTypeRef
 	3,  // 5: rove.AssetTypeGetRequest.select:type_name -> rove.AssetTypeSelect
-	33, // 6: rove.AssetTypeSelect.tenant:type_name -> rove.TenantSelect
+	35, // 6: rove.AssetTypeSelect.tenant:type_name -> rove.TenantSelect
 	2,  // 7: rove.AssetTypePatchRequest.ref:type_name -> rove.AssetTypeRef
-	27, // 8: rove.AssetTypePatchRequest.labels:type_name -> rove.AssetTypePatchRequest.LabelsEntry
-	31, // 9: rove.AssetTypePatchRequest.spec:type_name -> rove.TypeSpec
-	32, // 10: rove.AssetTypePatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	29, // 8: rove.AssetTypePatchRequest.labels:type_name -> rove.AssetTypePatchRequest.LabelsEntry
+	33, // 9: rove.AssetTypePatchRequest.spec:type_name -> rove.TypeSpec
+	34, // 10: rove.AssetTypePatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 11: rove.AssetTypeApplyRequest.ref:type_name -> rove.AssetTypeRef
-	34, // 12: rove.AssetTypeApplyRequest.patch:type_name -> patch.Patch
+	36, // 12: rove.AssetTypeApplyRequest.patch:type_name -> patch.Patch
 	9,  // 13: rove.AssetTypeListRequest.filters:type_name -> rove.AssetTypeFilter
-	35, // 14: rove.AssetTypeListResponse.items:type_name -> rove.AssetType
+	37, // 14: rove.AssetTypeListResponse.items:type_name -> rove.AssetType
 	2,  // 15: rove.AssetTypeFilter.ref:type_name -> rove.AssetTypeRef
 	9,  // 16: rove.AssetTypeWatchRequest.filters:type_name -> rove.AssetTypeFilter
 	12, // 17: rove.AssetTypeWatchResponse.items:type_name -> rove.AssetTypeWatchItem
-	35, // 18: rove.AssetTypeWatchItem.value:type_name -> rove.AssetType
-	30, // 19: rove.ItemModelAddRequest.tenant:type_name -> rove.TenantRef
-	28, // 20: rove.ItemModelAddRequest.labels:type_name -> rove.ItemModelAddRequest.LabelsEntry
-	2,  // 21: rove.ItemModelAddRequest.type:type_name -> rove.AssetTypeRef
-	36, // 22: rove.ItemModelAddRequest.spec:type_name -> rove.ModelSpec
-	32, // 23: rove.ItemModelAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	15, // 24: rove.ItemModelGetRequest.ref:type_name -> rove.ItemModelRef
-	16, // 25: rove.ItemModelGetRequest.select:type_name -> rove.ItemModelSelect
-	33, // 26: rove.ItemModelSelect.tenant:type_name -> rove.TenantSelect
-	3,  // 27: rove.ItemModelSelect.type:type_name -> rove.AssetTypeSelect
-	15, // 28: rove.ItemModelPatchRequest.ref:type_name -> rove.ItemModelRef
-	29, // 29: rove.ItemModelPatchRequest.labels:type_name -> rove.ItemModelPatchRequest.LabelsEntry
-	2,  // 30: rove.ItemModelPatchRequest.type:type_name -> rove.AssetTypeRef
-	36, // 31: rove.ItemModelPatchRequest.spec:type_name -> rove.ModelSpec
-	32, // 32: rove.ItemModelPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	15, // 33: rove.ItemModelApplyRequest.ref:type_name -> rove.ItemModelRef
-	34, // 34: rove.ItemModelApplyRequest.patch:type_name -> patch.Patch
-	22, // 35: rove.ItemModelListRequest.filters:type_name -> rove.ItemModelFilter
-	37, // 36: rove.ItemModelListResponse.items:type_name -> rove.ItemModel
-	15, // 37: rove.ItemModelFilter.ref:type_name -> rove.ItemModelRef
-	2,  // 38: rove.ItemModelFilter.type:type_name -> rove.AssetTypeRef
-	22, // 39: rove.ItemModelWatchRequest.filters:type_name -> rove.ItemModelFilter
-	25, // 40: rove.ItemModelWatchResponse.items:type_name -> rove.ItemModelWatchItem
-	37, // 41: rove.ItemModelWatchItem.value:type_name -> rove.ItemModel
-	0,  // 42: rove.AssetTypeService.Add:input_type -> rove.AssetTypeAddRequest
-	1,  // 43: rove.AssetTypeService.Get:input_type -> rove.AssetTypeGetRequest
-	4,  // 44: rove.AssetTypeService.Patch:input_type -> rove.AssetTypePatchRequest
-	5,  // 45: rove.AssetTypeService.Apply:input_type -> rove.AssetTypeApplyRequest
-	2,  // 46: rove.AssetTypeService.Erase:input_type -> rove.AssetTypeRef
-	7,  // 47: rove.AssetTypeService.List:input_type -> rove.AssetTypeListRequest
-	10, // 48: rove.AssetTypeService.Watch:input_type -> rove.AssetTypeWatchRequest
-	13, // 49: rove.ItemModelService.Add:input_type -> rove.ItemModelAddRequest
-	14, // 50: rove.ItemModelService.Get:input_type -> rove.ItemModelGetRequest
-	17, // 51: rove.ItemModelService.Patch:input_type -> rove.ItemModelPatchRequest
-	18, // 52: rove.ItemModelService.Apply:input_type -> rove.ItemModelApplyRequest
-	15, // 53: rove.ItemModelService.Erase:input_type -> rove.ItemModelRef
-	20, // 54: rove.ItemModelService.List:input_type -> rove.ItemModelListRequest
-	23, // 55: rove.ItemModelService.Watch:input_type -> rove.ItemModelWatchRequest
-	35, // 56: rove.AssetTypeService.Add:output_type -> rove.AssetType
-	35, // 57: rove.AssetTypeService.Get:output_type -> rove.AssetType
-	35, // 58: rove.AssetTypeService.Patch:output_type -> rove.AssetType
-	35, // 59: rove.AssetTypeService.Apply:output_type -> rove.AssetType
-	6,  // 60: rove.AssetTypeService.Erase:output_type -> rove.AssetTypeEraseResponse
-	8,  // 61: rove.AssetTypeService.List:output_type -> rove.AssetTypeListResponse
-	11, // 62: rove.AssetTypeService.Watch:output_type -> rove.AssetTypeWatchResponse
-	37, // 63: rove.ItemModelService.Add:output_type -> rove.ItemModel
-	37, // 64: rove.ItemModelService.Get:output_type -> rove.ItemModel
-	37, // 65: rove.ItemModelService.Patch:output_type -> rove.ItemModel
-	37, // 66: rove.ItemModelService.Apply:output_type -> rove.ItemModel
-	19, // 67: rove.ItemModelService.Erase:output_type -> rove.ItemModelEraseResponse
-	21, // 68: rove.ItemModelService.List:output_type -> rove.ItemModelListResponse
-	24, // 69: rove.ItemModelService.Watch:output_type -> rove.ItemModelWatchResponse
-	56, // [56:70] is the sub-list for method output_type
-	42, // [42:56] is the sub-list for method input_type
-	42, // [42:42] is the sub-list for extension type_name
-	42, // [42:42] is the sub-list for extension extendee
-	0,  // [0:42] is the sub-list for field type_name
+	37, // 18: rove.AssetTypeWatchItem.value:type_name -> rove.AssetType
+	2,  // 19: rove.AssetTypeUpdateRequest.ref:type_name -> rove.AssetTypeRef
+	33, // 20: rove.AssetTypeUpdateRequest.spec:type_name -> rove.TypeSpec
+	32, // 21: rove.ItemModelAddRequest.tenant:type_name -> rove.TenantRef
+	30, // 22: rove.ItemModelAddRequest.labels:type_name -> rove.ItemModelAddRequest.LabelsEntry
+	2,  // 23: rove.ItemModelAddRequest.type:type_name -> rove.AssetTypeRef
+	38, // 24: rove.ItemModelAddRequest.spec:type_name -> rove.ModelSpec
+	34, // 25: rove.ItemModelAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	16, // 26: rove.ItemModelGetRequest.ref:type_name -> rove.ItemModelRef
+	17, // 27: rove.ItemModelGetRequest.select:type_name -> rove.ItemModelSelect
+	35, // 28: rove.ItemModelSelect.tenant:type_name -> rove.TenantSelect
+	3,  // 29: rove.ItemModelSelect.type:type_name -> rove.AssetTypeSelect
+	16, // 30: rove.ItemModelPatchRequest.ref:type_name -> rove.ItemModelRef
+	31, // 31: rove.ItemModelPatchRequest.labels:type_name -> rove.ItemModelPatchRequest.LabelsEntry
+	2,  // 32: rove.ItemModelPatchRequest.type:type_name -> rove.AssetTypeRef
+	38, // 33: rove.ItemModelPatchRequest.spec:type_name -> rove.ModelSpec
+	34, // 34: rove.ItemModelPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	16, // 35: rove.ItemModelApplyRequest.ref:type_name -> rove.ItemModelRef
+	36, // 36: rove.ItemModelApplyRequest.patch:type_name -> patch.Patch
+	23, // 37: rove.ItemModelListRequest.filters:type_name -> rove.ItemModelFilter
+	39, // 38: rove.ItemModelListResponse.items:type_name -> rove.ItemModel
+	16, // 39: rove.ItemModelFilter.ref:type_name -> rove.ItemModelRef
+	2,  // 40: rove.ItemModelFilter.type:type_name -> rove.AssetTypeRef
+	23, // 41: rove.ItemModelWatchRequest.filters:type_name -> rove.ItemModelFilter
+	26, // 42: rove.ItemModelWatchResponse.items:type_name -> rove.ItemModelWatchItem
+	39, // 43: rove.ItemModelWatchItem.value:type_name -> rove.ItemModel
+	16, // 44: rove.ItemModelUpdateRequest.ref:type_name -> rove.ItemModelRef
+	2,  // 45: rove.ItemModelUpdateRequest.type:type_name -> rove.AssetTypeRef
+	38, // 46: rove.ItemModelUpdateRequest.spec:type_name -> rove.ModelSpec
+	0,  // 47: rove.AssetTypeService.Add:input_type -> rove.AssetTypeAddRequest
+	1,  // 48: rove.AssetTypeService.Get:input_type -> rove.AssetTypeGetRequest
+	4,  // 49: rove.AssetTypeService.Patch:input_type -> rove.AssetTypePatchRequest
+	5,  // 50: rove.AssetTypeService.Apply:input_type -> rove.AssetTypeApplyRequest
+	2,  // 51: rove.AssetTypeService.Erase:input_type -> rove.AssetTypeRef
+	7,  // 52: rove.AssetTypeService.List:input_type -> rove.AssetTypeListRequest
+	10, // 53: rove.AssetTypeService.Watch:input_type -> rove.AssetTypeWatchRequest
+	13, // 54: rove.AssetTypeService.Update:input_type -> rove.AssetTypeUpdateRequest
+	14, // 55: rove.ItemModelService.Add:input_type -> rove.ItemModelAddRequest
+	15, // 56: rove.ItemModelService.Get:input_type -> rove.ItemModelGetRequest
+	18, // 57: rove.ItemModelService.Patch:input_type -> rove.ItemModelPatchRequest
+	19, // 58: rove.ItemModelService.Apply:input_type -> rove.ItemModelApplyRequest
+	16, // 59: rove.ItemModelService.Erase:input_type -> rove.ItemModelRef
+	21, // 60: rove.ItemModelService.List:input_type -> rove.ItemModelListRequest
+	24, // 61: rove.ItemModelService.Watch:input_type -> rove.ItemModelWatchRequest
+	27, // 62: rove.ItemModelService.Update:input_type -> rove.ItemModelUpdateRequest
+	37, // 63: rove.AssetTypeService.Add:output_type -> rove.AssetType
+	37, // 64: rove.AssetTypeService.Get:output_type -> rove.AssetType
+	37, // 65: rove.AssetTypeService.Patch:output_type -> rove.AssetType
+	37, // 66: rove.AssetTypeService.Apply:output_type -> rove.AssetType
+	6,  // 67: rove.AssetTypeService.Erase:output_type -> rove.AssetTypeEraseResponse
+	8,  // 68: rove.AssetTypeService.List:output_type -> rove.AssetTypeListResponse
+	11, // 69: rove.AssetTypeService.Watch:output_type -> rove.AssetTypeWatchResponse
+	37, // 70: rove.AssetTypeService.Update:output_type -> rove.AssetType
+	39, // 71: rove.ItemModelService.Add:output_type -> rove.ItemModel
+	39, // 72: rove.ItemModelService.Get:output_type -> rove.ItemModel
+	39, // 73: rove.ItemModelService.Patch:output_type -> rove.ItemModel
+	39, // 74: rove.ItemModelService.Apply:output_type -> rove.ItemModel
+	20, // 75: rove.ItemModelService.Erase:output_type -> rove.ItemModelEraseResponse
+	22, // 76: rove.ItemModelService.List:output_type -> rove.ItemModelListResponse
+	25, // 77: rove.ItemModelService.Watch:output_type -> rove.ItemModelWatchResponse
+	39, // 78: rove.ItemModelService.Update:output_type -> rove.ItemModel
+	63, // [63:79] is the sub-list for method output_type
+	47, // [47:63] is the sub-list for method input_type
+	47, // [47:47] is the sub-list for extension type_name
+	47, // [47:47] is the sub-list for extension extendee
+	0,  // [0:47] is the sub-list for field type_name
 }
 
 func init() { file_rove_catalog_svc_g_proto_init() }
@@ -4357,7 +4742,7 @@ func file_rove_catalog_svc_g_proto_init() {
 	file_rove_catalog_svc_g_proto_msgTypes[2].OneofWrappers = []any{
 		(*assetTypeRef_Id)(nil),
 	}
-	file_rove_catalog_svc_g_proto_msgTypes[15].OneofWrappers = []any{
+	file_rove_catalog_svc_g_proto_msgTypes[16].OneofWrappers = []any{
 		(*itemModelRef_Id)(nil),
 	}
 	type x struct{}
@@ -4366,7 +4751,7 @@ func file_rove_catalog_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_catalog_svc_g_proto_rawDesc), len(file_rove_catalog_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   30,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

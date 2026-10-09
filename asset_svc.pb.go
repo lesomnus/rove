@@ -45,6 +45,11 @@ type AssetAddRequest struct {
 	xxx_hidden_AcquiredAt     *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=acquired_at,json=acquiredAt"`
 	xxx_hidden_DisposedAt     *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=disposed_at,json=disposedAt"`
 	xxx_hidden_ContentVersion uint64                 `protobuf:"varint,25,opt,name=content_version,json=contentVersion"`
+	xxx_hidden_Since          *timestamppb.Timestamp `protobuf:"bytes,100,opt,name=since"`
+	xxx_hidden_Op             []byte                 `protobuf:"bytes,101,opt,name=op"`
+	xxx_hidden_Reason         *string                `protobuf:"bytes,102,opt,name=reason"`
+	xxx_hidden_To             *AssetRef              `protobuf:"bytes,103,opt,name=to"`
+	xxx_hidden_Mode           *string                `protobuf:"bytes,104,opt,name=mode"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -223,12 +228,53 @@ func (x *AssetAddRequest) GetContentVersion() uint64 {
 	return 0
 }
 
+func (x *AssetAddRequest) GetSince() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_Since
+	}
+	return nil
+}
+
+func (x *AssetAddRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetAddRequest) GetReason() string {
+	if x != nil {
+		if x.xxx_hidden_Reason != nil {
+			return *x.xxx_hidden_Reason
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *AssetAddRequest) GetTo() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_To
+	}
+	return nil
+}
+
+func (x *AssetAddRequest) GetMode() string {
+	if x != nil {
+		if x.xxx_hidden_Mode != nil {
+			return *x.xxx_hidden_Mode
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *AssetAddRequest) SetId(v []byte) {
 	if v == nil {
 		v = []byte{}
 	}
 	x.xxx_hidden_Id = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 26)
 }
 
 func (x *AssetAddRequest) SetTenant(v *TenantRef) {
@@ -284,7 +330,7 @@ func (x *AssetAddRequest) SetParentId(v []byte) {
 		v = []byte{}
 	}
 	x.xxx_hidden_ParentId = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 26)
 }
 
 func (x *AssetAddRequest) SetPlacementMode(v string) {
@@ -313,6 +359,32 @@ func (x *AssetAddRequest) SetDisposedAt(v *timestamppb.Timestamp) {
 
 func (x *AssetAddRequest) SetContentVersion(v uint64) {
 	x.xxx_hidden_ContentVersion = v
+}
+
+func (x *AssetAddRequest) SetSince(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Since = v
+}
+
+func (x *AssetAddRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 22, 26)
+}
+
+func (x *AssetAddRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 23, 26)
+}
+
+func (x *AssetAddRequest) SetTo(v *AssetRef) {
+	x.xxx_hidden_To = v
+}
+
+func (x *AssetAddRequest) SetMode(v string) {
+	x.xxx_hidden_Mode = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 26)
 }
 
 func (x *AssetAddRequest) HasId() bool {
@@ -378,6 +450,41 @@ func (x *AssetAddRequest) HasDisposedAt() bool {
 	return x.xxx_hidden_DisposedAt != nil
 }
 
+func (x *AssetAddRequest) HasSince() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Since != nil
+}
+
+func (x *AssetAddRequest) HasOp() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 22)
+}
+
+func (x *AssetAddRequest) HasReason() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 23)
+}
+
+func (x *AssetAddRequest) HasTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_To != nil
+}
+
+func (x *AssetAddRequest) HasMode() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 25)
+}
+
 func (x *AssetAddRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -416,6 +523,29 @@ func (x *AssetAddRequest) ClearDisposedAt() {
 	x.xxx_hidden_DisposedAt = nil
 }
 
+func (x *AssetAddRequest) ClearSince() {
+	x.xxx_hidden_Since = nil
+}
+
+func (x *AssetAddRequest) ClearOp() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 22)
+	x.xxx_hidden_Op = nil
+}
+
+func (x *AssetAddRequest) ClearReason() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 23)
+	x.xxx_hidden_Reason = nil
+}
+
+func (x *AssetAddRequest) ClearTo() {
+	x.xxx_hidden_To = nil
+}
+
+func (x *AssetAddRequest) ClearMode() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 25)
+	x.xxx_hidden_Mode = nil
+}
+
 type AssetAddRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -440,6 +570,16 @@ type AssetAddRequest_builder struct {
 	AcquiredAt     *timestamppb.Timestamp
 	DisposedAt     *timestamppb.Timestamp
 	ContentVersion uint64
+	// When the asset started being what the request says: the initial facts
+	// and placement are valid from here. Empty is now.
+	Since *timestamppb.Timestamp
+	// A client-minted Event id, so that a retry is the same operation.
+	Op     []byte
+	Reason *string
+	// Where it is, from `since`. Taken from here rather than from parent_id so
+	// that a mode and a slot come with it.
+	To   *AssetRef
+	Mode *string
 }
 
 func (b0 AssetAddRequest_builder) Build() *AssetAddRequest {
@@ -447,7 +587,7 @@ func (b0 AssetAddRequest_builder) Build() *AssetAddRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 26)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Tenant = b.Tenant
@@ -463,7 +603,7 @@ func (b0 AssetAddRequest_builder) Build() *AssetAddRequest {
 	x.xxx_hidden_Status = b.Status
 	x.xxx_hidden_Condition = b.Condition
 	if b.ParentId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 26)
 		x.xxx_hidden_ParentId = b.ParentId
 	}
 	x.xxx_hidden_PlacementMode = b.PlacementMode
@@ -473,99 +613,20 @@ func (b0 AssetAddRequest_builder) Build() *AssetAddRequest {
 	x.xxx_hidden_AcquiredAt = b.AcquiredAt
 	x.xxx_hidden_DisposedAt = b.DisposedAt
 	x.xxx_hidden_ContentVersion = b.ContentVersion
-	return m0
-}
-
-type AssetGetRequest struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Ref    *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
-	xxx_hidden_Select *AssetSelect           `protobuf:"bytes,2,opt,name=select"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *AssetGetRequest) Reset() {
-	*x = AssetGetRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AssetGetRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AssetGetRequest) ProtoMessage() {}
-
-func (x *AssetGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+	x.xxx_hidden_Since = b.Since
+	if b.Op != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 22, 26)
+		x.xxx_hidden_Op = b.Op
 	}
-	return mi.MessageOf(x)
-}
-
-func (x *AssetGetRequest) GetRef() *AssetRef {
-	if x != nil {
-		return x.xxx_hidden_Ref
+	if b.Reason != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 23, 26)
+		x.xxx_hidden_Reason = b.Reason
 	}
-	return nil
-}
-
-func (x *AssetGetRequest) GetSelect() *AssetSelect {
-	if x != nil {
-		return x.xxx_hidden_Select
+	x.xxx_hidden_To = b.To
+	if b.Mode != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 26)
+		x.xxx_hidden_Mode = b.Mode
 	}
-	return nil
-}
-
-func (x *AssetGetRequest) SetRef(v *AssetRef) {
-	x.xxx_hidden_Ref = v
-}
-
-func (x *AssetGetRequest) SetSelect(v *AssetSelect) {
-	x.xxx_hidden_Select = v
-}
-
-func (x *AssetGetRequest) HasRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Ref != nil
-}
-
-func (x *AssetGetRequest) HasSelect() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Select != nil
-}
-
-func (x *AssetGetRequest) ClearRef() {
-	x.xxx_hidden_Ref = nil
-}
-
-func (x *AssetGetRequest) ClearSelect() {
-	x.xxx_hidden_Select = nil
-}
-
-type AssetGetRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Ref    *AssetRef
-	Select *AssetSelect
-}
-
-func (b0 AssetGetRequest_builder) Build() *AssetGetRequest {
-	m0 := &AssetGetRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Ref = b.Ref
-	x.xxx_hidden_Select = b.Select
 	return m0
 }
 
@@ -578,7 +639,7 @@ type AssetRef struct {
 
 func (x *AssetRef) Reset() {
 	*x = AssetRef{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[2]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -590,7 +651,7 @@ func (x *AssetRef) String() string {
 func (*AssetRef) ProtoMessage() {}
 
 func (x *AssetRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[2]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -716,7 +777,7 @@ func (b0 AssetRef_builder) Build() *AssetRef {
 type case_AssetRef_Key protoreflect.FieldNumber
 
 func (x case_AssetRef_Key) String() string {
-	md := file_rove_asset_svc_g_proto_msgTypes[2].Descriptor()
+	md := file_rove_asset_svc_g_proto_msgTypes[1].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -751,7 +812,7 @@ type AssetRefByTag struct {
 
 func (x *AssetRefByTag) Reset() {
 	*x = AssetRefByTag{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[3]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +824,7 @@ func (x *AssetRefByTag) String() string {
 func (*AssetRefByTag) ProtoMessage() {}
 
 func (x *AssetRefByTag) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[3]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -839,6 +900,99 @@ func (b0 AssetRefByTag_builder) Build() *AssetRefByTag {
 		x.xxx_hidden_Tag = b.Tag
 	}
 	x.xxx_hidden_Tenant = b.Tenant
+	return m0
+}
+
+type AssetGetRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Select *AssetSelect           `protobuf:"bytes,2,opt,name=select"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetGetRequest) Reset() {
+	*x = AssetGetRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetGetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetGetRequest) ProtoMessage() {}
+
+func (x *AssetGetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetGetRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetGetRequest) GetSelect() *AssetSelect {
+	if x != nil {
+		return x.xxx_hidden_Select
+	}
+	return nil
+}
+
+func (x *AssetGetRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetGetRequest) SetSelect(v *AssetSelect) {
+	x.xxx_hidden_Select = v
+}
+
+func (x *AssetGetRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetGetRequest) HasSelect() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Select != nil
+}
+
+func (x *AssetGetRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetGetRequest) ClearSelect() {
+	x.xxx_hidden_Select = nil
+}
+
+type AssetGetRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref    *AssetRef
+	Select *AssetSelect
+}
+
+func (b0 AssetGetRequest_builder) Build() *AssetGetRequest {
+	m0 := &AssetGetRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Select = b.Select
 	return m0
 }
 
@@ -3344,6 +3498,2999 @@ func (b0 AssetWatchItem_builder) Build() *AssetWatchItem {
 	return m0
 }
 
+type AssetMoveRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_To     *AssetRef              `protobuf:"bytes,2,opt,name=to"`
+	xxx_hidden_Mode   string                 `protobuf:"bytes,3,opt,name=mode"`
+	xxx_hidden_Slot   string                 `protobuf:"bytes,4,opt,name=slot"`
+	xxx_hidden_UFrom  int32                  `protobuf:"varint,5,opt,name=u_from,json=uFrom"`
+	xxx_hidden_UTo    int32                  `protobuf:"varint,6,opt,name=u_to,json=uTo"`
+	xxx_hidden_At     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=at"`
+	xxx_hidden_Reason string                 `protobuf:"bytes,8,opt,name=reason"`
+	xxx_hidden_Op     []byte                 `protobuf:"bytes,9,opt,name=op"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetMoveRequest) Reset() {
+	*x = AssetMoveRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetMoveRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetMoveRequest) ProtoMessage() {}
+
+func (x *AssetMoveRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetMoveRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetMoveRequest) GetTo() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_To
+	}
+	return nil
+}
+
+func (x *AssetMoveRequest) GetMode() string {
+	if x != nil {
+		return x.xxx_hidden_Mode
+	}
+	return ""
+}
+
+func (x *AssetMoveRequest) GetSlot() string {
+	if x != nil {
+		return x.xxx_hidden_Slot
+	}
+	return ""
+}
+
+func (x *AssetMoveRequest) GetUFrom() int32 {
+	if x != nil {
+		return x.xxx_hidden_UFrom
+	}
+	return 0
+}
+
+func (x *AssetMoveRequest) GetUTo() int32 {
+	if x != nil {
+		return x.xxx_hidden_UTo
+	}
+	return 0
+}
+
+func (x *AssetMoveRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *AssetMoveRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *AssetMoveRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetMoveRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetMoveRequest) SetTo(v *AssetRef) {
+	x.xxx_hidden_To = v
+}
+
+func (x *AssetMoveRequest) SetMode(v string) {
+	x.xxx_hidden_Mode = v
+}
+
+func (x *AssetMoveRequest) SetSlot(v string) {
+	x.xxx_hidden_Slot = v
+}
+
+func (x *AssetMoveRequest) SetUFrom(v int32) {
+	x.xxx_hidden_UFrom = v
+}
+
+func (x *AssetMoveRequest) SetUTo(v int32) {
+	x.xxx_hidden_UTo = v
+}
+
+func (x *AssetMoveRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *AssetMoveRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *AssetMoveRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *AssetMoveRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetMoveRequest) HasTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_To != nil
+}
+
+func (x *AssetMoveRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *AssetMoveRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetMoveRequest) ClearTo() {
+	x.xxx_hidden_To = nil
+}
+
+func (x *AssetMoveRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type AssetMoveRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AssetRef
+	// Where it goes. Absent: out of wherever it was.
+	To *AssetRef
+	// located | installed | part
+	Mode   string
+	Slot   string
+	UFrom  int32
+	UTo    int32
+	At     *timestamppb.Timestamp
+	Reason string
+	Op     []byte
+}
+
+func (b0 AssetMoveRequest_builder) Build() *AssetMoveRequest {
+	m0 := &AssetMoveRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_To = b.To
+	x.xxx_hidden_Mode = b.Mode
+	x.xxx_hidden_Slot = b.Slot
+	x.xxx_hidden_UFrom = b.UFrom
+	x.xxx_hidden_UTo = b.UTo
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type AssetSetAttributesRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Set    map[string]string      `protobuf:"bytes,2,rep,name=set" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Clear  []string               `protobuf:"bytes,3,rep,name=clear"`
+	xxx_hidden_At     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=at"`
+	xxx_hidden_Reason string                 `protobuf:"bytes,5,opt,name=reason"`
+	xxx_hidden_Op     []byte                 `protobuf:"bytes,6,opt,name=op"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetSetAttributesRequest) Reset() {
+	*x = AssetSetAttributesRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetSetAttributesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetSetAttributesRequest) ProtoMessage() {}
+
+func (x *AssetSetAttributesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetSetAttributesRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetSetAttributesRequest) GetSet() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Set
+	}
+	return nil
+}
+
+func (x *AssetSetAttributesRequest) GetClear() []string {
+	if x != nil {
+		return x.xxx_hidden_Clear
+	}
+	return nil
+}
+
+func (x *AssetSetAttributesRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *AssetSetAttributesRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *AssetSetAttributesRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetSetAttributesRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetSetAttributesRequest) SetSet(v map[string]string) {
+	x.xxx_hidden_Set = v
+}
+
+func (x *AssetSetAttributesRequest) SetClear(v []string) {
+	x.xxx_hidden_Clear = v
+}
+
+func (x *AssetSetAttributesRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *AssetSetAttributesRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *AssetSetAttributesRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *AssetSetAttributesRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetSetAttributesRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *AssetSetAttributesRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetSetAttributesRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type AssetSetAttributesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AssetRef
+	// Keys: name, desc, status, condition, serial, tag, type, model, or an
+	// attribute key. An empty value clears an attribute.
+	Set    map[string]string
+	Clear  []string
+	At     *timestamppb.Timestamp
+	Reason string
+	Op     []byte
+}
+
+func (b0 AssetSetAttributesRequest_builder) Build() *AssetSetAttributesRequest {
+	m0 := &AssetSetAttributesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Set = b.Set
+	x.xxx_hidden_Clear = b.Clear
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type AssetAssignRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Role   string                 `protobuf:"bytes,2,opt,name=role"`
+	xxx_hidden_Party  *PartyRef              `protobuf:"bytes,3,opt,name=party"`
+	xxx_hidden_At     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=at"`
+	xxx_hidden_Reason string                 `protobuf:"bytes,5,opt,name=reason"`
+	xxx_hidden_Op     []byte                 `protobuf:"bytes,6,opt,name=op"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetAssignRequest) Reset() {
+	*x = AssetAssignRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetAssignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetAssignRequest) ProtoMessage() {}
+
+func (x *AssetAssignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetAssignRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetAssignRequest) GetRole() string {
+	if x != nil {
+		return x.xxx_hidden_Role
+	}
+	return ""
+}
+
+func (x *AssetAssignRequest) GetParty() *PartyRef {
+	if x != nil {
+		return x.xxx_hidden_Party
+	}
+	return nil
+}
+
+func (x *AssetAssignRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *AssetAssignRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *AssetAssignRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetAssignRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetAssignRequest) SetRole(v string) {
+	x.xxx_hidden_Role = v
+}
+
+func (x *AssetAssignRequest) SetParty(v *PartyRef) {
+	x.xxx_hidden_Party = v
+}
+
+func (x *AssetAssignRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *AssetAssignRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *AssetAssignRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *AssetAssignRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetAssignRequest) HasParty() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Party != nil
+}
+
+func (x *AssetAssignRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *AssetAssignRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetAssignRequest) ClearParty() {
+	x.xxx_hidden_Party = nil
+}
+
+func (x *AssetAssignRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type AssetAssignRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AssetRef
+	// owner | manager | custodian
+	Role string
+	// Absent ends the role.
+	Party  *PartyRef
+	At     *timestamppb.Timestamp
+	Reason string
+	Op     []byte
+}
+
+func (b0 AssetAssignRequest_builder) Build() *AssetAssignRequest {
+	m0 := &AssetAssignRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Role = b.Role
+	x.xxx_hidden_Party = b.Party
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type AssetRelateRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref      *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Target   *AssetRef              `protobuf:"bytes,2,opt,name=target"`
+	xxx_hidden_Kind     string                 `protobuf:"bytes,3,opt,name=kind"`
+	xxx_hidden_Required bool                   `protobuf:"varint,4,opt,name=required"`
+	xxx_hidden_End      bool                   `protobuf:"varint,5,opt,name=end"`
+	xxx_hidden_At       *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=at"`
+	xxx_hidden_Reason   string                 `protobuf:"bytes,7,opt,name=reason"`
+	xxx_hidden_Op       []byte                 `protobuf:"bytes,8,opt,name=op"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *AssetRelateRequest) Reset() {
+	*x = AssetRelateRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetRelateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetRelateRequest) ProtoMessage() {}
+
+func (x *AssetRelateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetRelateRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetRelateRequest) GetTarget() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Target
+	}
+	return nil
+}
+
+func (x *AssetRelateRequest) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *AssetRelateRequest) GetRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_Required
+	}
+	return false
+}
+
+func (x *AssetRelateRequest) GetEnd() bool {
+	if x != nil {
+		return x.xxx_hidden_End
+	}
+	return false
+}
+
+func (x *AssetRelateRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *AssetRelateRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *AssetRelateRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetRelateRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetRelateRequest) SetTarget(v *AssetRef) {
+	x.xxx_hidden_Target = v
+}
+
+func (x *AssetRelateRequest) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *AssetRelateRequest) SetRequired(v bool) {
+	x.xxx_hidden_Required = v
+}
+
+func (x *AssetRelateRequest) SetEnd(v bool) {
+	x.xxx_hidden_End = v
+}
+
+func (x *AssetRelateRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *AssetRelateRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *AssetRelateRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *AssetRelateRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetRelateRequest) HasTarget() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Target != nil
+}
+
+func (x *AssetRelateRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *AssetRelateRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetRelateRequest) ClearTarget() {
+	x.xxx_hidden_Target = nil
+}
+
+func (x *AssetRelateRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+type AssetRelateRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref    *AssetRef
+	Target *AssetRef
+	// member_of | connected_to
+	Kind     string
+	Required bool
+	// End the relation instead of starting it.
+	End    bool
+	At     *timestamppb.Timestamp
+	Reason string
+	Op     []byte
+}
+
+func (b0 AssetRelateRequest_builder) Build() *AssetRelateRequest {
+	m0 := &AssetRelateRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Target = b.Target
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_Required = b.Required
+	x.xxx_hidden_End = b.End
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type AssetCorrectRequest struct {
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref       *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_RowId     []byte                 `protobuf:"bytes,2,opt,name=row_id,json=rowId"`
+	xxx_hidden_Retract   bool                   `protobuf:"varint,3,opt,name=retract"`
+	xxx_hidden_ValidFrom *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=valid_from,json=validFrom"`
+	xxx_hidden_Reason    string                 `protobuf:"bytes,5,opt,name=reason"`
+	xxx_hidden_Op        []byte                 `protobuf:"bytes,6,opt,name=op"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *AssetCorrectRequest) Reset() {
+	*x = AssetCorrectRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetCorrectRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetCorrectRequest) ProtoMessage() {}
+
+func (x *AssetCorrectRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetCorrectRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetCorrectRequest) GetRowId() []byte {
+	if x != nil {
+		return x.xxx_hidden_RowId
+	}
+	return nil
+}
+
+func (x *AssetCorrectRequest) GetRetract() bool {
+	if x != nil {
+		return x.xxx_hidden_Retract
+	}
+	return false
+}
+
+func (x *AssetCorrectRequest) GetValidFrom() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_ValidFrom
+	}
+	return nil
+}
+
+func (x *AssetCorrectRequest) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *AssetCorrectRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *AssetCorrectRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetCorrectRequest) SetRowId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_RowId = v
+}
+
+func (x *AssetCorrectRequest) SetRetract(v bool) {
+	x.xxx_hidden_Retract = v
+}
+
+func (x *AssetCorrectRequest) SetValidFrom(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ValidFrom = v
+}
+
+func (x *AssetCorrectRequest) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *AssetCorrectRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *AssetCorrectRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetCorrectRequest) HasValidFrom() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ValidFrom != nil
+}
+
+func (x *AssetCorrectRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetCorrectRequest) ClearValidFrom() {
+	x.xxx_hidden_ValidFrom = nil
+}
+
+type AssetCorrectRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AssetRef
+	// The time row being corrected: a placement, stewardship, link or fact.
+	RowId []byte
+	// It never happened.
+	Retract bool
+	// It happened, but from this moment instead.
+	ValidFrom *timestamppb.Timestamp
+	Reason    string
+	Op        []byte
+}
+
+func (b0 AssetCorrectRequest_builder) Build() *AssetCorrectRequest {
+	m0 := &AssetCorrectRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_RowId = b.RowId
+	x.xxx_hidden_Retract = b.Retract
+	x.xxx_hidden_ValidFrom = b.ValidFrom
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type AssetTimelineRequest struct {
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref        *AssetRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Superseded bool                   `protobuf:"varint,2,opt,name=superseded"`
+	xxx_hidden_Known      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=known"`
+	xxx_hidden_Limit      uint32                 `protobuf:"varint,4,opt,name=limit"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *AssetTimelineRequest) Reset() {
+	*x = AssetTimelineRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetTimelineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetTimelineRequest) ProtoMessage() {}
+
+func (x *AssetTimelineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetTimelineRequest) GetRef() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AssetTimelineRequest) GetSuperseded() bool {
+	if x != nil {
+		return x.xxx_hidden_Superseded
+	}
+	return false
+}
+
+func (x *AssetTimelineRequest) GetKnown() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_Known
+	}
+	return nil
+}
+
+func (x *AssetTimelineRequest) GetLimit() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Limit
+	}
+	return 0
+}
+
+func (x *AssetTimelineRequest) SetRef(v *AssetRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AssetTimelineRequest) SetSuperseded(v bool) {
+	x.xxx_hidden_Superseded = v
+}
+
+func (x *AssetTimelineRequest) SetKnown(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Known = v
+}
+
+func (x *AssetTimelineRequest) SetLimit(v uint32) {
+	x.xxx_hidden_Limit = v
+}
+
+func (x *AssetTimelineRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AssetTimelineRequest) HasKnown() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Known != nil
+}
+
+func (x *AssetTimelineRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *AssetTimelineRequest) ClearKnown() {
+	x.xxx_hidden_Known = nil
+}
+
+type AssetTimelineRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AssetRef
+	// Also the rows later corrections superseded.
+	Superseded bool
+	// As the system knew it then.
+	Known *timestamppb.Timestamp
+	Limit uint32
+}
+
+func (b0 AssetTimelineRequest_builder) Build() *AssetTimelineRequest {
+	m0 := &AssetTimelineRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Superseded = b.Superseded
+	x.xxx_hidden_Known = b.Known
+	x.xxx_hidden_Limit = b.Limit
+	return m0
+}
+
+type AssetTimelineResponse struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Entries *[]*TimelineEntry      `protobuf:"bytes,1,rep,name=entries"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *AssetTimelineResponse) Reset() {
+	*x = AssetTimelineResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetTimelineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetTimelineResponse) ProtoMessage() {}
+
+func (x *AssetTimelineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetTimelineResponse) GetEntries() []*TimelineEntry {
+	if x != nil {
+		if x.xxx_hidden_Entries != nil {
+			return *x.xxx_hidden_Entries
+		}
+	}
+	return nil
+}
+
+func (x *AssetTimelineResponse) SetEntries(v []*TimelineEntry) {
+	x.xxx_hidden_Entries = &v
+}
+
+type AssetTimelineResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Entries []*TimelineEntry
+}
+
+func (b0 AssetTimelineResponse_builder) Build() *AssetTimelineResponse {
+	m0 := &AssetTimelineResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Entries = &b.Entries
+	return m0
+}
+
+type TimelineEntry struct {
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Kind         string                 `protobuf:"bytes,1,opt,name=kind"`
+	xxx_hidden_RowId        []byte                 `protobuf:"bytes,2,opt,name=row_id,json=rowId"`
+	xxx_hidden_ValidFrom    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=valid_from,json=validFrom"`
+	xxx_hidden_ValidTo      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=valid_to,json=validTo"`
+	xxx_hidden_RecordedAt   *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=recorded_at,json=recordedAt"`
+	xxx_hidden_SupersededAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=superseded_at,json=supersededAt"`
+	xxx_hidden_Summary      string                 `protobuf:"bytes,7,opt,name=summary"`
+	xxx_hidden_Detail       map[string]string      `protobuf:"bytes,8,rep,name=detail" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_EventId      []byte                 `protobuf:"bytes,9,opt,name=event_id,json=eventId"`
+	xxx_hidden_EventKind    string                 `protobuf:"bytes,10,opt,name=event_kind,json=eventKind"`
+	xxx_hidden_Reason       string                 `protobuf:"bytes,11,opt,name=reason"`
+	xxx_hidden_Actor        string                 `protobuf:"bytes,12,opt,name=actor"`
+	xxx_hidden_OtherId      []byte                 `protobuf:"bytes,13,opt,name=other_id,json=otherId"`
+	xxx_hidden_OtherName    string                 `protobuf:"bytes,14,opt,name=other_name,json=otherName"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *TimelineEntry) Reset() {
+	*x = TimelineEntry{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TimelineEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimelineEntry) ProtoMessage() {}
+
+func (x *TimelineEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TimelineEntry) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *TimelineEntry) GetRowId() []byte {
+	if x != nil {
+		return x.xxx_hidden_RowId
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetValidFrom() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_ValidFrom
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetValidTo() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_ValidTo
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetRecordedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_RecordedAt
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetSupersededAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_SupersededAt
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetSummary() string {
+	if x != nil {
+		return x.xxx_hidden_Summary
+	}
+	return ""
+}
+
+func (x *TimelineEntry) GetDetail() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Detail
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetEventId() []byte {
+	if x != nil {
+		return x.xxx_hidden_EventId
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetEventKind() string {
+	if x != nil {
+		return x.xxx_hidden_EventKind
+	}
+	return ""
+}
+
+func (x *TimelineEntry) GetReason() string {
+	if x != nil {
+		return x.xxx_hidden_Reason
+	}
+	return ""
+}
+
+func (x *TimelineEntry) GetActor() string {
+	if x != nil {
+		return x.xxx_hidden_Actor
+	}
+	return ""
+}
+
+func (x *TimelineEntry) GetOtherId() []byte {
+	if x != nil {
+		return x.xxx_hidden_OtherId
+	}
+	return nil
+}
+
+func (x *TimelineEntry) GetOtherName() string {
+	if x != nil {
+		return x.xxx_hidden_OtherName
+	}
+	return ""
+}
+
+func (x *TimelineEntry) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *TimelineEntry) SetRowId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_RowId = v
+}
+
+func (x *TimelineEntry) SetValidFrom(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ValidFrom = v
+}
+
+func (x *TimelineEntry) SetValidTo(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ValidTo = v
+}
+
+func (x *TimelineEntry) SetRecordedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_RecordedAt = v
+}
+
+func (x *TimelineEntry) SetSupersededAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_SupersededAt = v
+}
+
+func (x *TimelineEntry) SetSummary(v string) {
+	x.xxx_hidden_Summary = v
+}
+
+func (x *TimelineEntry) SetDetail(v map[string]string) {
+	x.xxx_hidden_Detail = v
+}
+
+func (x *TimelineEntry) SetEventId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_EventId = v
+}
+
+func (x *TimelineEntry) SetEventKind(v string) {
+	x.xxx_hidden_EventKind = v
+}
+
+func (x *TimelineEntry) SetReason(v string) {
+	x.xxx_hidden_Reason = v
+}
+
+func (x *TimelineEntry) SetActor(v string) {
+	x.xxx_hidden_Actor = v
+}
+
+func (x *TimelineEntry) SetOtherId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_OtherId = v
+}
+
+func (x *TimelineEntry) SetOtherName(v string) {
+	x.xxx_hidden_OtherName = v
+}
+
+func (x *TimelineEntry) HasValidFrom() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ValidFrom != nil
+}
+
+func (x *TimelineEntry) HasValidTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ValidTo != nil
+}
+
+func (x *TimelineEntry) HasRecordedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RecordedAt != nil
+}
+
+func (x *TimelineEntry) HasSupersededAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SupersededAt != nil
+}
+
+func (x *TimelineEntry) ClearValidFrom() {
+	x.xxx_hidden_ValidFrom = nil
+}
+
+func (x *TimelineEntry) ClearValidTo() {
+	x.xxx_hidden_ValidTo = nil
+}
+
+func (x *TimelineEntry) ClearRecordedAt() {
+	x.xxx_hidden_RecordedAt = nil
+}
+
+func (x *TimelineEntry) ClearSupersededAt() {
+	x.xxx_hidden_SupersededAt = nil
+}
+
+type TimelineEntry_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// placement | fact | stewardship | link | event
+	Kind         string
+	RowId        []byte
+	ValidFrom    *timestamppb.Timestamp
+	ValidTo      *timestamppb.Timestamp
+	RecordedAt   *timestamppb.Timestamp
+	SupersededAt *timestamppb.Timestamp
+	// What it says, for a person.
+	Summary   string
+	Detail    map[string]string
+	EventId   []byte
+	EventKind string
+	Reason    string
+	Actor     string
+	OtherId   []byte
+	OtherName string
+}
+
+func (b0 TimelineEntry_builder) Build() *TimelineEntry {
+	m0 := &TimelineEntry{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_RowId = b.RowId
+	x.xxx_hidden_ValidFrom = b.ValidFrom
+	x.xxx_hidden_ValidTo = b.ValidTo
+	x.xxx_hidden_RecordedAt = b.RecordedAt
+	x.xxx_hidden_SupersededAt = b.SupersededAt
+	x.xxx_hidden_Summary = b.Summary
+	x.xxx_hidden_Detail = b.Detail
+	x.xxx_hidden_EventId = b.EventId
+	x.xxx_hidden_EventKind = b.EventKind
+	x.xxx_hidden_Reason = b.Reason
+	x.xxx_hidden_Actor = b.Actor
+	x.xxx_hidden_OtherId = b.OtherId
+	x.xxx_hidden_OtherName = b.OtherName
+	return m0
+}
+
+type AssetQueryAtRequest struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Root  *AssetRef              `protobuf:"bytes,1,opt,name=root"`
+	xxx_hidden_At    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at"`
+	xxx_hidden_Known *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=known"`
+	xxx_hidden_Depth uint32                 `protobuf:"varint,4,opt,name=depth"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AssetQueryAtRequest) Reset() {
+	*x = AssetQueryAtRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetQueryAtRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetQueryAtRequest) ProtoMessage() {}
+
+func (x *AssetQueryAtRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetQueryAtRequest) GetRoot() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Root
+	}
+	return nil
+}
+
+func (x *AssetQueryAtRequest) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_At
+	}
+	return nil
+}
+
+func (x *AssetQueryAtRequest) GetKnown() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_Known
+	}
+	return nil
+}
+
+func (x *AssetQueryAtRequest) GetDepth() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Depth
+	}
+	return 0
+}
+
+func (x *AssetQueryAtRequest) SetRoot(v *AssetRef) {
+	x.xxx_hidden_Root = v
+}
+
+func (x *AssetQueryAtRequest) SetAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_At = v
+}
+
+func (x *AssetQueryAtRequest) SetKnown(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Known = v
+}
+
+func (x *AssetQueryAtRequest) SetDepth(v uint32) {
+	x.xxx_hidden_Depth = v
+}
+
+func (x *AssetQueryAtRequest) HasRoot() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Root != nil
+}
+
+func (x *AssetQueryAtRequest) HasAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_At != nil
+}
+
+func (x *AssetQueryAtRequest) HasKnown() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Known != nil
+}
+
+func (x *AssetQueryAtRequest) ClearRoot() {
+	x.xxx_hidden_Root = nil
+}
+
+func (x *AssetQueryAtRequest) ClearAt() {
+	x.xxx_hidden_At = nil
+}
+
+func (x *AssetQueryAtRequest) ClearKnown() {
+	x.xxx_hidden_Known = nil
+}
+
+type AssetQueryAtRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Root *AssetRef
+	At   *timestamppb.Timestamp
+	// AsOf: by what was recorded at this moment. Empty is what is known now.
+	Known *timestamppb.Timestamp
+	// How deep under the root. Zero is everything.
+	Depth uint32
+}
+
+func (b0 AssetQueryAtRequest_builder) Build() *AssetQueryAtRequest {
+	m0 := &AssetQueryAtRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Root = b.Root
+	x.xxx_hidden_At = b.At
+	x.xxx_hidden_Known = b.Known
+	x.xxx_hidden_Depth = b.Depth
+	return m0
+}
+
+type AssetQueryAtResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*AssetState         `protobuf:"bytes,1,rep,name=items"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AssetQueryAtResponse) Reset() {
+	*x = AssetQueryAtResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetQueryAtResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetQueryAtResponse) ProtoMessage() {}
+
+func (x *AssetQueryAtResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetQueryAtResponse) GetItems() []*AssetState {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *AssetQueryAtResponse) SetItems(v []*AssetState) {
+	x.xxx_hidden_Items = &v
+}
+
+type AssetQueryAtResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*AssetState
+}
+
+func (b0 AssetQueryAtResponse_builder) Build() *AssetQueryAtResponse {
+	m0 := &AssetQueryAtResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	return m0
+}
+
+// AssetState is one asset as it was at a moment.
+type AssetState struct {
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id           []byte                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_ParentId     []byte                 `protobuf:"bytes,2,opt,name=parent_id,json=parentId"`
+	xxx_hidden_Mode         string                 `protobuf:"bytes,3,opt,name=mode"`
+	xxx_hidden_Slot         string                 `protobuf:"bytes,4,opt,name=slot"`
+	xxx_hidden_UFrom        int32                  `protobuf:"varint,5,opt,name=u_from,json=uFrom"`
+	xxx_hidden_UTo          int32                  `protobuf:"varint,6,opt,name=u_to,json=uTo"`
+	xxx_hidden_Facts        map[string]string      `protobuf:"bytes,7,rep,name=facts" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Stewards     map[string]string      `protobuf:"bytes,8,rep,name=stewards" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_StewardNames map[string]string      `protobuf:"bytes,9,rep,name=steward_names,json=stewardNames" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Depth        uint32                 `protobuf:"varint,10,opt,name=depth"`
+	xxx_hidden_Kind         string                 `protobuf:"bytes,11,opt,name=kind"`
+	xxx_hidden_Tag          string                 `protobuf:"bytes,12,opt,name=tag"`
+	xxx_hidden_Existed      bool                   `protobuf:"varint,13,opt,name=existed"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *AssetState) Reset() {
+	*x = AssetState{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetState) ProtoMessage() {}
+
+func (x *AssetState) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetState) GetId() []byte {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return nil
+}
+
+func (x *AssetState) GetParentId() []byte {
+	if x != nil {
+		return x.xxx_hidden_ParentId
+	}
+	return nil
+}
+
+func (x *AssetState) GetMode() string {
+	if x != nil {
+		return x.xxx_hidden_Mode
+	}
+	return ""
+}
+
+func (x *AssetState) GetSlot() string {
+	if x != nil {
+		return x.xxx_hidden_Slot
+	}
+	return ""
+}
+
+func (x *AssetState) GetUFrom() int32 {
+	if x != nil {
+		return x.xxx_hidden_UFrom
+	}
+	return 0
+}
+
+func (x *AssetState) GetUTo() int32 {
+	if x != nil {
+		return x.xxx_hidden_UTo
+	}
+	return 0
+}
+
+func (x *AssetState) GetFacts() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Facts
+	}
+	return nil
+}
+
+func (x *AssetState) GetStewards() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Stewards
+	}
+	return nil
+}
+
+func (x *AssetState) GetStewardNames() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_StewardNames
+	}
+	return nil
+}
+
+func (x *AssetState) GetDepth() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Depth
+	}
+	return 0
+}
+
+func (x *AssetState) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *AssetState) GetTag() string {
+	if x != nil {
+		return x.xxx_hidden_Tag
+	}
+	return ""
+}
+
+func (x *AssetState) GetExisted() bool {
+	if x != nil {
+		return x.xxx_hidden_Existed
+	}
+	return false
+}
+
+func (x *AssetState) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Id = v
+}
+
+func (x *AssetState) SetParentId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_ParentId = v
+}
+
+func (x *AssetState) SetMode(v string) {
+	x.xxx_hidden_Mode = v
+}
+
+func (x *AssetState) SetSlot(v string) {
+	x.xxx_hidden_Slot = v
+}
+
+func (x *AssetState) SetUFrom(v int32) {
+	x.xxx_hidden_UFrom = v
+}
+
+func (x *AssetState) SetUTo(v int32) {
+	x.xxx_hidden_UTo = v
+}
+
+func (x *AssetState) SetFacts(v map[string]string) {
+	x.xxx_hidden_Facts = v
+}
+
+func (x *AssetState) SetStewards(v map[string]string) {
+	x.xxx_hidden_Stewards = v
+}
+
+func (x *AssetState) SetStewardNames(v map[string]string) {
+	x.xxx_hidden_StewardNames = v
+}
+
+func (x *AssetState) SetDepth(v uint32) {
+	x.xxx_hidden_Depth = v
+}
+
+func (x *AssetState) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *AssetState) SetTag(v string) {
+	x.xxx_hidden_Tag = v
+}
+
+func (x *AssetState) SetExisted(v bool) {
+	x.xxx_hidden_Existed = v
+}
+
+type AssetState_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id       []byte
+	ParentId []byte
+	Mode     string
+	Slot     string
+	UFrom    int32
+	UTo      int32
+	// name, status, condition, attr.<key> ... as they were.
+	Facts map[string]string
+	// role -> party id, and role -> party name.
+	Stewards     map[string]string
+	StewardNames map[string]string
+	Depth        uint32
+	Kind         string
+	Tag          string
+	Existed      bool
+}
+
+func (b0 AssetState_builder) Build() *AssetState {
+	m0 := &AssetState{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_ParentId = b.ParentId
+	x.xxx_hidden_Mode = b.Mode
+	x.xxx_hidden_Slot = b.Slot
+	x.xxx_hidden_UFrom = b.UFrom
+	x.xxx_hidden_UTo = b.UTo
+	x.xxx_hidden_Facts = b.Facts
+	x.xxx_hidden_Stewards = b.Stewards
+	x.xxx_hidden_StewardNames = b.StewardNames
+	x.xxx_hidden_Depth = b.Depth
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_Tag = b.Tag
+	x.xxx_hidden_Existed = b.Existed
+	return m0
+}
+
+type AssetDiffRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Root *AssetRef              `protobuf:"bytes,1,opt,name=root"`
+	xxx_hidden_From *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=from"`
+	xxx_hidden_To   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=to"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AssetDiffRequest) Reset() {
+	*x = AssetDiffRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetDiffRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetDiffRequest) ProtoMessage() {}
+
+func (x *AssetDiffRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetDiffRequest) GetRoot() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Root
+	}
+	return nil
+}
+
+func (x *AssetDiffRequest) GetFrom() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_From
+	}
+	return nil
+}
+
+func (x *AssetDiffRequest) GetTo() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_To
+	}
+	return nil
+}
+
+func (x *AssetDiffRequest) SetRoot(v *AssetRef) {
+	x.xxx_hidden_Root = v
+}
+
+func (x *AssetDiffRequest) SetFrom(v *timestamppb.Timestamp) {
+	x.xxx_hidden_From = v
+}
+
+func (x *AssetDiffRequest) SetTo(v *timestamppb.Timestamp) {
+	x.xxx_hidden_To = v
+}
+
+func (x *AssetDiffRequest) HasRoot() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Root != nil
+}
+
+func (x *AssetDiffRequest) HasFrom() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_From != nil
+}
+
+func (x *AssetDiffRequest) HasTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_To != nil
+}
+
+func (x *AssetDiffRequest) ClearRoot() {
+	x.xxx_hidden_Root = nil
+}
+
+func (x *AssetDiffRequest) ClearFrom() {
+	x.xxx_hidden_From = nil
+}
+
+func (x *AssetDiffRequest) ClearTo() {
+	x.xxx_hidden_To = nil
+}
+
+type AssetDiffRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Root *AssetRef
+	From *timestamppb.Timestamp
+	To   *timestamppb.Timestamp
+}
+
+func (b0 AssetDiffRequest_builder) Build() *AssetDiffRequest {
+	m0 := &AssetDiffRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Root = b.Root
+	x.xxx_hidden_From = b.From
+	x.xxx_hidden_To = b.To
+	return m0
+}
+
+type AssetDiffResponse struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Changes *[]*AssetChange        `protobuf:"bytes,1,rep,name=changes"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *AssetDiffResponse) Reset() {
+	*x = AssetDiffResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetDiffResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetDiffResponse) ProtoMessage() {}
+
+func (x *AssetDiffResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetDiffResponse) GetChanges() []*AssetChange {
+	if x != nil {
+		if x.xxx_hidden_Changes != nil {
+			return *x.xxx_hidden_Changes
+		}
+	}
+	return nil
+}
+
+func (x *AssetDiffResponse) SetChanges(v []*AssetChange) {
+	x.xxx_hidden_Changes = &v
+}
+
+type AssetDiffResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Changes []*AssetChange
+}
+
+func (b0 AssetDiffResponse_builder) Build() *AssetDiffResponse {
+	m0 := &AssetDiffResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Changes = &b.Changes
+	return m0
+}
+
+type AssetChange struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id     []byte                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Tag    string                 `protobuf:"bytes,2,opt,name=tag"`
+	xxx_hidden_Name   string                 `protobuf:"bytes,3,opt,name=name"`
+	xxx_hidden_What   string                 `protobuf:"bytes,4,opt,name=what"`
+	xxx_hidden_Field  string                 `protobuf:"bytes,5,opt,name=field"`
+	xxx_hidden_Before string                 `protobuf:"bytes,6,opt,name=before"`
+	xxx_hidden_After  string                 `protobuf:"bytes,7,opt,name=after"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetChange) Reset() {
+	*x = AssetChange{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetChange) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetChange) ProtoMessage() {}
+
+func (x *AssetChange) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetChange) GetId() []byte {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return nil
+}
+
+func (x *AssetChange) GetTag() string {
+	if x != nil {
+		return x.xxx_hidden_Tag
+	}
+	return ""
+}
+
+func (x *AssetChange) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *AssetChange) GetWhat() string {
+	if x != nil {
+		return x.xxx_hidden_What
+	}
+	return ""
+}
+
+func (x *AssetChange) GetField() string {
+	if x != nil {
+		return x.xxx_hidden_Field
+	}
+	return ""
+}
+
+func (x *AssetChange) GetBefore() string {
+	if x != nil {
+		return x.xxx_hidden_Before
+	}
+	return ""
+}
+
+func (x *AssetChange) GetAfter() string {
+	if x != nil {
+		return x.xxx_hidden_After
+	}
+	return ""
+}
+
+func (x *AssetChange) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Id = v
+}
+
+func (x *AssetChange) SetTag(v string) {
+	x.xxx_hidden_Tag = v
+}
+
+func (x *AssetChange) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *AssetChange) SetWhat(v string) {
+	x.xxx_hidden_What = v
+}
+
+func (x *AssetChange) SetField(v string) {
+	x.xxx_hidden_Field = v
+}
+
+func (x *AssetChange) SetBefore(v string) {
+	x.xxx_hidden_Before = v
+}
+
+func (x *AssetChange) SetAfter(v string) {
+	x.xxx_hidden_After = v
+}
+
+type AssetChange_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id   []byte
+	Tag  string
+	Name string
+	// entered | left | moved | changed
+	What   string
+	Field  string
+	Before string
+	After  string
+}
+
+func (b0 AssetChange_builder) Build() *AssetChange {
+	m0 := &AssetChange{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_Tag = b.Tag
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_What = b.What
+	x.xxx_hidden_Field = b.Field
+	x.xxx_hidden_Before = b.Before
+	x.xxx_hidden_After = b.After
+	return m0
+}
+
+type AssetSearchRequest struct {
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Q         string                 `protobuf:"bytes,1,opt,name=q"`
+	xxx_hidden_Kind      string                 `protobuf:"bytes,2,opt,name=kind"`
+	xxx_hidden_Status    string                 `protobuf:"bytes,3,opt,name=status"`
+	xxx_hidden_Type      *AssetTypeRef          `protobuf:"bytes,4,opt,name=type"`
+	xxx_hidden_Within    *AssetRef              `protobuf:"bytes,5,opt,name=within"`
+	xxx_hidden_Size      uint32                 `protobuf:"varint,6,opt,name=size"`
+	xxx_hidden_Offset    uint32                 `protobuf:"varint,7,opt,name=offset"`
+	xxx_hidden_Custodian *PartyRef              `protobuf:"bytes,8,opt,name=custodian"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *AssetSearchRequest) Reset() {
+	*x = AssetSearchRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetSearchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetSearchRequest) ProtoMessage() {}
+
+func (x *AssetSearchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetSearchRequest) GetQ() string {
+	if x != nil {
+		return x.xxx_hidden_Q
+	}
+	return ""
+}
+
+func (x *AssetSearchRequest) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *AssetSearchRequest) GetStatus() string {
+	if x != nil {
+		return x.xxx_hidden_Status
+	}
+	return ""
+}
+
+func (x *AssetSearchRequest) GetType() *AssetTypeRef {
+	if x != nil {
+		return x.xxx_hidden_Type
+	}
+	return nil
+}
+
+func (x *AssetSearchRequest) GetWithin() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Within
+	}
+	return nil
+}
+
+func (x *AssetSearchRequest) GetSize() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *AssetSearchRequest) GetOffset() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Offset
+	}
+	return 0
+}
+
+func (x *AssetSearchRequest) GetCustodian() *PartyRef {
+	if x != nil {
+		return x.xxx_hidden_Custodian
+	}
+	return nil
+}
+
+func (x *AssetSearchRequest) SetQ(v string) {
+	x.xxx_hidden_Q = v
+}
+
+func (x *AssetSearchRequest) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *AssetSearchRequest) SetStatus(v string) {
+	x.xxx_hidden_Status = v
+}
+
+func (x *AssetSearchRequest) SetType(v *AssetTypeRef) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *AssetSearchRequest) SetWithin(v *AssetRef) {
+	x.xxx_hidden_Within = v
+}
+
+func (x *AssetSearchRequest) SetSize(v uint32) {
+	x.xxx_hidden_Size = v
+}
+
+func (x *AssetSearchRequest) SetOffset(v uint32) {
+	x.xxx_hidden_Offset = v
+}
+
+func (x *AssetSearchRequest) SetCustodian(v *PartyRef) {
+	x.xxx_hidden_Custodian = v
+}
+
+func (x *AssetSearchRequest) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Type != nil
+}
+
+func (x *AssetSearchRequest) HasWithin() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Within != nil
+}
+
+func (x *AssetSearchRequest) HasCustodian() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Custodian != nil
+}
+
+func (x *AssetSearchRequest) ClearType() {
+	x.xxx_hidden_Type = nil
+}
+
+func (x *AssetSearchRequest) ClearWithin() {
+	x.xxx_hidden_Within = nil
+}
+
+func (x *AssetSearchRequest) ClearCustodian() {
+	x.xxx_hidden_Custodian = nil
+}
+
+type AssetSearchRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Q      string
+	Kind   string
+	Status string
+	Type   *AssetTypeRef
+	// Only what is inside this asset now, at any depth.
+	Within    *AssetRef
+	Size      uint32
+	Offset    uint32
+	Custodian *PartyRef
+}
+
+func (b0 AssetSearchRequest_builder) Build() *AssetSearchRequest {
+	m0 := &AssetSearchRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Q = b.Q
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_Status = b.Status
+	x.xxx_hidden_Type = b.Type
+	x.xxx_hidden_Within = b.Within
+	x.xxx_hidden_Size = b.Size
+	x.xxx_hidden_Offset = b.Offset
+	x.xxx_hidden_Custodian = b.Custodian
+	return m0
+}
+
+type AssetSearchResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*Asset              `protobuf:"bytes,1,rep,name=items"`
+	xxx_hidden_Total uint32                 `protobuf:"varint,2,opt,name=total"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AssetSearchResponse) Reset() {
+	*x = AssetSearchResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetSearchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetSearchResponse) ProtoMessage() {}
+
+func (x *AssetSearchResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetSearchResponse) GetItems() []*Asset {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *AssetSearchResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Total
+	}
+	return 0
+}
+
+func (x *AssetSearchResponse) SetItems(v []*Asset) {
+	x.xxx_hidden_Items = &v
+}
+
+func (x *AssetSearchResponse) SetTotal(v uint32) {
+	x.xxx_hidden_Total = v
+}
+
+type AssetSearchResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*Asset
+	Total uint32
+}
+
+func (b0 AssetSearchResponse_builder) Build() *AssetSearchResponse {
+	m0 := &AssetSearchResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	x.xxx_hidden_Total = b.Total
+	return m0
+}
+
+type AssetReportRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Kind string                 `protobuf:"bytes,1,opt,name=kind"`
+	xxx_hidden_From *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=from"`
+	xxx_hidden_To   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=to"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AssetReportRequest) Reset() {
+	*x = AssetReportRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetReportRequest) ProtoMessage() {}
+
+func (x *AssetReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetReportRequest) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *AssetReportRequest) GetFrom() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_From
+	}
+	return nil
+}
+
+func (x *AssetReportRequest) GetTo() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_To
+	}
+	return nil
+}
+
+func (x *AssetReportRequest) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *AssetReportRequest) SetFrom(v *timestamppb.Timestamp) {
+	x.xxx_hidden_From = v
+}
+
+func (x *AssetReportRequest) SetTo(v *timestamppb.Timestamp) {
+	x.xxx_hidden_To = v
+}
+
+func (x *AssetReportRequest) HasFrom() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_From != nil
+}
+
+func (x *AssetReportRequest) HasTo() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_To != nil
+}
+
+func (x *AssetReportRequest) ClearFrom() {
+	x.xxx_hidden_From = nil
+}
+
+func (x *AssetReportRequest) ClearTo() {
+	x.xxx_hidden_To = nil
+}
+
+type AssetReportRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// summary | custody | utilization | stock | work
+	Kind string
+	From *timestamppb.Timestamp
+	To   *timestamppb.Timestamp
+}
+
+func (b0 AssetReportRequest_builder) Build() *AssetReportRequest {
+	m0 := &AssetReportRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_From = b.From
+	x.xxx_hidden_To = b.To
+	return m0
+}
+
+type AssetReportResponse struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Rows *[]*ReportRow          `protobuf:"bytes,1,rep,name=rows"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AssetReportResponse) Reset() {
+	*x = AssetReportResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetReportResponse) ProtoMessage() {}
+
+func (x *AssetReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetReportResponse) GetRows() []*ReportRow {
+	if x != nil {
+		if x.xxx_hidden_Rows != nil {
+			return *x.xxx_hidden_Rows
+		}
+	}
+	return nil
+}
+
+func (x *AssetReportResponse) SetRows(v []*ReportRow) {
+	x.xxx_hidden_Rows = &v
+}
+
+type AssetReportResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Rows []*ReportRow
+}
+
+func (b0 AssetReportResponse_builder) Build() *AssetReportResponse {
+	m0 := &AssetReportResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Rows = &b.Rows
+	return m0
+}
+
+type ReportRow struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Group  string                 `protobuf:"bytes,1,opt,name=group"`
+	xxx_hidden_Key    string                 `protobuf:"bytes,2,opt,name=key"`
+	xxx_hidden_Label  string                 `protobuf:"bytes,3,opt,name=label"`
+	xxx_hidden_Value  float64                `protobuf:"fixed64,4,opt,name=value"`
+	xxx_hidden_Detail map[string]string      `protobuf:"bytes,5,rep,name=detail" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ReportRow) Reset() {
+	*x = ReportRow{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReportRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReportRow) ProtoMessage() {}
+
+func (x *ReportRow) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ReportRow) GetGroup() string {
+	if x != nil {
+		return x.xxx_hidden_Group
+	}
+	return ""
+}
+
+func (x *ReportRow) GetKey() string {
+	if x != nil {
+		return x.xxx_hidden_Key
+	}
+	return ""
+}
+
+func (x *ReportRow) GetLabel() string {
+	if x != nil {
+		return x.xxx_hidden_Label
+	}
+	return ""
+}
+
+func (x *ReportRow) GetValue() float64 {
+	if x != nil {
+		return x.xxx_hidden_Value
+	}
+	return 0
+}
+
+func (x *ReportRow) GetDetail() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Detail
+	}
+	return nil
+}
+
+func (x *ReportRow) SetGroup(v string) {
+	x.xxx_hidden_Group = v
+}
+
+func (x *ReportRow) SetKey(v string) {
+	x.xxx_hidden_Key = v
+}
+
+func (x *ReportRow) SetLabel(v string) {
+	x.xxx_hidden_Label = v
+}
+
+func (x *ReportRow) SetValue(v float64) {
+	x.xxx_hidden_Value = v
+}
+
+func (x *ReportRow) SetDetail(v map[string]string) {
+	x.xxx_hidden_Detail = v
+}
+
+type ReportRow_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Group  string
+	Key    string
+	Label  string
+	Value  float64
+	Detail map[string]string
+}
+
+func (b0 ReportRow_builder) Build() *ReportRow {
+	m0 := &ReportRow{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Group = b.Group
+	x.xxx_hidden_Key = b.Key
+	x.xxx_hidden_Label = b.Label
+	x.xxx_hidden_Value = b.Value
+	x.xxx_hidden_Detail = b.Detail
+	return m0
+}
+
+type AssetImportRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Format string                 `protobuf:"bytes,1,opt,name=format"`
+	xxx_hidden_Data   []byte                 `protobuf:"bytes,2,opt,name=data"`
+	xxx_hidden_DryRun bool                   `protobuf:"varint,3,opt,name=dry_run,json=dryRun"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetImportRequest) Reset() {
+	*x = AssetImportRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetImportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetImportRequest) ProtoMessage() {}
+
+func (x *AssetImportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetImportRequest) GetFormat() string {
+	if x != nil {
+		return x.xxx_hidden_Format
+	}
+	return ""
+}
+
+func (x *AssetImportRequest) GetData() []byte {
+	if x != nil {
+		return x.xxx_hidden_Data
+	}
+	return nil
+}
+
+func (x *AssetImportRequest) GetDryRun() bool {
+	if x != nil {
+		return x.xxx_hidden_DryRun
+	}
+	return false
+}
+
+func (x *AssetImportRequest) SetFormat(v string) {
+	x.xxx_hidden_Format = v
+}
+
+func (x *AssetImportRequest) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+}
+
+func (x *AssetImportRequest) SetDryRun(v bool) {
+	x.xxx_hidden_DryRun = v
+}
+
+type AssetImportRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// csv | xlsx
+	Format string
+	Data   []byte
+	// Report what would happen, change nothing.
+	DryRun bool
+}
+
+func (b0 AssetImportRequest_builder) Build() *AssetImportRequest {
+	m0 := &AssetImportRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Format = b.Format
+	x.xxx_hidden_Data = b.Data
+	x.xxx_hidden_DryRun = b.DryRun
+	return m0
+}
+
+type AssetImportResponse struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Created  uint32                 `protobuf:"varint,1,opt,name=created"`
+	xxx_hidden_Updated  uint32                 `protobuf:"varint,2,opt,name=updated"`
+	xxx_hidden_Skipped  uint32                 `protobuf:"varint,3,opt,name=skipped"`
+	xxx_hidden_Errors   []string               `protobuf:"bytes,4,rep,name=errors"`
+	xxx_hidden_Warnings []string               `protobuf:"bytes,5,rep,name=warnings"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *AssetImportResponse) Reset() {
+	*x = AssetImportResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetImportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetImportResponse) ProtoMessage() {}
+
+func (x *AssetImportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetImportResponse) GetCreated() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Created
+	}
+	return 0
+}
+
+func (x *AssetImportResponse) GetUpdated() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Updated
+	}
+	return 0
+}
+
+func (x *AssetImportResponse) GetSkipped() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Skipped
+	}
+	return 0
+}
+
+func (x *AssetImportResponse) GetErrors() []string {
+	if x != nil {
+		return x.xxx_hidden_Errors
+	}
+	return nil
+}
+
+func (x *AssetImportResponse) GetWarnings() []string {
+	if x != nil {
+		return x.xxx_hidden_Warnings
+	}
+	return nil
+}
+
+func (x *AssetImportResponse) SetCreated(v uint32) {
+	x.xxx_hidden_Created = v
+}
+
+func (x *AssetImportResponse) SetUpdated(v uint32) {
+	x.xxx_hidden_Updated = v
+}
+
+func (x *AssetImportResponse) SetSkipped(v uint32) {
+	x.xxx_hidden_Skipped = v
+}
+
+func (x *AssetImportResponse) SetErrors(v []string) {
+	x.xxx_hidden_Errors = v
+}
+
+func (x *AssetImportResponse) SetWarnings(v []string) {
+	x.xxx_hidden_Warnings = v
+}
+
+type AssetImportResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Created  uint32
+	Updated  uint32
+	Skipped  uint32
+	Errors   []string
+	Warnings []string
+}
+
+func (b0 AssetImportResponse_builder) Build() *AssetImportResponse {
+	m0 := &AssetImportResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Created = b.Created
+	x.xxx_hidden_Updated = b.Updated
+	x.xxx_hidden_Skipped = b.Skipped
+	x.xxx_hidden_Errors = b.Errors
+	x.xxx_hidden_Warnings = b.Warnings
+	return m0
+}
+
+type AssetExportRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Format string                 `protobuf:"bytes,1,opt,name=format"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssetExportRequest) Reset() {
+	*x = AssetExportRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetExportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetExportRequest) ProtoMessage() {}
+
+func (x *AssetExportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetExportRequest) GetFormat() string {
+	if x != nil {
+		return x.xxx_hidden_Format
+	}
+	return ""
+}
+
+func (x *AssetExportRequest) SetFormat(v string) {
+	x.xxx_hidden_Format = v
+}
+
+type AssetExportRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// csv | xlsx
+	Format string
+}
+
+func (b0 AssetExportRequest_builder) Build() *AssetExportRequest {
+	m0 := &AssetExportRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Format = b.Format
+	return m0
+}
+
+type AssetExportResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data        []byte                 `protobuf:"bytes,1,opt,name=data"`
+	xxx_hidden_ContentType string                 `protobuf:"bytes,2,opt,name=content_type,json=contentType"`
+	xxx_hidden_Name        string                 `protobuf:"bytes,3,opt,name=name"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *AssetExportResponse) Reset() {
+	*x = AssetExportResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetExportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetExportResponse) ProtoMessage() {}
+
+func (x *AssetExportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AssetExportResponse) GetData() []byte {
+	if x != nil {
+		return x.xxx_hidden_Data
+	}
+	return nil
+}
+
+func (x *AssetExportResponse) GetContentType() string {
+	if x != nil {
+		return x.xxx_hidden_ContentType
+	}
+	return ""
+}
+
+func (x *AssetExportResponse) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *AssetExportResponse) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+}
+
+func (x *AssetExportResponse) SetContentType(v string) {
+	x.xxx_hidden_ContentType = v
+}
+
+func (x *AssetExportResponse) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+type AssetExportResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Data        []byte
+	ContentType string
+	Name        string
+}
+
+func (b0 AssetExportResponse_builder) Build() *AssetExportResponse {
+	m0 := &AssetExportResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Data = b.Data
+	x.xxx_hidden_ContentType = b.ContentType
+	x.xxx_hidden_Name = b.Name
+	return m0
+}
+
 type TreeLockAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -3358,7 +6505,7 @@ type TreeLockAddRequest struct {
 
 func (x *TreeLockAddRequest) Reset() {
 	*x = TreeLockAddRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[14]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3370,7 +6517,7 @@ func (x *TreeLockAddRequest) String() string {
 func (*TreeLockAddRequest) ProtoMessage() {}
 
 func (x *TreeLockAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[14]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3496,7 +6643,7 @@ type TreeLockGetRequest struct {
 
 func (x *TreeLockGetRequest) Reset() {
 	*x = TreeLockGetRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[15]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3508,7 +6655,7 @@ func (x *TreeLockGetRequest) String() string {
 func (*TreeLockGetRequest) ProtoMessage() {}
 
 func (x *TreeLockGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[15]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3588,7 +6735,7 @@ type TreeLockRef struct {
 
 func (x *TreeLockRef) Reset() {
 	*x = TreeLockRef{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[16]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3600,7 +6747,7 @@ func (x *TreeLockRef) String() string {
 func (*TreeLockRef) ProtoMessage() {}
 
 func (x *TreeLockRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[16]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3726,7 +6873,7 @@ func (b0 TreeLockRef_builder) Build() *TreeLockRef {
 type case_TreeLockRef_Key protoreflect.FieldNumber
 
 func (x case_TreeLockRef_Key) String() string {
-	md := file_rove_asset_svc_g_proto_msgTypes[16].Descriptor()
+	md := file_rove_asset_svc_g_proto_msgTypes[39].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3758,7 +6905,7 @@ type TreeLockRefByTenant struct {
 
 func (x *TreeLockRefByTenant) Reset() {
 	*x = TreeLockRefByTenant{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[17]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3770,7 +6917,7 @@ func (x *TreeLockRefByTenant) String() string {
 func (*TreeLockRefByTenant) ProtoMessage() {}
 
 func (x *TreeLockRefByTenant) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[17]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3832,7 +6979,7 @@ type TreeLockSelect struct {
 
 func (x *TreeLockSelect) Reset() {
 	*x = TreeLockSelect{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[18]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3844,7 +6991,7 @@ func (x *TreeLockSelect) String() string {
 func (*TreeLockSelect) ProtoMessage() {}
 
 func (x *TreeLockSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[18]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4021,7 +7168,7 @@ type TreeLockPatchRequest struct {
 
 func (x *TreeLockPatchRequest) Reset() {
 	*x = TreeLockPatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[19]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4033,7 +7180,7 @@ func (x *TreeLockPatchRequest) String() string {
 func (*TreeLockPatchRequest) ProtoMessage() {}
 
 func (x *TreeLockPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[19]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4184,7 +7331,7 @@ type TreeLockApplyRequest struct {
 
 func (x *TreeLockApplyRequest) Reset() {
 	*x = TreeLockApplyRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[20]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4196,7 +7343,7 @@ func (x *TreeLockApplyRequest) String() string {
 func (*TreeLockApplyRequest) ProtoMessage() {}
 
 func (x *TreeLockApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[20]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4278,7 +7425,7 @@ type TreeLockEraseResponse struct {
 
 func (x *TreeLockEraseResponse) Reset() {
 	*x = TreeLockEraseResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[21]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4290,7 +7437,7 @@ func (x *TreeLockEraseResponse) String() string {
 func (*TreeLockEraseResponse) ProtoMessage() {}
 
 func (x *TreeLockEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[21]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4358,6 +7505,7 @@ type TenantDomainAddRequest struct {
 	xxx_hidden_Source      string                 `protobuf:"bytes,12,opt,name=source"`
 	xxx_hidden_DateCreated *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
 	xxx_hidden_VerifiedAt  *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=verified_at,json=verifiedAt"`
+	xxx_hidden_Sub         *string                `protobuf:"bytes,100,opt,name=sub"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -4366,7 +7514,7 @@ type TenantDomainAddRequest struct {
 
 func (x *TenantDomainAddRequest) Reset() {
 	*x = TenantDomainAddRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[22]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4378,7 +7526,7 @@ func (x *TenantDomainAddRequest) String() string {
 func (*TenantDomainAddRequest) ProtoMessage() {}
 
 func (x *TenantDomainAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[22]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4452,12 +7600,22 @@ func (x *TenantDomainAddRequest) GetVerifiedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *TenantDomainAddRequest) GetSub() string {
+	if x != nil {
+		if x.xxx_hidden_Sub != nil {
+			return *x.xxx_hidden_Sub
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *TenantDomainAddRequest) SetId(v []byte) {
 	if v == nil {
 		v = []byte{}
 	}
 	x.xxx_hidden_Id = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
 }
 
 func (x *TenantDomainAddRequest) SetTenant(v *TenantRef) {
@@ -4492,6 +7650,11 @@ func (x *TenantDomainAddRequest) SetVerifiedAt(v *timestamppb.Timestamp) {
 	x.xxx_hidden_VerifiedAt = v
 }
 
+func (x *TenantDomainAddRequest) SetSub(v string) {
+	x.xxx_hidden_Sub = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 10)
+}
+
 func (x *TenantDomainAddRequest) HasId() bool {
 	if x == nil {
 		return false
@@ -4520,6 +7683,13 @@ func (x *TenantDomainAddRequest) HasVerifiedAt() bool {
 	return x.xxx_hidden_VerifiedAt != nil
 }
 
+func (x *TenantDomainAddRequest) HasSub() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
 func (x *TenantDomainAddRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -4537,6 +7707,11 @@ func (x *TenantDomainAddRequest) ClearVerifiedAt() {
 	x.xxx_hidden_VerifiedAt = nil
 }
 
+func (x *TenantDomainAddRequest) ClearSub() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_Sub = nil
+}
+
 type TenantDomainAddRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -4549,6 +7724,8 @@ type TenantDomainAddRequest_builder struct {
 	Source      string
 	DateCreated *timestamppb.Timestamp
 	VerifiedAt  *timestamppb.Timestamp
+	// The label for a default subdomain; the host is made from it.
+	Sub *string
 }
 
 func (b0 TenantDomainAddRequest_builder) Build() *TenantDomainAddRequest {
@@ -4556,7 +7733,7 @@ func (b0 TenantDomainAddRequest_builder) Build() *TenantDomainAddRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Tenant = b.Tenant
@@ -4567,6 +7744,10 @@ func (b0 TenantDomainAddRequest_builder) Build() *TenantDomainAddRequest {
 	x.xxx_hidden_Source = b.Source
 	x.xxx_hidden_DateCreated = b.DateCreated
 	x.xxx_hidden_VerifiedAt = b.VerifiedAt
+	if b.Sub != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 10)
+		x.xxx_hidden_Sub = b.Sub
+	}
 	return m0
 }
 
@@ -4580,7 +7761,7 @@ type TenantDomainGetRequest struct {
 
 func (x *TenantDomainGetRequest) Reset() {
 	*x = TenantDomainGetRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[23]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4592,7 +7773,7 @@ func (x *TenantDomainGetRequest) String() string {
 func (*TenantDomainGetRequest) ProtoMessage() {}
 
 func (x *TenantDomainGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[23]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4672,7 +7853,7 @@ type TenantDomainRef struct {
 
 func (x *TenantDomainRef) Reset() {
 	*x = TenantDomainRef{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[24]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4684,7 +7865,7 @@ func (x *TenantDomainRef) String() string {
 func (*TenantDomainRef) ProtoMessage() {}
 
 func (x *TenantDomainRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[24]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4806,7 +7987,7 @@ func (b0 TenantDomainRef_builder) Build() *TenantDomainRef {
 type case_TenantDomainRef_Key protoreflect.FieldNumber
 
 func (x case_TenantDomainRef_Key) String() string {
-	md := file_rove_asset_svc_g_proto_msgTypes[24].Descriptor()
+	md := file_rove_asset_svc_g_proto_msgTypes[47].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -4850,7 +8031,7 @@ type TenantDomainSelect struct {
 
 func (x *TenantDomainSelect) Reset() {
 	*x = TenantDomainSelect{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[25]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4862,7 +8043,7 @@ func (x *TenantDomainSelect) String() string {
 func (*TenantDomainSelect) ProtoMessage() {}
 
 func (x *TenantDomainSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[25]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5219,7 +8400,7 @@ type TenantDomainPatchRequest struct {
 
 func (x *TenantDomainPatchRequest) Reset() {
 	*x = TenantDomainPatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[26]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5231,7 +8412,7 @@ func (x *TenantDomainPatchRequest) String() string {
 func (*TenantDomainPatchRequest) ProtoMessage() {}
 
 func (x *TenantDomainPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[26]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5570,7 +8751,7 @@ type TenantDomainApplyRequest struct {
 
 func (x *TenantDomainApplyRequest) Reset() {
 	*x = TenantDomainApplyRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[27]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5582,7 +8763,7 @@ func (x *TenantDomainApplyRequest) String() string {
 func (*TenantDomainApplyRequest) ProtoMessage() {}
 
 func (x *TenantDomainApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[27]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5664,7 +8845,7 @@ type TenantDomainEraseResponse struct {
 
 func (x *TenantDomainEraseResponse) Reset() {
 	*x = TenantDomainEraseResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[28]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5676,7 +8857,7 @@ func (x *TenantDomainEraseResponse) String() string {
 func (*TenantDomainEraseResponse) ProtoMessage() {}
 
 func (x *TenantDomainEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[28]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5744,7 +8925,7 @@ type TenantDomainListRequest struct {
 
 func (x *TenantDomainListRequest) Reset() {
 	*x = TenantDomainListRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[29]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5756,7 +8937,7 @@ func (x *TenantDomainListRequest) String() string {
 func (*TenantDomainListRequest) ProtoMessage() {}
 
 func (x *TenantDomainListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[29]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5839,7 +9020,7 @@ type TenantDomainListResponse struct {
 
 func (x *TenantDomainListResponse) Reset() {
 	*x = TenantDomainListResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[30]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5851,7 +9032,7 @@ func (x *TenantDomainListResponse) String() string {
 func (*TenantDomainListResponse) ProtoMessage() {}
 
 func (x *TenantDomainListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[30]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5922,7 +9103,7 @@ type TenantDomainFilter struct {
 
 func (x *TenantDomainFilter) Reset() {
 	*x = TenantDomainFilter{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[31]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5934,7 +9115,7 @@ func (x *TenantDomainFilter) String() string {
 func (*TenantDomainFilter) ProtoMessage() {}
 
 func (x *TenantDomainFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[31]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6055,7 +9236,7 @@ type TenantDomainWatchRequest struct {
 
 func (x *TenantDomainWatchRequest) Reset() {
 	*x = TenantDomainWatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[32]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6067,7 +9248,7 @@ func (x *TenantDomainWatchRequest) String() string {
 func (*TenantDomainWatchRequest) ProtoMessage() {}
 
 func (x *TenantDomainWatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[32]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6139,7 +9320,7 @@ type TenantDomainWatchResponse struct {
 
 func (x *TenantDomainWatchResponse) Reset() {
 	*x = TenantDomainWatchResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[33]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6151,7 +9332,7 @@ func (x *TenantDomainWatchResponse) String() string {
 func (*TenantDomainWatchResponse) ProtoMessage() {}
 
 func (x *TenantDomainWatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[33]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6203,7 +9384,7 @@ type TenantDomainWatchItem struct {
 
 func (x *TenantDomainWatchItem) Reset() {
 	*x = TenantDomainWatchItem{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[34]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6215,7 +9396,7 @@ func (x *TenantDomainWatchItem) String() string {
 func (*TenantDomainWatchItem) ProtoMessage() {}
 
 func (x *TenantDomainWatchItem) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[34]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6324,6 +9505,380 @@ func (b0 TenantDomainWatchItem_builder) Build() *TenantDomainWatchItem {
 	return m0
 }
 
+type TenantDomainVerifyRequest struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref *TenantDomainRef       `protobuf:"bytes,1,opt,name=ref"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TenantDomainVerifyRequest) Reset() {
+	*x = TenantDomainVerifyRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantDomainVerifyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantDomainVerifyRequest) ProtoMessage() {}
+
+func (x *TenantDomainVerifyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantDomainVerifyRequest) GetRef() *TenantDomainRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantDomainVerifyRequest) SetRef(v *TenantDomainRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantDomainVerifyRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantDomainVerifyRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type TenantDomainVerifyRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *TenantDomainRef
+}
+
+func (b0 TenantDomainVerifyRequest_builder) Build() *TenantDomainVerifyRequest {
+	m0 := &TenantDomainVerifyRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	return m0
+}
+
+type TenantDomainActivateRequest struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref *TenantDomainRef       `protobuf:"bytes,1,opt,name=ref"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TenantDomainActivateRequest) Reset() {
+	*x = TenantDomainActivateRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantDomainActivateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantDomainActivateRequest) ProtoMessage() {}
+
+func (x *TenantDomainActivateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantDomainActivateRequest) GetRef() *TenantDomainRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantDomainActivateRequest) SetRef(v *TenantDomainRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantDomainActivateRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantDomainActivateRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type TenantDomainActivateRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *TenantDomainRef
+}
+
+func (b0 TenantDomainActivateRequest_builder) Build() *TenantDomainActivateRequest {
+	m0 := &TenantDomainActivateRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	return m0
+}
+
+type TenantDomainRetireRequest struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref   *TenantDomainRef       `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Force bool                   `protobuf:"varint,2,opt,name=force"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *TenantDomainRetireRequest) Reset() {
+	*x = TenantDomainRetireRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantDomainRetireRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantDomainRetireRequest) ProtoMessage() {}
+
+func (x *TenantDomainRetireRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantDomainRetireRequest) GetRef() *TenantDomainRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantDomainRetireRequest) GetForce() bool {
+	if x != nil {
+		return x.xxx_hidden_Force
+	}
+	return false
+}
+
+func (x *TenantDomainRetireRequest) SetRef(v *TenantDomainRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantDomainRetireRequest) SetForce(v bool) {
+	x.xxx_hidden_Force = v
+}
+
+func (x *TenantDomainRetireRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantDomainRetireRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type TenantDomainRetireRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *TenantDomainRef
+	// Retire even though labels were printed with it.
+	Force bool
+}
+
+func (b0 TenantDomainRetireRequest_builder) Build() *TenantDomainRetireRequest {
+	m0 := &TenantDomainRetireRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Force = b.Force
+	return m0
+}
+
+type TenantDomainStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TenantDomainStatusRequest) Reset() {
+	*x = TenantDomainStatusRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantDomainStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantDomainStatusRequest) ProtoMessage() {}
+
+func (x *TenantDomainStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type TenantDomainStatusRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 TenantDomainStatusRequest_builder) Build() *TenantDomainStatusRequest {
+	m0 := &TenantDomainStatusRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type TenantDomainStatusResponse struct {
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Labels        bool                   `protobuf:"varint,1,opt,name=labels"`
+	xxx_hidden_Active        *TenantDomain          `protobuf:"bytes,2,opt,name=active"`
+	xxx_hidden_Target        string                 `protobuf:"bytes,3,opt,name=target"`
+	xxx_hidden_DefaultSuffix string                 `protobuf:"bytes,4,opt,name=default_suffix,json=defaultSuffix"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *TenantDomainStatusResponse) Reset() {
+	*x = TenantDomainStatusResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantDomainStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantDomainStatusResponse) ProtoMessage() {}
+
+func (x *TenantDomainStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantDomainStatusResponse) GetLabels() bool {
+	if x != nil {
+		return x.xxx_hidden_Labels
+	}
+	return false
+}
+
+func (x *TenantDomainStatusResponse) GetActive() *TenantDomain {
+	if x != nil {
+		return x.xxx_hidden_Active
+	}
+	return nil
+}
+
+func (x *TenantDomainStatusResponse) GetTarget() string {
+	if x != nil {
+		return x.xxx_hidden_Target
+	}
+	return ""
+}
+
+func (x *TenantDomainStatusResponse) GetDefaultSuffix() string {
+	if x != nil {
+		return x.xxx_hidden_DefaultSuffix
+	}
+	return ""
+}
+
+func (x *TenantDomainStatusResponse) SetLabels(v bool) {
+	x.xxx_hidden_Labels = v
+}
+
+func (x *TenantDomainStatusResponse) SetActive(v *TenantDomain) {
+	x.xxx_hidden_Active = v
+}
+
+func (x *TenantDomainStatusResponse) SetTarget(v string) {
+	x.xxx_hidden_Target = v
+}
+
+func (x *TenantDomainStatusResponse) SetDefaultSuffix(v string) {
+	x.xxx_hidden_DefaultSuffix = v
+}
+
+func (x *TenantDomainStatusResponse) HasActive() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Active != nil
+}
+
+func (x *TenantDomainStatusResponse) ClearActive() {
+	x.xxx_hidden_Active = nil
+}
+
+type TenantDomainStatusResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Labels bool
+	Active *TenantDomain
+	// The host a custom domain's CNAME has to point at.
+	Target string
+	// The suffix a default subdomain gets.
+	DefaultSuffix string
+}
+
+func (b0 TenantDomainStatusResponse_builder) Build() *TenantDomainStatusResponse {
+	m0 := &TenantDomainStatusResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Labels = b.Labels
+	x.xxx_hidden_Active = b.Active
+	x.xxx_hidden_Target = b.Target
+	x.xxx_hidden_DefaultSuffix = b.DefaultSuffix
+	return m0
+}
+
 type LabelAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -6343,7 +9898,7 @@ type LabelAddRequest struct {
 
 func (x *LabelAddRequest) Reset() {
 	*x = LabelAddRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[35]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6355,7 +9910,7 @@ func (x *LabelAddRequest) String() string {
 func (*LabelAddRequest) ProtoMessage() {}
 
 func (x *LabelAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[35]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6598,7 +10153,7 @@ type LabelGetRequest struct {
 
 func (x *LabelGetRequest) Reset() {
 	*x = LabelGetRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[36]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6610,7 +10165,7 @@ func (x *LabelGetRequest) String() string {
 func (*LabelGetRequest) ProtoMessage() {}
 
 func (x *LabelGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[36]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6690,7 +10245,7 @@ type LabelRef struct {
 
 func (x *LabelRef) Reset() {
 	*x = LabelRef{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[37]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6702,7 +10257,7 @@ func (x *LabelRef) String() string {
 func (*LabelRef) ProtoMessage() {}
 
 func (x *LabelRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[37]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6790,7 +10345,7 @@ func (b0 LabelRef_builder) Build() *LabelRef {
 type case_LabelRef_Key protoreflect.FieldNumber
 
 func (x case_LabelRef_Key) String() string {
-	md := file_rove_asset_svc_g_proto_msgTypes[37].Descriptor()
+	md := file_rove_asset_svc_g_proto_msgTypes[65].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -6828,7 +10383,7 @@ type LabelSelect struct {
 
 func (x *LabelSelect) Reset() {
 	*x = LabelSelect{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[38]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6840,7 +10395,7 @@ func (x *LabelSelect) String() string {
 func (*LabelSelect) ProtoMessage() {}
 
 func (x *LabelSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[38]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7195,7 +10750,7 @@ type LabelPatchRequest struct {
 
 func (x *LabelPatchRequest) Reset() {
 	*x = LabelPatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[39]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7207,7 +10762,7 @@ func (x *LabelPatchRequest) String() string {
 func (*LabelPatchRequest) ProtoMessage() {}
 
 func (x *LabelPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[39]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7629,7 +11184,7 @@ type LabelApplyRequest struct {
 
 func (x *LabelApplyRequest) Reset() {
 	*x = LabelApplyRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[40]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7641,7 +11196,7 @@ func (x *LabelApplyRequest) String() string {
 func (*LabelApplyRequest) ProtoMessage() {}
 
 func (x *LabelApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[40]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7723,7 +11278,7 @@ type LabelEraseResponse struct {
 
 func (x *LabelEraseResponse) Reset() {
 	*x = LabelEraseResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[41]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7735,7 +11290,7 @@ func (x *LabelEraseResponse) String() string {
 func (*LabelEraseResponse) ProtoMessage() {}
 
 func (x *LabelEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[41]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7803,7 +11358,7 @@ type LabelListRequest struct {
 
 func (x *LabelListRequest) Reset() {
 	*x = LabelListRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[42]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7815,7 +11370,7 @@ func (x *LabelListRequest) String() string {
 func (*LabelListRequest) ProtoMessage() {}
 
 func (x *LabelListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[42]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7898,7 +11453,7 @@ type LabelListResponse struct {
 
 func (x *LabelListResponse) Reset() {
 	*x = LabelListResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[43]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7910,7 +11465,7 @@ func (x *LabelListResponse) String() string {
 func (*LabelListResponse) ProtoMessage() {}
 
 func (x *LabelListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[43]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7982,7 +11537,7 @@ type LabelFilter struct {
 
 func (x *LabelFilter) Reset() {
 	*x = LabelFilter{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[44]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7994,7 +11549,7 @@ func (x *LabelFilter) String() string {
 func (*LabelFilter) ProtoMessage() {}
 
 func (x *LabelFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[44]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8147,7 +11702,7 @@ type LabelWatchRequest struct {
 
 func (x *LabelWatchRequest) Reset() {
 	*x = LabelWatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[45]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8159,7 +11714,7 @@ func (x *LabelWatchRequest) String() string {
 func (*LabelWatchRequest) ProtoMessage() {}
 
 func (x *LabelWatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[45]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8231,7 +11786,7 @@ type LabelWatchResponse struct {
 
 func (x *LabelWatchResponse) Reset() {
 	*x = LabelWatchResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[46]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8243,7 +11798,7 @@ func (x *LabelWatchResponse) String() string {
 func (*LabelWatchResponse) ProtoMessage() {}
 
 func (x *LabelWatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[46]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8295,7 +11850,7 @@ type LabelWatchItem struct {
 
 func (x *LabelWatchItem) Reset() {
 	*x = LabelWatchItem{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[47]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8307,7 +11862,7 @@ func (x *LabelWatchItem) String() string {
 func (*LabelWatchItem) ProtoMessage() {}
 
 func (x *LabelWatchItem) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[47]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8416,6 +11971,509 @@ func (b0 LabelWatchItem_builder) Build() *LabelWatchItem {
 	return m0
 }
 
+type LabelPrintRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Count    uint32                 `protobuf:"varint,1,opt,name=count"`
+	xxx_hidden_Batch    string                 `protobuf:"bytes,2,opt,name=batch"`
+	xxx_hidden_AssetIds [][]byte               `protobuf:"bytes,3,rep,name=asset_ids,json=assetIds"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *LabelPrintRequest) Reset() {
+	*x = LabelPrintRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelPrintRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelPrintRequest) ProtoMessage() {}
+
+func (x *LabelPrintRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelPrintRequest) GetCount() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Count
+	}
+	return 0
+}
+
+func (x *LabelPrintRequest) GetBatch() string {
+	if x != nil {
+		return x.xxx_hidden_Batch
+	}
+	return ""
+}
+
+func (x *LabelPrintRequest) GetAssetIds() [][]byte {
+	if x != nil {
+		return x.xxx_hidden_AssetIds
+	}
+	return nil
+}
+
+func (x *LabelPrintRequest) SetCount(v uint32) {
+	x.xxx_hidden_Count = v
+}
+
+func (x *LabelPrintRequest) SetBatch(v string) {
+	x.xxx_hidden_Batch = v
+}
+
+func (x *LabelPrintRequest) SetAssetIds(v [][]byte) {
+	x.xxx_hidden_AssetIds = v
+}
+
+type LabelPrintRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Count    uint32
+	Batch    string
+	AssetIds [][]byte
+}
+
+func (b0 LabelPrintRequest_builder) Build() *LabelPrintRequest {
+	m0 := &LabelPrintRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Count = b.Count
+	x.xxx_hidden_Batch = b.Batch
+	x.xxx_hidden_AssetIds = b.AssetIds
+	return m0
+}
+
+type LabelPrintResponse struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Labels *[]*Label              `protobuf:"bytes,1,rep,name=labels"`
+	xxx_hidden_Urls   []string               `protobuf:"bytes,2,rep,name=urls"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *LabelPrintResponse) Reset() {
+	*x = LabelPrintResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelPrintResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelPrintResponse) ProtoMessage() {}
+
+func (x *LabelPrintResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelPrintResponse) GetLabels() []*Label {
+	if x != nil {
+		if x.xxx_hidden_Labels != nil {
+			return *x.xxx_hidden_Labels
+		}
+	}
+	return nil
+}
+
+func (x *LabelPrintResponse) GetUrls() []string {
+	if x != nil {
+		return x.xxx_hidden_Urls
+	}
+	return nil
+}
+
+func (x *LabelPrintResponse) SetLabels(v []*Label) {
+	x.xxx_hidden_Labels = &v
+}
+
+func (x *LabelPrintResponse) SetUrls(v []string) {
+	x.xxx_hidden_Urls = v
+}
+
+type LabelPrintResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Labels []*Label
+	// The URL each label encodes, in the same order.
+	Urls []string
+}
+
+func (b0 LabelPrintResponse_builder) Build() *LabelPrintResponse {
+	m0 := &LabelPrintResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Labels = &b.Labels
+	x.xxx_hidden_Urls = b.Urls
+	return m0
+}
+
+type LabelBindRequest struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref   *LabelRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Asset *AssetRef              `protobuf:"bytes,2,opt,name=asset"`
+	xxx_hidden_Op    []byte                 `protobuf:"bytes,3,opt,name=op"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LabelBindRequest) Reset() {
+	*x = LabelBindRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelBindRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelBindRequest) ProtoMessage() {}
+
+func (x *LabelBindRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelBindRequest) GetRef() *LabelRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LabelBindRequest) GetAsset() *AssetRef {
+	if x != nil {
+		return x.xxx_hidden_Asset
+	}
+	return nil
+}
+
+func (x *LabelBindRequest) GetOp() []byte {
+	if x != nil {
+		return x.xxx_hidden_Op
+	}
+	return nil
+}
+
+func (x *LabelBindRequest) SetRef(v *LabelRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LabelBindRequest) SetAsset(v *AssetRef) {
+	x.xxx_hidden_Asset = v
+}
+
+func (x *LabelBindRequest) SetOp(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Op = v
+}
+
+func (x *LabelBindRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LabelBindRequest) HasAsset() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Asset != nil
+}
+
+func (x *LabelBindRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *LabelBindRequest) ClearAsset() {
+	x.xxx_hidden_Asset = nil
+}
+
+type LabelBindRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref   *LabelRef
+	Asset *AssetRef
+	Op    []byte
+}
+
+func (b0 LabelBindRequest_builder) Build() *LabelBindRequest {
+	m0 := &LabelBindRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Asset = b.Asset
+	x.xxx_hidden_Op = b.Op
+	return m0
+}
+
+type LabelUnbindRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref  *LabelRef              `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Void bool                   `protobuf:"varint,2,opt,name=void"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LabelUnbindRequest) Reset() {
+	*x = LabelUnbindRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelUnbindRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelUnbindRequest) ProtoMessage() {}
+
+func (x *LabelUnbindRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelUnbindRequest) GetRef() *LabelRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LabelUnbindRequest) GetVoid() bool {
+	if x != nil {
+		return x.xxx_hidden_Void
+	}
+	return false
+}
+
+func (x *LabelUnbindRequest) SetRef(v *LabelRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LabelUnbindRequest) SetVoid(v bool) {
+	x.xxx_hidden_Void = v
+}
+
+func (x *LabelUnbindRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LabelUnbindRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type LabelUnbindRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *LabelRef
+	// Void the label as well: it is damaged or lost.
+	Void bool
+}
+
+func (b0 LabelUnbindRequest_builder) Build() *LabelUnbindRequest {
+	m0 := &LabelUnbindRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Void = b.Void
+	return m0
+}
+
+type LabelResolveRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Code string                 `protobuf:"bytes,1,opt,name=code"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LabelResolveRequest) Reset() {
+	*x = LabelResolveRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelResolveRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelResolveRequest) ProtoMessage() {}
+
+func (x *LabelResolveRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelResolveRequest) GetCode() string {
+	if x != nil {
+		return x.xxx_hidden_Code
+	}
+	return ""
+}
+
+func (x *LabelResolveRequest) SetCode(v string) {
+	x.xxx_hidden_Code = v
+}
+
+type LabelResolveRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// What the scanner read: the URL, or the label id alone.
+	Code string
+}
+
+func (b0 LabelResolveRequest_builder) Build() *LabelResolveRequest {
+	m0 := &LabelResolveRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Code = b.Code
+	return m0
+}
+
+type LabelResolveResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Label *Label                 `protobuf:"bytes,1,opt,name=label"`
+	xxx_hidden_Asset *Asset                 `protobuf:"bytes,2,opt,name=asset"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LabelResolveResponse) Reset() {
+	*x = LabelResolveResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LabelResolveResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LabelResolveResponse) ProtoMessage() {}
+
+func (x *LabelResolveResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LabelResolveResponse) GetLabel() *Label {
+	if x != nil {
+		return x.xxx_hidden_Label
+	}
+	return nil
+}
+
+func (x *LabelResolveResponse) GetAsset() *Asset {
+	if x != nil {
+		return x.xxx_hidden_Asset
+	}
+	return nil
+}
+
+func (x *LabelResolveResponse) SetLabel(v *Label) {
+	x.xxx_hidden_Label = v
+}
+
+func (x *LabelResolveResponse) SetAsset(v *Asset) {
+	x.xxx_hidden_Asset = v
+}
+
+func (x *LabelResolveResponse) HasLabel() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Label != nil
+}
+
+func (x *LabelResolveResponse) HasAsset() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Asset != nil
+}
+
+func (x *LabelResolveResponse) ClearLabel() {
+	x.xxx_hidden_Label = nil
+}
+
+func (x *LabelResolveResponse) ClearAsset() {
+	x.xxx_hidden_Asset = nil
+}
+
+type LabelResolveResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Label *Label
+	Asset *Asset
+}
+
+func (b0 LabelResolveResponse_builder) Build() *LabelResolveResponse {
+	m0 := &LabelResolveResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Label = b.Label
+	x.xxx_hidden_Asset = b.Asset
+	return m0
+}
+
 type AttachmentAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -8435,7 +12493,7 @@ type AttachmentAddRequest struct {
 
 func (x *AttachmentAddRequest) Reset() {
 	*x = AttachmentAddRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[48]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8447,7 +12505,7 @@ func (x *AttachmentAddRequest) String() string {
 func (*AttachmentAddRequest) ProtoMessage() {}
 
 func (x *AttachmentAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[48]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8660,7 +12718,7 @@ type AttachmentGetRequest struct {
 
 func (x *AttachmentGetRequest) Reset() {
 	*x = AttachmentGetRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[49]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8672,7 +12730,7 @@ func (x *AttachmentGetRequest) String() string {
 func (*AttachmentGetRequest) ProtoMessage() {}
 
 func (x *AttachmentGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[49]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8752,7 +12810,7 @@ type AttachmentRef struct {
 
 func (x *AttachmentRef) Reset() {
 	*x = AttachmentRef{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[50]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8764,7 +12822,7 @@ func (x *AttachmentRef) String() string {
 func (*AttachmentRef) ProtoMessage() {}
 
 func (x *AttachmentRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[50]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8852,7 +12910,7 @@ func (b0 AttachmentRef_builder) Build() *AttachmentRef {
 type case_AttachmentRef_Key protoreflect.FieldNumber
 
 func (x case_AttachmentRef_Key) String() string {
-	md := file_rove_asset_svc_g_proto_msgTypes[50].Descriptor()
+	md := file_rove_asset_svc_g_proto_msgTypes[84].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -8890,7 +12948,7 @@ type AttachmentSelect struct {
 
 func (x *AttachmentSelect) Reset() {
 	*x = AttachmentSelect{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[51]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8902,7 +12960,7 @@ func (x *AttachmentSelect) String() string {
 func (*AttachmentSelect) ProtoMessage() {}
 
 func (x *AttachmentSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[51]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9258,7 +13316,7 @@ type AttachmentPatchRequest struct {
 
 func (x *AttachmentPatchRequest) Reset() {
 	*x = AttachmentPatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[52]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9270,7 +13328,7 @@ func (x *AttachmentPatchRequest) String() string {
 func (*AttachmentPatchRequest) ProtoMessage() {}
 
 func (x *AttachmentPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[52]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9581,7 +13639,7 @@ type AttachmentApplyRequest struct {
 
 func (x *AttachmentApplyRequest) Reset() {
 	*x = AttachmentApplyRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[53]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9593,7 +13651,7 @@ func (x *AttachmentApplyRequest) String() string {
 func (*AttachmentApplyRequest) ProtoMessage() {}
 
 func (x *AttachmentApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[53]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9675,7 +13733,7 @@ type AttachmentEraseResponse struct {
 
 func (x *AttachmentEraseResponse) Reset() {
 	*x = AttachmentEraseResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[54]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9687,7 +13745,7 @@ func (x *AttachmentEraseResponse) String() string {
 func (*AttachmentEraseResponse) ProtoMessage() {}
 
 func (x *AttachmentEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[54]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9755,7 +13813,7 @@ type AttachmentListRequest struct {
 
 func (x *AttachmentListRequest) Reset() {
 	*x = AttachmentListRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[55]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9767,7 +13825,7 @@ func (x *AttachmentListRequest) String() string {
 func (*AttachmentListRequest) ProtoMessage() {}
 
 func (x *AttachmentListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[55]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9850,7 +13908,7 @@ type AttachmentListResponse struct {
 
 func (x *AttachmentListResponse) Reset() {
 	*x = AttachmentListResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[56]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9862,7 +13920,7 @@ func (x *AttachmentListResponse) String() string {
 func (*AttachmentListResponse) ProtoMessage() {}
 
 func (x *AttachmentListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[56]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9932,7 +13990,7 @@ type AttachmentFilter struct {
 
 func (x *AttachmentFilter) Reset() {
 	*x = AttachmentFilter{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[57]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9944,7 +14002,7 @@ func (x *AttachmentFilter) String() string {
 func (*AttachmentFilter) ProtoMessage() {}
 
 func (x *AttachmentFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[57]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10033,7 +14091,7 @@ type AttachmentWatchRequest struct {
 
 func (x *AttachmentWatchRequest) Reset() {
 	*x = AttachmentWatchRequest{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[58]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10045,7 +14103,7 @@ func (x *AttachmentWatchRequest) String() string {
 func (*AttachmentWatchRequest) ProtoMessage() {}
 
 func (x *AttachmentWatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[58]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10117,7 +14175,7 @@ type AttachmentWatchResponse struct {
 
 func (x *AttachmentWatchResponse) Reset() {
 	*x = AttachmentWatchResponse{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[59]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10129,7 +14187,7 @@ func (x *AttachmentWatchResponse) String() string {
 func (*AttachmentWatchResponse) ProtoMessage() {}
 
 func (x *AttachmentWatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[59]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10181,7 +14239,7 @@ type AttachmentWatchItem struct {
 
 func (x *AttachmentWatchItem) Reset() {
 	*x = AttachmentWatchItem{}
-	mi := &file_rove_asset_svc_g_proto_msgTypes[60]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10193,7 +14251,7 @@ func (x *AttachmentWatchItem) String() string {
 func (*AttachmentWatchItem) ProtoMessage() {}
 
 func (x *AttachmentWatchItem) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_asset_svc_g_proto_msgTypes[60]
+	mi := &file_rove_asset_svc_g_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10302,11 +14360,266 @@ func (b0 AttachmentWatchItem_builder) Build() *AttachmentWatchItem {
 	return m0
 }
 
+type AttachmentUploadRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_SubjectId   []byte                 `protobuf:"bytes,1,opt,name=subject_id,json=subjectId"`
+	xxx_hidden_Name        string                 `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_ContentType string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType"`
+	xxx_hidden_Data        []byte                 `protobuf:"bytes,4,opt,name=data"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *AttachmentUploadRequest) Reset() {
+	*x = AttachmentUploadRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttachmentUploadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttachmentUploadRequest) ProtoMessage() {}
+
+func (x *AttachmentUploadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AttachmentUploadRequest) GetSubjectId() []byte {
+	if x != nil {
+		return x.xxx_hidden_SubjectId
+	}
+	return nil
+}
+
+func (x *AttachmentUploadRequest) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *AttachmentUploadRequest) GetContentType() string {
+	if x != nil {
+		return x.xxx_hidden_ContentType
+	}
+	return ""
+}
+
+func (x *AttachmentUploadRequest) GetData() []byte {
+	if x != nil {
+		return x.xxx_hidden_Data
+	}
+	return nil
+}
+
+func (x *AttachmentUploadRequest) SetSubjectId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_SubjectId = v
+}
+
+func (x *AttachmentUploadRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *AttachmentUploadRequest) SetContentType(v string) {
+	x.xxx_hidden_ContentType = v
+}
+
+func (x *AttachmentUploadRequest) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+}
+
+type AttachmentUploadRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	SubjectId   []byte
+	Name        string
+	ContentType string
+	Data        []byte
+}
+
+func (b0 AttachmentUploadRequest_builder) Build() *AttachmentUploadRequest {
+	m0 := &AttachmentUploadRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_SubjectId = b.SubjectId
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_ContentType = b.ContentType
+	x.xxx_hidden_Data = b.Data
+	return m0
+}
+
+type AttachmentUrlRequest struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref *AttachmentRef         `protobuf:"bytes,1,opt,name=ref"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AttachmentUrlRequest) Reset() {
+	*x = AttachmentUrlRequest{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttachmentUrlRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttachmentUrlRequest) ProtoMessage() {}
+
+func (x *AttachmentUrlRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AttachmentUrlRequest) GetRef() *AttachmentRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *AttachmentUrlRequest) SetRef(v *AttachmentRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *AttachmentUrlRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *AttachmentUrlRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type AttachmentUrlRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *AttachmentRef
+}
+
+func (b0 AttachmentUrlRequest_builder) Build() *AttachmentUrlRequest {
+	m0 := &AttachmentUrlRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	return m0
+}
+
+type AttachmentUrlResponse struct {
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Url       string                 `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_ExpiresAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *AttachmentUrlResponse) Reset() {
+	*x = AttachmentUrlResponse{}
+	mi := &file_rove_asset_svc_g_proto_msgTypes[97]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttachmentUrlResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttachmentUrlResponse) ProtoMessage() {}
+
+func (x *AttachmentUrlResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_asset_svc_g_proto_msgTypes[97]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AttachmentUrlResponse) GetUrl() string {
+	if x != nil {
+		return x.xxx_hidden_Url
+	}
+	return ""
+}
+
+func (x *AttachmentUrlResponse) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_ExpiresAt
+	}
+	return nil
+}
+
+func (x *AttachmentUrlResponse) SetUrl(v string) {
+	x.xxx_hidden_Url = v
+}
+
+func (x *AttachmentUrlResponse) SetExpiresAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ExpiresAt = v
+}
+
+func (x *AttachmentUrlResponse) HasExpiresAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ExpiresAt != nil
+}
+
+func (x *AttachmentUrlResponse) ClearExpiresAt() {
+	x.xxx_hidden_ExpiresAt = nil
+}
+
+type AttachmentUrlResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Url       string
+	ExpiresAt *timestamppb.Timestamp
+}
+
+func (b0 AttachmentUrlResponse_builder) Build() *AttachmentUrlResponse {
+	m0 := &AttachmentUrlResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Url = b.Url
+	x.xxx_hidden_ExpiresAt = b.ExpiresAt
+	return m0
+}
+
 var File_rove_asset_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\n" +
-	"\x16rove/asset_svc.g.proto\x12\x04rove\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11patch/patch.proto\x1a\x10rove/asset.proto\x1a\x18rove/catalog_svc.g.proto\x1a\x14rove/org_svc.g.proto\x1a\x1erove/payday/tenant_svc.g.proto\"\xe2\a\n" +
+	"\x16rove/asset_svc.g.proto\x12\x04rove\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11patch/patch.proto\x1a\x10rove/asset.proto\x1a\x18rove/catalog_svc.g.proto\x1a\x14rove/org_svc.g.proto\x1a\x1erove/payday/tenant_svc.g.proto\"\xf0\b\n" +
 	"\x0fAssetAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
@@ -10333,23 +14646,28 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"acquiredAt\x12;\n" +
 	"\vdisposed_at\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"disposedAt\x12.\n" +
-	"\x0fcontent_version\x18\x19 \x01(\x04B\x05\xaa\x01\x02\b\x02R\x0econtentVersion\x1a9\n" +
+	"\x0fcontent_version\x18\x19 \x01(\x04B\x05\xaa\x01\x02\b\x02R\x0econtentVersion\x120\n" +
+	"\x05since\x18d \x01(\v2\x1a.google.protobuf.TimestampR\x05since\x12\x0e\n" +
+	"\x02op\x18e \x01(\fR\x02op\x12\x16\n" +
+	"\x06reason\x18f \x01(\tR\x06reason\x12\x1e\n" +
+	"\x02to\x18g \x01(\v2\x0e.rove.AssetRefR\x02to\x12\x12\n" +
+	"\x04mode\x18h \x01(\tR\x04mode\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"^\n" +
-	"\x0fAssetGetRequest\x12 \n" +
-	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12)\n" +
-	"\x06select\x18\x02 \x01(\v2\x11.rove.AssetSelectR\x06select\"L\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"L\n" +
 	"\bAssetRef\x12\x10\n" +
 	"\x02id\x18\x01 \x01(\fH\x00R\x02id\x12'\n" +
 	"\x03tag\x18\v \x01(\v2\x13.rove.AssetRefByTagH\x00R\x03tagB\x05\n" +
 	"\x03key\"J\n" +
 	"\rAssetRefByTag\x12\x10\n" +
 	"\x03tag\x18\v \x01(\tR\x03tag\x12'\n" +
-	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\"\xd2\x05\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\"^\n" +
+	"\x0fAssetGetRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12)\n" +
+	"\x06select\x18\x02 \x01(\v2\x11.rove.AssetSelectR\x06select\"\xd2\x05\n" +
 	"\vAssetSelect\x12\x10\n" +
 	"\x03all\x18\x01 \x01(\bR\x03all\x12*\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x12.rove.TenantSelectR\x06tenant\x12\x12\n" +
@@ -10460,7 +14778,173 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x0eAssetWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12!\n" +
 	"\x05value\x18\x02 \x01(\v2\v.rove.AssetR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xad\x01\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xa4\x02\n" +
+	"\x10AssetMoveRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12\x1e\n" +
+	"\x02to\x18\x02 \x01(\v2\x0e.rove.AssetRefR\x02to\x12\x19\n" +
+	"\x04mode\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04mode\x12\x19\n" +
+	"\x04slot\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04slot\x12\x1c\n" +
+	"\x06u_from\x18\x05 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x05uFrom\x12\x18\n" +
+	"\x04u_to\x18\x06 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x03uTo\x12*\n" +
+	"\x02at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x1d\n" +
+	"\x06reason\x18\b \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x15\n" +
+	"\x02op\x18\t \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\xa9\x02\n" +
+	"\x19AssetSetAttributesRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12:\n" +
+	"\x03set\x18\x02 \x03(\v2(.rove.AssetSetAttributesRequest.SetEntryR\x03set\x12\x14\n" +
+	"\x05clear\x18\x03 \x03(\tR\x05clear\x12*\n" +
+	"\x02at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x1d\n" +
+	"\x06reason\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x15\n" +
+	"\x02op\x18\x06 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\x1a6\n" +
+	"\bSetEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd9\x01\n" +
+	"\x12AssetAssignRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12\x19\n" +
+	"\x04role\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04role\x12$\n" +
+	"\x05party\x18\x03 \x01(\v2\x0e.rove.PartyRefR\x05party\x12*\n" +
+	"\x02at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x1d\n" +
+	"\x06reason\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x15\n" +
+	"\x02op\x18\x06 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\x97\x02\n" +
+	"\x12AssetRelateRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12&\n" +
+	"\x06target\x18\x02 \x01(\v2\x0e.rove.AssetRefR\x06target\x12\x19\n" +
+	"\x04kind\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12!\n" +
+	"\brequired\x18\x04 \x01(\bB\x05\xaa\x01\x02\b\x02R\brequired\x12\x17\n" +
+	"\x03end\x18\x05 \x01(\bB\x05\xaa\x01\x02\b\x02R\x03end\x12*\n" +
+	"\x02at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x1d\n" +
+	"\x06reason\x18\a \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x15\n" +
+	"\x02op\x18\b \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\xe7\x01\n" +
+	"\x13AssetCorrectRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12\x1c\n" +
+	"\x06row_id\x18\x02 \x01(\fB\x05\xaa\x01\x02\b\x02R\x05rowId\x12\x1f\n" +
+	"\aretract\x18\x03 \x01(\bB\x05\xaa\x01\x02\b\x02R\aretract\x129\n" +
+	"\n" +
+	"valid_from\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tvalidFrom\x12\x1d\n" +
+	"\x06reason\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x15\n" +
+	"\x02op\x18\x06 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"\xae\x01\n" +
+	"\x14AssetTimelineRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x03ref\x12%\n" +
+	"\n" +
+	"superseded\x18\x02 \x01(\bB\x05\xaa\x01\x02\b\x02R\n" +
+	"superseded\x120\n" +
+	"\x05known\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x05known\x12\x1b\n" +
+	"\x05limit\x18\x04 \x01(\rB\x05\xaa\x01\x02\b\x02R\x05limit\"F\n" +
+	"\x15AssetTimelineResponse\x12-\n" +
+	"\aentries\x18\x01 \x03(\v2\x13.rove.TimelineEntryR\aentries\"\x99\x05\n" +
+	"\rTimelineEntry\x12\x19\n" +
+	"\x04kind\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12\x1c\n" +
+	"\x06row_id\x18\x02 \x01(\fB\x05\xaa\x01\x02\b\x02R\x05rowId\x129\n" +
+	"\n" +
+	"valid_from\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tvalidFrom\x125\n" +
+	"\bvalid_to\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\avalidTo\x12;\n" +
+	"\vrecorded_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"recordedAt\x12?\n" +
+	"\rsuperseded_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\fsupersededAt\x12\x1f\n" +
+	"\asummary\x18\a \x01(\tB\x05\xaa\x01\x02\b\x02R\asummary\x127\n" +
+	"\x06detail\x18\b \x03(\v2\x1f.rove.TimelineEntry.DetailEntryR\x06detail\x12 \n" +
+	"\bevent_id\x18\t \x01(\fB\x05\xaa\x01\x02\b\x02R\aeventId\x12$\n" +
+	"\n" +
+	"event_kind\x18\n" +
+	" \x01(\tB\x05\xaa\x01\x02\b\x02R\teventKind\x12\x1d\n" +
+	"\x06reason\x18\v \x01(\tB\x05\xaa\x01\x02\b\x02R\x06reason\x12\x1b\n" +
+	"\x05actor\x18\f \x01(\tB\x05\xaa\x01\x02\b\x02R\x05actor\x12 \n" +
+	"\bother_id\x18\r \x01(\fB\x05\xaa\x01\x02\b\x02R\aotherId\x12$\n" +
+	"\n" +
+	"other_name\x18\x0e \x01(\tB\x05\xaa\x01\x02\b\x02R\totherName\x1a9\n" +
+	"\vDetailEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb4\x01\n" +
+	"\x13AssetQueryAtRequest\x12\"\n" +
+	"\x04root\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x04root\x12*\n" +
+	"\x02at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x120\n" +
+	"\x05known\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x05known\x12\x1b\n" +
+	"\x05depth\x18\x04 \x01(\rB\x05\xaa\x01\x02\b\x02R\x05depth\">\n" +
+	"\x14AssetQueryAtResponse\x12&\n" +
+	"\x05items\x18\x01 \x03(\v2\x10.rove.AssetStateR\x05items\"\x97\x05\n" +
+	"\n" +
+	"AssetState\x12\x15\n" +
+	"\x02id\x18\x01 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02id\x12\"\n" +
+	"\tparent_id\x18\x02 \x01(\fB\x05\xaa\x01\x02\b\x02R\bparentId\x12\x19\n" +
+	"\x04mode\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04mode\x12\x19\n" +
+	"\x04slot\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04slot\x12\x1c\n" +
+	"\x06u_from\x18\x05 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x05uFrom\x12\x18\n" +
+	"\x04u_to\x18\x06 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x03uTo\x121\n" +
+	"\x05facts\x18\a \x03(\v2\x1b.rove.AssetState.FactsEntryR\x05facts\x12:\n" +
+	"\bstewards\x18\b \x03(\v2\x1e.rove.AssetState.StewardsEntryR\bstewards\x12G\n" +
+	"\rsteward_names\x18\t \x03(\v2\".rove.AssetState.StewardNamesEntryR\fstewardNames\x12\x1b\n" +
+	"\x05depth\x18\n" +
+	" \x01(\rB\x05\xaa\x01\x02\b\x02R\x05depth\x12\x19\n" +
+	"\x04kind\x18\v \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12\x17\n" +
+	"\x03tag\x18\f \x01(\tB\x05\xaa\x01\x02\b\x02R\x03tag\x12\x1f\n" +
+	"\aexisted\x18\r \x01(\bB\x05\xaa\x01\x02\b\x02R\aexisted\x1a8\n" +
+	"\n" +
+	"FactsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
+	"\rStewardsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
+	"\x11StewardNamesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x92\x01\n" +
+	"\x10AssetDiffRequest\x12\"\n" +
+	"\x04root\x18\x01 \x01(\v2\x0e.rove.AssetRefR\x04root\x12.\n" +
+	"\x04from\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x04from\x12*\n" +
+	"\x02to\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x02to\"@\n" +
+	"\x11AssetDiffResponse\x12+\n" +
+	"\achanges\x18\x01 \x03(\v2\x11.rove.AssetChangeR\achanges\"\xcc\x01\n" +
+	"\vAssetChange\x12\x15\n" +
+	"\x02id\x18\x01 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02id\x12\x17\n" +
+	"\x03tag\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x03tag\x12\x19\n" +
+	"\x04name\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
+	"\x04what\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04what\x12\x1b\n" +
+	"\x05field\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05field\x12\x1d\n" +
+	"\x06before\x18\x06 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06before\x12\x1b\n" +
+	"\x05after\x18\a \x01(\tB\x05\xaa\x01\x02\b\x02R\x05after\"\x9b\x02\n" +
+	"\x12AssetSearchRequest\x12\x13\n" +
+	"\x01q\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x01q\x12\x19\n" +
+	"\x04kind\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12\x1d\n" +
+	"\x06status\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06status\x12&\n" +
+	"\x04type\x18\x04 \x01(\v2\x12.rove.AssetTypeRefR\x04type\x12&\n" +
+	"\x06within\x18\x05 \x01(\v2\x0e.rove.AssetRefR\x06within\x12\x19\n" +
+	"\x04size\x18\x06 \x01(\rB\x05\xaa\x01\x02\b\x02R\x04size\x12\x1d\n" +
+	"\x06offset\x18\a \x01(\rB\x05\xaa\x01\x02\b\x02R\x06offset\x12,\n" +
+	"\tcustodian\x18\b \x01(\v2\x0e.rove.PartyRefR\tcustodian\"U\n" +
+	"\x13AssetSearchResponse\x12!\n" +
+	"\x05items\x18\x01 \x03(\v2\v.rove.AssetR\x05items\x12\x1b\n" +
+	"\x05total\x18\x02 \x01(\rB\x05\xaa\x01\x02\b\x02R\x05total\"\x8b\x01\n" +
+	"\x12AssetReportRequest\x12\x19\n" +
+	"\x04kind\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x12.\n" +
+	"\x04from\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x04from\x12*\n" +
+	"\x02to\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x02to\":\n" +
+	"\x13AssetReportResponse\x12#\n" +
+	"\x04rows\x18\x01 \x03(\v2\x0f.rove.ReportRowR\x04rows\"\xeb\x01\n" +
+	"\tReportRow\x12\x1b\n" +
+	"\x05group\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05group\x12\x17\n" +
+	"\x03key\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x03key\x12\x1b\n" +
+	"\x05label\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05label\x12\x1b\n" +
+	"\x05value\x18\x04 \x01(\x01B\x05\xaa\x01\x02\b\x02R\x05value\x123\n" +
+	"\x06detail\x18\x05 \x03(\v2\x1b.rove.ReportRow.DetailEntryR\x06detail\x1a9\n" +
+	"\vDetailEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"n\n" +
+	"\x12AssetImportRequest\x12\x1d\n" +
+	"\x06format\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06format\x12\x19\n" +
+	"\x04data\x18\x02 \x01(\fB\x05\xaa\x01\x02\b\x02R\x04data\x12\x1e\n" +
+	"\adry_run\x18\x03 \x01(\bB\x05\xaa\x01\x02\b\x02R\x06dryRun\"\xac\x01\n" +
+	"\x13AssetImportResponse\x12\x1f\n" +
+	"\acreated\x18\x01 \x01(\rB\x05\xaa\x01\x02\b\x02R\acreated\x12\x1f\n" +
+	"\aupdated\x18\x02 \x01(\rB\x05\xaa\x01\x02\b\x02R\aupdated\x12\x1f\n" +
+	"\askipped\x18\x03 \x01(\rB\x05\xaa\x01\x02\b\x02R\askipped\x12\x16\n" +
+	"\x06errors\x18\x04 \x03(\tR\x06errors\x12\x1a\n" +
+	"\bwarnings\x18\x05 \x03(\tR\bwarnings\"3\n" +
+	"\x12AssetExportRequest\x12\x1d\n" +
+	"\x06format\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06format\"u\n" +
+	"\x13AssetExportResponse\x12\x19\n" +
+	"\x04data\x18\x01 \x01(\fB\x05\xaa\x01\x02\b\x02R\x04data\x12(\n" +
+	"\fcontent_type\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\vcontentType\x12\x19\n" +
+	"\x04name\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\"\xad\x01\n" +
 	"\x12TreeLockAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x1f\n" +
@@ -10490,7 +14974,7 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x03ref\x18\x01 \x01(\v2\x11.rove.TreeLockRefR\x03ref\x12\"\n" +
 	"\x05patch\x18\x02 \x01(\v2\f.patch.PatchR\x05patch\"/\n" +
 	"\x15TreeLockEraseResponse\x12\x16\n" +
-	"\x06erased\x18\x01 \x01(\bR\x06erased\"\xe2\x02\n" +
+	"\x06erased\x18\x01 \x01(\bR\x06erased\"\xf4\x02\n" +
 	"\x16TenantDomainAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
@@ -10502,7 +14986,8 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x06source\x18\f \x01(\tB\x05\xaa\x01\x02\b\x02R\x06source\x12=\n" +
 	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\x12;\n" +
 	"\vverified_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"verifiedAt\"s\n" +
+	"verifiedAt\x12\x10\n" +
+	"\x03sub\x18d \x01(\tR\x03sub\"s\n" +
 	"\x16TenantDomainGetRequest\x12'\n" +
 	"\x03ref\x18\x01 \x01(\v2\x15.rove.TenantDomainRefR\x03ref\x120\n" +
 	"\x06select\x18\x02 \x01(\v2\x18.rove.TenantDomainSelectR\x06select\"@\n" +
@@ -10561,7 +15046,20 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x15TenantDomainWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12(\n" +
 	"\x05value\x18\x02 \x01(\v2\x12.rove.TenantDomainR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x83\x03\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"D\n" +
+	"\x19TenantDomainVerifyRequest\x12'\n" +
+	"\x03ref\x18\x01 \x01(\v2\x15.rove.TenantDomainRefR\x03ref\"F\n" +
+	"\x1bTenantDomainActivateRequest\x12'\n" +
+	"\x03ref\x18\x01 \x01(\v2\x15.rove.TenantDomainRefR\x03ref\"a\n" +
+	"\x19TenantDomainRetireRequest\x12'\n" +
+	"\x03ref\x18\x01 \x01(\v2\x15.rove.TenantDomainRefR\x03ref\x12\x1b\n" +
+	"\x05force\x18\x02 \x01(\bB\x05\xaa\x01\x02\b\x02R\x05force\"\x1b\n" +
+	"\x19TenantDomainStatusRequest\"\xb4\x01\n" +
+	"\x1aTenantDomainStatusResponse\x12\x1d\n" +
+	"\x06labels\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x02R\x06labels\x12*\n" +
+	"\x06active\x18\x02 \x01(\v2\x12.rove.TenantDomainR\x06active\x12\x1d\n" +
+	"\x06target\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06target\x12,\n" +
+	"\x0edefault_suffix\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\rdefaultSuffix\"\x83\x03\n" +
 	"\x0fLabelAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12-\n" +
@@ -10640,7 +15138,26 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x0eLabelWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12!\n" +
 	"\x05value\x18\x02 \x01(\v2\v.rove.LabelR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\xdd\x02\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"j\n" +
+	"\x11LabelPrintRequest\x12\x1b\n" +
+	"\x05count\x18\x01 \x01(\rB\x05\xaa\x01\x02\b\x02R\x05count\x12\x1b\n" +
+	"\x05batch\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05batch\x12\x1b\n" +
+	"\tasset_ids\x18\x03 \x03(\fR\bassetIds\"M\n" +
+	"\x12LabelPrintResponse\x12#\n" +
+	"\x06labels\x18\x01 \x03(\v2\v.rove.LabelR\x06labels\x12\x12\n" +
+	"\x04urls\x18\x02 \x03(\tR\x04urls\"q\n" +
+	"\x10LabelBindRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.LabelRefR\x03ref\x12$\n" +
+	"\x05asset\x18\x02 \x01(\v2\x0e.rove.AssetRefR\x05asset\x12\x15\n" +
+	"\x02op\x18\x03 \x01(\fB\x05\xaa\x01\x02\b\x02R\x02op\"Q\n" +
+	"\x12LabelUnbindRequest\x12 \n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.LabelRefR\x03ref\x12\x19\n" +
+	"\x04void\x18\x02 \x01(\bB\x05\xaa\x01\x02\b\x02R\x04void\"0\n" +
+	"\x13LabelResolveRequest\x12\x19\n" +
+	"\x04code\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04code\"\\\n" +
+	"\x14LabelResolveResponse\x12!\n" +
+	"\x05label\x18\x01 \x01(\v2\v.rove.LabelR\x05label\x12!\n" +
+	"\x05asset\x18\x02 \x01(\v2\v.rove.AssetR\x05asset\"\xdd\x02\n" +
 	"\x14AttachmentAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
@@ -10716,7 +15233,19 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x13AttachmentWatchItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12&\n" +
 	"\x05value\x18\x02 \x01(\v2\x10.rove.AttachmentR\x05value\x12\x1d\n" +
-	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action2\xec\x02\n" +
+	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x9f\x01\n" +
+	"\x17AttachmentUploadRequest\x12$\n" +
+	"\n" +
+	"subject_id\x18\x01 \x01(\fB\x05\xaa\x01\x02\b\x02R\tsubjectId\x12\x19\n" +
+	"\x04name\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12(\n" +
+	"\fcontent_type\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\vcontentType\x12\x19\n" +
+	"\x04data\x18\x04 \x01(\fB\x05\xaa\x01\x02\b\x02R\x04data\"=\n" +
+	"\x14AttachmentUrlRequest\x12%\n" +
+	"\x03ref\x18\x01 \x01(\v2\x13.rove.AttachmentRefR\x03ref\"k\n" +
+	"\x15AttachmentUrlResponse\x12\x17\n" +
+	"\x03url\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x02R\x03url\x129\n" +
+	"\n" +
+	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt2\xa9\b\n" +
 	"\fAssetService\x12)\n" +
 	"\x03Add\x12\x15.rove.AssetAddRequest\x1a\v.rove.Asset\x12)\n" +
 	"\x03Get\x12\x15.rove.AssetGetRequest\x1a\v.rove.Asset\x12-\n" +
@@ -10724,13 +15253,25 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x17.rove.AssetApplyRequest\x1a\v.rove.Asset\x121\n" +
 	"\x05Erase\x12\x0e.rove.AssetRef\x1a\x18.rove.AssetEraseResponse\x127\n" +
 	"\x04List\x12\x16.rove.AssetListRequest\x1a\x17.rove.AssetListResponse\x12<\n" +
-	"\x05Watch\x12\x17.rove.AssetWatchRequest\x1a\x18.rove.AssetWatchResponse0\x012\x96\x02\n" +
+	"\x05Watch\x12\x17.rove.AssetWatchRequest\x1a\x18.rove.AssetWatchResponse0\x01\x12+\n" +
+	"\x04Move\x12\x16.rove.AssetMoveRequest\x1a\v.rove.Asset\x12=\n" +
+	"\rSetAttributes\x12\x1f.rove.AssetSetAttributesRequest\x1a\v.rove.Asset\x12/\n" +
+	"\x06Assign\x12\x18.rove.AssetAssignRequest\x1a\v.rove.Asset\x12/\n" +
+	"\x06Relate\x12\x18.rove.AssetRelateRequest\x1a\v.rove.Asset\x121\n" +
+	"\aCorrect\x12\x19.rove.AssetCorrectRequest\x1a\v.rove.Asset\x12C\n" +
+	"\bTimeline\x12\x1a.rove.AssetTimelineRequest\x1a\x1b.rove.AssetTimelineResponse\x12@\n" +
+	"\aQueryAt\x12\x19.rove.AssetQueryAtRequest\x1a\x1a.rove.AssetQueryAtResponse\x127\n" +
+	"\x04Diff\x12\x16.rove.AssetDiffRequest\x1a\x17.rove.AssetDiffResponse\x12=\n" +
+	"\x06Search\x12\x18.rove.AssetSearchRequest\x1a\x19.rove.AssetSearchResponse\x12=\n" +
+	"\x06Report\x12\x18.rove.AssetReportRequest\x1a\x19.rove.AssetReportResponse\x12=\n" +
+	"\x06Import\x12\x18.rove.AssetImportRequest\x1a\x19.rove.AssetImportResponse\x12=\n" +
+	"\x06Export\x12\x18.rove.AssetExportRequest\x1a\x19.rove.AssetExportResponse2\x96\x02\n" +
 	"\x0fTreeLockService\x12/\n" +
 	"\x03Add\x12\x18.rove.TreeLockAddRequest\x1a\x0e.rove.TreeLock\x12/\n" +
 	"\x03Get\x12\x18.rove.TreeLockGetRequest\x1a\x0e.rove.TreeLock\x123\n" +
 	"\x05Patch\x12\x1a.rove.TreeLockPatchRequest\x1a\x0e.rove.TreeLock\x123\n" +
 	"\x05Apply\x12\x1a.rove.TreeLockApplyRequest\x1a\x0e.rove.TreeLock\x127\n" +
-	"\x05Erase\x12\x11.rove.TreeLockRef\x1a\x1b.rove.TreeLockEraseResponse2\xd5\x03\n" +
+	"\x05Erase\x12\x11.rove.TreeLockRef\x1a\x1b.rove.TreeLockEraseResponse2\xe3\x05\n" +
 	"\x13TenantDomainService\x127\n" +
 	"\x03Add\x12\x1c.rove.TenantDomainAddRequest\x1a\x12.rove.TenantDomain\x127\n" +
 	"\x03Get\x12\x1c.rove.TenantDomainGetRequest\x1a\x12.rove.TenantDomain\x12;\n" +
@@ -10738,7 +15279,11 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x1e.rove.TenantDomainApplyRequest\x1a\x12.rove.TenantDomain\x12?\n" +
 	"\x05Erase\x12\x15.rove.TenantDomainRef\x1a\x1f.rove.TenantDomainEraseResponse\x12E\n" +
 	"\x04List\x12\x1d.rove.TenantDomainListRequest\x1a\x1e.rove.TenantDomainListResponse\x12J\n" +
-	"\x05Watch\x12\x1e.rove.TenantDomainWatchRequest\x1a\x1f.rove.TenantDomainWatchResponse0\x012\xec\x02\n" +
+	"\x05Watch\x12\x1e.rove.TenantDomainWatchRequest\x1a\x1f.rove.TenantDomainWatchResponse0\x01\x12=\n" +
+	"\x06Verify\x12\x1f.rove.TenantDomainVerifyRequest\x1a\x12.rove.TenantDomain\x12A\n" +
+	"\bActivate\x12!.rove.TenantDomainActivateRequest\x1a\x12.rove.TenantDomain\x12=\n" +
+	"\x06Retire\x12\x1f.rove.TenantDomainRetireRequest\x1a\x12.rove.TenantDomain\x12K\n" +
+	"\x06Status\x12\x1f.rove.TenantDomainStatusRequest\x1a .rove.TenantDomainStatusResponse2\xc8\x04\n" +
 	"\fLabelService\x12)\n" +
 	"\x03Add\x12\x15.rove.LabelAddRequest\x1a\v.rove.Label\x12)\n" +
 	"\x03Get\x12\x15.rove.LabelGetRequest\x1a\v.rove.Label\x12-\n" +
@@ -10746,7 +15291,11 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x17.rove.LabelApplyRequest\x1a\v.rove.Label\x121\n" +
 	"\x05Erase\x12\x0e.rove.LabelRef\x1a\x18.rove.LabelEraseResponse\x127\n" +
 	"\x04List\x12\x16.rove.LabelListRequest\x1a\x17.rove.LabelListResponse\x12<\n" +
-	"\x05Watch\x12\x17.rove.LabelWatchRequest\x1a\x18.rove.LabelWatchResponse0\x012\xb7\x03\n" +
+	"\x05Watch\x12\x17.rove.LabelWatchRequest\x1a\x18.rove.LabelWatchResponse0\x01\x12:\n" +
+	"\x05Print\x12\x17.rove.LabelPrintRequest\x1a\x18.rove.LabelPrintResponse\x12+\n" +
+	"\x04Bind\x12\x16.rove.LabelBindRequest\x1a\v.rove.Label\x12/\n" +
+	"\x06Unbind\x12\x18.rove.LabelUnbindRequest\x1a\v.rove.Label\x12@\n" +
+	"\aResolve\x12\x19.rove.LabelResolveRequest\x1a\x1a.rove.LabelResolveResponse2\xb2\x04\n" +
 	"\x11AttachmentService\x123\n" +
 	"\x03Add\x12\x1a.rove.AttachmentAddRequest\x1a\x10.rove.Attachment\x123\n" +
 	"\x03Get\x12\x1a.rove.AttachmentGetRequest\x1a\x10.rove.Attachment\x127\n" +
@@ -10754,269 +15303,413 @@ const file_rove_asset_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x1c.rove.AttachmentApplyRequest\x1a\x10.rove.Attachment\x12;\n" +
 	"\x05Erase\x12\x13.rove.AttachmentRef\x1a\x1d.rove.AttachmentEraseResponse\x12A\n" +
 	"\x04List\x12\x1b.rove.AttachmentListRequest\x1a\x1c.rove.AttachmentListResponse\x12F\n" +
-	"\x05Watch\x12\x1c.rove.AttachmentWatchRequest\x1a\x1d.rove.AttachmentWatchResponse0\x01B\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
+	"\x05Watch\x12\x1c.rove.AttachmentWatchRequest\x1a\x1d.rove.AttachmentWatchResponse0\x01\x129\n" +
+	"\x06Upload\x12\x1d.rove.AttachmentUploadRequest\x1a\x10.rove.Attachment\x12>\n" +
+	"\x03Url\x12\x1a.rove.AttachmentUrlRequest\x1a\x1b.rove.AttachmentUrlResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_asset_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 67)
+var file_rove_asset_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 110)
 var file_rove_asset_svc_g_proto_goTypes = []any{
-	(*AssetAddRequest)(nil),           // 0: rove.AssetAddRequest
-	(*AssetGetRequest)(nil),           // 1: rove.AssetGetRequest
-	(*AssetRef)(nil),                  // 2: rove.AssetRef
-	(*AssetRefByTag)(nil),             // 3: rove.AssetRefByTag
-	(*AssetSelect)(nil),               // 4: rove.AssetSelect
-	(*AssetPatchRequest)(nil),         // 5: rove.AssetPatchRequest
-	(*AssetApplyRequest)(nil),         // 6: rove.AssetApplyRequest
-	(*AssetEraseResponse)(nil),        // 7: rove.AssetEraseResponse
-	(*AssetListRequest)(nil),          // 8: rove.AssetListRequest
-	(*AssetListResponse)(nil),         // 9: rove.AssetListResponse
-	(*AssetFilter)(nil),               // 10: rove.AssetFilter
-	(*AssetWatchRequest)(nil),         // 11: rove.AssetWatchRequest
-	(*AssetWatchResponse)(nil),        // 12: rove.AssetWatchResponse
-	(*AssetWatchItem)(nil),            // 13: rove.AssetWatchItem
-	(*TreeLockAddRequest)(nil),        // 14: rove.TreeLockAddRequest
-	(*TreeLockGetRequest)(nil),        // 15: rove.TreeLockGetRequest
-	(*TreeLockRef)(nil),               // 16: rove.TreeLockRef
-	(*TreeLockRefByTenant)(nil),       // 17: rove.TreeLockRefByTenant
-	(*TreeLockSelect)(nil),            // 18: rove.TreeLockSelect
-	(*TreeLockPatchRequest)(nil),      // 19: rove.TreeLockPatchRequest
-	(*TreeLockApplyRequest)(nil),      // 20: rove.TreeLockApplyRequest
-	(*TreeLockEraseResponse)(nil),     // 21: rove.TreeLockEraseResponse
-	(*TenantDomainAddRequest)(nil),    // 22: rove.TenantDomainAddRequest
-	(*TenantDomainGetRequest)(nil),    // 23: rove.TenantDomainGetRequest
-	(*TenantDomainRef)(nil),           // 24: rove.TenantDomainRef
-	(*TenantDomainSelect)(nil),        // 25: rove.TenantDomainSelect
-	(*TenantDomainPatchRequest)(nil),  // 26: rove.TenantDomainPatchRequest
-	(*TenantDomainApplyRequest)(nil),  // 27: rove.TenantDomainApplyRequest
-	(*TenantDomainEraseResponse)(nil), // 28: rove.TenantDomainEraseResponse
-	(*TenantDomainListRequest)(nil),   // 29: rove.TenantDomainListRequest
-	(*TenantDomainListResponse)(nil),  // 30: rove.TenantDomainListResponse
-	(*TenantDomainFilter)(nil),        // 31: rove.TenantDomainFilter
-	(*TenantDomainWatchRequest)(nil),  // 32: rove.TenantDomainWatchRequest
-	(*TenantDomainWatchResponse)(nil), // 33: rove.TenantDomainWatchResponse
-	(*TenantDomainWatchItem)(nil),     // 34: rove.TenantDomainWatchItem
-	(*LabelAddRequest)(nil),           // 35: rove.LabelAddRequest
-	(*LabelGetRequest)(nil),           // 36: rove.LabelGetRequest
-	(*LabelRef)(nil),                  // 37: rove.LabelRef
-	(*LabelSelect)(nil),               // 38: rove.LabelSelect
-	(*LabelPatchRequest)(nil),         // 39: rove.LabelPatchRequest
-	(*LabelApplyRequest)(nil),         // 40: rove.LabelApplyRequest
-	(*LabelEraseResponse)(nil),        // 41: rove.LabelEraseResponse
-	(*LabelListRequest)(nil),          // 42: rove.LabelListRequest
-	(*LabelListResponse)(nil),         // 43: rove.LabelListResponse
-	(*LabelFilter)(nil),               // 44: rove.LabelFilter
-	(*LabelWatchRequest)(nil),         // 45: rove.LabelWatchRequest
-	(*LabelWatchResponse)(nil),        // 46: rove.LabelWatchResponse
-	(*LabelWatchItem)(nil),            // 47: rove.LabelWatchItem
-	(*AttachmentAddRequest)(nil),      // 48: rove.AttachmentAddRequest
-	(*AttachmentGetRequest)(nil),      // 49: rove.AttachmentGetRequest
-	(*AttachmentRef)(nil),             // 50: rove.AttachmentRef
-	(*AttachmentSelect)(nil),          // 51: rove.AttachmentSelect
-	(*AttachmentPatchRequest)(nil),    // 52: rove.AttachmentPatchRequest
-	(*AttachmentApplyRequest)(nil),    // 53: rove.AttachmentApplyRequest
-	(*AttachmentEraseResponse)(nil),   // 54: rove.AttachmentEraseResponse
-	(*AttachmentListRequest)(nil),     // 55: rove.AttachmentListRequest
-	(*AttachmentListResponse)(nil),    // 56: rove.AttachmentListResponse
-	(*AttachmentFilter)(nil),          // 57: rove.AttachmentFilter
-	(*AttachmentWatchRequest)(nil),    // 58: rove.AttachmentWatchRequest
-	(*AttachmentWatchResponse)(nil),   // 59: rove.AttachmentWatchResponse
-	(*AttachmentWatchItem)(nil),       // 60: rove.AttachmentWatchItem
-	nil,                               // 61: rove.AssetAddRequest.LabelsEntry
-	nil,                               // 62: rove.AssetAddRequest.AttributesEntry
-	nil,                               // 63: rove.AssetPatchRequest.LabelsEntry
-	nil,                               // 64: rove.AssetPatchRequest.AttributesEntry
-	nil,                               // 65: rove.AssetFilter.LabelsEntry
-	nil,                               // 66: rove.AssetFilter.AttributesEntry
-	(*TenantRef)(nil),                 // 67: rove.TenantRef
-	(*AssetTypeRef)(nil),              // 68: rove.AssetTypeRef
-	(*ItemModelRef)(nil),              // 69: rove.ItemModelRef
-	(*timestamppb.Timestamp)(nil),     // 70: google.protobuf.Timestamp
-	(*PartyRef)(nil),                  // 71: rove.PartyRef
-	(*TenantSelect)(nil),              // 72: rove.TenantSelect
-	(*AssetTypeSelect)(nil),           // 73: rove.AssetTypeSelect
-	(*ItemModelSelect)(nil),           // 74: rove.ItemModelSelect
-	(*PartySelect)(nil),               // 75: rove.PartySelect
-	(*patchpb.Patch)(nil),             // 76: patch.Patch
-	(*Asset)(nil),                     // 77: rove.Asset
-	(*TenantDomain)(nil),              // 78: rove.TenantDomain
-	(*Label)(nil),                     // 79: rove.Label
-	(*Attachment)(nil),                // 80: rove.Attachment
-	(*TreeLock)(nil),                  // 81: rove.TreeLock
+	(*AssetAddRequest)(nil),             // 0: rove.AssetAddRequest
+	(*AssetRef)(nil),                    // 1: rove.AssetRef
+	(*AssetRefByTag)(nil),               // 2: rove.AssetRefByTag
+	(*AssetGetRequest)(nil),             // 3: rove.AssetGetRequest
+	(*AssetSelect)(nil),                 // 4: rove.AssetSelect
+	(*AssetPatchRequest)(nil),           // 5: rove.AssetPatchRequest
+	(*AssetApplyRequest)(nil),           // 6: rove.AssetApplyRequest
+	(*AssetEraseResponse)(nil),          // 7: rove.AssetEraseResponse
+	(*AssetListRequest)(nil),            // 8: rove.AssetListRequest
+	(*AssetListResponse)(nil),           // 9: rove.AssetListResponse
+	(*AssetFilter)(nil),                 // 10: rove.AssetFilter
+	(*AssetWatchRequest)(nil),           // 11: rove.AssetWatchRequest
+	(*AssetWatchResponse)(nil),          // 12: rove.AssetWatchResponse
+	(*AssetWatchItem)(nil),              // 13: rove.AssetWatchItem
+	(*AssetMoveRequest)(nil),            // 14: rove.AssetMoveRequest
+	(*AssetSetAttributesRequest)(nil),   // 15: rove.AssetSetAttributesRequest
+	(*AssetAssignRequest)(nil),          // 16: rove.AssetAssignRequest
+	(*AssetRelateRequest)(nil),          // 17: rove.AssetRelateRequest
+	(*AssetCorrectRequest)(nil),         // 18: rove.AssetCorrectRequest
+	(*AssetTimelineRequest)(nil),        // 19: rove.AssetTimelineRequest
+	(*AssetTimelineResponse)(nil),       // 20: rove.AssetTimelineResponse
+	(*TimelineEntry)(nil),               // 21: rove.TimelineEntry
+	(*AssetQueryAtRequest)(nil),         // 22: rove.AssetQueryAtRequest
+	(*AssetQueryAtResponse)(nil),        // 23: rove.AssetQueryAtResponse
+	(*AssetState)(nil),                  // 24: rove.AssetState
+	(*AssetDiffRequest)(nil),            // 25: rove.AssetDiffRequest
+	(*AssetDiffResponse)(nil),           // 26: rove.AssetDiffResponse
+	(*AssetChange)(nil),                 // 27: rove.AssetChange
+	(*AssetSearchRequest)(nil),          // 28: rove.AssetSearchRequest
+	(*AssetSearchResponse)(nil),         // 29: rove.AssetSearchResponse
+	(*AssetReportRequest)(nil),          // 30: rove.AssetReportRequest
+	(*AssetReportResponse)(nil),         // 31: rove.AssetReportResponse
+	(*ReportRow)(nil),                   // 32: rove.ReportRow
+	(*AssetImportRequest)(nil),          // 33: rove.AssetImportRequest
+	(*AssetImportResponse)(nil),         // 34: rove.AssetImportResponse
+	(*AssetExportRequest)(nil),          // 35: rove.AssetExportRequest
+	(*AssetExportResponse)(nil),         // 36: rove.AssetExportResponse
+	(*TreeLockAddRequest)(nil),          // 37: rove.TreeLockAddRequest
+	(*TreeLockGetRequest)(nil),          // 38: rove.TreeLockGetRequest
+	(*TreeLockRef)(nil),                 // 39: rove.TreeLockRef
+	(*TreeLockRefByTenant)(nil),         // 40: rove.TreeLockRefByTenant
+	(*TreeLockSelect)(nil),              // 41: rove.TreeLockSelect
+	(*TreeLockPatchRequest)(nil),        // 42: rove.TreeLockPatchRequest
+	(*TreeLockApplyRequest)(nil),        // 43: rove.TreeLockApplyRequest
+	(*TreeLockEraseResponse)(nil),       // 44: rove.TreeLockEraseResponse
+	(*TenantDomainAddRequest)(nil),      // 45: rove.TenantDomainAddRequest
+	(*TenantDomainGetRequest)(nil),      // 46: rove.TenantDomainGetRequest
+	(*TenantDomainRef)(nil),             // 47: rove.TenantDomainRef
+	(*TenantDomainSelect)(nil),          // 48: rove.TenantDomainSelect
+	(*TenantDomainPatchRequest)(nil),    // 49: rove.TenantDomainPatchRequest
+	(*TenantDomainApplyRequest)(nil),    // 50: rove.TenantDomainApplyRequest
+	(*TenantDomainEraseResponse)(nil),   // 51: rove.TenantDomainEraseResponse
+	(*TenantDomainListRequest)(nil),     // 52: rove.TenantDomainListRequest
+	(*TenantDomainListResponse)(nil),    // 53: rove.TenantDomainListResponse
+	(*TenantDomainFilter)(nil),          // 54: rove.TenantDomainFilter
+	(*TenantDomainWatchRequest)(nil),    // 55: rove.TenantDomainWatchRequest
+	(*TenantDomainWatchResponse)(nil),   // 56: rove.TenantDomainWatchResponse
+	(*TenantDomainWatchItem)(nil),       // 57: rove.TenantDomainWatchItem
+	(*TenantDomainVerifyRequest)(nil),   // 58: rove.TenantDomainVerifyRequest
+	(*TenantDomainActivateRequest)(nil), // 59: rove.TenantDomainActivateRequest
+	(*TenantDomainRetireRequest)(nil),   // 60: rove.TenantDomainRetireRequest
+	(*TenantDomainStatusRequest)(nil),   // 61: rove.TenantDomainStatusRequest
+	(*TenantDomainStatusResponse)(nil),  // 62: rove.TenantDomainStatusResponse
+	(*LabelAddRequest)(nil),             // 63: rove.LabelAddRequest
+	(*LabelGetRequest)(nil),             // 64: rove.LabelGetRequest
+	(*LabelRef)(nil),                    // 65: rove.LabelRef
+	(*LabelSelect)(nil),                 // 66: rove.LabelSelect
+	(*LabelPatchRequest)(nil),           // 67: rove.LabelPatchRequest
+	(*LabelApplyRequest)(nil),           // 68: rove.LabelApplyRequest
+	(*LabelEraseResponse)(nil),          // 69: rove.LabelEraseResponse
+	(*LabelListRequest)(nil),            // 70: rove.LabelListRequest
+	(*LabelListResponse)(nil),           // 71: rove.LabelListResponse
+	(*LabelFilter)(nil),                 // 72: rove.LabelFilter
+	(*LabelWatchRequest)(nil),           // 73: rove.LabelWatchRequest
+	(*LabelWatchResponse)(nil),          // 74: rove.LabelWatchResponse
+	(*LabelWatchItem)(nil),              // 75: rove.LabelWatchItem
+	(*LabelPrintRequest)(nil),           // 76: rove.LabelPrintRequest
+	(*LabelPrintResponse)(nil),          // 77: rove.LabelPrintResponse
+	(*LabelBindRequest)(nil),            // 78: rove.LabelBindRequest
+	(*LabelUnbindRequest)(nil),          // 79: rove.LabelUnbindRequest
+	(*LabelResolveRequest)(nil),         // 80: rove.LabelResolveRequest
+	(*LabelResolveResponse)(nil),        // 81: rove.LabelResolveResponse
+	(*AttachmentAddRequest)(nil),        // 82: rove.AttachmentAddRequest
+	(*AttachmentGetRequest)(nil),        // 83: rove.AttachmentGetRequest
+	(*AttachmentRef)(nil),               // 84: rove.AttachmentRef
+	(*AttachmentSelect)(nil),            // 85: rove.AttachmentSelect
+	(*AttachmentPatchRequest)(nil),      // 86: rove.AttachmentPatchRequest
+	(*AttachmentApplyRequest)(nil),      // 87: rove.AttachmentApplyRequest
+	(*AttachmentEraseResponse)(nil),     // 88: rove.AttachmentEraseResponse
+	(*AttachmentListRequest)(nil),       // 89: rove.AttachmentListRequest
+	(*AttachmentListResponse)(nil),      // 90: rove.AttachmentListResponse
+	(*AttachmentFilter)(nil),            // 91: rove.AttachmentFilter
+	(*AttachmentWatchRequest)(nil),      // 92: rove.AttachmentWatchRequest
+	(*AttachmentWatchResponse)(nil),     // 93: rove.AttachmentWatchResponse
+	(*AttachmentWatchItem)(nil),         // 94: rove.AttachmentWatchItem
+	(*AttachmentUploadRequest)(nil),     // 95: rove.AttachmentUploadRequest
+	(*AttachmentUrlRequest)(nil),        // 96: rove.AttachmentUrlRequest
+	(*AttachmentUrlResponse)(nil),       // 97: rove.AttachmentUrlResponse
+	nil,                                 // 98: rove.AssetAddRequest.LabelsEntry
+	nil,                                 // 99: rove.AssetAddRequest.AttributesEntry
+	nil,                                 // 100: rove.AssetPatchRequest.LabelsEntry
+	nil,                                 // 101: rove.AssetPatchRequest.AttributesEntry
+	nil,                                 // 102: rove.AssetFilter.LabelsEntry
+	nil,                                 // 103: rove.AssetFilter.AttributesEntry
+	nil,                                 // 104: rove.AssetSetAttributesRequest.SetEntry
+	nil,                                 // 105: rove.TimelineEntry.DetailEntry
+	nil,                                 // 106: rove.AssetState.FactsEntry
+	nil,                                 // 107: rove.AssetState.StewardsEntry
+	nil,                                 // 108: rove.AssetState.StewardNamesEntry
+	nil,                                 // 109: rove.ReportRow.DetailEntry
+	(*TenantRef)(nil),                   // 110: rove.TenantRef
+	(*AssetTypeRef)(nil),                // 111: rove.AssetTypeRef
+	(*ItemModelRef)(nil),                // 112: rove.ItemModelRef
+	(*timestamppb.Timestamp)(nil),       // 113: google.protobuf.Timestamp
+	(*PartyRef)(nil),                    // 114: rove.PartyRef
+	(*TenantSelect)(nil),                // 115: rove.TenantSelect
+	(*AssetTypeSelect)(nil),             // 116: rove.AssetTypeSelect
+	(*ItemModelSelect)(nil),             // 117: rove.ItemModelSelect
+	(*PartySelect)(nil),                 // 118: rove.PartySelect
+	(*patchpb.Patch)(nil),               // 119: patch.Patch
+	(*Asset)(nil),                       // 120: rove.Asset
+	(*TenantDomain)(nil),                // 121: rove.TenantDomain
+	(*Label)(nil),                       // 122: rove.Label
+	(*Attachment)(nil),                  // 123: rove.Attachment
+	(*TreeLock)(nil),                    // 124: rove.TreeLock
 }
 var file_rove_asset_svc_g_proto_depIdxs = []int32{
-	67,  // 0: rove.AssetAddRequest.tenant:type_name -> rove.TenantRef
-	61,  // 1: rove.AssetAddRequest.labels:type_name -> rove.AssetAddRequest.LabelsEntry
-	68,  // 2: rove.AssetAddRequest.type:type_name -> rove.AssetTypeRef
-	69,  // 3: rove.AssetAddRequest.model:type_name -> rove.ItemModelRef
-	70,  // 4: rove.AssetAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	71,  // 5: rove.AssetAddRequest.custodian:type_name -> rove.PartyRef
-	62,  // 6: rove.AssetAddRequest.attributes:type_name -> rove.AssetAddRequest.AttributesEntry
-	70,  // 7: rove.AssetAddRequest.acquired_at:type_name -> google.protobuf.Timestamp
-	70,  // 8: rove.AssetAddRequest.disposed_at:type_name -> google.protobuf.Timestamp
-	2,   // 9: rove.AssetGetRequest.ref:type_name -> rove.AssetRef
-	4,   // 10: rove.AssetGetRequest.select:type_name -> rove.AssetSelect
-	3,   // 11: rove.AssetRef.tag:type_name -> rove.AssetRefByTag
-	67,  // 12: rove.AssetRefByTag.tenant:type_name -> rove.TenantRef
-	72,  // 13: rove.AssetSelect.tenant:type_name -> rove.TenantSelect
-	73,  // 14: rove.AssetSelect.type:type_name -> rove.AssetTypeSelect
-	74,  // 15: rove.AssetSelect.model:type_name -> rove.ItemModelSelect
-	75,  // 16: rove.AssetSelect.custodian:type_name -> rove.PartySelect
-	2,   // 17: rove.AssetPatchRequest.ref:type_name -> rove.AssetRef
-	63,  // 18: rove.AssetPatchRequest.labels:type_name -> rove.AssetPatchRequest.LabelsEntry
-	68,  // 19: rove.AssetPatchRequest.type:type_name -> rove.AssetTypeRef
-	69,  // 20: rove.AssetPatchRequest.model:type_name -> rove.ItemModelRef
-	70,  // 21: rove.AssetPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	71,  // 22: rove.AssetPatchRequest.custodian:type_name -> rove.PartyRef
-	64,  // 23: rove.AssetPatchRequest.attributes:type_name -> rove.AssetPatchRequest.AttributesEntry
-	70,  // 24: rove.AssetPatchRequest.acquired_at:type_name -> google.protobuf.Timestamp
-	70,  // 25: rove.AssetPatchRequest.disposed_at:type_name -> google.protobuf.Timestamp
-	2,   // 26: rove.AssetApplyRequest.ref:type_name -> rove.AssetRef
-	76,  // 27: rove.AssetApplyRequest.patch:type_name -> patch.Patch
-	10,  // 28: rove.AssetListRequest.filters:type_name -> rove.AssetFilter
-	77,  // 29: rove.AssetListResponse.items:type_name -> rove.Asset
-	2,   // 30: rove.AssetFilter.ref:type_name -> rove.AssetRef
-	68,  // 31: rove.AssetFilter.type:type_name -> rove.AssetTypeRef
-	69,  // 32: rove.AssetFilter.model:type_name -> rove.ItemModelRef
-	71,  // 33: rove.AssetFilter.custodian:type_name -> rove.PartyRef
-	65,  // 34: rove.AssetFilter.labels:type_name -> rove.AssetFilter.LabelsEntry
-	66,  // 35: rove.AssetFilter.attributes:type_name -> rove.AssetFilter.AttributesEntry
-	10,  // 36: rove.AssetWatchRequest.filters:type_name -> rove.AssetFilter
-	13,  // 37: rove.AssetWatchResponse.items:type_name -> rove.AssetWatchItem
-	77,  // 38: rove.AssetWatchItem.value:type_name -> rove.Asset
-	67,  // 39: rove.TreeLockAddRequest.tenant:type_name -> rove.TenantRef
-	70,  // 40: rove.TreeLockAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	16,  // 41: rove.TreeLockGetRequest.ref:type_name -> rove.TreeLockRef
-	18,  // 42: rove.TreeLockGetRequest.select:type_name -> rove.TreeLockSelect
-	17,  // 43: rove.TreeLockRef.tenant:type_name -> rove.TreeLockRefByTenant
-	67,  // 44: rove.TreeLockRefByTenant.tenant:type_name -> rove.TenantRef
-	72,  // 45: rove.TreeLockSelect.tenant:type_name -> rove.TenantSelect
-	16,  // 46: rove.TreeLockPatchRequest.ref:type_name -> rove.TreeLockRef
-	70,  // 47: rove.TreeLockPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	16,  // 48: rove.TreeLockApplyRequest.ref:type_name -> rove.TreeLockRef
-	76,  // 49: rove.TreeLockApplyRequest.patch:type_name -> patch.Patch
-	67,  // 50: rove.TenantDomainAddRequest.tenant:type_name -> rove.TenantRef
-	70,  // 51: rove.TenantDomainAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	70,  // 52: rove.TenantDomainAddRequest.verified_at:type_name -> google.protobuf.Timestamp
-	24,  // 53: rove.TenantDomainGetRequest.ref:type_name -> rove.TenantDomainRef
-	25,  // 54: rove.TenantDomainGetRequest.select:type_name -> rove.TenantDomainSelect
-	72,  // 55: rove.TenantDomainSelect.tenant:type_name -> rove.TenantSelect
-	24,  // 56: rove.TenantDomainPatchRequest.ref:type_name -> rove.TenantDomainRef
-	70,  // 57: rove.TenantDomainPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	70,  // 58: rove.TenantDomainPatchRequest.verified_at:type_name -> google.protobuf.Timestamp
-	24,  // 59: rove.TenantDomainApplyRequest.ref:type_name -> rove.TenantDomainRef
-	76,  // 60: rove.TenantDomainApplyRequest.patch:type_name -> patch.Patch
-	31,  // 61: rove.TenantDomainListRequest.filters:type_name -> rove.TenantDomainFilter
-	78,  // 62: rove.TenantDomainListResponse.items:type_name -> rove.TenantDomain
-	24,  // 63: rove.TenantDomainFilter.ref:type_name -> rove.TenantDomainRef
-	31,  // 64: rove.TenantDomainWatchRequest.filters:type_name -> rove.TenantDomainFilter
-	34,  // 65: rove.TenantDomainWatchResponse.items:type_name -> rove.TenantDomainWatchItem
-	78,  // 66: rove.TenantDomainWatchItem.value:type_name -> rove.TenantDomain
-	67,  // 67: rove.LabelAddRequest.tenant:type_name -> rove.TenantRef
-	24,  // 68: rove.LabelAddRequest.domain:type_name -> rove.TenantDomainRef
-	70,  // 69: rove.LabelAddRequest.bound_at:type_name -> google.protobuf.Timestamp
-	70,  // 70: rove.LabelAddRequest.printed_at:type_name -> google.protobuf.Timestamp
-	70,  // 71: rove.LabelAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	37,  // 72: rove.LabelGetRequest.ref:type_name -> rove.LabelRef
-	38,  // 73: rove.LabelGetRequest.select:type_name -> rove.LabelSelect
-	72,  // 74: rove.LabelSelect.tenant:type_name -> rove.TenantSelect
-	25,  // 75: rove.LabelSelect.domain:type_name -> rove.TenantDomainSelect
-	37,  // 76: rove.LabelPatchRequest.ref:type_name -> rove.LabelRef
-	24,  // 77: rove.LabelPatchRequest.domain:type_name -> rove.TenantDomainRef
-	70,  // 78: rove.LabelPatchRequest.bound_at:type_name -> google.protobuf.Timestamp
-	70,  // 79: rove.LabelPatchRequest.printed_at:type_name -> google.protobuf.Timestamp
-	70,  // 80: rove.LabelPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	37,  // 81: rove.LabelApplyRequest.ref:type_name -> rove.LabelRef
-	76,  // 82: rove.LabelApplyRequest.patch:type_name -> patch.Patch
-	44,  // 83: rove.LabelListRequest.filters:type_name -> rove.LabelFilter
-	79,  // 84: rove.LabelListResponse.items:type_name -> rove.Label
-	37,  // 85: rove.LabelFilter.ref:type_name -> rove.LabelRef
-	44,  // 86: rove.LabelWatchRequest.filters:type_name -> rove.LabelFilter
-	47,  // 87: rove.LabelWatchResponse.items:type_name -> rove.LabelWatchItem
-	79,  // 88: rove.LabelWatchItem.value:type_name -> rove.Label
-	67,  // 89: rove.AttachmentAddRequest.tenant:type_name -> rove.TenantRef
-	70,  // 90: rove.AttachmentAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	50,  // 91: rove.AttachmentGetRequest.ref:type_name -> rove.AttachmentRef
-	51,  // 92: rove.AttachmentGetRequest.select:type_name -> rove.AttachmentSelect
-	72,  // 93: rove.AttachmentSelect.tenant:type_name -> rove.TenantSelect
-	50,  // 94: rove.AttachmentPatchRequest.ref:type_name -> rove.AttachmentRef
-	70,  // 95: rove.AttachmentPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	50,  // 96: rove.AttachmentApplyRequest.ref:type_name -> rove.AttachmentRef
-	76,  // 97: rove.AttachmentApplyRequest.patch:type_name -> patch.Patch
-	57,  // 98: rove.AttachmentListRequest.filters:type_name -> rove.AttachmentFilter
-	80,  // 99: rove.AttachmentListResponse.items:type_name -> rove.Attachment
-	50,  // 100: rove.AttachmentFilter.ref:type_name -> rove.AttachmentRef
-	57,  // 101: rove.AttachmentWatchRequest.filters:type_name -> rove.AttachmentFilter
-	60,  // 102: rove.AttachmentWatchResponse.items:type_name -> rove.AttachmentWatchItem
-	80,  // 103: rove.AttachmentWatchItem.value:type_name -> rove.Attachment
-	0,   // 104: rove.AssetService.Add:input_type -> rove.AssetAddRequest
-	1,   // 105: rove.AssetService.Get:input_type -> rove.AssetGetRequest
-	5,   // 106: rove.AssetService.Patch:input_type -> rove.AssetPatchRequest
-	6,   // 107: rove.AssetService.Apply:input_type -> rove.AssetApplyRequest
-	2,   // 108: rove.AssetService.Erase:input_type -> rove.AssetRef
-	8,   // 109: rove.AssetService.List:input_type -> rove.AssetListRequest
-	11,  // 110: rove.AssetService.Watch:input_type -> rove.AssetWatchRequest
-	14,  // 111: rove.TreeLockService.Add:input_type -> rove.TreeLockAddRequest
-	15,  // 112: rove.TreeLockService.Get:input_type -> rove.TreeLockGetRequest
-	19,  // 113: rove.TreeLockService.Patch:input_type -> rove.TreeLockPatchRequest
-	20,  // 114: rove.TreeLockService.Apply:input_type -> rove.TreeLockApplyRequest
-	16,  // 115: rove.TreeLockService.Erase:input_type -> rove.TreeLockRef
-	22,  // 116: rove.TenantDomainService.Add:input_type -> rove.TenantDomainAddRequest
-	23,  // 117: rove.TenantDomainService.Get:input_type -> rove.TenantDomainGetRequest
-	26,  // 118: rove.TenantDomainService.Patch:input_type -> rove.TenantDomainPatchRequest
-	27,  // 119: rove.TenantDomainService.Apply:input_type -> rove.TenantDomainApplyRequest
-	24,  // 120: rove.TenantDomainService.Erase:input_type -> rove.TenantDomainRef
-	29,  // 121: rove.TenantDomainService.List:input_type -> rove.TenantDomainListRequest
-	32,  // 122: rove.TenantDomainService.Watch:input_type -> rove.TenantDomainWatchRequest
-	35,  // 123: rove.LabelService.Add:input_type -> rove.LabelAddRequest
-	36,  // 124: rove.LabelService.Get:input_type -> rove.LabelGetRequest
-	39,  // 125: rove.LabelService.Patch:input_type -> rove.LabelPatchRequest
-	40,  // 126: rove.LabelService.Apply:input_type -> rove.LabelApplyRequest
-	37,  // 127: rove.LabelService.Erase:input_type -> rove.LabelRef
-	42,  // 128: rove.LabelService.List:input_type -> rove.LabelListRequest
-	45,  // 129: rove.LabelService.Watch:input_type -> rove.LabelWatchRequest
-	48,  // 130: rove.AttachmentService.Add:input_type -> rove.AttachmentAddRequest
-	49,  // 131: rove.AttachmentService.Get:input_type -> rove.AttachmentGetRequest
-	52,  // 132: rove.AttachmentService.Patch:input_type -> rove.AttachmentPatchRequest
-	53,  // 133: rove.AttachmentService.Apply:input_type -> rove.AttachmentApplyRequest
-	50,  // 134: rove.AttachmentService.Erase:input_type -> rove.AttachmentRef
-	55,  // 135: rove.AttachmentService.List:input_type -> rove.AttachmentListRequest
-	58,  // 136: rove.AttachmentService.Watch:input_type -> rove.AttachmentWatchRequest
-	77,  // 137: rove.AssetService.Add:output_type -> rove.Asset
-	77,  // 138: rove.AssetService.Get:output_type -> rove.Asset
-	77,  // 139: rove.AssetService.Patch:output_type -> rove.Asset
-	77,  // 140: rove.AssetService.Apply:output_type -> rove.Asset
-	7,   // 141: rove.AssetService.Erase:output_type -> rove.AssetEraseResponse
-	9,   // 142: rove.AssetService.List:output_type -> rove.AssetListResponse
-	12,  // 143: rove.AssetService.Watch:output_type -> rove.AssetWatchResponse
-	81,  // 144: rove.TreeLockService.Add:output_type -> rove.TreeLock
-	81,  // 145: rove.TreeLockService.Get:output_type -> rove.TreeLock
-	81,  // 146: rove.TreeLockService.Patch:output_type -> rove.TreeLock
-	81,  // 147: rove.TreeLockService.Apply:output_type -> rove.TreeLock
-	21,  // 148: rove.TreeLockService.Erase:output_type -> rove.TreeLockEraseResponse
-	78,  // 149: rove.TenantDomainService.Add:output_type -> rove.TenantDomain
-	78,  // 150: rove.TenantDomainService.Get:output_type -> rove.TenantDomain
-	78,  // 151: rove.TenantDomainService.Patch:output_type -> rove.TenantDomain
-	78,  // 152: rove.TenantDomainService.Apply:output_type -> rove.TenantDomain
-	28,  // 153: rove.TenantDomainService.Erase:output_type -> rove.TenantDomainEraseResponse
-	30,  // 154: rove.TenantDomainService.List:output_type -> rove.TenantDomainListResponse
-	33,  // 155: rove.TenantDomainService.Watch:output_type -> rove.TenantDomainWatchResponse
-	79,  // 156: rove.LabelService.Add:output_type -> rove.Label
-	79,  // 157: rove.LabelService.Get:output_type -> rove.Label
-	79,  // 158: rove.LabelService.Patch:output_type -> rove.Label
-	79,  // 159: rove.LabelService.Apply:output_type -> rove.Label
-	41,  // 160: rove.LabelService.Erase:output_type -> rove.LabelEraseResponse
-	43,  // 161: rove.LabelService.List:output_type -> rove.LabelListResponse
-	46,  // 162: rove.LabelService.Watch:output_type -> rove.LabelWatchResponse
-	80,  // 163: rove.AttachmentService.Add:output_type -> rove.Attachment
-	80,  // 164: rove.AttachmentService.Get:output_type -> rove.Attachment
-	80,  // 165: rove.AttachmentService.Patch:output_type -> rove.Attachment
-	80,  // 166: rove.AttachmentService.Apply:output_type -> rove.Attachment
-	54,  // 167: rove.AttachmentService.Erase:output_type -> rove.AttachmentEraseResponse
-	56,  // 168: rove.AttachmentService.List:output_type -> rove.AttachmentListResponse
-	59,  // 169: rove.AttachmentService.Watch:output_type -> rove.AttachmentWatchResponse
-	137, // [137:170] is the sub-list for method output_type
-	104, // [104:137] is the sub-list for method input_type
-	104, // [104:104] is the sub-list for extension type_name
-	104, // [104:104] is the sub-list for extension extendee
-	0,   // [0:104] is the sub-list for field type_name
+	110, // 0: rove.AssetAddRequest.tenant:type_name -> rove.TenantRef
+	98,  // 1: rove.AssetAddRequest.labels:type_name -> rove.AssetAddRequest.LabelsEntry
+	111, // 2: rove.AssetAddRequest.type:type_name -> rove.AssetTypeRef
+	112, // 3: rove.AssetAddRequest.model:type_name -> rove.ItemModelRef
+	113, // 4: rove.AssetAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	114, // 5: rove.AssetAddRequest.custodian:type_name -> rove.PartyRef
+	99,  // 6: rove.AssetAddRequest.attributes:type_name -> rove.AssetAddRequest.AttributesEntry
+	113, // 7: rove.AssetAddRequest.acquired_at:type_name -> google.protobuf.Timestamp
+	113, // 8: rove.AssetAddRequest.disposed_at:type_name -> google.protobuf.Timestamp
+	113, // 9: rove.AssetAddRequest.since:type_name -> google.protobuf.Timestamp
+	1,   // 10: rove.AssetAddRequest.to:type_name -> rove.AssetRef
+	2,   // 11: rove.AssetRef.tag:type_name -> rove.AssetRefByTag
+	110, // 12: rove.AssetRefByTag.tenant:type_name -> rove.TenantRef
+	1,   // 13: rove.AssetGetRequest.ref:type_name -> rove.AssetRef
+	4,   // 14: rove.AssetGetRequest.select:type_name -> rove.AssetSelect
+	115, // 15: rove.AssetSelect.tenant:type_name -> rove.TenantSelect
+	116, // 16: rove.AssetSelect.type:type_name -> rove.AssetTypeSelect
+	117, // 17: rove.AssetSelect.model:type_name -> rove.ItemModelSelect
+	118, // 18: rove.AssetSelect.custodian:type_name -> rove.PartySelect
+	1,   // 19: rove.AssetPatchRequest.ref:type_name -> rove.AssetRef
+	100, // 20: rove.AssetPatchRequest.labels:type_name -> rove.AssetPatchRequest.LabelsEntry
+	111, // 21: rove.AssetPatchRequest.type:type_name -> rove.AssetTypeRef
+	112, // 22: rove.AssetPatchRequest.model:type_name -> rove.ItemModelRef
+	113, // 23: rove.AssetPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	114, // 24: rove.AssetPatchRequest.custodian:type_name -> rove.PartyRef
+	101, // 25: rove.AssetPatchRequest.attributes:type_name -> rove.AssetPatchRequest.AttributesEntry
+	113, // 26: rove.AssetPatchRequest.acquired_at:type_name -> google.protobuf.Timestamp
+	113, // 27: rove.AssetPatchRequest.disposed_at:type_name -> google.protobuf.Timestamp
+	1,   // 28: rove.AssetApplyRequest.ref:type_name -> rove.AssetRef
+	119, // 29: rove.AssetApplyRequest.patch:type_name -> patch.Patch
+	10,  // 30: rove.AssetListRequest.filters:type_name -> rove.AssetFilter
+	120, // 31: rove.AssetListResponse.items:type_name -> rove.Asset
+	1,   // 32: rove.AssetFilter.ref:type_name -> rove.AssetRef
+	111, // 33: rove.AssetFilter.type:type_name -> rove.AssetTypeRef
+	112, // 34: rove.AssetFilter.model:type_name -> rove.ItemModelRef
+	114, // 35: rove.AssetFilter.custodian:type_name -> rove.PartyRef
+	102, // 36: rove.AssetFilter.labels:type_name -> rove.AssetFilter.LabelsEntry
+	103, // 37: rove.AssetFilter.attributes:type_name -> rove.AssetFilter.AttributesEntry
+	10,  // 38: rove.AssetWatchRequest.filters:type_name -> rove.AssetFilter
+	13,  // 39: rove.AssetWatchResponse.items:type_name -> rove.AssetWatchItem
+	120, // 40: rove.AssetWatchItem.value:type_name -> rove.Asset
+	1,   // 41: rove.AssetMoveRequest.ref:type_name -> rove.AssetRef
+	1,   // 42: rove.AssetMoveRequest.to:type_name -> rove.AssetRef
+	113, // 43: rove.AssetMoveRequest.at:type_name -> google.protobuf.Timestamp
+	1,   // 44: rove.AssetSetAttributesRequest.ref:type_name -> rove.AssetRef
+	104, // 45: rove.AssetSetAttributesRequest.set:type_name -> rove.AssetSetAttributesRequest.SetEntry
+	113, // 46: rove.AssetSetAttributesRequest.at:type_name -> google.protobuf.Timestamp
+	1,   // 47: rove.AssetAssignRequest.ref:type_name -> rove.AssetRef
+	114, // 48: rove.AssetAssignRequest.party:type_name -> rove.PartyRef
+	113, // 49: rove.AssetAssignRequest.at:type_name -> google.protobuf.Timestamp
+	1,   // 50: rove.AssetRelateRequest.ref:type_name -> rove.AssetRef
+	1,   // 51: rove.AssetRelateRequest.target:type_name -> rove.AssetRef
+	113, // 52: rove.AssetRelateRequest.at:type_name -> google.protobuf.Timestamp
+	1,   // 53: rove.AssetCorrectRequest.ref:type_name -> rove.AssetRef
+	113, // 54: rove.AssetCorrectRequest.valid_from:type_name -> google.protobuf.Timestamp
+	1,   // 55: rove.AssetTimelineRequest.ref:type_name -> rove.AssetRef
+	113, // 56: rove.AssetTimelineRequest.known:type_name -> google.protobuf.Timestamp
+	21,  // 57: rove.AssetTimelineResponse.entries:type_name -> rove.TimelineEntry
+	113, // 58: rove.TimelineEntry.valid_from:type_name -> google.protobuf.Timestamp
+	113, // 59: rove.TimelineEntry.valid_to:type_name -> google.protobuf.Timestamp
+	113, // 60: rove.TimelineEntry.recorded_at:type_name -> google.protobuf.Timestamp
+	113, // 61: rove.TimelineEntry.superseded_at:type_name -> google.protobuf.Timestamp
+	105, // 62: rove.TimelineEntry.detail:type_name -> rove.TimelineEntry.DetailEntry
+	1,   // 63: rove.AssetQueryAtRequest.root:type_name -> rove.AssetRef
+	113, // 64: rove.AssetQueryAtRequest.at:type_name -> google.protobuf.Timestamp
+	113, // 65: rove.AssetQueryAtRequest.known:type_name -> google.protobuf.Timestamp
+	24,  // 66: rove.AssetQueryAtResponse.items:type_name -> rove.AssetState
+	106, // 67: rove.AssetState.facts:type_name -> rove.AssetState.FactsEntry
+	107, // 68: rove.AssetState.stewards:type_name -> rove.AssetState.StewardsEntry
+	108, // 69: rove.AssetState.steward_names:type_name -> rove.AssetState.StewardNamesEntry
+	1,   // 70: rove.AssetDiffRequest.root:type_name -> rove.AssetRef
+	113, // 71: rove.AssetDiffRequest.from:type_name -> google.protobuf.Timestamp
+	113, // 72: rove.AssetDiffRequest.to:type_name -> google.protobuf.Timestamp
+	27,  // 73: rove.AssetDiffResponse.changes:type_name -> rove.AssetChange
+	111, // 74: rove.AssetSearchRequest.type:type_name -> rove.AssetTypeRef
+	1,   // 75: rove.AssetSearchRequest.within:type_name -> rove.AssetRef
+	114, // 76: rove.AssetSearchRequest.custodian:type_name -> rove.PartyRef
+	120, // 77: rove.AssetSearchResponse.items:type_name -> rove.Asset
+	113, // 78: rove.AssetReportRequest.from:type_name -> google.protobuf.Timestamp
+	113, // 79: rove.AssetReportRequest.to:type_name -> google.protobuf.Timestamp
+	32,  // 80: rove.AssetReportResponse.rows:type_name -> rove.ReportRow
+	109, // 81: rove.ReportRow.detail:type_name -> rove.ReportRow.DetailEntry
+	110, // 82: rove.TreeLockAddRequest.tenant:type_name -> rove.TenantRef
+	113, // 83: rove.TreeLockAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	39,  // 84: rove.TreeLockGetRequest.ref:type_name -> rove.TreeLockRef
+	41,  // 85: rove.TreeLockGetRequest.select:type_name -> rove.TreeLockSelect
+	40,  // 86: rove.TreeLockRef.tenant:type_name -> rove.TreeLockRefByTenant
+	110, // 87: rove.TreeLockRefByTenant.tenant:type_name -> rove.TenantRef
+	115, // 88: rove.TreeLockSelect.tenant:type_name -> rove.TenantSelect
+	39,  // 89: rove.TreeLockPatchRequest.ref:type_name -> rove.TreeLockRef
+	113, // 90: rove.TreeLockPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	39,  // 91: rove.TreeLockApplyRequest.ref:type_name -> rove.TreeLockRef
+	119, // 92: rove.TreeLockApplyRequest.patch:type_name -> patch.Patch
+	110, // 93: rove.TenantDomainAddRequest.tenant:type_name -> rove.TenantRef
+	113, // 94: rove.TenantDomainAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	113, // 95: rove.TenantDomainAddRequest.verified_at:type_name -> google.protobuf.Timestamp
+	47,  // 96: rove.TenantDomainGetRequest.ref:type_name -> rove.TenantDomainRef
+	48,  // 97: rove.TenantDomainGetRequest.select:type_name -> rove.TenantDomainSelect
+	115, // 98: rove.TenantDomainSelect.tenant:type_name -> rove.TenantSelect
+	47,  // 99: rove.TenantDomainPatchRequest.ref:type_name -> rove.TenantDomainRef
+	113, // 100: rove.TenantDomainPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	113, // 101: rove.TenantDomainPatchRequest.verified_at:type_name -> google.protobuf.Timestamp
+	47,  // 102: rove.TenantDomainApplyRequest.ref:type_name -> rove.TenantDomainRef
+	119, // 103: rove.TenantDomainApplyRequest.patch:type_name -> patch.Patch
+	54,  // 104: rove.TenantDomainListRequest.filters:type_name -> rove.TenantDomainFilter
+	121, // 105: rove.TenantDomainListResponse.items:type_name -> rove.TenantDomain
+	47,  // 106: rove.TenantDomainFilter.ref:type_name -> rove.TenantDomainRef
+	54,  // 107: rove.TenantDomainWatchRequest.filters:type_name -> rove.TenantDomainFilter
+	57,  // 108: rove.TenantDomainWatchResponse.items:type_name -> rove.TenantDomainWatchItem
+	121, // 109: rove.TenantDomainWatchItem.value:type_name -> rove.TenantDomain
+	47,  // 110: rove.TenantDomainVerifyRequest.ref:type_name -> rove.TenantDomainRef
+	47,  // 111: rove.TenantDomainActivateRequest.ref:type_name -> rove.TenantDomainRef
+	47,  // 112: rove.TenantDomainRetireRequest.ref:type_name -> rove.TenantDomainRef
+	121, // 113: rove.TenantDomainStatusResponse.active:type_name -> rove.TenantDomain
+	110, // 114: rove.LabelAddRequest.tenant:type_name -> rove.TenantRef
+	47,  // 115: rove.LabelAddRequest.domain:type_name -> rove.TenantDomainRef
+	113, // 116: rove.LabelAddRequest.bound_at:type_name -> google.protobuf.Timestamp
+	113, // 117: rove.LabelAddRequest.printed_at:type_name -> google.protobuf.Timestamp
+	113, // 118: rove.LabelAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	65,  // 119: rove.LabelGetRequest.ref:type_name -> rove.LabelRef
+	66,  // 120: rove.LabelGetRequest.select:type_name -> rove.LabelSelect
+	115, // 121: rove.LabelSelect.tenant:type_name -> rove.TenantSelect
+	48,  // 122: rove.LabelSelect.domain:type_name -> rove.TenantDomainSelect
+	65,  // 123: rove.LabelPatchRequest.ref:type_name -> rove.LabelRef
+	47,  // 124: rove.LabelPatchRequest.domain:type_name -> rove.TenantDomainRef
+	113, // 125: rove.LabelPatchRequest.bound_at:type_name -> google.protobuf.Timestamp
+	113, // 126: rove.LabelPatchRequest.printed_at:type_name -> google.protobuf.Timestamp
+	113, // 127: rove.LabelPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	65,  // 128: rove.LabelApplyRequest.ref:type_name -> rove.LabelRef
+	119, // 129: rove.LabelApplyRequest.patch:type_name -> patch.Patch
+	72,  // 130: rove.LabelListRequest.filters:type_name -> rove.LabelFilter
+	122, // 131: rove.LabelListResponse.items:type_name -> rove.Label
+	65,  // 132: rove.LabelFilter.ref:type_name -> rove.LabelRef
+	72,  // 133: rove.LabelWatchRequest.filters:type_name -> rove.LabelFilter
+	75,  // 134: rove.LabelWatchResponse.items:type_name -> rove.LabelWatchItem
+	122, // 135: rove.LabelWatchItem.value:type_name -> rove.Label
+	122, // 136: rove.LabelPrintResponse.labels:type_name -> rove.Label
+	65,  // 137: rove.LabelBindRequest.ref:type_name -> rove.LabelRef
+	1,   // 138: rove.LabelBindRequest.asset:type_name -> rove.AssetRef
+	65,  // 139: rove.LabelUnbindRequest.ref:type_name -> rove.LabelRef
+	122, // 140: rove.LabelResolveResponse.label:type_name -> rove.Label
+	120, // 141: rove.LabelResolveResponse.asset:type_name -> rove.Asset
+	110, // 142: rove.AttachmentAddRequest.tenant:type_name -> rove.TenantRef
+	113, // 143: rove.AttachmentAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	84,  // 144: rove.AttachmentGetRequest.ref:type_name -> rove.AttachmentRef
+	85,  // 145: rove.AttachmentGetRequest.select:type_name -> rove.AttachmentSelect
+	115, // 146: rove.AttachmentSelect.tenant:type_name -> rove.TenantSelect
+	84,  // 147: rove.AttachmentPatchRequest.ref:type_name -> rove.AttachmentRef
+	113, // 148: rove.AttachmentPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	84,  // 149: rove.AttachmentApplyRequest.ref:type_name -> rove.AttachmentRef
+	119, // 150: rove.AttachmentApplyRequest.patch:type_name -> patch.Patch
+	91,  // 151: rove.AttachmentListRequest.filters:type_name -> rove.AttachmentFilter
+	123, // 152: rove.AttachmentListResponse.items:type_name -> rove.Attachment
+	84,  // 153: rove.AttachmentFilter.ref:type_name -> rove.AttachmentRef
+	91,  // 154: rove.AttachmentWatchRequest.filters:type_name -> rove.AttachmentFilter
+	94,  // 155: rove.AttachmentWatchResponse.items:type_name -> rove.AttachmentWatchItem
+	123, // 156: rove.AttachmentWatchItem.value:type_name -> rove.Attachment
+	84,  // 157: rove.AttachmentUrlRequest.ref:type_name -> rove.AttachmentRef
+	113, // 158: rove.AttachmentUrlResponse.expires_at:type_name -> google.protobuf.Timestamp
+	0,   // 159: rove.AssetService.Add:input_type -> rove.AssetAddRequest
+	3,   // 160: rove.AssetService.Get:input_type -> rove.AssetGetRequest
+	5,   // 161: rove.AssetService.Patch:input_type -> rove.AssetPatchRequest
+	6,   // 162: rove.AssetService.Apply:input_type -> rove.AssetApplyRequest
+	1,   // 163: rove.AssetService.Erase:input_type -> rove.AssetRef
+	8,   // 164: rove.AssetService.List:input_type -> rove.AssetListRequest
+	11,  // 165: rove.AssetService.Watch:input_type -> rove.AssetWatchRequest
+	14,  // 166: rove.AssetService.Move:input_type -> rove.AssetMoveRequest
+	15,  // 167: rove.AssetService.SetAttributes:input_type -> rove.AssetSetAttributesRequest
+	16,  // 168: rove.AssetService.Assign:input_type -> rove.AssetAssignRequest
+	17,  // 169: rove.AssetService.Relate:input_type -> rove.AssetRelateRequest
+	18,  // 170: rove.AssetService.Correct:input_type -> rove.AssetCorrectRequest
+	19,  // 171: rove.AssetService.Timeline:input_type -> rove.AssetTimelineRequest
+	22,  // 172: rove.AssetService.QueryAt:input_type -> rove.AssetQueryAtRequest
+	25,  // 173: rove.AssetService.Diff:input_type -> rove.AssetDiffRequest
+	28,  // 174: rove.AssetService.Search:input_type -> rove.AssetSearchRequest
+	30,  // 175: rove.AssetService.Report:input_type -> rove.AssetReportRequest
+	33,  // 176: rove.AssetService.Import:input_type -> rove.AssetImportRequest
+	35,  // 177: rove.AssetService.Export:input_type -> rove.AssetExportRequest
+	37,  // 178: rove.TreeLockService.Add:input_type -> rove.TreeLockAddRequest
+	38,  // 179: rove.TreeLockService.Get:input_type -> rove.TreeLockGetRequest
+	42,  // 180: rove.TreeLockService.Patch:input_type -> rove.TreeLockPatchRequest
+	43,  // 181: rove.TreeLockService.Apply:input_type -> rove.TreeLockApplyRequest
+	39,  // 182: rove.TreeLockService.Erase:input_type -> rove.TreeLockRef
+	45,  // 183: rove.TenantDomainService.Add:input_type -> rove.TenantDomainAddRequest
+	46,  // 184: rove.TenantDomainService.Get:input_type -> rove.TenantDomainGetRequest
+	49,  // 185: rove.TenantDomainService.Patch:input_type -> rove.TenantDomainPatchRequest
+	50,  // 186: rove.TenantDomainService.Apply:input_type -> rove.TenantDomainApplyRequest
+	47,  // 187: rove.TenantDomainService.Erase:input_type -> rove.TenantDomainRef
+	52,  // 188: rove.TenantDomainService.List:input_type -> rove.TenantDomainListRequest
+	55,  // 189: rove.TenantDomainService.Watch:input_type -> rove.TenantDomainWatchRequest
+	58,  // 190: rove.TenantDomainService.Verify:input_type -> rove.TenantDomainVerifyRequest
+	59,  // 191: rove.TenantDomainService.Activate:input_type -> rove.TenantDomainActivateRequest
+	60,  // 192: rove.TenantDomainService.Retire:input_type -> rove.TenantDomainRetireRequest
+	61,  // 193: rove.TenantDomainService.Status:input_type -> rove.TenantDomainStatusRequest
+	63,  // 194: rove.LabelService.Add:input_type -> rove.LabelAddRequest
+	64,  // 195: rove.LabelService.Get:input_type -> rove.LabelGetRequest
+	67,  // 196: rove.LabelService.Patch:input_type -> rove.LabelPatchRequest
+	68,  // 197: rove.LabelService.Apply:input_type -> rove.LabelApplyRequest
+	65,  // 198: rove.LabelService.Erase:input_type -> rove.LabelRef
+	70,  // 199: rove.LabelService.List:input_type -> rove.LabelListRequest
+	73,  // 200: rove.LabelService.Watch:input_type -> rove.LabelWatchRequest
+	76,  // 201: rove.LabelService.Print:input_type -> rove.LabelPrintRequest
+	78,  // 202: rove.LabelService.Bind:input_type -> rove.LabelBindRequest
+	79,  // 203: rove.LabelService.Unbind:input_type -> rove.LabelUnbindRequest
+	80,  // 204: rove.LabelService.Resolve:input_type -> rove.LabelResolveRequest
+	82,  // 205: rove.AttachmentService.Add:input_type -> rove.AttachmentAddRequest
+	83,  // 206: rove.AttachmentService.Get:input_type -> rove.AttachmentGetRequest
+	86,  // 207: rove.AttachmentService.Patch:input_type -> rove.AttachmentPatchRequest
+	87,  // 208: rove.AttachmentService.Apply:input_type -> rove.AttachmentApplyRequest
+	84,  // 209: rove.AttachmentService.Erase:input_type -> rove.AttachmentRef
+	89,  // 210: rove.AttachmentService.List:input_type -> rove.AttachmentListRequest
+	92,  // 211: rove.AttachmentService.Watch:input_type -> rove.AttachmentWatchRequest
+	95,  // 212: rove.AttachmentService.Upload:input_type -> rove.AttachmentUploadRequest
+	96,  // 213: rove.AttachmentService.Url:input_type -> rove.AttachmentUrlRequest
+	120, // 214: rove.AssetService.Add:output_type -> rove.Asset
+	120, // 215: rove.AssetService.Get:output_type -> rove.Asset
+	120, // 216: rove.AssetService.Patch:output_type -> rove.Asset
+	120, // 217: rove.AssetService.Apply:output_type -> rove.Asset
+	7,   // 218: rove.AssetService.Erase:output_type -> rove.AssetEraseResponse
+	9,   // 219: rove.AssetService.List:output_type -> rove.AssetListResponse
+	12,  // 220: rove.AssetService.Watch:output_type -> rove.AssetWatchResponse
+	120, // 221: rove.AssetService.Move:output_type -> rove.Asset
+	120, // 222: rove.AssetService.SetAttributes:output_type -> rove.Asset
+	120, // 223: rove.AssetService.Assign:output_type -> rove.Asset
+	120, // 224: rove.AssetService.Relate:output_type -> rove.Asset
+	120, // 225: rove.AssetService.Correct:output_type -> rove.Asset
+	20,  // 226: rove.AssetService.Timeline:output_type -> rove.AssetTimelineResponse
+	23,  // 227: rove.AssetService.QueryAt:output_type -> rove.AssetQueryAtResponse
+	26,  // 228: rove.AssetService.Diff:output_type -> rove.AssetDiffResponse
+	29,  // 229: rove.AssetService.Search:output_type -> rove.AssetSearchResponse
+	31,  // 230: rove.AssetService.Report:output_type -> rove.AssetReportResponse
+	34,  // 231: rove.AssetService.Import:output_type -> rove.AssetImportResponse
+	36,  // 232: rove.AssetService.Export:output_type -> rove.AssetExportResponse
+	124, // 233: rove.TreeLockService.Add:output_type -> rove.TreeLock
+	124, // 234: rove.TreeLockService.Get:output_type -> rove.TreeLock
+	124, // 235: rove.TreeLockService.Patch:output_type -> rove.TreeLock
+	124, // 236: rove.TreeLockService.Apply:output_type -> rove.TreeLock
+	44,  // 237: rove.TreeLockService.Erase:output_type -> rove.TreeLockEraseResponse
+	121, // 238: rove.TenantDomainService.Add:output_type -> rove.TenantDomain
+	121, // 239: rove.TenantDomainService.Get:output_type -> rove.TenantDomain
+	121, // 240: rove.TenantDomainService.Patch:output_type -> rove.TenantDomain
+	121, // 241: rove.TenantDomainService.Apply:output_type -> rove.TenantDomain
+	51,  // 242: rove.TenantDomainService.Erase:output_type -> rove.TenantDomainEraseResponse
+	53,  // 243: rove.TenantDomainService.List:output_type -> rove.TenantDomainListResponse
+	56,  // 244: rove.TenantDomainService.Watch:output_type -> rove.TenantDomainWatchResponse
+	121, // 245: rove.TenantDomainService.Verify:output_type -> rove.TenantDomain
+	121, // 246: rove.TenantDomainService.Activate:output_type -> rove.TenantDomain
+	121, // 247: rove.TenantDomainService.Retire:output_type -> rove.TenantDomain
+	62,  // 248: rove.TenantDomainService.Status:output_type -> rove.TenantDomainStatusResponse
+	122, // 249: rove.LabelService.Add:output_type -> rove.Label
+	122, // 250: rove.LabelService.Get:output_type -> rove.Label
+	122, // 251: rove.LabelService.Patch:output_type -> rove.Label
+	122, // 252: rove.LabelService.Apply:output_type -> rove.Label
+	69,  // 253: rove.LabelService.Erase:output_type -> rove.LabelEraseResponse
+	71,  // 254: rove.LabelService.List:output_type -> rove.LabelListResponse
+	74,  // 255: rove.LabelService.Watch:output_type -> rove.LabelWatchResponse
+	77,  // 256: rove.LabelService.Print:output_type -> rove.LabelPrintResponse
+	122, // 257: rove.LabelService.Bind:output_type -> rove.Label
+	122, // 258: rove.LabelService.Unbind:output_type -> rove.Label
+	81,  // 259: rove.LabelService.Resolve:output_type -> rove.LabelResolveResponse
+	123, // 260: rove.AttachmentService.Add:output_type -> rove.Attachment
+	123, // 261: rove.AttachmentService.Get:output_type -> rove.Attachment
+	123, // 262: rove.AttachmentService.Patch:output_type -> rove.Attachment
+	123, // 263: rove.AttachmentService.Apply:output_type -> rove.Attachment
+	88,  // 264: rove.AttachmentService.Erase:output_type -> rove.AttachmentEraseResponse
+	90,  // 265: rove.AttachmentService.List:output_type -> rove.AttachmentListResponse
+	93,  // 266: rove.AttachmentService.Watch:output_type -> rove.AttachmentWatchResponse
+	123, // 267: rove.AttachmentService.Upload:output_type -> rove.Attachment
+	97,  // 268: rove.AttachmentService.Url:output_type -> rove.AttachmentUrlResponse
+	214, // [214:269] is the sub-list for method output_type
+	159, // [159:214] is the sub-list for method input_type
+	159, // [159:159] is the sub-list for extension type_name
+	159, // [159:159] is the sub-list for extension extendee
+	0,   // [0:159] is the sub-list for field type_name
 }
 
 func init() { file_rove_asset_svc_g_proto_init() }
@@ -11028,22 +15721,22 @@ func file_rove_asset_svc_g_proto_init() {
 	file_rove_catalog_svc_g_proto_init()
 	file_rove_org_svc_g_proto_init()
 	file_rove_payday_tenant_svc_g_proto_init()
-	file_rove_asset_svc_g_proto_msgTypes[2].OneofWrappers = []any{
+	file_rove_asset_svc_g_proto_msgTypes[1].OneofWrappers = []any{
 		(*assetRef_Id)(nil),
 		(*assetRef_Tag)(nil),
 	}
-	file_rove_asset_svc_g_proto_msgTypes[16].OneofWrappers = []any{
+	file_rove_asset_svc_g_proto_msgTypes[39].OneofWrappers = []any{
 		(*treeLockRef_Id)(nil),
 		(*treeLockRef_Tenant)(nil),
 	}
-	file_rove_asset_svc_g_proto_msgTypes[24].OneofWrappers = []any{
+	file_rove_asset_svc_g_proto_msgTypes[47].OneofWrappers = []any{
 		(*tenantDomainRef_Id)(nil),
 		(*tenantDomainRef_Host)(nil),
 	}
-	file_rove_asset_svc_g_proto_msgTypes[37].OneofWrappers = []any{
+	file_rove_asset_svc_g_proto_msgTypes[65].OneofWrappers = []any{
 		(*labelRef_Id)(nil),
 	}
-	file_rove_asset_svc_g_proto_msgTypes[50].OneofWrappers = []any{
+	file_rove_asset_svc_g_proto_msgTypes[84].OneofWrappers = []any{
 		(*attachmentRef_Id)(nil),
 	}
 	type x struct{}
@@ -11052,7 +15745,7 @@ func file_rove_asset_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_asset_svc_g_proto_rawDesc), len(file_rove_asset_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   67,
+			NumMessages:   110,
 			NumExtensions: 0,
 			NumServices:   5,
 		},

@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookableService_Add_FullMethodName   = "/rove.BookableService/Add"
-	BookableService_Get_FullMethodName   = "/rove.BookableService/Get"
-	BookableService_Patch_FullMethodName = "/rove.BookableService/Patch"
-	BookableService_Apply_FullMethodName = "/rove.BookableService/Apply"
-	BookableService_Erase_FullMethodName = "/rove.BookableService/Erase"
-	BookableService_List_FullMethodName  = "/rove.BookableService/List"
-	BookableService_Watch_FullMethodName = "/rove.BookableService/Watch"
+	BookableService_Add_FullMethodName          = "/rove.BookableService/Add"
+	BookableService_Get_FullMethodName          = "/rove.BookableService/Get"
+	BookableService_Patch_FullMethodName        = "/rove.BookableService/Patch"
+	BookableService_Apply_FullMethodName        = "/rove.BookableService/Apply"
+	BookableService_Erase_FullMethodName        = "/rove.BookableService/Erase"
+	BookableService_List_FullMethodName         = "/rove.BookableService/List"
+	BookableService_Watch_FullMethodName        = "/rove.BookableService/Watch"
+	BookableService_Update_FullMethodName       = "/rove.BookableService/Update"
+	BookableService_Availability_FullMethodName = "/rove.BookableService/Availability"
 )
 
 // BookableServiceClient is the client API for BookableService service.
@@ -56,6 +58,9 @@ type BookableServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *BookableWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[BookableWatchResponse], error)
+	Update(ctx context.Context, in *BookableUpdateRequest, opts ...grpc.CallOption) (*Bookable, error)
+	// Availability answers when resources are taken between two moments.
+	Availability(ctx context.Context, in *BookableAvailabilityRequest, opts ...grpc.CallOption) (*BookableAvailabilityResponse, error)
 }
 
 type bookableServiceClient struct {
@@ -145,6 +150,26 @@ func (c *bookableServiceClient) Watch(ctx context.Context, in *BookableWatchRequ
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BookableService_WatchClient = grpc.ServerStreamingClient[BookableWatchResponse]
 
+func (c *bookableServiceClient) Update(ctx context.Context, in *BookableUpdateRequest, opts ...grpc.CallOption) (*Bookable, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bookable)
+	err := c.cc.Invoke(ctx, BookableService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookableServiceClient) Availability(ctx context.Context, in *BookableAvailabilityRequest, opts ...grpc.CallOption) (*BookableAvailabilityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BookableAvailabilityResponse)
+	err := c.cc.Invoke(ctx, BookableService_Availability_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookableServiceServer is the server API for BookableService service.
 // All implementations must embed UnimplementedBookableServiceServer
 // for forward compatibility.
@@ -173,6 +198,9 @@ type BookableServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*BookableWatchRequest, grpc.ServerStreamingServer[BookableWatchResponse]) error
+	Update(context.Context, *BookableUpdateRequest) (*Bookable, error)
+	// Availability answers when resources are taken between two moments.
+	Availability(context.Context, *BookableAvailabilityRequest) (*BookableAvailabilityResponse, error)
 	mustEmbedUnimplementedBookableServiceServer()
 }
 
@@ -203,6 +231,12 @@ func (UnimplementedBookableServiceServer) List(context.Context, *BookableListReq
 }
 func (UnimplementedBookableServiceServer) Watch(*BookableWatchRequest, grpc.ServerStreamingServer[BookableWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedBookableServiceServer) Update(context.Context, *BookableUpdateRequest) (*Bookable, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedBookableServiceServer) Availability(context.Context, *BookableAvailabilityRequest) (*BookableAvailabilityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Availability not implemented")
 }
 func (UnimplementedBookableServiceServer) mustEmbedUnimplementedBookableServiceServer() {}
 func (UnimplementedBookableServiceServer) testEmbeddedByValue()                         {}
@@ -344,6 +378,42 @@ func _BookableService_Watch_Handler(srv interface{}, stream grpc.ServerStream) e
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BookableService_WatchServer = grpc.ServerStreamingServer[BookableWatchResponse]
 
+func _BookableService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookableUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookableServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookableService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookableServiceServer).Update(ctx, req.(*BookableUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookableService_Availability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookableAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookableServiceServer).Availability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookableService_Availability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookableServiceServer).Availability(ctx, req.(*BookableAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookableService_ServiceDesc is the grpc.ServiceDesc for BookableService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -375,6 +445,14 @@ var BookableService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _BookableService_List_Handler,
 		},
+		{
+			MethodName: "Update",
+			Handler:    _BookableService_Update_Handler,
+		},
+		{
+			MethodName: "Availability",
+			Handler:    _BookableService_Availability_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -387,13 +465,20 @@ var BookableService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ReservationService_Add_FullMethodName   = "/rove.ReservationService/Add"
-	ReservationService_Get_FullMethodName   = "/rove.ReservationService/Get"
-	ReservationService_Patch_FullMethodName = "/rove.ReservationService/Patch"
-	ReservationService_Apply_FullMethodName = "/rove.ReservationService/Apply"
-	ReservationService_Erase_FullMethodName = "/rove.ReservationService/Erase"
-	ReservationService_List_FullMethodName  = "/rove.ReservationService/List"
-	ReservationService_Watch_FullMethodName = "/rove.ReservationService/Watch"
+	ReservationService_Add_FullMethodName      = "/rove.ReservationService/Add"
+	ReservationService_Get_FullMethodName      = "/rove.ReservationService/Get"
+	ReservationService_Patch_FullMethodName    = "/rove.ReservationService/Patch"
+	ReservationService_Apply_FullMethodName    = "/rove.ReservationService/Apply"
+	ReservationService_Erase_FullMethodName    = "/rove.ReservationService/Erase"
+	ReservationService_List_FullMethodName     = "/rove.ReservationService/List"
+	ReservationService_Watch_FullMethodName    = "/rove.ReservationService/Watch"
+	ReservationService_Confirm_FullMethodName  = "/rove.ReservationService/Confirm"
+	ReservationService_Approve_FullMethodName  = "/rove.ReservationService/Approve"
+	ReservationService_Reject_FullMethodName   = "/rove.ReservationService/Reject"
+	ReservationService_Cancel_FullMethodName   = "/rove.ReservationService/Cancel"
+	ReservationService_CheckIn_FullMethodName  = "/rove.ReservationService/CheckIn"
+	ReservationService_Complete_FullMethodName = "/rove.ReservationService/Complete"
+	ReservationService_Calendar_FullMethodName = "/rove.ReservationService/Calendar"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -424,6 +509,15 @@ type ReservationServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *ReservationWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ReservationWatchResponse], error)
+	// Confirm turns a hold into a request or a confirmed reservation.
+	Confirm(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	Approve(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	Reject(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	Cancel(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	CheckIn(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	Complete(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error)
+	// Calendar answers reservations touching a span, for one resource or all.
+	Calendar(ctx context.Context, in *ReservationCalendarRequest, opts ...grpc.CallOption) (*ReservationCalendarResponse, error)
 }
 
 type reservationServiceClient struct {
@@ -513,6 +607,76 @@ func (c *reservationServiceClient) Watch(ctx context.Context, in *ReservationWat
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ReservationService_WatchClient = grpc.ServerStreamingClient[ReservationWatchResponse]
 
+func (c *reservationServiceClient) Confirm(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_Confirm_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) Approve(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_Approve_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) Reject(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_Reject_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) Cancel(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_Cancel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) CheckIn(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_CheckIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) Complete(ctx context.Context, in *ReservationDecideRequest, opts ...grpc.CallOption) (*Reservation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Reservation)
+	err := c.cc.Invoke(ctx, ReservationService_Complete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) Calendar(ctx context.Context, in *ReservationCalendarRequest, opts ...grpc.CallOption) (*ReservationCalendarResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReservationCalendarResponse)
+	err := c.cc.Invoke(ctx, ReservationService_Calendar_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations must embed UnimplementedReservationServiceServer
 // for forward compatibility.
@@ -541,6 +705,15 @@ type ReservationServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*ReservationWatchRequest, grpc.ServerStreamingServer[ReservationWatchResponse]) error
+	// Confirm turns a hold into a request or a confirmed reservation.
+	Confirm(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	Approve(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	Reject(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	Cancel(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	CheckIn(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	Complete(context.Context, *ReservationDecideRequest) (*Reservation, error)
+	// Calendar answers reservations touching a span, for one resource or all.
+	Calendar(context.Context, *ReservationCalendarRequest) (*ReservationCalendarResponse, error)
 	mustEmbedUnimplementedReservationServiceServer()
 }
 
@@ -571,6 +744,27 @@ func (UnimplementedReservationServiceServer) List(context.Context, *ReservationL
 }
 func (UnimplementedReservationServiceServer) Watch(*ReservationWatchRequest, grpc.ServerStreamingServer[ReservationWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedReservationServiceServer) Confirm(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method Confirm not implemented")
+}
+func (UnimplementedReservationServiceServer) Approve(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method Approve not implemented")
+}
+func (UnimplementedReservationServiceServer) Reject(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method Reject not implemented")
+}
+func (UnimplementedReservationServiceServer) Cancel(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method Cancel not implemented")
+}
+func (UnimplementedReservationServiceServer) CheckIn(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method CheckIn not implemented")
+}
+func (UnimplementedReservationServiceServer) Complete(context.Context, *ReservationDecideRequest) (*Reservation, error) {
+	return nil, status.Error(codes.Unimplemented, "method Complete not implemented")
+}
+func (UnimplementedReservationServiceServer) Calendar(context.Context, *ReservationCalendarRequest) (*ReservationCalendarResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Calendar not implemented")
 }
 func (UnimplementedReservationServiceServer) mustEmbedUnimplementedReservationServiceServer() {}
 func (UnimplementedReservationServiceServer) testEmbeddedByValue()                            {}
@@ -712,6 +906,132 @@ func _ReservationService_Watch_Handler(srv interface{}, stream grpc.ServerStream
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ReservationService_WatchServer = grpc.ServerStreamingServer[ReservationWatchResponse]
 
+func _ReservationService_Confirm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Confirm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Confirm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Confirm(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_Approve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Approve(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Approve_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Approve(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_Reject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Reject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Reject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Reject(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Cancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Cancel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Cancel(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_CheckIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).CheckIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_CheckIn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).CheckIn(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_Complete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationDecideRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Complete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Complete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Complete(ctx, req.(*ReservationDecideRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_Calendar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationCalendarRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).Calendar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_Calendar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).Calendar(ctx, req.(*ReservationCalendarRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -742,6 +1062,34 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _ReservationService_List_Handler,
+		},
+		{
+			MethodName: "Confirm",
+			Handler:    _ReservationService_Confirm_Handler,
+		},
+		{
+			MethodName: "Approve",
+			Handler:    _ReservationService_Approve_Handler,
+		},
+		{
+			MethodName: "Reject",
+			Handler:    _ReservationService_Reject_Handler,
+		},
+		{
+			MethodName: "Cancel",
+			Handler:    _ReservationService_Cancel_Handler,
+		},
+		{
+			MethodName: "CheckIn",
+			Handler:    _ReservationService_CheckIn_Handler,
+		},
+		{
+			MethodName: "Complete",
+			Handler:    _ReservationService_Complete_Handler,
+		},
+		{
+			MethodName: "Calendar",
+			Handler:    _ReservationService_Calendar_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

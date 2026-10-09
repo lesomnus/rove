@@ -19,13 +19,25 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AssetService_Add_FullMethodName   = "/rove.AssetService/Add"
-	AssetService_Get_FullMethodName   = "/rove.AssetService/Get"
-	AssetService_Patch_FullMethodName = "/rove.AssetService/Patch"
-	AssetService_Apply_FullMethodName = "/rove.AssetService/Apply"
-	AssetService_Erase_FullMethodName = "/rove.AssetService/Erase"
-	AssetService_List_FullMethodName  = "/rove.AssetService/List"
-	AssetService_Watch_FullMethodName = "/rove.AssetService/Watch"
+	AssetService_Add_FullMethodName           = "/rove.AssetService/Add"
+	AssetService_Get_FullMethodName           = "/rove.AssetService/Get"
+	AssetService_Patch_FullMethodName         = "/rove.AssetService/Patch"
+	AssetService_Apply_FullMethodName         = "/rove.AssetService/Apply"
+	AssetService_Erase_FullMethodName         = "/rove.AssetService/Erase"
+	AssetService_List_FullMethodName          = "/rove.AssetService/List"
+	AssetService_Watch_FullMethodName         = "/rove.AssetService/Watch"
+	AssetService_Move_FullMethodName          = "/rove.AssetService/Move"
+	AssetService_SetAttributes_FullMethodName = "/rove.AssetService/SetAttributes"
+	AssetService_Assign_FullMethodName        = "/rove.AssetService/Assign"
+	AssetService_Relate_FullMethodName        = "/rove.AssetService/Relate"
+	AssetService_Correct_FullMethodName       = "/rove.AssetService/Correct"
+	AssetService_Timeline_FullMethodName      = "/rove.AssetService/Timeline"
+	AssetService_QueryAt_FullMethodName       = "/rove.AssetService/QueryAt"
+	AssetService_Diff_FullMethodName          = "/rove.AssetService/Diff"
+	AssetService_Search_FullMethodName        = "/rove.AssetService/Search"
+	AssetService_Report_FullMethodName        = "/rove.AssetService/Report"
+	AssetService_Import_FullMethodName        = "/rove.AssetService/Import"
+	AssetService_Export_FullMethodName        = "/rove.AssetService/Export"
 )
 
 // AssetServiceClient is the client API for AssetService service.
@@ -56,6 +68,32 @@ type AssetServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *AssetWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[AssetWatchResponse], error)
+	// Move puts an asset inside another from a moment on: on a shelf, into a
+	// computer, into a rack at a U position. Without `to` it takes it out of
+	// wherever it was.
+	Move(ctx context.Context, in *AssetMoveRequest, opts ...grpc.CallOption) (*Asset, error)
+	// SetAttributes changes what an asset is from a moment on: its name, status,
+	// condition, type, model or any attribute.
+	SetAttributes(ctx context.Context, in *AssetSetAttributesRequest, opts ...grpc.CallOption) (*Asset, error)
+	// Assign makes a party the owner, manager or custodian from a moment on, or
+	// ends the role.
+	Assign(ctx context.Context, in *AssetAssignRequest, opts ...grpc.CallOption) (*Asset, error)
+	// Relate adds or ends a logical relation: membership of a kit or a group.
+	// (Not `Link`: an RPC named after an entity collides with the stack's
+	// accessor for it.)
+	Relate(ctx context.Context, in *AssetRelateRequest, opts ...grpc.CallOption) (*Asset, error)
+	// Correct fixes the past: a time row was wrong, or happened at another
+	// time. The old row is superseded, never edited (design 3.3).
+	Correct(ctx context.Context, in *AssetCorrectRequest, opts ...grpc.CallOption) (*Asset, error)
+	Timeline(ctx context.Context, in *AssetTimelineRequest, opts ...grpc.CallOption) (*AssetTimelineResponse, error)
+	// QueryAt answers an asset and everything inside it as it was at `at`, by
+	// what is known now -- or by what was known at `known`, which is AsOf.
+	QueryAt(ctx context.Context, in *AssetQueryAtRequest, opts ...grpc.CallOption) (*AssetQueryAtResponse, error)
+	Diff(ctx context.Context, in *AssetDiffRequest, opts ...grpc.CallOption) (*AssetDiffResponse, error)
+	Search(ctx context.Context, in *AssetSearchRequest, opts ...grpc.CallOption) (*AssetSearchResponse, error)
+	Report(ctx context.Context, in *AssetReportRequest, opts ...grpc.CallOption) (*AssetReportResponse, error)
+	Import(ctx context.Context, in *AssetImportRequest, opts ...grpc.CallOption) (*AssetImportResponse, error)
+	Export(ctx context.Context, in *AssetExportRequest, opts ...grpc.CallOption) (*AssetExportResponse, error)
 }
 
 type assetServiceClient struct {
@@ -145,6 +183,126 @@ func (c *assetServiceClient) Watch(ctx context.Context, in *AssetWatchRequest, o
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AssetService_WatchClient = grpc.ServerStreamingClient[AssetWatchResponse]
 
+func (c *assetServiceClient) Move(ctx context.Context, in *AssetMoveRequest, opts ...grpc.CallOption) (*Asset, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Asset)
+	err := c.cc.Invoke(ctx, AssetService_Move_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) SetAttributes(ctx context.Context, in *AssetSetAttributesRequest, opts ...grpc.CallOption) (*Asset, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Asset)
+	err := c.cc.Invoke(ctx, AssetService_SetAttributes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Assign(ctx context.Context, in *AssetAssignRequest, opts ...grpc.CallOption) (*Asset, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Asset)
+	err := c.cc.Invoke(ctx, AssetService_Assign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Relate(ctx context.Context, in *AssetRelateRequest, opts ...grpc.CallOption) (*Asset, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Asset)
+	err := c.cc.Invoke(ctx, AssetService_Relate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Correct(ctx context.Context, in *AssetCorrectRequest, opts ...grpc.CallOption) (*Asset, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Asset)
+	err := c.cc.Invoke(ctx, AssetService_Correct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Timeline(ctx context.Context, in *AssetTimelineRequest, opts ...grpc.CallOption) (*AssetTimelineResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetTimelineResponse)
+	err := c.cc.Invoke(ctx, AssetService_Timeline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) QueryAt(ctx context.Context, in *AssetQueryAtRequest, opts ...grpc.CallOption) (*AssetQueryAtResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetQueryAtResponse)
+	err := c.cc.Invoke(ctx, AssetService_QueryAt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Diff(ctx context.Context, in *AssetDiffRequest, opts ...grpc.CallOption) (*AssetDiffResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetDiffResponse)
+	err := c.cc.Invoke(ctx, AssetService_Diff_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Search(ctx context.Context, in *AssetSearchRequest, opts ...grpc.CallOption) (*AssetSearchResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetSearchResponse)
+	err := c.cc.Invoke(ctx, AssetService_Search_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Report(ctx context.Context, in *AssetReportRequest, opts ...grpc.CallOption) (*AssetReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetReportResponse)
+	err := c.cc.Invoke(ctx, AssetService_Report_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Import(ctx context.Context, in *AssetImportRequest, opts ...grpc.CallOption) (*AssetImportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetImportResponse)
+	err := c.cc.Invoke(ctx, AssetService_Import_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) Export(ctx context.Context, in *AssetExportRequest, opts ...grpc.CallOption) (*AssetExportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetExportResponse)
+	err := c.cc.Invoke(ctx, AssetService_Export_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetServiceServer is the server API for AssetService service.
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility.
@@ -173,6 +331,32 @@ type AssetServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*AssetWatchRequest, grpc.ServerStreamingServer[AssetWatchResponse]) error
+	// Move puts an asset inside another from a moment on: on a shelf, into a
+	// computer, into a rack at a U position. Without `to` it takes it out of
+	// wherever it was.
+	Move(context.Context, *AssetMoveRequest) (*Asset, error)
+	// SetAttributes changes what an asset is from a moment on: its name, status,
+	// condition, type, model or any attribute.
+	SetAttributes(context.Context, *AssetSetAttributesRequest) (*Asset, error)
+	// Assign makes a party the owner, manager or custodian from a moment on, or
+	// ends the role.
+	Assign(context.Context, *AssetAssignRequest) (*Asset, error)
+	// Relate adds or ends a logical relation: membership of a kit or a group.
+	// (Not `Link`: an RPC named after an entity collides with the stack's
+	// accessor for it.)
+	Relate(context.Context, *AssetRelateRequest) (*Asset, error)
+	// Correct fixes the past: a time row was wrong, or happened at another
+	// time. The old row is superseded, never edited (design 3.3).
+	Correct(context.Context, *AssetCorrectRequest) (*Asset, error)
+	Timeline(context.Context, *AssetTimelineRequest) (*AssetTimelineResponse, error)
+	// QueryAt answers an asset and everything inside it as it was at `at`, by
+	// what is known now -- or by what was known at `known`, which is AsOf.
+	QueryAt(context.Context, *AssetQueryAtRequest) (*AssetQueryAtResponse, error)
+	Diff(context.Context, *AssetDiffRequest) (*AssetDiffResponse, error)
+	Search(context.Context, *AssetSearchRequest) (*AssetSearchResponse, error)
+	Report(context.Context, *AssetReportRequest) (*AssetReportResponse, error)
+	Import(context.Context, *AssetImportRequest) (*AssetImportResponse, error)
+	Export(context.Context, *AssetExportRequest) (*AssetExportResponse, error)
 	mustEmbedUnimplementedAssetServiceServer()
 }
 
@@ -203,6 +387,42 @@ func (UnimplementedAssetServiceServer) List(context.Context, *AssetListRequest) 
 }
 func (UnimplementedAssetServiceServer) Watch(*AssetWatchRequest, grpc.ServerStreamingServer[AssetWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedAssetServiceServer) Move(context.Context, *AssetMoveRequest) (*Asset, error) {
+	return nil, status.Error(codes.Unimplemented, "method Move not implemented")
+}
+func (UnimplementedAssetServiceServer) SetAttributes(context.Context, *AssetSetAttributesRequest) (*Asset, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetAttributes not implemented")
+}
+func (UnimplementedAssetServiceServer) Assign(context.Context, *AssetAssignRequest) (*Asset, error) {
+	return nil, status.Error(codes.Unimplemented, "method Assign not implemented")
+}
+func (UnimplementedAssetServiceServer) Relate(context.Context, *AssetRelateRequest) (*Asset, error) {
+	return nil, status.Error(codes.Unimplemented, "method Relate not implemented")
+}
+func (UnimplementedAssetServiceServer) Correct(context.Context, *AssetCorrectRequest) (*Asset, error) {
+	return nil, status.Error(codes.Unimplemented, "method Correct not implemented")
+}
+func (UnimplementedAssetServiceServer) Timeline(context.Context, *AssetTimelineRequest) (*AssetTimelineResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Timeline not implemented")
+}
+func (UnimplementedAssetServiceServer) QueryAt(context.Context, *AssetQueryAtRequest) (*AssetQueryAtResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method QueryAt not implemented")
+}
+func (UnimplementedAssetServiceServer) Diff(context.Context, *AssetDiffRequest) (*AssetDiffResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Diff not implemented")
+}
+func (UnimplementedAssetServiceServer) Search(context.Context, *AssetSearchRequest) (*AssetSearchResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Search not implemented")
+}
+func (UnimplementedAssetServiceServer) Report(context.Context, *AssetReportRequest) (*AssetReportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Report not implemented")
+}
+func (UnimplementedAssetServiceServer) Import(context.Context, *AssetImportRequest) (*AssetImportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Import not implemented")
+}
+func (UnimplementedAssetServiceServer) Export(context.Context, *AssetExportRequest) (*AssetExportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Export not implemented")
 }
 func (UnimplementedAssetServiceServer) mustEmbedUnimplementedAssetServiceServer() {}
 func (UnimplementedAssetServiceServer) testEmbeddedByValue()                      {}
@@ -344,6 +564,222 @@ func _AssetService_Watch_Handler(srv interface{}, stream grpc.ServerStream) erro
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AssetService_WatchServer = grpc.ServerStreamingServer[AssetWatchResponse]
 
+func _AssetService_Move_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetMoveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Move(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Move_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Move(ctx, req.(*AssetMoveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_SetAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetSetAttributesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).SetAttributes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_SetAttributes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).SetAttributes(ctx, req.(*AssetSetAttributesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Assign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetAssignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Assign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Assign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Assign(ctx, req.(*AssetAssignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Relate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetRelateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Relate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Relate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Relate(ctx, req.(*AssetRelateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Correct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetCorrectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Correct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Correct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Correct(ctx, req.(*AssetCorrectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Timeline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetTimelineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Timeline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Timeline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Timeline(ctx, req.(*AssetTimelineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_QueryAt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetQueryAtRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).QueryAt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_QueryAt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).QueryAt(ctx, req.(*AssetQueryAtRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Diff_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetDiffRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Diff(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Diff_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Diff(ctx, req.(*AssetDiffRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetSearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Search(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Search_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Search(ctx, req.(*AssetSearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Report_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Report(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Report_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Report(ctx, req.(*AssetReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Import_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetImportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Import(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Import_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Import(ctx, req.(*AssetImportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_Export_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetExportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).Export(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_Export_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).Export(ctx, req.(*AssetExportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetService_ServiceDesc is the grpc.ServiceDesc for AssetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -374,6 +810,54 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _AssetService_List_Handler,
+		},
+		{
+			MethodName: "Move",
+			Handler:    _AssetService_Move_Handler,
+		},
+		{
+			MethodName: "SetAttributes",
+			Handler:    _AssetService_SetAttributes_Handler,
+		},
+		{
+			MethodName: "Assign",
+			Handler:    _AssetService_Assign_Handler,
+		},
+		{
+			MethodName: "Relate",
+			Handler:    _AssetService_Relate_Handler,
+		},
+		{
+			MethodName: "Correct",
+			Handler:    _AssetService_Correct_Handler,
+		},
+		{
+			MethodName: "Timeline",
+			Handler:    _AssetService_Timeline_Handler,
+		},
+		{
+			MethodName: "QueryAt",
+			Handler:    _AssetService_QueryAt_Handler,
+		},
+		{
+			MethodName: "Diff",
+			Handler:    _AssetService_Diff_Handler,
+		},
+		{
+			MethodName: "Search",
+			Handler:    _AssetService_Search_Handler,
+		},
+		{
+			MethodName: "Report",
+			Handler:    _AssetService_Report_Handler,
+		},
+		{
+			MethodName: "Import",
+			Handler:    _AssetService_Import_Handler,
+		},
+		{
+			MethodName: "Export",
+			Handler:    _AssetService_Export_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -651,13 +1135,17 @@ var TreeLockService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	TenantDomainService_Add_FullMethodName   = "/rove.TenantDomainService/Add"
-	TenantDomainService_Get_FullMethodName   = "/rove.TenantDomainService/Get"
-	TenantDomainService_Patch_FullMethodName = "/rove.TenantDomainService/Patch"
-	TenantDomainService_Apply_FullMethodName = "/rove.TenantDomainService/Apply"
-	TenantDomainService_Erase_FullMethodName = "/rove.TenantDomainService/Erase"
-	TenantDomainService_List_FullMethodName  = "/rove.TenantDomainService/List"
-	TenantDomainService_Watch_FullMethodName = "/rove.TenantDomainService/Watch"
+	TenantDomainService_Add_FullMethodName      = "/rove.TenantDomainService/Add"
+	TenantDomainService_Get_FullMethodName      = "/rove.TenantDomainService/Get"
+	TenantDomainService_Patch_FullMethodName    = "/rove.TenantDomainService/Patch"
+	TenantDomainService_Apply_FullMethodName    = "/rove.TenantDomainService/Apply"
+	TenantDomainService_Erase_FullMethodName    = "/rove.TenantDomainService/Erase"
+	TenantDomainService_List_FullMethodName     = "/rove.TenantDomainService/List"
+	TenantDomainService_Watch_FullMethodName    = "/rove.TenantDomainService/Watch"
+	TenantDomainService_Verify_FullMethodName   = "/rove.TenantDomainService/Verify"
+	TenantDomainService_Activate_FullMethodName = "/rove.TenantDomainService/Activate"
+	TenantDomainService_Retire_FullMethodName   = "/rove.TenantDomainService/Retire"
+	TenantDomainService_Status_FullMethodName   = "/rove.TenantDomainService/Status"
 )
 
 // TenantDomainServiceClient is the client API for TenantDomainService service.
@@ -688,6 +1176,14 @@ type TenantDomainServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *TenantDomainWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TenantDomainWatchResponse], error)
+	// Verify checks the TXT record of a pending custom domain.
+	Verify(ctx context.Context, in *TenantDomainVerifyRequest, opts ...grpc.CallOption) (*TenantDomain, error)
+	// Activate makes a verified domain the one new labels are printed with; the
+	// active one before it becomes legacy and keeps resolving.
+	Activate(ctx context.Context, in *TenantDomainActivateRequest, opts ...grpc.CallOption) (*TenantDomain, error)
+	Retire(ctx context.Context, in *TenantDomainRetireRequest, opts ...grpc.CallOption) (*TenantDomain, error)
+	// Status answers whether labels are on for this tenant, and with what.
+	Status(ctx context.Context, in *TenantDomainStatusRequest, opts ...grpc.CallOption) (*TenantDomainStatusResponse, error)
 }
 
 type tenantDomainServiceClient struct {
@@ -777,6 +1273,46 @@ func (c *tenantDomainServiceClient) Watch(ctx context.Context, in *TenantDomainW
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type TenantDomainService_WatchClient = grpc.ServerStreamingClient[TenantDomainWatchResponse]
 
+func (c *tenantDomainServiceClient) Verify(ctx context.Context, in *TenantDomainVerifyRequest, opts ...grpc.CallOption) (*TenantDomain, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantDomain)
+	err := c.cc.Invoke(ctx, TenantDomainService_Verify_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantDomainServiceClient) Activate(ctx context.Context, in *TenantDomainActivateRequest, opts ...grpc.CallOption) (*TenantDomain, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantDomain)
+	err := c.cc.Invoke(ctx, TenantDomainService_Activate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantDomainServiceClient) Retire(ctx context.Context, in *TenantDomainRetireRequest, opts ...grpc.CallOption) (*TenantDomain, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantDomain)
+	err := c.cc.Invoke(ctx, TenantDomainService_Retire_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantDomainServiceClient) Status(ctx context.Context, in *TenantDomainStatusRequest, opts ...grpc.CallOption) (*TenantDomainStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantDomainStatusResponse)
+	err := c.cc.Invoke(ctx, TenantDomainService_Status_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TenantDomainServiceServer is the server API for TenantDomainService service.
 // All implementations must embed UnimplementedTenantDomainServiceServer
 // for forward compatibility.
@@ -805,6 +1341,14 @@ type TenantDomainServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*TenantDomainWatchRequest, grpc.ServerStreamingServer[TenantDomainWatchResponse]) error
+	// Verify checks the TXT record of a pending custom domain.
+	Verify(context.Context, *TenantDomainVerifyRequest) (*TenantDomain, error)
+	// Activate makes a verified domain the one new labels are printed with; the
+	// active one before it becomes legacy and keeps resolving.
+	Activate(context.Context, *TenantDomainActivateRequest) (*TenantDomain, error)
+	Retire(context.Context, *TenantDomainRetireRequest) (*TenantDomain, error)
+	// Status answers whether labels are on for this tenant, and with what.
+	Status(context.Context, *TenantDomainStatusRequest) (*TenantDomainStatusResponse, error)
 	mustEmbedUnimplementedTenantDomainServiceServer()
 }
 
@@ -835,6 +1379,18 @@ func (UnimplementedTenantDomainServiceServer) List(context.Context, *TenantDomai
 }
 func (UnimplementedTenantDomainServiceServer) Watch(*TenantDomainWatchRequest, grpc.ServerStreamingServer[TenantDomainWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedTenantDomainServiceServer) Verify(context.Context, *TenantDomainVerifyRequest) (*TenantDomain, error) {
+	return nil, status.Error(codes.Unimplemented, "method Verify not implemented")
+}
+func (UnimplementedTenantDomainServiceServer) Activate(context.Context, *TenantDomainActivateRequest) (*TenantDomain, error) {
+	return nil, status.Error(codes.Unimplemented, "method Activate not implemented")
+}
+func (UnimplementedTenantDomainServiceServer) Retire(context.Context, *TenantDomainRetireRequest) (*TenantDomain, error) {
+	return nil, status.Error(codes.Unimplemented, "method Retire not implemented")
+}
+func (UnimplementedTenantDomainServiceServer) Status(context.Context, *TenantDomainStatusRequest) (*TenantDomainStatusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Status not implemented")
 }
 func (UnimplementedTenantDomainServiceServer) mustEmbedUnimplementedTenantDomainServiceServer() {}
 func (UnimplementedTenantDomainServiceServer) testEmbeddedByValue()                             {}
@@ -976,6 +1532,78 @@ func _TenantDomainService_Watch_Handler(srv interface{}, stream grpc.ServerStrea
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type TenantDomainService_WatchServer = grpc.ServerStreamingServer[TenantDomainWatchResponse]
 
+func _TenantDomainService_Verify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantDomainVerifyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantDomainServiceServer).Verify(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantDomainService_Verify_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantDomainServiceServer).Verify(ctx, req.(*TenantDomainVerifyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantDomainService_Activate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantDomainActivateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantDomainServiceServer).Activate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantDomainService_Activate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantDomainServiceServer).Activate(ctx, req.(*TenantDomainActivateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantDomainService_Retire_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantDomainRetireRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantDomainServiceServer).Retire(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantDomainService_Retire_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantDomainServiceServer).Retire(ctx, req.(*TenantDomainRetireRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantDomainService_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantDomainStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantDomainServiceServer).Status(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantDomainService_Status_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantDomainServiceServer).Status(ctx, req.(*TenantDomainStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TenantDomainService_ServiceDesc is the grpc.ServiceDesc for TenantDomainService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1007,6 +1635,22 @@ var TenantDomainService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _TenantDomainService_List_Handler,
 		},
+		{
+			MethodName: "Verify",
+			Handler:    _TenantDomainService_Verify_Handler,
+		},
+		{
+			MethodName: "Activate",
+			Handler:    _TenantDomainService_Activate_Handler,
+		},
+		{
+			MethodName: "Retire",
+			Handler:    _TenantDomainService_Retire_Handler,
+		},
+		{
+			MethodName: "Status",
+			Handler:    _TenantDomainService_Status_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -1019,13 +1663,17 @@ var TenantDomainService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	LabelService_Add_FullMethodName   = "/rove.LabelService/Add"
-	LabelService_Get_FullMethodName   = "/rove.LabelService/Get"
-	LabelService_Patch_FullMethodName = "/rove.LabelService/Patch"
-	LabelService_Apply_FullMethodName = "/rove.LabelService/Apply"
-	LabelService_Erase_FullMethodName = "/rove.LabelService/Erase"
-	LabelService_List_FullMethodName  = "/rove.LabelService/List"
-	LabelService_Watch_FullMethodName = "/rove.LabelService/Watch"
+	LabelService_Add_FullMethodName     = "/rove.LabelService/Add"
+	LabelService_Get_FullMethodName     = "/rove.LabelService/Get"
+	LabelService_Patch_FullMethodName   = "/rove.LabelService/Patch"
+	LabelService_Apply_FullMethodName   = "/rove.LabelService/Apply"
+	LabelService_Erase_FullMethodName   = "/rove.LabelService/Erase"
+	LabelService_List_FullMethodName    = "/rove.LabelService/List"
+	LabelService_Watch_FullMethodName   = "/rove.LabelService/Watch"
+	LabelService_Print_FullMethodName   = "/rove.LabelService/Print"
+	LabelService_Bind_FullMethodName    = "/rove.LabelService/Bind"
+	LabelService_Unbind_FullMethodName  = "/rove.LabelService/Unbind"
+	LabelService_Resolve_FullMethodName = "/rove.LabelService/Resolve"
 )
 
 // LabelServiceClient is the client API for LabelService service.
@@ -1056,6 +1704,13 @@ type LabelServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *LabelWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LabelWatchResponse], error)
+	// Print makes labels for the tenant's active label domain: new ones to bind
+	// later, or one for each asset given, bound already.
+	Print(ctx context.Context, in *LabelPrintRequest, opts ...grpc.CallOption) (*LabelPrintResponse, error)
+	Bind(ctx context.Context, in *LabelBindRequest, opts ...grpc.CallOption) (*Label, error)
+	Unbind(ctx context.Context, in *LabelUnbindRequest, opts ...grpc.CallOption) (*Label, error)
+	// Resolve reads what a scanned code names.
+	Resolve(ctx context.Context, in *LabelResolveRequest, opts ...grpc.CallOption) (*LabelResolveResponse, error)
 }
 
 type labelServiceClient struct {
@@ -1145,6 +1800,46 @@ func (c *labelServiceClient) Watch(ctx context.Context, in *LabelWatchRequest, o
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type LabelService_WatchClient = grpc.ServerStreamingClient[LabelWatchResponse]
 
+func (c *labelServiceClient) Print(ctx context.Context, in *LabelPrintRequest, opts ...grpc.CallOption) (*LabelPrintResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LabelPrintResponse)
+	err := c.cc.Invoke(ctx, LabelService_Print_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *labelServiceClient) Bind(ctx context.Context, in *LabelBindRequest, opts ...grpc.CallOption) (*Label, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Label)
+	err := c.cc.Invoke(ctx, LabelService_Bind_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *labelServiceClient) Unbind(ctx context.Context, in *LabelUnbindRequest, opts ...grpc.CallOption) (*Label, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Label)
+	err := c.cc.Invoke(ctx, LabelService_Unbind_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *labelServiceClient) Resolve(ctx context.Context, in *LabelResolveRequest, opts ...grpc.CallOption) (*LabelResolveResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LabelResolveResponse)
+	err := c.cc.Invoke(ctx, LabelService_Resolve_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LabelServiceServer is the server API for LabelService service.
 // All implementations must embed UnimplementedLabelServiceServer
 // for forward compatibility.
@@ -1173,6 +1868,13 @@ type LabelServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*LabelWatchRequest, grpc.ServerStreamingServer[LabelWatchResponse]) error
+	// Print makes labels for the tenant's active label domain: new ones to bind
+	// later, or one for each asset given, bound already.
+	Print(context.Context, *LabelPrintRequest) (*LabelPrintResponse, error)
+	Bind(context.Context, *LabelBindRequest) (*Label, error)
+	Unbind(context.Context, *LabelUnbindRequest) (*Label, error)
+	// Resolve reads what a scanned code names.
+	Resolve(context.Context, *LabelResolveRequest) (*LabelResolveResponse, error)
 	mustEmbedUnimplementedLabelServiceServer()
 }
 
@@ -1203,6 +1905,18 @@ func (UnimplementedLabelServiceServer) List(context.Context, *LabelListRequest) 
 }
 func (UnimplementedLabelServiceServer) Watch(*LabelWatchRequest, grpc.ServerStreamingServer[LabelWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedLabelServiceServer) Print(context.Context, *LabelPrintRequest) (*LabelPrintResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Print not implemented")
+}
+func (UnimplementedLabelServiceServer) Bind(context.Context, *LabelBindRequest) (*Label, error) {
+	return nil, status.Error(codes.Unimplemented, "method Bind not implemented")
+}
+func (UnimplementedLabelServiceServer) Unbind(context.Context, *LabelUnbindRequest) (*Label, error) {
+	return nil, status.Error(codes.Unimplemented, "method Unbind not implemented")
+}
+func (UnimplementedLabelServiceServer) Resolve(context.Context, *LabelResolveRequest) (*LabelResolveResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Resolve not implemented")
 }
 func (UnimplementedLabelServiceServer) mustEmbedUnimplementedLabelServiceServer() {}
 func (UnimplementedLabelServiceServer) testEmbeddedByValue()                      {}
@@ -1344,6 +2058,78 @@ func _LabelService_Watch_Handler(srv interface{}, stream grpc.ServerStream) erro
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type LabelService_WatchServer = grpc.ServerStreamingServer[LabelWatchResponse]
 
+func _LabelService_Print_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LabelPrintRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LabelServiceServer).Print(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LabelService_Print_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LabelServiceServer).Print(ctx, req.(*LabelPrintRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LabelService_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LabelBindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LabelServiceServer).Bind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LabelService_Bind_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LabelServiceServer).Bind(ctx, req.(*LabelBindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LabelService_Unbind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LabelUnbindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LabelServiceServer).Unbind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LabelService_Unbind_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LabelServiceServer).Unbind(ctx, req.(*LabelUnbindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LabelService_Resolve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LabelResolveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LabelServiceServer).Resolve(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LabelService_Resolve_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LabelServiceServer).Resolve(ctx, req.(*LabelResolveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LabelService_ServiceDesc is the grpc.ServiceDesc for LabelService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1375,6 +2161,22 @@ var LabelService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _LabelService_List_Handler,
 		},
+		{
+			MethodName: "Print",
+			Handler:    _LabelService_Print_Handler,
+		},
+		{
+			MethodName: "Bind",
+			Handler:    _LabelService_Bind_Handler,
+		},
+		{
+			MethodName: "Unbind",
+			Handler:    _LabelService_Unbind_Handler,
+		},
+		{
+			MethodName: "Resolve",
+			Handler:    _LabelService_Resolve_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -1387,13 +2189,15 @@ var LabelService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	AttachmentService_Add_FullMethodName   = "/rove.AttachmentService/Add"
-	AttachmentService_Get_FullMethodName   = "/rove.AttachmentService/Get"
-	AttachmentService_Patch_FullMethodName = "/rove.AttachmentService/Patch"
-	AttachmentService_Apply_FullMethodName = "/rove.AttachmentService/Apply"
-	AttachmentService_Erase_FullMethodName = "/rove.AttachmentService/Erase"
-	AttachmentService_List_FullMethodName  = "/rove.AttachmentService/List"
-	AttachmentService_Watch_FullMethodName = "/rove.AttachmentService/Watch"
+	AttachmentService_Add_FullMethodName    = "/rove.AttachmentService/Add"
+	AttachmentService_Get_FullMethodName    = "/rove.AttachmentService/Get"
+	AttachmentService_Patch_FullMethodName  = "/rove.AttachmentService/Patch"
+	AttachmentService_Apply_FullMethodName  = "/rove.AttachmentService/Apply"
+	AttachmentService_Erase_FullMethodName  = "/rove.AttachmentService/Erase"
+	AttachmentService_List_FullMethodName   = "/rove.AttachmentService/List"
+	AttachmentService_Watch_FullMethodName  = "/rove.AttachmentService/Watch"
+	AttachmentService_Upload_FullMethodName = "/rove.AttachmentService/Upload"
+	AttachmentService_Url_FullMethodName    = "/rove.AttachmentService/Url"
 )
 
 // AttachmentServiceClient is the client API for AttachmentService service.
@@ -1424,6 +2228,9 @@ type AttachmentServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *AttachmentWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[AttachmentWatchResponse], error)
+	Upload(ctx context.Context, in *AttachmentUploadRequest, opts ...grpc.CallOption) (*Attachment, error)
+	// Url answers a short-lived signed address to download the file.
+	Url(ctx context.Context, in *AttachmentUrlRequest, opts ...grpc.CallOption) (*AttachmentUrlResponse, error)
 }
 
 type attachmentServiceClient struct {
@@ -1513,6 +2320,26 @@ func (c *attachmentServiceClient) Watch(ctx context.Context, in *AttachmentWatch
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AttachmentService_WatchClient = grpc.ServerStreamingClient[AttachmentWatchResponse]
 
+func (c *attachmentServiceClient) Upload(ctx context.Context, in *AttachmentUploadRequest, opts ...grpc.CallOption) (*Attachment, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Attachment)
+	err := c.cc.Invoke(ctx, AttachmentService_Upload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attachmentServiceClient) Url(ctx context.Context, in *AttachmentUrlRequest, opts ...grpc.CallOption) (*AttachmentUrlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AttachmentUrlResponse)
+	err := c.cc.Invoke(ctx, AttachmentService_Url_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AttachmentServiceServer is the server API for AttachmentService service.
 // All implementations must embed UnimplementedAttachmentServiceServer
 // for forward compatibility.
@@ -1541,6 +2368,9 @@ type AttachmentServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*AttachmentWatchRequest, grpc.ServerStreamingServer[AttachmentWatchResponse]) error
+	Upload(context.Context, *AttachmentUploadRequest) (*Attachment, error)
+	// Url answers a short-lived signed address to download the file.
+	Url(context.Context, *AttachmentUrlRequest) (*AttachmentUrlResponse, error)
 	mustEmbedUnimplementedAttachmentServiceServer()
 }
 
@@ -1571,6 +2401,12 @@ func (UnimplementedAttachmentServiceServer) List(context.Context, *AttachmentLis
 }
 func (UnimplementedAttachmentServiceServer) Watch(*AttachmentWatchRequest, grpc.ServerStreamingServer[AttachmentWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedAttachmentServiceServer) Upload(context.Context, *AttachmentUploadRequest) (*Attachment, error) {
+	return nil, status.Error(codes.Unimplemented, "method Upload not implemented")
+}
+func (UnimplementedAttachmentServiceServer) Url(context.Context, *AttachmentUrlRequest) (*AttachmentUrlResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Url not implemented")
 }
 func (UnimplementedAttachmentServiceServer) mustEmbedUnimplementedAttachmentServiceServer() {}
 func (UnimplementedAttachmentServiceServer) testEmbeddedByValue()                           {}
@@ -1712,6 +2548,42 @@ func _AttachmentService_Watch_Handler(srv interface{}, stream grpc.ServerStream)
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AttachmentService_WatchServer = grpc.ServerStreamingServer[AttachmentWatchResponse]
 
+func _AttachmentService_Upload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttachmentUploadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttachmentServiceServer).Upload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttachmentService_Upload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttachmentServiceServer).Upload(ctx, req.(*AttachmentUploadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttachmentService_Url_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttachmentUrlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttachmentServiceServer).Url(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttachmentService_Url_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttachmentServiceServer).Url(ctx, req.(*AttachmentUrlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttachmentService_ServiceDesc is the grpc.ServiceDesc for AttachmentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1742,6 +2614,14 @@ var AttachmentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _AttachmentService_List_Handler,
+		},
+		{
+			MethodName: "Upload",
+			Handler:    _AttachmentService_Upload_Handler,
+		},
+		{
+			MethodName: "Url",
+			Handler:    _AttachmentService_Url_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

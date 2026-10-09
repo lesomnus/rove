@@ -19,13 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PartyService_Add_FullMethodName   = "/rove.PartyService/Add"
-	PartyService_Get_FullMethodName   = "/rove.PartyService/Get"
-	PartyService_Patch_FullMethodName = "/rove.PartyService/Patch"
-	PartyService_Apply_FullMethodName = "/rove.PartyService/Apply"
-	PartyService_Erase_FullMethodName = "/rove.PartyService/Erase"
-	PartyService_List_FullMethodName  = "/rove.PartyService/List"
-	PartyService_Watch_FullMethodName = "/rove.PartyService/Watch"
+	PartyService_Add_FullMethodName          = "/rove.PartyService/Add"
+	PartyService_Get_FullMethodName          = "/rove.PartyService/Get"
+	PartyService_Patch_FullMethodName        = "/rove.PartyService/Patch"
+	PartyService_Apply_FullMethodName        = "/rove.PartyService/Apply"
+	PartyService_Erase_FullMethodName        = "/rove.PartyService/Erase"
+	PartyService_List_FullMethodName         = "/rove.PartyService/List"
+	PartyService_Watch_FullMethodName        = "/rove.PartyService/Watch"
+	PartyService_Me_FullMethodName           = "/rove.PartyService/Me"
+	PartyService_Update_FullMethodName       = "/rove.PartyService/Update"
+	PartyService_Invite_FullMethodName       = "/rove.PartyService/Invite"
+	PartyService_SetRole_FullMethodName      = "/rove.PartyService/SetRole"
+	PartyService_SetPassword_FullMethodName  = "/rove.PartyService/SetPassword"
+	PartyService_Deactivate_FullMethodName   = "/rove.PartyService/Deactivate"
+	PartyService_Pseudonymize_FullMethodName = "/rove.PartyService/Pseudonymize"
 )
 
 // PartyServiceClient is the client API for PartyService service.
@@ -56,6 +63,21 @@ type PartyServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *PartyWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PartyWatchResponse], error)
+	// Me answers who is calling: the account, the person it is, the tenant and
+	// the role.
+	Me(ctx context.Context, in *PartyMeRequest, opts ...grpc.CallOption) (*PartyMeResponse, error)
+	// Update changes a party's own fields.
+	Update(ctx context.Context, in *PartyUpdateRequest, opts ...grpc.CallOption) (*Party, error)
+	// Invite gives a person a login: a holder, a password, and the role.
+	Invite(ctx context.Context, in *PartyInviteRequest, opts ...grpc.CallOption) (*PartyInviteResponse, error)
+	SetRole(ctx context.Context, in *PartySetRoleRequest, opts ...grpc.CallOption) (*Party, error)
+	// SetPassword changes the caller's own password, or -- for an admin --
+	// somebody else's.
+	SetPassword(ctx context.Context, in *PartySetPasswordRequest, opts ...grpc.CallOption) (*PartySetPasswordResponse, error)
+	// Deactivate ends a person's login and keeps the person.
+	Deactivate(ctx context.Context, in *PartyDeactivateRequest, opts ...grpc.CallOption) (*Party, error)
+	// Pseudonymize answers a request to forget a person (design 8.2).
+	Pseudonymize(ctx context.Context, in *PartyPseudonymizeRequest, opts ...grpc.CallOption) (*Party, error)
 }
 
 type partyServiceClient struct {
@@ -145,6 +167,76 @@ func (c *partyServiceClient) Watch(ctx context.Context, in *PartyWatchRequest, o
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type PartyService_WatchClient = grpc.ServerStreamingClient[PartyWatchResponse]
 
+func (c *partyServiceClient) Me(ctx context.Context, in *PartyMeRequest, opts ...grpc.CallOption) (*PartyMeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PartyMeResponse)
+	err := c.cc.Invoke(ctx, PartyService_Me_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) Update(ctx context.Context, in *PartyUpdateRequest, opts ...grpc.CallOption) (*Party, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Party)
+	err := c.cc.Invoke(ctx, PartyService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) Invite(ctx context.Context, in *PartyInviteRequest, opts ...grpc.CallOption) (*PartyInviteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PartyInviteResponse)
+	err := c.cc.Invoke(ctx, PartyService_Invite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) SetRole(ctx context.Context, in *PartySetRoleRequest, opts ...grpc.CallOption) (*Party, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Party)
+	err := c.cc.Invoke(ctx, PartyService_SetRole_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) SetPassword(ctx context.Context, in *PartySetPasswordRequest, opts ...grpc.CallOption) (*PartySetPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PartySetPasswordResponse)
+	err := c.cc.Invoke(ctx, PartyService_SetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) Deactivate(ctx context.Context, in *PartyDeactivateRequest, opts ...grpc.CallOption) (*Party, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Party)
+	err := c.cc.Invoke(ctx, PartyService_Deactivate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partyServiceClient) Pseudonymize(ctx context.Context, in *PartyPseudonymizeRequest, opts ...grpc.CallOption) (*Party, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Party)
+	err := c.cc.Invoke(ctx, PartyService_Pseudonymize_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PartyServiceServer is the server API for PartyService service.
 // All implementations must embed UnimplementedPartyServiceServer
 // for forward compatibility.
@@ -173,6 +265,21 @@ type PartyServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*PartyWatchRequest, grpc.ServerStreamingServer[PartyWatchResponse]) error
+	// Me answers who is calling: the account, the person it is, the tenant and
+	// the role.
+	Me(context.Context, *PartyMeRequest) (*PartyMeResponse, error)
+	// Update changes a party's own fields.
+	Update(context.Context, *PartyUpdateRequest) (*Party, error)
+	// Invite gives a person a login: a holder, a password, and the role.
+	Invite(context.Context, *PartyInviteRequest) (*PartyInviteResponse, error)
+	SetRole(context.Context, *PartySetRoleRequest) (*Party, error)
+	// SetPassword changes the caller's own password, or -- for an admin --
+	// somebody else's.
+	SetPassword(context.Context, *PartySetPasswordRequest) (*PartySetPasswordResponse, error)
+	// Deactivate ends a person's login and keeps the person.
+	Deactivate(context.Context, *PartyDeactivateRequest) (*Party, error)
+	// Pseudonymize answers a request to forget a person (design 8.2).
+	Pseudonymize(context.Context, *PartyPseudonymizeRequest) (*Party, error)
 	mustEmbedUnimplementedPartyServiceServer()
 }
 
@@ -203,6 +310,27 @@ func (UnimplementedPartyServiceServer) List(context.Context, *PartyListRequest) 
 }
 func (UnimplementedPartyServiceServer) Watch(*PartyWatchRequest, grpc.ServerStreamingServer[PartyWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedPartyServiceServer) Me(context.Context, *PartyMeRequest) (*PartyMeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Me not implemented")
+}
+func (UnimplementedPartyServiceServer) Update(context.Context, *PartyUpdateRequest) (*Party, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedPartyServiceServer) Invite(context.Context, *PartyInviteRequest) (*PartyInviteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Invite not implemented")
+}
+func (UnimplementedPartyServiceServer) SetRole(context.Context, *PartySetRoleRequest) (*Party, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetRole not implemented")
+}
+func (UnimplementedPartyServiceServer) SetPassword(context.Context, *PartySetPasswordRequest) (*PartySetPasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetPassword not implemented")
+}
+func (UnimplementedPartyServiceServer) Deactivate(context.Context, *PartyDeactivateRequest) (*Party, error) {
+	return nil, status.Error(codes.Unimplemented, "method Deactivate not implemented")
+}
+func (UnimplementedPartyServiceServer) Pseudonymize(context.Context, *PartyPseudonymizeRequest) (*Party, error) {
+	return nil, status.Error(codes.Unimplemented, "method Pseudonymize not implemented")
 }
 func (UnimplementedPartyServiceServer) mustEmbedUnimplementedPartyServiceServer() {}
 func (UnimplementedPartyServiceServer) testEmbeddedByValue()                      {}
@@ -344,6 +472,132 @@ func _PartyService_Watch_Handler(srv interface{}, stream grpc.ServerStream) erro
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type PartyService_WatchServer = grpc.ServerStreamingServer[PartyWatchResponse]
 
+func _PartyService_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartyMeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).Me(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_Me_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).Me(ctx, req.(*PartyMeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartyUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).Update(ctx, req.(*PartyUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_Invite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartyInviteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).Invite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_Invite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).Invite(ctx, req.(*PartyInviteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_SetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartySetRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).SetRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_SetRole_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).SetRole(ctx, req.(*PartySetRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_SetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartySetPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).SetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_SetPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).SetPassword(ctx, req.(*PartySetPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_Deactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartyDeactivateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).Deactivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_Deactivate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).Deactivate(ctx, req.(*PartyDeactivateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartyService_Pseudonymize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartyPseudonymizeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartyServiceServer).Pseudonymize(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartyService_Pseudonymize_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartyServiceServer).Pseudonymize(ctx, req.(*PartyPseudonymizeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PartyService_ServiceDesc is the grpc.ServiceDesc for PartyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -374,6 +628,34 @@ var PartyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _PartyService_List_Handler,
+		},
+		{
+			MethodName: "Me",
+			Handler:    _PartyService_Me_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _PartyService_Update_Handler,
+		},
+		{
+			MethodName: "Invite",
+			Handler:    _PartyService_Invite_Handler,
+		},
+		{
+			MethodName: "SetRole",
+			Handler:    _PartyService_SetRole_Handler,
+		},
+		{
+			MethodName: "SetPassword",
+			Handler:    _PartyService_SetPassword_Handler,
+		},
+		{
+			MethodName: "Deactivate",
+			Handler:    _PartyService_Deactivate_Handler,
+		},
+		{
+			MethodName: "Pseudonymize",
+			Handler:    _PartyService_Pseudonymize_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -19,13 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CustodyService_Add_FullMethodName   = "/rove.CustodyService/Add"
-	CustodyService_Get_FullMethodName   = "/rove.CustodyService/Get"
-	CustodyService_Patch_FullMethodName = "/rove.CustodyService/Patch"
-	CustodyService_Apply_FullMethodName = "/rove.CustodyService/Apply"
-	CustodyService_Erase_FullMethodName = "/rove.CustodyService/Erase"
-	CustodyService_List_FullMethodName  = "/rove.CustodyService/List"
-	CustodyService_Watch_FullMethodName = "/rove.CustodyService/Watch"
+	CustodyService_Add_FullMethodName         = "/rove.CustodyService/Add"
+	CustodyService_Get_FullMethodName         = "/rove.CustodyService/Get"
+	CustodyService_Patch_FullMethodName       = "/rove.CustodyService/Patch"
+	CustodyService_Apply_FullMethodName       = "/rove.CustodyService/Apply"
+	CustodyService_Erase_FullMethodName       = "/rove.CustodyService/Erase"
+	CustodyService_List_FullMethodName        = "/rove.CustodyService/List"
+	CustodyService_Watch_FullMethodName       = "/rove.CustodyService/Watch"
+	CustodyService_Acknowledge_FullMethodName = "/rove.CustodyService/Acknowledge"
+	CustodyService_Return_FullMethodName      = "/rove.CustodyService/Return"
+	CustodyService_Extend_FullMethodName      = "/rove.CustodyService/Extend"
 )
 
 // CustodyServiceClient is the client API for CustodyService service.
@@ -56,6 +59,11 @@ type CustodyServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *CustodyWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[CustodyWatchResponse], error)
+	// Acknowledge is the receiver saying they have it.
+	Acknowledge(ctx context.Context, in *CustodyAcknowledgeRequest, opts ...grpc.CallOption) (*Custody, error)
+	// Return takes back some or all of what was handed over.
+	Return(ctx context.Context, in *CustodyReturnRequest, opts ...grpc.CallOption) (*Custody, error)
+	Extend(ctx context.Context, in *CustodyExtendRequest, opts ...grpc.CallOption) (*Custody, error)
 }
 
 type custodyServiceClient struct {
@@ -145,6 +153,36 @@ func (c *custodyServiceClient) Watch(ctx context.Context, in *CustodyWatchReques
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type CustodyService_WatchClient = grpc.ServerStreamingClient[CustodyWatchResponse]
 
+func (c *custodyServiceClient) Acknowledge(ctx context.Context, in *CustodyAcknowledgeRequest, opts ...grpc.CallOption) (*Custody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Custody)
+	err := c.cc.Invoke(ctx, CustodyService_Acknowledge_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *custodyServiceClient) Return(ctx context.Context, in *CustodyReturnRequest, opts ...grpc.CallOption) (*Custody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Custody)
+	err := c.cc.Invoke(ctx, CustodyService_Return_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *custodyServiceClient) Extend(ctx context.Context, in *CustodyExtendRequest, opts ...grpc.CallOption) (*Custody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Custody)
+	err := c.cc.Invoke(ctx, CustodyService_Extend_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CustodyServiceServer is the server API for CustodyService service.
 // All implementations must embed UnimplementedCustodyServiceServer
 // for forward compatibility.
@@ -173,6 +211,11 @@ type CustodyServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*CustodyWatchRequest, grpc.ServerStreamingServer[CustodyWatchResponse]) error
+	// Acknowledge is the receiver saying they have it.
+	Acknowledge(context.Context, *CustodyAcknowledgeRequest) (*Custody, error)
+	// Return takes back some or all of what was handed over.
+	Return(context.Context, *CustodyReturnRequest) (*Custody, error)
+	Extend(context.Context, *CustodyExtendRequest) (*Custody, error)
 	mustEmbedUnimplementedCustodyServiceServer()
 }
 
@@ -203,6 +246,15 @@ func (UnimplementedCustodyServiceServer) List(context.Context, *CustodyListReque
 }
 func (UnimplementedCustodyServiceServer) Watch(*CustodyWatchRequest, grpc.ServerStreamingServer[CustodyWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedCustodyServiceServer) Acknowledge(context.Context, *CustodyAcknowledgeRequest) (*Custody, error) {
+	return nil, status.Error(codes.Unimplemented, "method Acknowledge not implemented")
+}
+func (UnimplementedCustodyServiceServer) Return(context.Context, *CustodyReturnRequest) (*Custody, error) {
+	return nil, status.Error(codes.Unimplemented, "method Return not implemented")
+}
+func (UnimplementedCustodyServiceServer) Extend(context.Context, *CustodyExtendRequest) (*Custody, error) {
+	return nil, status.Error(codes.Unimplemented, "method Extend not implemented")
 }
 func (UnimplementedCustodyServiceServer) mustEmbedUnimplementedCustodyServiceServer() {}
 func (UnimplementedCustodyServiceServer) testEmbeddedByValue()                        {}
@@ -344,6 +396,60 @@ func _CustodyService_Watch_Handler(srv interface{}, stream grpc.ServerStream) er
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type CustodyService_WatchServer = grpc.ServerStreamingServer[CustodyWatchResponse]
 
+func _CustodyService_Acknowledge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CustodyAcknowledgeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustodyServiceServer).Acknowledge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CustodyService_Acknowledge_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustodyServiceServer).Acknowledge(ctx, req.(*CustodyAcknowledgeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CustodyService_Return_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CustodyReturnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustodyServiceServer).Return(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CustodyService_Return_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustodyServiceServer).Return(ctx, req.(*CustodyReturnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CustodyService_Extend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CustodyExtendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustodyServiceServer).Extend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CustodyService_Extend_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustodyServiceServer).Extend(ctx, req.(*CustodyExtendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CustodyService_ServiceDesc is the grpc.ServiceDesc for CustodyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -374,6 +480,18 @@ var CustodyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _CustodyService_List_Handler,
+		},
+		{
+			MethodName: "Acknowledge",
+			Handler:    _CustodyService_Acknowledge_Handler,
+		},
+		{
+			MethodName: "Return",
+			Handler:    _CustodyService_Return_Handler,
+		},
+		{
+			MethodName: "Extend",
+			Handler:    _CustodyService_Extend_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -3,6 +3,7 @@ package rove;
 
 import "google/protobuf/timestamp.proto";
 import "patch/patch.proto";
+import "rove/asset.proto";
 import "rove/asset_svc.g.proto";
 import "rove/catalog_svc.g.proto";
 import "rove/payday/tenant_svc.g.proto";
@@ -35,6 +36,14 @@ service StockService {
   // once in that first message and once as a change that happened while it was
   // being read -- and that is harmless for the same reason.
   rpc Watch(StockWatchRequest) returns (stream StockWatchResponse);
+  // Receive, Consume and Adjust change a stock by a quantity, with a reason.
+  rpc Receive(StockChangeRequest) returns (Stock);
+  rpc Consume(StockChangeRequest) returns (Stock);
+  rpc Adjust(StockChangeRequest) returns (Stock);
+  // Transfer moves a quantity to the same model's stock in another space.
+  rpc Transfer(StockTransferRequest) returns (Stock);
+  // Convert takes units out of a stock and makes them assets of their own.
+  rpc Convert(StockConvertRequest) returns (StockConvertResponse);
 }
 
 service StockMovementService {
@@ -63,6 +72,7 @@ message StockAddRequest {
   int64 threshold = 11 [features.field_presence = IMPLICIT];
   string unit = 12 [features.field_presence = IMPLICIT];
   google.protobuf.Timestamp date_created = 15;
+  bytes op = 100;
 }
 
 message StockGetRequest {
@@ -210,6 +220,36 @@ message StockWatchItem {
   // Empty in the first message, which is not something anybody asked for -- it
   // is what is already there.
   string action = 3 [features.field_presence = IMPLICIT];
+}
+
+message StockChangeRequest {
+  StockRef ref = 1;
+  int64 quantity = 2 [features.field_presence = IMPLICIT];
+  string reason = 3 [features.field_presence = IMPLICIT];
+  google.protobuf.Timestamp at = 4;
+  bytes op = 5 [features.field_presence = IMPLICIT];
+}
+
+message StockTransferRequest {
+  StockRef ref = 1;
+  AssetRef to = 2;
+  int64 quantity = 3 [features.field_presence = IMPLICIT];
+  string reason = 4 [features.field_presence = IMPLICIT];
+  google.protobuf.Timestamp at = 5;
+  bytes op = 6 [features.field_presence = IMPLICIT];
+}
+
+message StockConvertRequest {
+  StockRef ref = 1;
+  int64 quantity = 2 [features.field_presence = IMPLICIT];
+  // A prefix the new assets' tags start with; numbers follow.
+  string tag_prefix = 3 [features.field_presence = IMPLICIT];
+  bytes op = 4 [features.field_presence = IMPLICIT];
+}
+
+message StockConvertResponse {
+  Stock stock = 1;
+  repeated Asset assets = 2;
 }
 
 message StockMovementAddRequest {

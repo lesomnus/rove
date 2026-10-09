@@ -19,13 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkOrderService_Add_FullMethodName   = "/rove.WorkOrderService/Add"
-	WorkOrderService_Get_FullMethodName   = "/rove.WorkOrderService/Get"
-	WorkOrderService_Patch_FullMethodName = "/rove.WorkOrderService/Patch"
-	WorkOrderService_Apply_FullMethodName = "/rove.WorkOrderService/Apply"
-	WorkOrderService_Erase_FullMethodName = "/rove.WorkOrderService/Erase"
-	WorkOrderService_List_FullMethodName  = "/rove.WorkOrderService/List"
-	WorkOrderService_Watch_FullMethodName = "/rove.WorkOrderService/Watch"
+	WorkOrderService_Add_FullMethodName      = "/rove.WorkOrderService/Add"
+	WorkOrderService_Get_FullMethodName      = "/rove.WorkOrderService/Get"
+	WorkOrderService_Patch_FullMethodName    = "/rove.WorkOrderService/Patch"
+	WorkOrderService_Apply_FullMethodName    = "/rove.WorkOrderService/Apply"
+	WorkOrderService_Erase_FullMethodName    = "/rove.WorkOrderService/Erase"
+	WorkOrderService_List_FullMethodName     = "/rove.WorkOrderService/List"
+	WorkOrderService_Watch_FullMethodName    = "/rove.WorkOrderService/Watch"
+	WorkOrderService_Update_FullMethodName   = "/rove.WorkOrderService/Update"
+	WorkOrderService_Complete_FullMethodName = "/rove.WorkOrderService/Complete"
+	WorkOrderService_Cancel_FullMethodName   = "/rove.WorkOrderService/Cancel"
 )
 
 // WorkOrderServiceClient is the client API for WorkOrderService service.
@@ -56,6 +59,10 @@ type WorkOrderServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *WorkOrderWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[WorkOrderWatchResponse], error)
+	Update(ctx context.Context, in *WorkOrderUpdateRequest, opts ...grpc.CallOption) (*WorkOrder, error)
+	// Complete closes it; one that recurs opens the next.
+	Complete(ctx context.Context, in *WorkOrderCompleteRequest, opts ...grpc.CallOption) (*WorkOrder, error)
+	Cancel(ctx context.Context, in *WorkOrderCompleteRequest, opts ...grpc.CallOption) (*WorkOrder, error)
 }
 
 type workOrderServiceClient struct {
@@ -145,6 +152,36 @@ func (c *workOrderServiceClient) Watch(ctx context.Context, in *WorkOrderWatchRe
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type WorkOrderService_WatchClient = grpc.ServerStreamingClient[WorkOrderWatchResponse]
 
+func (c *workOrderServiceClient) Update(ctx context.Context, in *WorkOrderUpdateRequest, opts ...grpc.CallOption) (*WorkOrder, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WorkOrder)
+	err := c.cc.Invoke(ctx, WorkOrderService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workOrderServiceClient) Complete(ctx context.Context, in *WorkOrderCompleteRequest, opts ...grpc.CallOption) (*WorkOrder, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WorkOrder)
+	err := c.cc.Invoke(ctx, WorkOrderService_Complete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workOrderServiceClient) Cancel(ctx context.Context, in *WorkOrderCompleteRequest, opts ...grpc.CallOption) (*WorkOrder, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WorkOrder)
+	err := c.cc.Invoke(ctx, WorkOrderService_Cancel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkOrderServiceServer is the server API for WorkOrderService service.
 // All implementations must embed UnimplementedWorkOrderServiceServer
 // for forward compatibility.
@@ -173,6 +210,10 @@ type WorkOrderServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*WorkOrderWatchRequest, grpc.ServerStreamingServer[WorkOrderWatchResponse]) error
+	Update(context.Context, *WorkOrderUpdateRequest) (*WorkOrder, error)
+	// Complete closes it; one that recurs opens the next.
+	Complete(context.Context, *WorkOrderCompleteRequest) (*WorkOrder, error)
+	Cancel(context.Context, *WorkOrderCompleteRequest) (*WorkOrder, error)
 	mustEmbedUnimplementedWorkOrderServiceServer()
 }
 
@@ -203,6 +244,15 @@ func (UnimplementedWorkOrderServiceServer) List(context.Context, *WorkOrderListR
 }
 func (UnimplementedWorkOrderServiceServer) Watch(*WorkOrderWatchRequest, grpc.ServerStreamingServer[WorkOrderWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedWorkOrderServiceServer) Update(context.Context, *WorkOrderUpdateRequest) (*WorkOrder, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedWorkOrderServiceServer) Complete(context.Context, *WorkOrderCompleteRequest) (*WorkOrder, error) {
+	return nil, status.Error(codes.Unimplemented, "method Complete not implemented")
+}
+func (UnimplementedWorkOrderServiceServer) Cancel(context.Context, *WorkOrderCompleteRequest) (*WorkOrder, error) {
+	return nil, status.Error(codes.Unimplemented, "method Cancel not implemented")
 }
 func (UnimplementedWorkOrderServiceServer) mustEmbedUnimplementedWorkOrderServiceServer() {}
 func (UnimplementedWorkOrderServiceServer) testEmbeddedByValue()                          {}
@@ -344,6 +394,60 @@ func _WorkOrderService_Watch_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type WorkOrderService_WatchServer = grpc.ServerStreamingServer[WorkOrderWatchResponse]
 
+func _WorkOrderService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkOrderUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkOrderServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkOrderService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkOrderServiceServer).Update(ctx, req.(*WorkOrderUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkOrderService_Complete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkOrderCompleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkOrderServiceServer).Complete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkOrderService_Complete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkOrderServiceServer).Complete(ctx, req.(*WorkOrderCompleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkOrderService_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkOrderCompleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkOrderServiceServer).Cancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkOrderService_Cancel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkOrderServiceServer).Cancel(ctx, req.(*WorkOrderCompleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkOrderService_ServiceDesc is the grpc.ServiceDesc for WorkOrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -375,6 +479,18 @@ var WorkOrderService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _WorkOrderService_List_Handler,
 		},
+		{
+			MethodName: "Update",
+			Handler:    _WorkOrderService_Update_Handler,
+		},
+		{
+			MethodName: "Complete",
+			Handler:    _WorkOrderService_Complete_Handler,
+		},
+		{
+			MethodName: "Cancel",
+			Handler:    _WorkOrderService_Cancel_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -387,13 +503,14 @@ var WorkOrderService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	PurchaseService_Add_FullMethodName   = "/rove.PurchaseService/Add"
-	PurchaseService_Get_FullMethodName   = "/rove.PurchaseService/Get"
-	PurchaseService_Patch_FullMethodName = "/rove.PurchaseService/Patch"
-	PurchaseService_Apply_FullMethodName = "/rove.PurchaseService/Apply"
-	PurchaseService_Erase_FullMethodName = "/rove.PurchaseService/Erase"
-	PurchaseService_List_FullMethodName  = "/rove.PurchaseService/List"
-	PurchaseService_Watch_FullMethodName = "/rove.PurchaseService/Watch"
+	PurchaseService_Add_FullMethodName     = "/rove.PurchaseService/Add"
+	PurchaseService_Get_FullMethodName     = "/rove.PurchaseService/Get"
+	PurchaseService_Patch_FullMethodName   = "/rove.PurchaseService/Patch"
+	PurchaseService_Apply_FullMethodName   = "/rove.PurchaseService/Apply"
+	PurchaseService_Erase_FullMethodName   = "/rove.PurchaseService/Erase"
+	PurchaseService_List_FullMethodName    = "/rove.PurchaseService/List"
+	PurchaseService_Watch_FullMethodName   = "/rove.PurchaseService/Watch"
+	PurchaseService_Receive_FullMethodName = "/rove.PurchaseService/Receive"
 )
 
 // PurchaseServiceClient is the client API for PurchaseService service.
@@ -424,6 +541,8 @@ type PurchaseServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *PurchaseWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PurchaseWatchResponse], error)
+	// Receive turns what arrived into assets or stock, in a space.
+	Receive(ctx context.Context, in *PurchaseReceiveRequest, opts ...grpc.CallOption) (*PurchaseReceiveResponse, error)
 }
 
 type purchaseServiceClient struct {
@@ -513,6 +632,16 @@ func (c *purchaseServiceClient) Watch(ctx context.Context, in *PurchaseWatchRequ
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type PurchaseService_WatchClient = grpc.ServerStreamingClient[PurchaseWatchResponse]
 
+func (c *purchaseServiceClient) Receive(ctx context.Context, in *PurchaseReceiveRequest, opts ...grpc.CallOption) (*PurchaseReceiveResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PurchaseReceiveResponse)
+	err := c.cc.Invoke(ctx, PurchaseService_Receive_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PurchaseServiceServer is the server API for PurchaseService service.
 // All implementations must embed UnimplementedPurchaseServiceServer
 // for forward compatibility.
@@ -541,6 +670,8 @@ type PurchaseServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*PurchaseWatchRequest, grpc.ServerStreamingServer[PurchaseWatchResponse]) error
+	// Receive turns what arrived into assets or stock, in a space.
+	Receive(context.Context, *PurchaseReceiveRequest) (*PurchaseReceiveResponse, error)
 	mustEmbedUnimplementedPurchaseServiceServer()
 }
 
@@ -571,6 +702,9 @@ func (UnimplementedPurchaseServiceServer) List(context.Context, *PurchaseListReq
 }
 func (UnimplementedPurchaseServiceServer) Watch(*PurchaseWatchRequest, grpc.ServerStreamingServer[PurchaseWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedPurchaseServiceServer) Receive(context.Context, *PurchaseReceiveRequest) (*PurchaseReceiveResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Receive not implemented")
 }
 func (UnimplementedPurchaseServiceServer) mustEmbedUnimplementedPurchaseServiceServer() {}
 func (UnimplementedPurchaseServiceServer) testEmbeddedByValue()                         {}
@@ -712,6 +846,24 @@ func _PurchaseService_Watch_Handler(srv interface{}, stream grpc.ServerStream) e
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type PurchaseService_WatchServer = grpc.ServerStreamingServer[PurchaseWatchResponse]
 
+func _PurchaseService_Receive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurchaseReceiveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PurchaseServiceServer).Receive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PurchaseService_Receive_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PurchaseServiceServer).Receive(ctx, req.(*PurchaseReceiveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PurchaseService_ServiceDesc is the grpc.ServiceDesc for PurchaseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -742,6 +894,10 @@ var PurchaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _PurchaseService_List_Handler,
+		},
+		{
+			MethodName: "Receive",
+			Handler:    _PurchaseService_Receive_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

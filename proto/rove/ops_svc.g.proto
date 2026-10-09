@@ -22,6 +22,8 @@ service NotificationService {
   rpc Erase(NotificationRef) returns (NotificationEraseResponse);
   // List reads Notifications a page at a time.
   rpc List(NotificationListRequest) returns (NotificationListResponse);
+  rpc Inbox(NotificationInboxRequest) returns (NotificationInboxResponse);
+  rpc MarkRead(NotificationMarkReadRequest) returns (NotificationMarkReadResponse);
 }
 
 service UsageSnapshotService {
@@ -159,6 +161,25 @@ message NotificationFilter {
   NotificationRef ref = 1;
   HolderRef holder = 2;
   string kind = 3;
+}
+
+message NotificationInboxRequest {
+  bool unread = 1 [features.field_presence = IMPLICIT];
+  uint32 size = 2 [features.field_presence = IMPLICIT];
+}
+
+message NotificationInboxResponse {
+  repeated Notification items = 1;
+  uint32 unread = 2 [features.field_presence = IMPLICIT];
+}
+
+message NotificationMarkReadRequest {
+  // Empty: all of the caller's.
+  repeated bytes ids = 1;
+}
+
+message NotificationMarkReadResponse {
+  uint32 marked = 1 [features.field_presence = IMPLICIT];
 }
 
 message UsageSnapshotAddRequest {

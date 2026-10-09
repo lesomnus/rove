@@ -14923,6 +14923,11 @@ func (s interceptAssetType) Watch(req *rove.AssetTypeWatchRequest, out grpc.Serv
 		rove.AssetTypeService_Watch_FullMethodName, req, out, s.AssetTypeServiceServer.Watch)
 }
 
+func (s interceptAssetType) Update(ctx context.Context, req *rove.AssetTypeUpdateRequest) (*rove.AssetType, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetTypeServiceServer,
+		rove.AssetTypeService_Update_FullMethodName, req, s.AssetTypeServiceServer.Update)
+}
+
 func (s Intercept) ItemModel() rove.ItemModelServiceServer {
 	return interceptItemModel{s, s.Next().ItemModel()}
 }
@@ -14965,6 +14970,11 @@ func (s interceptItemModel) List(ctx context.Context, req *rove.ItemModelListReq
 func (s interceptItemModel) Watch(req *rove.ItemModelWatchRequest, out grpc.ServerStreamingServer[rove.ItemModelWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.ItemModelServiceServer,
 		rove.ItemModelService_Watch_FullMethodName, req, out, s.ItemModelServiceServer.Watch)
+}
+
+func (s interceptItemModel) Update(ctx context.Context, req *rove.ItemModelUpdateRequest) (*rove.ItemModel, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ItemModelServiceServer,
+		rove.ItemModelService_Update_FullMethodName, req, s.ItemModelServiceServer.Update)
 }
 
 func (s Intercept) Holder() rove.HolderServiceServer {
@@ -15053,6 +15063,41 @@ func (s interceptParty) List(ctx context.Context, req *rove.PartyListRequest) (*
 func (s interceptParty) Watch(req *rove.PartyWatchRequest, out grpc.ServerStreamingServer[rove.PartyWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.PartyServiceServer,
 		rove.PartyService_Watch_FullMethodName, req, out, s.PartyServiceServer.Watch)
+}
+
+func (s interceptParty) Me(ctx context.Context, req *rove.PartyMeRequest) (*rove.PartyMeResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_Me_FullMethodName, req, s.PartyServiceServer.Me)
+}
+
+func (s interceptParty) Update(ctx context.Context, req *rove.PartyUpdateRequest) (*rove.Party, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_Update_FullMethodName, req, s.PartyServiceServer.Update)
+}
+
+func (s interceptParty) Invite(ctx context.Context, req *rove.PartyInviteRequest) (*rove.PartyInviteResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_Invite_FullMethodName, req, s.PartyServiceServer.Invite)
+}
+
+func (s interceptParty) SetRole(ctx context.Context, req *rove.PartySetRoleRequest) (*rove.Party, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_SetRole_FullMethodName, req, s.PartyServiceServer.SetRole)
+}
+
+func (s interceptParty) SetPassword(ctx context.Context, req *rove.PartySetPasswordRequest) (*rove.PartySetPasswordResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_SetPassword_FullMethodName, req, s.PartyServiceServer.SetPassword)
+}
+
+func (s interceptParty) Deactivate(ctx context.Context, req *rove.PartyDeactivateRequest) (*rove.Party, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_Deactivate_FullMethodName, req, s.PartyServiceServer.Deactivate)
+}
+
+func (s interceptParty) Pseudonymize(ctx context.Context, req *rove.PartyPseudonymizeRequest) (*rove.Party, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
+		rove.PartyService_Pseudonymize_FullMethodName, req, s.PartyServiceServer.Pseudonymize)
 }
 
 func (s Intercept) Credential() rove.CredentialServiceServer {
@@ -15167,6 +15212,66 @@ func (s interceptAsset) Watch(req *rove.AssetWatchRequest, out grpc.ServerStream
 		rove.AssetService_Watch_FullMethodName, req, out, s.AssetServiceServer.Watch)
 }
 
+func (s interceptAsset) Move(ctx context.Context, req *rove.AssetMoveRequest) (*rove.Asset, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Move_FullMethodName, req, s.AssetServiceServer.Move)
+}
+
+func (s interceptAsset) SetAttributes(ctx context.Context, req *rove.AssetSetAttributesRequest) (*rove.Asset, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_SetAttributes_FullMethodName, req, s.AssetServiceServer.SetAttributes)
+}
+
+func (s interceptAsset) Assign(ctx context.Context, req *rove.AssetAssignRequest) (*rove.Asset, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Assign_FullMethodName, req, s.AssetServiceServer.Assign)
+}
+
+func (s interceptAsset) Relate(ctx context.Context, req *rove.AssetRelateRequest) (*rove.Asset, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Relate_FullMethodName, req, s.AssetServiceServer.Relate)
+}
+
+func (s interceptAsset) Correct(ctx context.Context, req *rove.AssetCorrectRequest) (*rove.Asset, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Correct_FullMethodName, req, s.AssetServiceServer.Correct)
+}
+
+func (s interceptAsset) Timeline(ctx context.Context, req *rove.AssetTimelineRequest) (*rove.AssetTimelineResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Timeline_FullMethodName, req, s.AssetServiceServer.Timeline)
+}
+
+func (s interceptAsset) QueryAt(ctx context.Context, req *rove.AssetQueryAtRequest) (*rove.AssetQueryAtResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_QueryAt_FullMethodName, req, s.AssetServiceServer.QueryAt)
+}
+
+func (s interceptAsset) Diff(ctx context.Context, req *rove.AssetDiffRequest) (*rove.AssetDiffResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Diff_FullMethodName, req, s.AssetServiceServer.Diff)
+}
+
+func (s interceptAsset) Search(ctx context.Context, req *rove.AssetSearchRequest) (*rove.AssetSearchResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Search_FullMethodName, req, s.AssetServiceServer.Search)
+}
+
+func (s interceptAsset) Report(ctx context.Context, req *rove.AssetReportRequest) (*rove.AssetReportResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Report_FullMethodName, req, s.AssetServiceServer.Report)
+}
+
+func (s interceptAsset) Import(ctx context.Context, req *rove.AssetImportRequest) (*rove.AssetImportResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Import_FullMethodName, req, s.AssetServiceServer.Import)
+}
+
+func (s interceptAsset) Export(ctx context.Context, req *rove.AssetExportRequest) (*rove.AssetExportResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AssetServiceServer,
+		rove.AssetService_Export_FullMethodName, req, s.AssetServiceServer.Export)
+}
+
 func (s Intercept) TreeLock() rove.TreeLockServiceServer {
 	return interceptTreeLock{s, s.Next().TreeLock()}
 }
@@ -15245,6 +15350,26 @@ func (s interceptTenantDomain) Watch(req *rove.TenantDomainWatchRequest, out grp
 		rove.TenantDomainService_Watch_FullMethodName, req, out, s.TenantDomainServiceServer.Watch)
 }
 
+func (s interceptTenantDomain) Verify(ctx context.Context, req *rove.TenantDomainVerifyRequest) (*rove.TenantDomain, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.TenantDomainServiceServer,
+		rove.TenantDomainService_Verify_FullMethodName, req, s.TenantDomainServiceServer.Verify)
+}
+
+func (s interceptTenantDomain) Activate(ctx context.Context, req *rove.TenantDomainActivateRequest) (*rove.TenantDomain, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.TenantDomainServiceServer,
+		rove.TenantDomainService_Activate_FullMethodName, req, s.TenantDomainServiceServer.Activate)
+}
+
+func (s interceptTenantDomain) Retire(ctx context.Context, req *rove.TenantDomainRetireRequest) (*rove.TenantDomain, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.TenantDomainServiceServer,
+		rove.TenantDomainService_Retire_FullMethodName, req, s.TenantDomainServiceServer.Retire)
+}
+
+func (s interceptTenantDomain) Status(ctx context.Context, req *rove.TenantDomainStatusRequest) (*rove.TenantDomainStatusResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.TenantDomainServiceServer,
+		rove.TenantDomainService_Status_FullMethodName, req, s.TenantDomainServiceServer.Status)
+}
+
 func (s Intercept) Label() rove.LabelServiceServer {
 	return interceptLabel{s, s.Next().Label()}
 }
@@ -15287,6 +15412,26 @@ func (s interceptLabel) List(ctx context.Context, req *rove.LabelListRequest) (*
 func (s interceptLabel) Watch(req *rove.LabelWatchRequest, out grpc.ServerStreamingServer[rove.LabelWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.LabelServiceServer,
 		rove.LabelService_Watch_FullMethodName, req, out, s.LabelServiceServer.Watch)
+}
+
+func (s interceptLabel) Print(ctx context.Context, req *rove.LabelPrintRequest) (*rove.LabelPrintResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.LabelServiceServer,
+		rove.LabelService_Print_FullMethodName, req, s.LabelServiceServer.Print)
+}
+
+func (s interceptLabel) Bind(ctx context.Context, req *rove.LabelBindRequest) (*rove.Label, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.LabelServiceServer,
+		rove.LabelService_Bind_FullMethodName, req, s.LabelServiceServer.Bind)
+}
+
+func (s interceptLabel) Unbind(ctx context.Context, req *rove.LabelUnbindRequest) (*rove.Label, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.LabelServiceServer,
+		rove.LabelService_Unbind_FullMethodName, req, s.LabelServiceServer.Unbind)
+}
+
+func (s interceptLabel) Resolve(ctx context.Context, req *rove.LabelResolveRequest) (*rove.LabelResolveResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.LabelServiceServer,
+		rove.LabelService_Resolve_FullMethodName, req, s.LabelServiceServer.Resolve)
 }
 
 func (s Intercept) Attachment() rove.AttachmentServiceServer {
@@ -15333,6 +15478,16 @@ func (s interceptAttachment) Watch(req *rove.AttachmentWatchRequest, out grpc.Se
 		rove.AttachmentService_Watch_FullMethodName, req, out, s.AttachmentServiceServer.Watch)
 }
 
+func (s interceptAttachment) Upload(ctx context.Context, req *rove.AttachmentUploadRequest) (*rove.Attachment, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AttachmentServiceServer,
+		rove.AttachmentService_Upload_FullMethodName, req, s.AttachmentServiceServer.Upload)
+}
+
+func (s interceptAttachment) Url(ctx context.Context, req *rove.AttachmentUrlRequest) (*rove.AttachmentUrlResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AttachmentServiceServer,
+		rove.AttachmentService_Url_FullMethodName, req, s.AttachmentServiceServer.Url)
+}
+
 func (s Intercept) Bookable() rove.BookableServiceServer {
 	return interceptBookable{s, s.Next().Bookable()}
 }
@@ -15377,6 +15532,16 @@ func (s interceptBookable) Watch(req *rove.BookableWatchRequest, out grpc.Server
 		rove.BookableService_Watch_FullMethodName, req, out, s.BookableServiceServer.Watch)
 }
 
+func (s interceptBookable) Update(ctx context.Context, req *rove.BookableUpdateRequest) (*rove.Bookable, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.BookableServiceServer,
+		rove.BookableService_Update_FullMethodName, req, s.BookableServiceServer.Update)
+}
+
+func (s interceptBookable) Availability(ctx context.Context, req *rove.BookableAvailabilityRequest) (*rove.BookableAvailabilityResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.BookableServiceServer,
+		rove.BookableService_Availability_FullMethodName, req, s.BookableServiceServer.Availability)
+}
+
 func (s Intercept) Reservation() rove.ReservationServiceServer {
 	return interceptReservation{s, s.Next().Reservation()}
 }
@@ -15419,6 +15584,41 @@ func (s interceptReservation) List(ctx context.Context, req *rove.ReservationLis
 func (s interceptReservation) Watch(req *rove.ReservationWatchRequest, out grpc.ServerStreamingServer[rove.ReservationWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.ReservationServiceServer,
 		rove.ReservationService_Watch_FullMethodName, req, out, s.ReservationServiceServer.Watch)
+}
+
+func (s interceptReservation) Confirm(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Confirm_FullMethodName, req, s.ReservationServiceServer.Confirm)
+}
+
+func (s interceptReservation) Approve(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Approve_FullMethodName, req, s.ReservationServiceServer.Approve)
+}
+
+func (s interceptReservation) Reject(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Reject_FullMethodName, req, s.ReservationServiceServer.Reject)
+}
+
+func (s interceptReservation) Cancel(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Cancel_FullMethodName, req, s.ReservationServiceServer.Cancel)
+}
+
+func (s interceptReservation) CheckIn(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_CheckIn_FullMethodName, req, s.ReservationServiceServer.CheckIn)
+}
+
+func (s interceptReservation) Complete(ctx context.Context, req *rove.ReservationDecideRequest) (*rove.Reservation, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Complete_FullMethodName, req, s.ReservationServiceServer.Complete)
+}
+
+func (s interceptReservation) Calendar(ctx context.Context, req *rove.ReservationCalendarRequest) (*rove.ReservationCalendarResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.ReservationServiceServer,
+		rove.ReservationService_Calendar_FullMethodName, req, s.ReservationServiceServer.Calendar)
 }
 
 func (s Intercept) ReservationItem() rove.ReservationItemServiceServer {
@@ -15543,6 +15743,26 @@ func (s interceptInventoryCount) Watch(req *rove.InventoryCountWatchRequest, out
 		rove.InventoryCountService_Watch_FullMethodName, req, out, s.InventoryCountServiceServer.Watch)
 }
 
+func (s interceptInventoryCount) Scan(ctx context.Context, req *rove.InventoryCountScanRequest) (*rove.CountFinding, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.InventoryCountServiceServer,
+		rove.InventoryCountService_Scan_FullMethodName, req, s.InventoryCountServiceServer.Scan)
+}
+
+func (s interceptInventoryCount) Reconcile(ctx context.Context, req *rove.InventoryCountReconcileRequest) (*rove.InventoryCountReconcileResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.InventoryCountServiceServer,
+		rove.InventoryCountService_Reconcile_FullMethodName, req, s.InventoryCountServiceServer.Reconcile)
+}
+
+func (s interceptInventoryCount) Resolve(ctx context.Context, req *rove.InventoryCountResolveRequest) (*rove.CountFinding, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.InventoryCountServiceServer,
+		rove.InventoryCountService_Resolve_FullMethodName, req, s.InventoryCountServiceServer.Resolve)
+}
+
+func (s interceptInventoryCount) Close(ctx context.Context, req *rove.InventoryCountCloseRequest) (*rove.InventoryCount, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.InventoryCountServiceServer,
+		rove.InventoryCountService_Close_FullMethodName, req, s.InventoryCountServiceServer.Close)
+}
+
 func (s Intercept) CountFinding() rove.CountFindingServiceServer {
 	return interceptCountFinding{s, s.Next().CountFinding()}
 }
@@ -15631,6 +15851,31 @@ func (s interceptStock) Watch(req *rove.StockWatchRequest, out grpc.ServerStream
 		rove.StockService_Watch_FullMethodName, req, out, s.StockServiceServer.Watch)
 }
 
+func (s interceptStock) Receive(ctx context.Context, req *rove.StockChangeRequest) (*rove.Stock, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.StockServiceServer,
+		rove.StockService_Receive_FullMethodName, req, s.StockServiceServer.Receive)
+}
+
+func (s interceptStock) Consume(ctx context.Context, req *rove.StockChangeRequest) (*rove.Stock, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.StockServiceServer,
+		rove.StockService_Consume_FullMethodName, req, s.StockServiceServer.Consume)
+}
+
+func (s interceptStock) Adjust(ctx context.Context, req *rove.StockChangeRequest) (*rove.Stock, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.StockServiceServer,
+		rove.StockService_Adjust_FullMethodName, req, s.StockServiceServer.Adjust)
+}
+
+func (s interceptStock) Transfer(ctx context.Context, req *rove.StockTransferRequest) (*rove.Stock, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.StockServiceServer,
+		rove.StockService_Transfer_FullMethodName, req, s.StockServiceServer.Transfer)
+}
+
+func (s interceptStock) Convert(ctx context.Context, req *rove.StockConvertRequest) (*rove.StockConvertResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.StockServiceServer,
+		rove.StockService_Convert_FullMethodName, req, s.StockServiceServer.Convert)
+}
+
 func (s Intercept) StockMovement() rove.StockMovementServiceServer {
 	return interceptStockMovement{s, s.Next().StockMovement()}
 }
@@ -15712,6 +15957,21 @@ func (s interceptCustody) List(ctx context.Context, req *rove.CustodyListRequest
 func (s interceptCustody) Watch(req *rove.CustodyWatchRequest, out grpc.ServerStreamingServer[rove.CustodyWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.CustodyServiceServer,
 		rove.CustodyService_Watch_FullMethodName, req, out, s.CustodyServiceServer.Watch)
+}
+
+func (s interceptCustody) Acknowledge(ctx context.Context, req *rove.CustodyAcknowledgeRequest) (*rove.Custody, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.CustodyServiceServer,
+		rove.CustodyService_Acknowledge_FullMethodName, req, s.CustodyServiceServer.Acknowledge)
+}
+
+func (s interceptCustody) Return(ctx context.Context, req *rove.CustodyReturnRequest) (*rove.Custody, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.CustodyServiceServer,
+		rove.CustodyService_Return_FullMethodName, req, s.CustodyServiceServer.Return)
+}
+
+func (s interceptCustody) Extend(ctx context.Context, req *rove.CustodyExtendRequest) (*rove.Custody, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.CustodyServiceServer,
+		rove.CustodyService_Extend_FullMethodName, req, s.CustodyServiceServer.Extend)
 }
 
 func (s Intercept) CustodyLine() rove.CustodyLineServiceServer {
@@ -15987,6 +16247,16 @@ func (s interceptNotification) List(ctx context.Context, req *rove.NotificationL
 		rove.NotificationService_List_FullMethodName, req, s.NotificationServiceServer.List)
 }
 
+func (s interceptNotification) Inbox(ctx context.Context, req *rove.NotificationInboxRequest) (*rove.NotificationInboxResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.NotificationServiceServer,
+		rove.NotificationService_Inbox_FullMethodName, req, s.NotificationServiceServer.Inbox)
+}
+
+func (s interceptNotification) MarkRead(ctx context.Context, req *rove.NotificationMarkReadRequest) (*rove.NotificationMarkReadResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.NotificationServiceServer,
+		rove.NotificationService_MarkRead_FullMethodName, req, s.NotificationServiceServer.MarkRead)
+}
+
 func (s Intercept) UsageSnapshot() rove.UsageSnapshotServiceServer {
 	return interceptUsageSnapshot{s, s.Next().UsageSnapshot()}
 }
@@ -16109,6 +16379,21 @@ func (s interceptWorkOrder) Watch(req *rove.WorkOrderWatchRequest, out grpc.Serv
 		rove.WorkOrderService_Watch_FullMethodName, req, out, s.WorkOrderServiceServer.Watch)
 }
 
+func (s interceptWorkOrder) Update(ctx context.Context, req *rove.WorkOrderUpdateRequest) (*rove.WorkOrder, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.WorkOrderServiceServer,
+		rove.WorkOrderService_Update_FullMethodName, req, s.WorkOrderServiceServer.Update)
+}
+
+func (s interceptWorkOrder) Complete(ctx context.Context, req *rove.WorkOrderCompleteRequest) (*rove.WorkOrder, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.WorkOrderServiceServer,
+		rove.WorkOrderService_Complete_FullMethodName, req, s.WorkOrderServiceServer.Complete)
+}
+
+func (s interceptWorkOrder) Cancel(ctx context.Context, req *rove.WorkOrderCompleteRequest) (*rove.WorkOrder, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.WorkOrderServiceServer,
+		rove.WorkOrderService_Cancel_FullMethodName, req, s.WorkOrderServiceServer.Cancel)
+}
+
 func (s Intercept) Purchase() rove.PurchaseServiceServer {
 	return interceptPurchase{s, s.Next().Purchase()}
 }
@@ -16151,6 +16436,11 @@ func (s interceptPurchase) List(ctx context.Context, req *rove.PurchaseListReque
 func (s interceptPurchase) Watch(req *rove.PurchaseWatchRequest, out grpc.ServerStreamingServer[rove.PurchaseWatchResponse]) error {
 	return grpcx.RunStream(s.stream, s.PurchaseServiceServer,
 		rove.PurchaseService_Watch_FullMethodName, req, out, s.PurchaseServiceServer.Watch)
+}
+
+func (s interceptPurchase) Receive(ctx context.Context, req *rove.PurchaseReceiveRequest) (*rove.PurchaseReceiveResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.PurchaseServiceServer,
+		rove.PurchaseService_Receive_FullMethodName, req, s.PurchaseServiceServer.Receive)
 }
 
 func (s Intercept) PurchaseLine() rove.PurchaseLineServiceServer {
@@ -16869,6 +17159,19 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.AssetTypeService_Update_FullMethodName:
+		v := &rove.AssetTypeUpdateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.AssetType().Update(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.ItemModelService_Add_FullMethodName:
 		v := &rove.ItemModelAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -16941,6 +17244,19 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.ItemModel().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ItemModelService_Update_FullMethodName:
+		v := &rove.ItemModelUpdateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.ItemModel().Update(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -17097,6 +17413,97 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Party().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_Me_FullMethodName:
+		v := &rove.PartyMeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().Me(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_Update_FullMethodName:
+		v := &rove.PartyUpdateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().Update(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_Invite_FullMethodName:
+		v := &rove.PartyInviteRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().Invite(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_SetRole_FullMethodName:
+		v := &rove.PartySetRoleRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().SetRole(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_SetPassword_FullMethodName:
+		v := &rove.PartySetPasswordRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().SetPassword(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_Deactivate_FullMethodName:
+		v := &rove.PartyDeactivateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().Deactivate(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PartyService_Pseudonymize_FullMethodName:
+		v := &rove.PartyPseudonymizeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Party().Pseudonymize(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -17311,6 +17718,162 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.AssetService_Move_FullMethodName:
+		v := &rove.AssetMoveRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Move(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_SetAttributes_FullMethodName:
+		v := &rove.AssetSetAttributesRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().SetAttributes(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Assign_FullMethodName:
+		v := &rove.AssetAssignRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Assign(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Relate_FullMethodName:
+		v := &rove.AssetRelateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Relate(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Correct_FullMethodName:
+		v := &rove.AssetCorrectRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Correct(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Timeline_FullMethodName:
+		v := &rove.AssetTimelineRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Timeline(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_QueryAt_FullMethodName:
+		v := &rove.AssetQueryAtRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().QueryAt(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Diff_FullMethodName:
+		v := &rove.AssetDiffRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Diff(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Search_FullMethodName:
+		v := &rove.AssetSearchRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Search(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Report_FullMethodName:
+		v := &rove.AssetReportRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Report(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Import_FullMethodName:
+		v := &rove.AssetImportRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Import(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AssetService_Export_FullMethodName:
+		v := &rove.AssetExportRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Asset().Export(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.TreeLockService_Add_FullMethodName:
 		v := &rove.TreeLockAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -17454,6 +18017,58 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.TenantDomainService_Verify_FullMethodName:
+		v := &rove.TenantDomainVerifyRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.TenantDomain().Verify(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.TenantDomainService_Activate_FullMethodName:
+		v := &rove.TenantDomainActivateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.TenantDomain().Activate(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.TenantDomainService_Retire_FullMethodName:
+		v := &rove.TenantDomainRetireRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.TenantDomain().Retire(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.TenantDomainService_Status_FullMethodName:
+		v := &rove.TenantDomainStatusRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.TenantDomain().Status(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.LabelService_Add_FullMethodName:
 		v := &rove.LabelAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -17526,6 +18141,58 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Label().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.LabelService_Print_FullMethodName:
+		v := &rove.LabelPrintRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Label().Print(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.LabelService_Bind_FullMethodName:
+		v := &rove.LabelBindRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Label().Bind(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.LabelService_Unbind_FullMethodName:
+		v := &rove.LabelUnbindRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Label().Unbind(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.LabelService_Resolve_FullMethodName:
+		v := &rove.LabelResolveRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Label().Resolve(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -17610,6 +18277,32 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.AttachmentService_Upload_FullMethodName:
+		v := &rove.AttachmentUploadRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Attachment().Upload(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AttachmentService_Url_FullMethodName:
+		v := &rove.AttachmentUrlRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Attachment().Url(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.BookableService_Add_FullMethodName:
 		v := &rove.BookableAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -17688,6 +18381,32 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.BookableService_Update_FullMethodName:
+		v := &rove.BookableUpdateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Bookable().Update(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.BookableService_Availability_FullMethodName:
+		v := &rove.BookableAvailabilityRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Bookable().Availability(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.ReservationService_Add_FullMethodName:
 		v := &rove.ReservationAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -17760,6 +18479,97 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Reservation().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Confirm_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Confirm(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Approve_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Approve(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Reject_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Reject(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Cancel_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Cancel(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_CheckIn_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().CheckIn(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Complete_FullMethodName:
+		v := &rove.ReservationDecideRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Complete(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.ReservationService_Calendar_FullMethodName:
+		v := &rove.ReservationCalendarRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Reservation().Calendar(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -18000,6 +18810,58 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.InventoryCountService_Scan_FullMethodName:
+		v := &rove.InventoryCountScanRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.InventoryCount().Scan(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.InventoryCountService_Reconcile_FullMethodName:
+		v := &rove.InventoryCountReconcileRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.InventoryCount().Reconcile(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.InventoryCountService_Resolve_FullMethodName:
+		v := &rove.InventoryCountResolveRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.InventoryCount().Resolve(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.InventoryCountService_Close_FullMethodName:
+		v := &rove.InventoryCountCloseRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.InventoryCount().Close(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.CountFindingService_Add_FullMethodName:
 		v := &rove.CountFindingAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -18156,6 +19018,71 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.StockService_Receive_FullMethodName:
+		v := &rove.StockChangeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Stock().Receive(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.StockService_Consume_FullMethodName:
+		v := &rove.StockChangeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Stock().Consume(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.StockService_Adjust_FullMethodName:
+		v := &rove.StockChangeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Stock().Adjust(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.StockService_Transfer_FullMethodName:
+		v := &rove.StockTransferRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Stock().Transfer(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.StockService_Convert_FullMethodName:
+		v := &rove.StockConvertRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Stock().Convert(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.StockMovementService_Add_FullMethodName:
 		v := &rove.StockMovementAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -18306,6 +19233,45 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Custody().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.CustodyService_Acknowledge_FullMethodName:
+		v := &rove.CustodyAcknowledgeRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Custody().Acknowledge(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.CustodyService_Return_FullMethodName:
+		v := &rove.CustodyReturnRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Custody().Return(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.CustodyService_Extend_FullMethodName:
+		v := &rove.CustodyExtendRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Custody().Extend(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -18858,6 +19824,32 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.NotificationService_Inbox_FullMethodName:
+		v := &rove.NotificationInboxRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Notification().Inbox(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.NotificationService_MarkRead_FullMethodName:
+		v := &rove.NotificationMarkReadRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Notification().MarkRead(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.UsageSnapshotService_Add_FullMethodName:
 		v := &rove.UsageSnapshotAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -19092,6 +20084,45 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.WorkOrderService_Update_FullMethodName:
+		v := &rove.WorkOrderUpdateRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.WorkOrder().Update(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.WorkOrderService_Complete_FullMethodName:
+		v := &rove.WorkOrderCompleteRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.WorkOrder().Complete(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.WorkOrderService_Cancel_FullMethodName:
+		v := &rove.WorkOrderCompleteRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.WorkOrder().Cancel(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.PurchaseService_Add_FullMethodName:
 		v := &rove.PurchaseAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -19164,6 +20195,19 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Purchase().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.PurchaseService_Receive_FullMethodName:
+		v := &rove.PurchaseReceiveRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Purchase().Receive(ctx, v)
 		if err != nil {
 			return nil, err
 		}

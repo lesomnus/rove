@@ -33,6 +33,7 @@ service AssetTypeService {
   // once in that first message and once as a change that happened while it was
   // being read -- and that is harmless for the same reason.
   rpc Watch(AssetTypeWatchRequest) returns (stream AssetTypeWatchResponse);
+  rpc Update(AssetTypeUpdateRequest) returns (AssetType);
 }
 
 service ItemModelService {
@@ -60,6 +61,7 @@ service ItemModelService {
   // once in that first message and once as a change that happened while it was
   // being read -- and that is harmless for the same reason.
   rpc Watch(ItemModelWatchRequest) returns (stream ItemModelWatchResponse);
+  rpc Update(ItemModelUpdateRequest) returns (ItemModel);
 }
 
 message AssetTypeAddRequest {
@@ -234,6 +236,16 @@ message AssetTypeWatchItem {
   string action = 3 [features.field_presence = IMPLICIT];
 }
 
+message AssetTypeUpdateRequest {
+  AssetTypeRef ref = 1;
+  string name = 2 [features.field_presence = IMPLICIT];
+  string desc = 3 [features.field_presence = IMPLICIT];
+  bytes parent_id = 4 [features.field_presence = IMPLICIT];
+  bool parent_null = 5 [features.field_presence = IMPLICIT];
+  string kind = 6 [features.field_presence = IMPLICIT];
+  TypeSpec spec = 7;
+}
+
 message ItemModelAddRequest {
   bytes id = 1;
   TenantRef tenant = 2;
@@ -403,4 +415,15 @@ message ItemModelWatchItem {
   // Empty in the first message, which is not something anybody asked for -- it
   // is what is already there.
   string action = 3 [features.field_presence = IMPLICIT];
+}
+
+message ItemModelUpdateRequest {
+  ItemModelRef ref = 1;
+  string name = 2 [features.field_presence = IMPLICIT];
+  string desc = 3 [features.field_presence = IMPLICIT];
+  string maker = 4 [features.field_presence = IMPLICIT];
+  string code = 5 [features.field_presence = IMPLICIT];
+  AssetTypeRef type = 6;
+  bool type_null = 7 [features.field_presence = IMPLICIT];
+  ModelSpec spec = 8;
 }

@@ -1745,6 +1745,265 @@ func (b0 NotificationFilter_builder) Build() *NotificationFilter {
 	return m0
 }
 
+type NotificationInboxRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Unread bool                   `protobuf:"varint,1,opt,name=unread"`
+	xxx_hidden_Size   uint32                 `protobuf:"varint,2,opt,name=size"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *NotificationInboxRequest) Reset() {
+	*x = NotificationInboxRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationInboxRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationInboxRequest) ProtoMessage() {}
+
+func (x *NotificationInboxRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *NotificationInboxRequest) GetUnread() bool {
+	if x != nil {
+		return x.xxx_hidden_Unread
+	}
+	return false
+}
+
+func (x *NotificationInboxRequest) GetSize() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *NotificationInboxRequest) SetUnread(v bool) {
+	x.xxx_hidden_Unread = v
+}
+
+func (x *NotificationInboxRequest) SetSize(v uint32) {
+	x.xxx_hidden_Size = v
+}
+
+type NotificationInboxRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Unread bool
+	Size   uint32
+}
+
+func (b0 NotificationInboxRequest_builder) Build() *NotificationInboxRequest {
+	m0 := &NotificationInboxRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Unread = b.Unread
+	x.xxx_hidden_Size = b.Size
+	return m0
+}
+
+type NotificationInboxResponse struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items  *[]*Notification       `protobuf:"bytes,1,rep,name=items"`
+	xxx_hidden_Unread uint32                 `protobuf:"varint,2,opt,name=unread"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *NotificationInboxResponse) Reset() {
+	*x = NotificationInboxResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationInboxResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationInboxResponse) ProtoMessage() {}
+
+func (x *NotificationInboxResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *NotificationInboxResponse) GetItems() []*Notification {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *NotificationInboxResponse) GetUnread() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Unread
+	}
+	return 0
+}
+
+func (x *NotificationInboxResponse) SetItems(v []*Notification) {
+	x.xxx_hidden_Items = &v
+}
+
+func (x *NotificationInboxResponse) SetUnread(v uint32) {
+	x.xxx_hidden_Unread = v
+}
+
+type NotificationInboxResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items  []*Notification
+	Unread uint32
+}
+
+func (b0 NotificationInboxResponse_builder) Build() *NotificationInboxResponse {
+	m0 := &NotificationInboxResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	x.xxx_hidden_Unread = b.Unread
+	return m0
+}
+
+type NotificationMarkReadRequest struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ids [][]byte               `protobuf:"bytes,1,rep,name=ids"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *NotificationMarkReadRequest) Reset() {
+	*x = NotificationMarkReadRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationMarkReadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationMarkReadRequest) ProtoMessage() {}
+
+func (x *NotificationMarkReadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *NotificationMarkReadRequest) GetIds() [][]byte {
+	if x != nil {
+		return x.xxx_hidden_Ids
+	}
+	return nil
+}
+
+func (x *NotificationMarkReadRequest) SetIds(v [][]byte) {
+	x.xxx_hidden_Ids = v
+}
+
+type NotificationMarkReadRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Empty: all of the caller's.
+	Ids [][]byte
+}
+
+func (b0 NotificationMarkReadRequest_builder) Build() *NotificationMarkReadRequest {
+	m0 := &NotificationMarkReadRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ids = b.Ids
+	return m0
+}
+
+type NotificationMarkReadResponse struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Marked uint32                 `protobuf:"varint,1,opt,name=marked"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *NotificationMarkReadResponse) Reset() {
+	*x = NotificationMarkReadResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotificationMarkReadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotificationMarkReadResponse) ProtoMessage() {}
+
+func (x *NotificationMarkReadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *NotificationMarkReadResponse) GetMarked() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Marked
+	}
+	return 0
+}
+
+func (x *NotificationMarkReadResponse) SetMarked(v uint32) {
+	x.xxx_hidden_Marked = v
+}
+
+type NotificationMarkReadResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Marked uint32
+}
+
+func (b0 NotificationMarkReadResponse_builder) Build() *NotificationMarkReadResponse {
+	m0 := &NotificationMarkReadResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Marked = b.Marked
+	return m0
+}
+
 type UsageSnapshotAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -1760,7 +2019,7 @@ type UsageSnapshotAddRequest struct {
 
 func (x *UsageSnapshotAddRequest) Reset() {
 	*x = UsageSnapshotAddRequest{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[10]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1772,7 +2031,7 @@ func (x *UsageSnapshotAddRequest) String() string {
 func (*UsageSnapshotAddRequest) ProtoMessage() {}
 
 func (x *UsageSnapshotAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[10]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1911,7 +2170,7 @@ type UsageSnapshotGetRequest struct {
 
 func (x *UsageSnapshotGetRequest) Reset() {
 	*x = UsageSnapshotGetRequest{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[11]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1923,7 +2182,7 @@ func (x *UsageSnapshotGetRequest) String() string {
 func (*UsageSnapshotGetRequest) ProtoMessage() {}
 
 func (x *UsageSnapshotGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[11]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2003,7 +2262,7 @@ type UsageSnapshotRef struct {
 
 func (x *UsageSnapshotRef) Reset() {
 	*x = UsageSnapshotRef{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[12]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2015,7 +2274,7 @@ func (x *UsageSnapshotRef) String() string {
 func (*UsageSnapshotRef) ProtoMessage() {}
 
 func (x *UsageSnapshotRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[12]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2141,7 +2400,7 @@ func (b0 UsageSnapshotRef_builder) Build() *UsageSnapshotRef {
 type case_UsageSnapshotRef_Key protoreflect.FieldNumber
 
 func (x case_UsageSnapshotRef_Key) String() string {
-	md := file_rove_ops_svc_g_proto_msgTypes[12].Descriptor()
+	md := file_rove_ops_svc_g_proto_msgTypes[16].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -2176,7 +2435,7 @@ type UsageSnapshotRefByDay struct {
 
 func (x *UsageSnapshotRefByDay) Reset() {
 	*x = UsageSnapshotRefByDay{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[13]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2188,7 +2447,7 @@ func (x *UsageSnapshotRefByDay) String() string {
 func (*UsageSnapshotRefByDay) ProtoMessage() {}
 
 func (x *UsageSnapshotRefByDay) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[13]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2283,7 +2542,7 @@ type UsageSnapshotSelect struct {
 
 func (x *UsageSnapshotSelect) Reset() {
 	*x = UsageSnapshotSelect{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[14]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +2554,7 @@ func (x *UsageSnapshotSelect) String() string {
 func (*UsageSnapshotSelect) ProtoMessage() {}
 
 func (x *UsageSnapshotSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[14]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2502,7 +2761,7 @@ type UsageSnapshotPatchRequest struct {
 
 func (x *UsageSnapshotPatchRequest) Reset() {
 	*x = UsageSnapshotPatchRequest{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[15]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2514,7 +2773,7 @@ func (x *UsageSnapshotPatchRequest) String() string {
 func (*UsageSnapshotPatchRequest) ProtoMessage() {}
 
 func (x *UsageSnapshotPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[15]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2681,7 +2940,7 @@ type UsageSnapshotApplyRequest struct {
 
 func (x *UsageSnapshotApplyRequest) Reset() {
 	*x = UsageSnapshotApplyRequest{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[16]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2693,7 +2952,7 @@ func (x *UsageSnapshotApplyRequest) String() string {
 func (*UsageSnapshotApplyRequest) ProtoMessage() {}
 
 func (x *UsageSnapshotApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[16]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2775,7 +3034,7 @@ type UsageSnapshotEraseResponse struct {
 
 func (x *UsageSnapshotEraseResponse) Reset() {
 	*x = UsageSnapshotEraseResponse{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[17]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2787,7 +3046,7 @@ func (x *UsageSnapshotEraseResponse) String() string {
 func (*UsageSnapshotEraseResponse) ProtoMessage() {}
 
 func (x *UsageSnapshotEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[17]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2855,7 +3114,7 @@ type UsageSnapshotListRequest struct {
 
 func (x *UsageSnapshotListRequest) Reset() {
 	*x = UsageSnapshotListRequest{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[18]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2867,7 +3126,7 @@ func (x *UsageSnapshotListRequest) String() string {
 func (*UsageSnapshotListRequest) ProtoMessage() {}
 
 func (x *UsageSnapshotListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[18]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2950,7 +3209,7 @@ type UsageSnapshotListResponse struct {
 
 func (x *UsageSnapshotListResponse) Reset() {
 	*x = UsageSnapshotListResponse{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[19]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2962,7 +3221,7 @@ func (x *UsageSnapshotListResponse) String() string {
 func (*UsageSnapshotListResponse) ProtoMessage() {}
 
 func (x *UsageSnapshotListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[19]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3032,7 +3291,7 @@ type UsageSnapshotFilter struct {
 
 func (x *UsageSnapshotFilter) Reset() {
 	*x = UsageSnapshotFilter{}
-	mi := &file_rove_ops_svc_g_proto_msgTypes[20]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3044,7 +3303,7 @@ func (x *UsageSnapshotFilter) String() string {
 func (*UsageSnapshotFilter) ProtoMessage() {}
 
 func (x *UsageSnapshotFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_ops_svc_g_proto_msgTypes[20]
+	mi := &file_rove_ops_svc_g_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3191,7 +3450,17 @@ const file_rove_ops_svc_g_proto_rawDesc = "" +
 	"\x12NotificationFilter\x12'\n" +
 	"\x03ref\x18\x01 \x01(\v2\x15.rove.NotificationRefR\x03ref\x12'\n" +
 	"\x06holder\x18\x02 \x01(\v2\x0f.rove.HolderRefR\x06holder\x12\x12\n" +
-	"\x04kind\x18\x03 \x01(\tR\x04kind\"\xac\x02\n" +
+	"\x04kind\x18\x03 \x01(\tR\x04kind\"T\n" +
+	"\x18NotificationInboxRequest\x12\x1d\n" +
+	"\x06unread\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x02R\x06unread\x12\x19\n" +
+	"\x04size\x18\x02 \x01(\rB\x05\xaa\x01\x02\b\x02R\x04size\"d\n" +
+	"\x19NotificationInboxResponse\x12(\n" +
+	"\x05items\x18\x01 \x03(\v2\x12.rove.NotificationR\x05items\x12\x1d\n" +
+	"\x06unread\x18\x02 \x01(\rB\x05\xaa\x01\x02\b\x02R\x06unread\"/\n" +
+	"\x1bNotificationMarkReadRequest\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\fR\x03ids\"=\n" +
+	"\x1cNotificationMarkReadResponse\x12\x1d\n" +
+	"\x06marked\x18\x01 \x01(\rB\x05\xaa\x01\x02\b\x02R\x06marked\"\xac\x02\n" +
 	"\x17UsageSnapshotAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x17\n" +
@@ -3241,14 +3510,16 @@ const file_rove_ops_svc_g_proto_rawDesc = "" +
 	"\x04next\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04next\"Q\n" +
 	"\x13UsageSnapshotFilter\x12(\n" +
 	"\x03ref\x18\x01 \x01(\v2\x16.rove.UsageSnapshotRefR\x03ref\x12\x10\n" +
-	"\x03day\x18\x02 \x01(\tR\x03day2\x89\x03\n" +
+	"\x03day\x18\x02 \x01(\tR\x03day2\xa6\x04\n" +
 	"\x13NotificationService\x127\n" +
 	"\x03Add\x12\x1c.rove.NotificationAddRequest\x1a\x12.rove.Notification\x127\n" +
 	"\x03Get\x12\x1c.rove.NotificationGetRequest\x1a\x12.rove.Notification\x12;\n" +
 	"\x05Patch\x12\x1e.rove.NotificationPatchRequest\x1a\x12.rove.Notification\x12;\n" +
 	"\x05Apply\x12\x1e.rove.NotificationApplyRequest\x1a\x12.rove.Notification\x12?\n" +
 	"\x05Erase\x12\x15.rove.NotificationRef\x1a\x1f.rove.NotificationEraseResponse\x12E\n" +
-	"\x04List\x12\x1d.rove.NotificationListRequest\x1a\x1e.rove.NotificationListResponse2\x96\x03\n" +
+	"\x04List\x12\x1d.rove.NotificationListRequest\x1a\x1e.rove.NotificationListResponse\x12H\n" +
+	"\x05Inbox\x12\x1e.rove.NotificationInboxRequest\x1a\x1f.rove.NotificationInboxResponse\x12Q\n" +
+	"\bMarkRead\x12!.rove.NotificationMarkReadRequest\x1a\".rove.NotificationMarkReadResponse2\x96\x03\n" +
 	"\x14UsageSnapshotService\x129\n" +
 	"\x03Add\x12\x1d.rove.UsageSnapshotAddRequest\x1a\x13.rove.UsageSnapshot\x129\n" +
 	"\x03Get\x12\x1d.rove.UsageSnapshotGetRequest\x1a\x13.rove.UsageSnapshot\x12=\n" +
@@ -3257,103 +3528,112 @@ const file_rove_ops_svc_g_proto_rawDesc = "" +
 	"\x05Erase\x12\x16.rove.UsageSnapshotRef\x1a .rove.UsageSnapshotEraseResponse\x12G\n" +
 	"\x04List\x12\x1e.rove.UsageSnapshotListRequest\x1a\x1f.rove.UsageSnapshotListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_ops_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_rove_ops_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_rove_ops_svc_g_proto_goTypes = []any{
-	(*NotificationAddRequest)(nil),     // 0: rove.NotificationAddRequest
-	(*NotificationGetRequest)(nil),     // 1: rove.NotificationGetRequest
-	(*NotificationRef)(nil),            // 2: rove.NotificationRef
-	(*NotificationSelect)(nil),         // 3: rove.NotificationSelect
-	(*NotificationPatchRequest)(nil),   // 4: rove.NotificationPatchRequest
-	(*NotificationApplyRequest)(nil),   // 5: rove.NotificationApplyRequest
-	(*NotificationEraseResponse)(nil),  // 6: rove.NotificationEraseResponse
-	(*NotificationListRequest)(nil),    // 7: rove.NotificationListRequest
-	(*NotificationListResponse)(nil),   // 8: rove.NotificationListResponse
-	(*NotificationFilter)(nil),         // 9: rove.NotificationFilter
-	(*UsageSnapshotAddRequest)(nil),    // 10: rove.UsageSnapshotAddRequest
-	(*UsageSnapshotGetRequest)(nil),    // 11: rove.UsageSnapshotGetRequest
-	(*UsageSnapshotRef)(nil),           // 12: rove.UsageSnapshotRef
-	(*UsageSnapshotRefByDay)(nil),      // 13: rove.UsageSnapshotRefByDay
-	(*UsageSnapshotSelect)(nil),        // 14: rove.UsageSnapshotSelect
-	(*UsageSnapshotPatchRequest)(nil),  // 15: rove.UsageSnapshotPatchRequest
-	(*UsageSnapshotApplyRequest)(nil),  // 16: rove.UsageSnapshotApplyRequest
-	(*UsageSnapshotEraseResponse)(nil), // 17: rove.UsageSnapshotEraseResponse
-	(*UsageSnapshotListRequest)(nil),   // 18: rove.UsageSnapshotListRequest
-	(*UsageSnapshotListResponse)(nil),  // 19: rove.UsageSnapshotListResponse
-	(*UsageSnapshotFilter)(nil),        // 20: rove.UsageSnapshotFilter
-	nil,                                // 21: rove.UsageSnapshotAddRequest.MetricsEntry
-	nil,                                // 22: rove.UsageSnapshotPatchRequest.MetricsEntry
-	(*TenantRef)(nil),                  // 23: rove.TenantRef
-	(*HolderRef)(nil),                  // 24: rove.HolderRef
-	(*timestamppb.Timestamp)(nil),      // 25: google.protobuf.Timestamp
-	(*TenantSelect)(nil),               // 26: rove.TenantSelect
-	(*HolderSelect)(nil),               // 27: rove.HolderSelect
-	(*patchpb.Patch)(nil),              // 28: patch.Patch
-	(*Notification)(nil),               // 29: rove.Notification
-	(*UsageSnapshot)(nil),              // 30: rove.UsageSnapshot
+	(*NotificationAddRequest)(nil),       // 0: rove.NotificationAddRequest
+	(*NotificationGetRequest)(nil),       // 1: rove.NotificationGetRequest
+	(*NotificationRef)(nil),              // 2: rove.NotificationRef
+	(*NotificationSelect)(nil),           // 3: rove.NotificationSelect
+	(*NotificationPatchRequest)(nil),     // 4: rove.NotificationPatchRequest
+	(*NotificationApplyRequest)(nil),     // 5: rove.NotificationApplyRequest
+	(*NotificationEraseResponse)(nil),    // 6: rove.NotificationEraseResponse
+	(*NotificationListRequest)(nil),      // 7: rove.NotificationListRequest
+	(*NotificationListResponse)(nil),     // 8: rove.NotificationListResponse
+	(*NotificationFilter)(nil),           // 9: rove.NotificationFilter
+	(*NotificationInboxRequest)(nil),     // 10: rove.NotificationInboxRequest
+	(*NotificationInboxResponse)(nil),    // 11: rove.NotificationInboxResponse
+	(*NotificationMarkReadRequest)(nil),  // 12: rove.NotificationMarkReadRequest
+	(*NotificationMarkReadResponse)(nil), // 13: rove.NotificationMarkReadResponse
+	(*UsageSnapshotAddRequest)(nil),      // 14: rove.UsageSnapshotAddRequest
+	(*UsageSnapshotGetRequest)(nil),      // 15: rove.UsageSnapshotGetRequest
+	(*UsageSnapshotRef)(nil),             // 16: rove.UsageSnapshotRef
+	(*UsageSnapshotRefByDay)(nil),        // 17: rove.UsageSnapshotRefByDay
+	(*UsageSnapshotSelect)(nil),          // 18: rove.UsageSnapshotSelect
+	(*UsageSnapshotPatchRequest)(nil),    // 19: rove.UsageSnapshotPatchRequest
+	(*UsageSnapshotApplyRequest)(nil),    // 20: rove.UsageSnapshotApplyRequest
+	(*UsageSnapshotEraseResponse)(nil),   // 21: rove.UsageSnapshotEraseResponse
+	(*UsageSnapshotListRequest)(nil),     // 22: rove.UsageSnapshotListRequest
+	(*UsageSnapshotListResponse)(nil),    // 23: rove.UsageSnapshotListResponse
+	(*UsageSnapshotFilter)(nil),          // 24: rove.UsageSnapshotFilter
+	nil,                                  // 25: rove.UsageSnapshotAddRequest.MetricsEntry
+	nil,                                  // 26: rove.UsageSnapshotPatchRequest.MetricsEntry
+	(*TenantRef)(nil),                    // 27: rove.TenantRef
+	(*HolderRef)(nil),                    // 28: rove.HolderRef
+	(*timestamppb.Timestamp)(nil),        // 29: google.protobuf.Timestamp
+	(*TenantSelect)(nil),                 // 30: rove.TenantSelect
+	(*HolderSelect)(nil),                 // 31: rove.HolderSelect
+	(*patchpb.Patch)(nil),                // 32: patch.Patch
+	(*Notification)(nil),                 // 33: rove.Notification
+	(*UsageSnapshot)(nil),                // 34: rove.UsageSnapshot
 }
 var file_rove_ops_svc_g_proto_depIdxs = []int32{
-	23, // 0: rove.NotificationAddRequest.tenant:type_name -> rove.TenantRef
-	24, // 1: rove.NotificationAddRequest.holder:type_name -> rove.HolderRef
-	25, // 2: rove.NotificationAddRequest.read_at:type_name -> google.protobuf.Timestamp
-	25, // 3: rove.NotificationAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	27, // 0: rove.NotificationAddRequest.tenant:type_name -> rove.TenantRef
+	28, // 1: rove.NotificationAddRequest.holder:type_name -> rove.HolderRef
+	29, // 2: rove.NotificationAddRequest.read_at:type_name -> google.protobuf.Timestamp
+	29, // 3: rove.NotificationAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 4: rove.NotificationGetRequest.ref:type_name -> rove.NotificationRef
 	3,  // 5: rove.NotificationGetRequest.select:type_name -> rove.NotificationSelect
-	26, // 6: rove.NotificationSelect.tenant:type_name -> rove.TenantSelect
-	27, // 7: rove.NotificationSelect.holder:type_name -> rove.HolderSelect
+	30, // 6: rove.NotificationSelect.tenant:type_name -> rove.TenantSelect
+	31, // 7: rove.NotificationSelect.holder:type_name -> rove.HolderSelect
 	2,  // 8: rove.NotificationPatchRequest.ref:type_name -> rove.NotificationRef
-	25, // 9: rove.NotificationPatchRequest.read_at:type_name -> google.protobuf.Timestamp
-	25, // 10: rove.NotificationPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	29, // 9: rove.NotificationPatchRequest.read_at:type_name -> google.protobuf.Timestamp
+	29, // 10: rove.NotificationPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 11: rove.NotificationApplyRequest.ref:type_name -> rove.NotificationRef
-	28, // 12: rove.NotificationApplyRequest.patch:type_name -> patch.Patch
+	32, // 12: rove.NotificationApplyRequest.patch:type_name -> patch.Patch
 	9,  // 13: rove.NotificationListRequest.filters:type_name -> rove.NotificationFilter
-	29, // 14: rove.NotificationListResponse.items:type_name -> rove.Notification
+	33, // 14: rove.NotificationListResponse.items:type_name -> rove.Notification
 	2,  // 15: rove.NotificationFilter.ref:type_name -> rove.NotificationRef
-	24, // 16: rove.NotificationFilter.holder:type_name -> rove.HolderRef
-	23, // 17: rove.UsageSnapshotAddRequest.tenant:type_name -> rove.TenantRef
-	21, // 18: rove.UsageSnapshotAddRequest.metrics:type_name -> rove.UsageSnapshotAddRequest.MetricsEntry
-	25, // 19: rove.UsageSnapshotAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	12, // 20: rove.UsageSnapshotGetRequest.ref:type_name -> rove.UsageSnapshotRef
-	14, // 21: rove.UsageSnapshotGetRequest.select:type_name -> rove.UsageSnapshotSelect
-	13, // 22: rove.UsageSnapshotRef.day:type_name -> rove.UsageSnapshotRefByDay
-	23, // 23: rove.UsageSnapshotRefByDay.tenant:type_name -> rove.TenantRef
-	26, // 24: rove.UsageSnapshotSelect.tenant:type_name -> rove.TenantSelect
-	12, // 25: rove.UsageSnapshotPatchRequest.ref:type_name -> rove.UsageSnapshotRef
-	22, // 26: rove.UsageSnapshotPatchRequest.metrics:type_name -> rove.UsageSnapshotPatchRequest.MetricsEntry
-	25, // 27: rove.UsageSnapshotPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	12, // 28: rove.UsageSnapshotApplyRequest.ref:type_name -> rove.UsageSnapshotRef
-	28, // 29: rove.UsageSnapshotApplyRequest.patch:type_name -> patch.Patch
-	20, // 30: rove.UsageSnapshotListRequest.filters:type_name -> rove.UsageSnapshotFilter
-	30, // 31: rove.UsageSnapshotListResponse.items:type_name -> rove.UsageSnapshot
-	12, // 32: rove.UsageSnapshotFilter.ref:type_name -> rove.UsageSnapshotRef
-	0,  // 33: rove.NotificationService.Add:input_type -> rove.NotificationAddRequest
-	1,  // 34: rove.NotificationService.Get:input_type -> rove.NotificationGetRequest
-	4,  // 35: rove.NotificationService.Patch:input_type -> rove.NotificationPatchRequest
-	5,  // 36: rove.NotificationService.Apply:input_type -> rove.NotificationApplyRequest
-	2,  // 37: rove.NotificationService.Erase:input_type -> rove.NotificationRef
-	7,  // 38: rove.NotificationService.List:input_type -> rove.NotificationListRequest
-	10, // 39: rove.UsageSnapshotService.Add:input_type -> rove.UsageSnapshotAddRequest
-	11, // 40: rove.UsageSnapshotService.Get:input_type -> rove.UsageSnapshotGetRequest
-	15, // 41: rove.UsageSnapshotService.Patch:input_type -> rove.UsageSnapshotPatchRequest
-	16, // 42: rove.UsageSnapshotService.Apply:input_type -> rove.UsageSnapshotApplyRequest
-	12, // 43: rove.UsageSnapshotService.Erase:input_type -> rove.UsageSnapshotRef
-	18, // 44: rove.UsageSnapshotService.List:input_type -> rove.UsageSnapshotListRequest
-	29, // 45: rove.NotificationService.Add:output_type -> rove.Notification
-	29, // 46: rove.NotificationService.Get:output_type -> rove.Notification
-	29, // 47: rove.NotificationService.Patch:output_type -> rove.Notification
-	29, // 48: rove.NotificationService.Apply:output_type -> rove.Notification
-	6,  // 49: rove.NotificationService.Erase:output_type -> rove.NotificationEraseResponse
-	8,  // 50: rove.NotificationService.List:output_type -> rove.NotificationListResponse
-	30, // 51: rove.UsageSnapshotService.Add:output_type -> rove.UsageSnapshot
-	30, // 52: rove.UsageSnapshotService.Get:output_type -> rove.UsageSnapshot
-	30, // 53: rove.UsageSnapshotService.Patch:output_type -> rove.UsageSnapshot
-	30, // 54: rove.UsageSnapshotService.Apply:output_type -> rove.UsageSnapshot
-	17, // 55: rove.UsageSnapshotService.Erase:output_type -> rove.UsageSnapshotEraseResponse
-	19, // 56: rove.UsageSnapshotService.List:output_type -> rove.UsageSnapshotListResponse
-	45, // [45:57] is the sub-list for method output_type
-	33, // [33:45] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	28, // 16: rove.NotificationFilter.holder:type_name -> rove.HolderRef
+	33, // 17: rove.NotificationInboxResponse.items:type_name -> rove.Notification
+	27, // 18: rove.UsageSnapshotAddRequest.tenant:type_name -> rove.TenantRef
+	25, // 19: rove.UsageSnapshotAddRequest.metrics:type_name -> rove.UsageSnapshotAddRequest.MetricsEntry
+	29, // 20: rove.UsageSnapshotAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	16, // 21: rove.UsageSnapshotGetRequest.ref:type_name -> rove.UsageSnapshotRef
+	18, // 22: rove.UsageSnapshotGetRequest.select:type_name -> rove.UsageSnapshotSelect
+	17, // 23: rove.UsageSnapshotRef.day:type_name -> rove.UsageSnapshotRefByDay
+	27, // 24: rove.UsageSnapshotRefByDay.tenant:type_name -> rove.TenantRef
+	30, // 25: rove.UsageSnapshotSelect.tenant:type_name -> rove.TenantSelect
+	16, // 26: rove.UsageSnapshotPatchRequest.ref:type_name -> rove.UsageSnapshotRef
+	26, // 27: rove.UsageSnapshotPatchRequest.metrics:type_name -> rove.UsageSnapshotPatchRequest.MetricsEntry
+	29, // 28: rove.UsageSnapshotPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	16, // 29: rove.UsageSnapshotApplyRequest.ref:type_name -> rove.UsageSnapshotRef
+	32, // 30: rove.UsageSnapshotApplyRequest.patch:type_name -> patch.Patch
+	24, // 31: rove.UsageSnapshotListRequest.filters:type_name -> rove.UsageSnapshotFilter
+	34, // 32: rove.UsageSnapshotListResponse.items:type_name -> rove.UsageSnapshot
+	16, // 33: rove.UsageSnapshotFilter.ref:type_name -> rove.UsageSnapshotRef
+	0,  // 34: rove.NotificationService.Add:input_type -> rove.NotificationAddRequest
+	1,  // 35: rove.NotificationService.Get:input_type -> rove.NotificationGetRequest
+	4,  // 36: rove.NotificationService.Patch:input_type -> rove.NotificationPatchRequest
+	5,  // 37: rove.NotificationService.Apply:input_type -> rove.NotificationApplyRequest
+	2,  // 38: rove.NotificationService.Erase:input_type -> rove.NotificationRef
+	7,  // 39: rove.NotificationService.List:input_type -> rove.NotificationListRequest
+	10, // 40: rove.NotificationService.Inbox:input_type -> rove.NotificationInboxRequest
+	12, // 41: rove.NotificationService.MarkRead:input_type -> rove.NotificationMarkReadRequest
+	14, // 42: rove.UsageSnapshotService.Add:input_type -> rove.UsageSnapshotAddRequest
+	15, // 43: rove.UsageSnapshotService.Get:input_type -> rove.UsageSnapshotGetRequest
+	19, // 44: rove.UsageSnapshotService.Patch:input_type -> rove.UsageSnapshotPatchRequest
+	20, // 45: rove.UsageSnapshotService.Apply:input_type -> rove.UsageSnapshotApplyRequest
+	16, // 46: rove.UsageSnapshotService.Erase:input_type -> rove.UsageSnapshotRef
+	22, // 47: rove.UsageSnapshotService.List:input_type -> rove.UsageSnapshotListRequest
+	33, // 48: rove.NotificationService.Add:output_type -> rove.Notification
+	33, // 49: rove.NotificationService.Get:output_type -> rove.Notification
+	33, // 50: rove.NotificationService.Patch:output_type -> rove.Notification
+	33, // 51: rove.NotificationService.Apply:output_type -> rove.Notification
+	6,  // 52: rove.NotificationService.Erase:output_type -> rove.NotificationEraseResponse
+	8,  // 53: rove.NotificationService.List:output_type -> rove.NotificationListResponse
+	11, // 54: rove.NotificationService.Inbox:output_type -> rove.NotificationInboxResponse
+	13, // 55: rove.NotificationService.MarkRead:output_type -> rove.NotificationMarkReadResponse
+	34, // 56: rove.UsageSnapshotService.Add:output_type -> rove.UsageSnapshot
+	34, // 57: rove.UsageSnapshotService.Get:output_type -> rove.UsageSnapshot
+	34, // 58: rove.UsageSnapshotService.Patch:output_type -> rove.UsageSnapshot
+	34, // 59: rove.UsageSnapshotService.Apply:output_type -> rove.UsageSnapshot
+	21, // 60: rove.UsageSnapshotService.Erase:output_type -> rove.UsageSnapshotEraseResponse
+	23, // 61: rove.UsageSnapshotService.List:output_type -> rove.UsageSnapshotListResponse
+	48, // [48:62] is the sub-list for method output_type
+	34, // [34:48] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_rove_ops_svc_g_proto_init() }
@@ -3367,7 +3647,7 @@ func file_rove_ops_svc_g_proto_init() {
 	file_rove_ops_svc_g_proto_msgTypes[2].OneofWrappers = []any{
 		(*notificationRef_Id)(nil),
 	}
-	file_rove_ops_svc_g_proto_msgTypes[12].OneofWrappers = []any{
+	file_rove_ops_svc_g_proto_msgTypes[16].OneofWrappers = []any{
 		(*usageSnapshotRef_Id)(nil),
 		(*usageSnapshotRef_Day)(nil),
 	}
@@ -3377,7 +3657,7 @@ func file_rove_ops_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_ops_svc_g_proto_rawDesc), len(file_rove_ops_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

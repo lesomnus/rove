@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AssetTypeService_Add_FullMethodName   = "/rove.AssetTypeService/Add"
-	AssetTypeService_Get_FullMethodName   = "/rove.AssetTypeService/Get"
-	AssetTypeService_Patch_FullMethodName = "/rove.AssetTypeService/Patch"
-	AssetTypeService_Apply_FullMethodName = "/rove.AssetTypeService/Apply"
-	AssetTypeService_Erase_FullMethodName = "/rove.AssetTypeService/Erase"
-	AssetTypeService_List_FullMethodName  = "/rove.AssetTypeService/List"
-	AssetTypeService_Watch_FullMethodName = "/rove.AssetTypeService/Watch"
+	AssetTypeService_Add_FullMethodName    = "/rove.AssetTypeService/Add"
+	AssetTypeService_Get_FullMethodName    = "/rove.AssetTypeService/Get"
+	AssetTypeService_Patch_FullMethodName  = "/rove.AssetTypeService/Patch"
+	AssetTypeService_Apply_FullMethodName  = "/rove.AssetTypeService/Apply"
+	AssetTypeService_Erase_FullMethodName  = "/rove.AssetTypeService/Erase"
+	AssetTypeService_List_FullMethodName   = "/rove.AssetTypeService/List"
+	AssetTypeService_Watch_FullMethodName  = "/rove.AssetTypeService/Watch"
+	AssetTypeService_Update_FullMethodName = "/rove.AssetTypeService/Update"
 )
 
 // AssetTypeServiceClient is the client API for AssetTypeService service.
@@ -56,6 +57,7 @@ type AssetTypeServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *AssetTypeWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[AssetTypeWatchResponse], error)
+	Update(ctx context.Context, in *AssetTypeUpdateRequest, opts ...grpc.CallOption) (*AssetType, error)
 }
 
 type assetTypeServiceClient struct {
@@ -145,6 +147,16 @@ func (c *assetTypeServiceClient) Watch(ctx context.Context, in *AssetTypeWatchRe
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AssetTypeService_WatchClient = grpc.ServerStreamingClient[AssetTypeWatchResponse]
 
+func (c *assetTypeServiceClient) Update(ctx context.Context, in *AssetTypeUpdateRequest, opts ...grpc.CallOption) (*AssetType, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetType)
+	err := c.cc.Invoke(ctx, AssetTypeService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetTypeServiceServer is the server API for AssetTypeService service.
 // All implementations must embed UnimplementedAssetTypeServiceServer
 // for forward compatibility.
@@ -173,6 +185,7 @@ type AssetTypeServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*AssetTypeWatchRequest, grpc.ServerStreamingServer[AssetTypeWatchResponse]) error
+	Update(context.Context, *AssetTypeUpdateRequest) (*AssetType, error)
 	mustEmbedUnimplementedAssetTypeServiceServer()
 }
 
@@ -203,6 +216,9 @@ func (UnimplementedAssetTypeServiceServer) List(context.Context, *AssetTypeListR
 }
 func (UnimplementedAssetTypeServiceServer) Watch(*AssetTypeWatchRequest, grpc.ServerStreamingServer[AssetTypeWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedAssetTypeServiceServer) Update(context.Context, *AssetTypeUpdateRequest) (*AssetType, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedAssetTypeServiceServer) mustEmbedUnimplementedAssetTypeServiceServer() {}
 func (UnimplementedAssetTypeServiceServer) testEmbeddedByValue()                          {}
@@ -344,6 +360,24 @@ func _AssetTypeService_Watch_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type AssetTypeService_WatchServer = grpc.ServerStreamingServer[AssetTypeWatchResponse]
 
+func _AssetTypeService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssetTypeUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetTypeServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetTypeService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetTypeServiceServer).Update(ctx, req.(*AssetTypeUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetTypeService_ServiceDesc is the grpc.ServiceDesc for AssetTypeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -375,6 +409,10 @@ var AssetTypeService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _AssetTypeService_List_Handler,
 		},
+		{
+			MethodName: "Update",
+			Handler:    _AssetTypeService_Update_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -387,13 +425,14 @@ var AssetTypeService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ItemModelService_Add_FullMethodName   = "/rove.ItemModelService/Add"
-	ItemModelService_Get_FullMethodName   = "/rove.ItemModelService/Get"
-	ItemModelService_Patch_FullMethodName = "/rove.ItemModelService/Patch"
-	ItemModelService_Apply_FullMethodName = "/rove.ItemModelService/Apply"
-	ItemModelService_Erase_FullMethodName = "/rove.ItemModelService/Erase"
-	ItemModelService_List_FullMethodName  = "/rove.ItemModelService/List"
-	ItemModelService_Watch_FullMethodName = "/rove.ItemModelService/Watch"
+	ItemModelService_Add_FullMethodName    = "/rove.ItemModelService/Add"
+	ItemModelService_Get_FullMethodName    = "/rove.ItemModelService/Get"
+	ItemModelService_Patch_FullMethodName  = "/rove.ItemModelService/Patch"
+	ItemModelService_Apply_FullMethodName  = "/rove.ItemModelService/Apply"
+	ItemModelService_Erase_FullMethodName  = "/rove.ItemModelService/Erase"
+	ItemModelService_List_FullMethodName   = "/rove.ItemModelService/List"
+	ItemModelService_Watch_FullMethodName  = "/rove.ItemModelService/Watch"
+	ItemModelService_Update_FullMethodName = "/rove.ItemModelService/Update"
 )
 
 // ItemModelServiceClient is the client API for ItemModelService service.
@@ -424,6 +463,7 @@ type ItemModelServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *ItemModelWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ItemModelWatchResponse], error)
+	Update(ctx context.Context, in *ItemModelUpdateRequest, opts ...grpc.CallOption) (*ItemModel, error)
 }
 
 type itemModelServiceClient struct {
@@ -513,6 +553,16 @@ func (c *itemModelServiceClient) Watch(ctx context.Context, in *ItemModelWatchRe
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ItemModelService_WatchClient = grpc.ServerStreamingClient[ItemModelWatchResponse]
 
+func (c *itemModelServiceClient) Update(ctx context.Context, in *ItemModelUpdateRequest, opts ...grpc.CallOption) (*ItemModel, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ItemModel)
+	err := c.cc.Invoke(ctx, ItemModelService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ItemModelServiceServer is the server API for ItemModelService service.
 // All implementations must embed UnimplementedItemModelServiceServer
 // for forward compatibility.
@@ -541,6 +591,7 @@ type ItemModelServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*ItemModelWatchRequest, grpc.ServerStreamingServer[ItemModelWatchResponse]) error
+	Update(context.Context, *ItemModelUpdateRequest) (*ItemModel, error)
 	mustEmbedUnimplementedItemModelServiceServer()
 }
 
@@ -571,6 +622,9 @@ func (UnimplementedItemModelServiceServer) List(context.Context, *ItemModelListR
 }
 func (UnimplementedItemModelServiceServer) Watch(*ItemModelWatchRequest, grpc.ServerStreamingServer[ItemModelWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedItemModelServiceServer) Update(context.Context, *ItemModelUpdateRequest) (*ItemModel, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedItemModelServiceServer) mustEmbedUnimplementedItemModelServiceServer() {}
 func (UnimplementedItemModelServiceServer) testEmbeddedByValue()                          {}
@@ -712,6 +766,24 @@ func _ItemModelService_Watch_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ItemModelService_WatchServer = grpc.ServerStreamingServer[ItemModelWatchResponse]
 
+func _ItemModelService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ItemModelUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemModelServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ItemModelService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemModelServiceServer).Update(ctx, req.(*ItemModelUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ItemModelService_ServiceDesc is the grpc.ServiceDesc for ItemModelService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -742,6 +814,10 @@ var ItemModelService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _ItemModelService_List_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _ItemModelService_Update_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

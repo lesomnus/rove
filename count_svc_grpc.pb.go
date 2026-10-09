@@ -19,13 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InventoryCountService_Add_FullMethodName   = "/rove.InventoryCountService/Add"
-	InventoryCountService_Get_FullMethodName   = "/rove.InventoryCountService/Get"
-	InventoryCountService_Patch_FullMethodName = "/rove.InventoryCountService/Patch"
-	InventoryCountService_Apply_FullMethodName = "/rove.InventoryCountService/Apply"
-	InventoryCountService_Erase_FullMethodName = "/rove.InventoryCountService/Erase"
-	InventoryCountService_List_FullMethodName  = "/rove.InventoryCountService/List"
-	InventoryCountService_Watch_FullMethodName = "/rove.InventoryCountService/Watch"
+	InventoryCountService_Add_FullMethodName       = "/rove.InventoryCountService/Add"
+	InventoryCountService_Get_FullMethodName       = "/rove.InventoryCountService/Get"
+	InventoryCountService_Patch_FullMethodName     = "/rove.InventoryCountService/Patch"
+	InventoryCountService_Apply_FullMethodName     = "/rove.InventoryCountService/Apply"
+	InventoryCountService_Erase_FullMethodName     = "/rove.InventoryCountService/Erase"
+	InventoryCountService_List_FullMethodName      = "/rove.InventoryCountService/List"
+	InventoryCountService_Watch_FullMethodName     = "/rove.InventoryCountService/Watch"
+	InventoryCountService_Scan_FullMethodName      = "/rove.InventoryCountService/Scan"
+	InventoryCountService_Reconcile_FullMethodName = "/rove.InventoryCountService/Reconcile"
+	InventoryCountService_Resolve_FullMethodName   = "/rove.InventoryCountService/Resolve"
+	InventoryCountService_Close_FullMethodName     = "/rove.InventoryCountService/Close"
 )
 
 // InventoryCountServiceClient is the client API for InventoryCountService service.
@@ -56,6 +60,15 @@ type InventoryCountServiceClient interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(ctx context.Context, in *InventoryCountWatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[InventoryCountWatchResponse], error)
+	// Scan records that something was seen, where. Offline scans arrive with the
+	// device's `seen_at` and their own op, so a replay is the same scan.
+	Scan(ctx context.Context, in *InventoryCountScanRequest, opts ...grpc.CallOption) (*CountFinding, error)
+	// Reconcile marks what was expected under the scope and never seen.
+	Reconcile(ctx context.Context, in *InventoryCountReconcileRequest, opts ...grpc.CallOption) (*InventoryCountReconcileResponse, error)
+	// Resolve settles one finding: move the asset to where it was seen, report it
+	// lost, or ignore it.
+	Resolve(ctx context.Context, in *InventoryCountResolveRequest, opts ...grpc.CallOption) (*CountFinding, error)
+	Close(ctx context.Context, in *InventoryCountCloseRequest, opts ...grpc.CallOption) (*InventoryCount, error)
 }
 
 type inventoryCountServiceClient struct {
@@ -145,6 +158,46 @@ func (c *inventoryCountServiceClient) Watch(ctx context.Context, in *InventoryCo
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type InventoryCountService_WatchClient = grpc.ServerStreamingClient[InventoryCountWatchResponse]
 
+func (c *inventoryCountServiceClient) Scan(ctx context.Context, in *InventoryCountScanRequest, opts ...grpc.CallOption) (*CountFinding, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountFinding)
+	err := c.cc.Invoke(ctx, InventoryCountService_Scan_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryCountServiceClient) Reconcile(ctx context.Context, in *InventoryCountReconcileRequest, opts ...grpc.CallOption) (*InventoryCountReconcileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InventoryCountReconcileResponse)
+	err := c.cc.Invoke(ctx, InventoryCountService_Reconcile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryCountServiceClient) Resolve(ctx context.Context, in *InventoryCountResolveRequest, opts ...grpc.CallOption) (*CountFinding, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountFinding)
+	err := c.cc.Invoke(ctx, InventoryCountService_Resolve_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryCountServiceClient) Close(ctx context.Context, in *InventoryCountCloseRequest, opts ...grpc.CallOption) (*InventoryCount, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InventoryCount)
+	err := c.cc.Invoke(ctx, InventoryCountService_Close_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryCountServiceServer is the server API for InventoryCountService service.
 // All implementations must embed UnimplementedInventoryCountServiceServer
 // for forward compatibility.
@@ -173,6 +226,15 @@ type InventoryCountServiceServer interface {
 	// once in that first message and once as a change that happened while it was
 	// being read -- and that is harmless for the same reason.
 	Watch(*InventoryCountWatchRequest, grpc.ServerStreamingServer[InventoryCountWatchResponse]) error
+	// Scan records that something was seen, where. Offline scans arrive with the
+	// device's `seen_at` and their own op, so a replay is the same scan.
+	Scan(context.Context, *InventoryCountScanRequest) (*CountFinding, error)
+	// Reconcile marks what was expected under the scope and never seen.
+	Reconcile(context.Context, *InventoryCountReconcileRequest) (*InventoryCountReconcileResponse, error)
+	// Resolve settles one finding: move the asset to where it was seen, report it
+	// lost, or ignore it.
+	Resolve(context.Context, *InventoryCountResolveRequest) (*CountFinding, error)
+	Close(context.Context, *InventoryCountCloseRequest) (*InventoryCount, error)
 	mustEmbedUnimplementedInventoryCountServiceServer()
 }
 
@@ -203,6 +265,18 @@ func (UnimplementedInventoryCountServiceServer) List(context.Context, *Inventory
 }
 func (UnimplementedInventoryCountServiceServer) Watch(*InventoryCountWatchRequest, grpc.ServerStreamingServer[InventoryCountWatchResponse]) error {
 	return status.Error(codes.Unimplemented, "method Watch not implemented")
+}
+func (UnimplementedInventoryCountServiceServer) Scan(context.Context, *InventoryCountScanRequest) (*CountFinding, error) {
+	return nil, status.Error(codes.Unimplemented, "method Scan not implemented")
+}
+func (UnimplementedInventoryCountServiceServer) Reconcile(context.Context, *InventoryCountReconcileRequest) (*InventoryCountReconcileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Reconcile not implemented")
+}
+func (UnimplementedInventoryCountServiceServer) Resolve(context.Context, *InventoryCountResolveRequest) (*CountFinding, error) {
+	return nil, status.Error(codes.Unimplemented, "method Resolve not implemented")
+}
+func (UnimplementedInventoryCountServiceServer) Close(context.Context, *InventoryCountCloseRequest) (*InventoryCount, error) {
+	return nil, status.Error(codes.Unimplemented, "method Close not implemented")
 }
 func (UnimplementedInventoryCountServiceServer) mustEmbedUnimplementedInventoryCountServiceServer() {}
 func (UnimplementedInventoryCountServiceServer) testEmbeddedByValue()                               {}
@@ -344,6 +418,78 @@ func _InventoryCountService_Watch_Handler(srv interface{}, stream grpc.ServerStr
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type InventoryCountService_WatchServer = grpc.ServerStreamingServer[InventoryCountWatchResponse]
 
+func _InventoryCountService_Scan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InventoryCountScanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryCountServiceServer).Scan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryCountService_Scan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryCountServiceServer).Scan(ctx, req.(*InventoryCountScanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryCountService_Reconcile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InventoryCountReconcileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryCountServiceServer).Reconcile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryCountService_Reconcile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryCountServiceServer).Reconcile(ctx, req.(*InventoryCountReconcileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryCountService_Resolve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InventoryCountResolveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryCountServiceServer).Resolve(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryCountService_Resolve_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryCountServiceServer).Resolve(ctx, req.(*InventoryCountResolveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryCountService_Close_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InventoryCountCloseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryCountServiceServer).Close(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryCountService_Close_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryCountServiceServer).Close(ctx, req.(*InventoryCountCloseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryCountService_ServiceDesc is the grpc.ServiceDesc for InventoryCountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -374,6 +520,22 @@ var InventoryCountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _InventoryCountService_List_Handler,
+		},
+		{
+			MethodName: "Scan",
+			Handler:    _InventoryCountService_Scan_Handler,
+		},
+		{
+			MethodName: "Reconcile",
+			Handler:    _InventoryCountService_Reconcile_Handler,
+		},
+		{
+			MethodName: "Resolve",
+			Handler:    _InventoryCountService_Resolve_Handler,
+		},
+		{
+			MethodName: "Close",
+			Handler:    _InventoryCountService_Close_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
