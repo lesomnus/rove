@@ -98,7 +98,8 @@ func init() {
 	}
 
 	// What only the people who run the tenant, or audit it, read.
-	oversee("AuditService", "Get", "List")
+	oversee("AuditService", "Get", "List", "Recent")
+	allow(Read, "EventService", "Recent")
 	oversee("HolderService", reads...)
 	oversee("UsageSnapshotService", "Get", "List")
 

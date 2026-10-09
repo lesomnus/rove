@@ -92,9 +92,18 @@ func (s domainAsset) Timeline(ctx context.Context, req *app.AssetTimelineRequest
 	if err != nil {
 		return nil, err
 	}
-	_, id, err := t.get(req.GetRef(), "ref")
+	cur, id, err := t.get(req.GetRef(), "ref")
 	if err != nil {
 		return nil, err
+	}
+	// What the type calls each attribute, for a person reading the history.
+	labels := map[string]string{}
+	if spec, err := t.specOfAsset(cur); err == nil {
+		for _, d := range spec.GetAttributes() {
+			if d.GetLabel() != "" {
+				labels["attr."+d.GetKey()] = d.GetLabel()
+			}
+		}
 	}
 	vis := visible{all: req.GetSuperseded()}
 	if req.HasKnown() {
@@ -178,7 +187,11 @@ func (s domainAsset) Timeline(ctx context.Context, req *app.AssetTimelineRequest
 		case r.Key == "condition":
 			v = or(conditionSay[v], v)
 		}
-		e.SetSummary(fmt.Sprintf("%s = %s", factName(r.Key), v))
+		name := factName(r.Key)
+		if l, ok := labels[r.Key]; ok {
+			name = l
+		}
+		e.SetSummary(fmt.Sprintf("%s = %s", name, v))
 		e.SetDetail(map[string]string{"key": r.Key, "value": r.Value})
 		entries = append(entries, e)
 	}

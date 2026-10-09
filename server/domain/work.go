@@ -8,6 +8,8 @@ import (
 
 	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/z"
+	"google.golang.org/grpc/codes"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	app "github.com/lesomnus/rove"
@@ -46,6 +48,17 @@ func (s domainWorkOrder) Add(ctx context.Context, req *app.WorkOrderAddRequest) 
 		if strings.TrimSpace(req.GetName()) == "" {
 			return invalid("name", "say what the work is")
 		}
+		mgr := manages(t.roleOf())
+		if !mgr {
+			// What a member can do is report something broken. When it is
+			// looked at, by whom and for how much is a manager's to decide.
+			if kind != "repair" {
+				return grpcstatus.Error(codes.PermissionDenied, "a member reports a repair; other work is a manager's")
+			}
+			if req.GetBlocking() || req.HasBeginsAt() || req.HasEndsAt() || req.GetEveryDays() != 0 || req.GetCost() != 0 || req.HasVendor() {
+				return grpcstatus.Error(codes.PermissionDenied, "scheduling and costs are a manager's")
+			}
+		}
 		status := "open"
 		if req.HasBeginsAt() {
 			status = "scheduled"
@@ -83,6 +96,11 @@ func (s domainWorkOrder) Add(ctx context.Context, req *app.WorkOrderAddRequest) 
 		}
 		if err := t.block(w); err != nil {
 			return err
+		}
+		if !mgr {
+			if err := t.notifyManagers("work.reported", "고장 신고: "+a.GetTag()+" "+a.GetName(), w.GetName(), idOf(w.GetId()), "/work"); err != nil {
+				return err
+			}
 		}
 		out = w
 		return nil

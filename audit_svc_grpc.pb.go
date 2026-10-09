@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuditService_Add_FullMethodName   = "/rove.AuditService/Add"
-	AuditService_Get_FullMethodName   = "/rove.AuditService/Get"
-	AuditService_Patch_FullMethodName = "/rove.AuditService/Patch"
-	AuditService_Apply_FullMethodName = "/rove.AuditService/Apply"
-	AuditService_Erase_FullMethodName = "/rove.AuditService/Erase"
-	AuditService_List_FullMethodName  = "/rove.AuditService/List"
+	AuditService_Add_FullMethodName    = "/rove.AuditService/Add"
+	AuditService_Get_FullMethodName    = "/rove.AuditService/Get"
+	AuditService_Patch_FullMethodName  = "/rove.AuditService/Patch"
+	AuditService_Apply_FullMethodName  = "/rove.AuditService/Apply"
+	AuditService_Erase_FullMethodName  = "/rove.AuditService/Erase"
+	AuditService_List_FullMethodName   = "/rove.AuditService/List"
+	AuditService_Recent_FullMethodName = "/rove.AuditService/Recent"
 )
 
 // AuditServiceClient is the client API for AuditService service.
@@ -43,6 +44,9 @@ type AuditServiceClient interface {
 	Erase(ctx context.Context, in *AuditRef, opts ...grpc.CallOption) (*AuditEraseResponse, error)
 	// List reads Audits a page at a time.
 	List(ctx context.Context, in *AuditListRequest, opts ...grpc.CallOption) (*AuditListResponse, error)
+	// Recent answers the newest trail rows first, for a person reading what
+	// happened lately.
+	Recent(ctx context.Context, in *AuditRecentRequest, opts ...grpc.CallOption) (*AuditRecentResponse, error)
 }
 
 type auditServiceClient struct {
@@ -113,6 +117,16 @@ func (c *auditServiceClient) List(ctx context.Context, in *AuditListRequest, opt
 	return out, nil
 }
 
+func (c *auditServiceClient) Recent(ctx context.Context, in *AuditRecentRequest, opts ...grpc.CallOption) (*AuditRecentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuditRecentResponse)
+	err := c.cc.Invoke(ctx, AuditService_Recent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuditServiceServer is the server API for AuditService service.
 // All implementations must embed UnimplementedAuditServiceServer
 // for forward compatibility.
@@ -129,6 +143,9 @@ type AuditServiceServer interface {
 	Erase(context.Context, *AuditRef) (*AuditEraseResponse, error)
 	// List reads Audits a page at a time.
 	List(context.Context, *AuditListRequest) (*AuditListResponse, error)
+	// Recent answers the newest trail rows first, for a person reading what
+	// happened lately.
+	Recent(context.Context, *AuditRecentRequest) (*AuditRecentResponse, error)
 	mustEmbedUnimplementedAuditServiceServer()
 }
 
@@ -156,6 +173,9 @@ func (UnimplementedAuditServiceServer) Erase(context.Context, *AuditRef) (*Audit
 }
 func (UnimplementedAuditServiceServer) List(context.Context, *AuditListRequest) (*AuditListResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedAuditServiceServer) Recent(context.Context, *AuditRecentRequest) (*AuditRecentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Recent not implemented")
 }
 func (UnimplementedAuditServiceServer) mustEmbedUnimplementedAuditServiceServer() {}
 func (UnimplementedAuditServiceServer) testEmbeddedByValue()                      {}
@@ -286,6 +306,24 @@ func _AuditService_List_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuditService_Recent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuditRecentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditServiceServer).Recent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuditService_Recent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditServiceServer).Recent(ctx, req.(*AuditRecentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuditService_ServiceDesc is the grpc.ServiceDesc for AuditService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -316,6 +354,10 @@ var AuditService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _AuditService_List_Handler,
+		},
+		{
+			MethodName: "Recent",
+			Handler:    _AuditService_Recent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

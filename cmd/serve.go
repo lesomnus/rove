@@ -483,7 +483,7 @@ func (s *Server) routes(mux *http.ServeMux, c Config) {
 		mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 			p := filepath.Join(dir, filepath.FromSlash(filepath.Clean("/"+r.URL.Path)))
 			if st, err := os.Stat(p); err != nil || st.IsDir() {
-				if strings.HasPrefix(r.URL.Path, "/assets/") {
+				if strings.HasPrefix(r.URL.Path, "/static/") {
 					http.NotFound(w, r)
 					return
 				}
@@ -491,7 +491,7 @@ func (s *Server) routes(mux *http.ServeMux, c Config) {
 				http.ServeFile(w, r, filepath.Join(dir, "index.html"))
 				return
 			}
-			if strings.HasPrefix(r.URL.Path, "/assets/") {
+			if strings.HasPrefix(r.URL.Path, "/static/") {
 				w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 			}
 			files.ServeHTTP(w, r)

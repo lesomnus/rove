@@ -14,9 +14,12 @@
 		"@bufbuild/protobuf": "^2.12.1",
 		"@connectrpc/connect": "^2.1.2",
 		"@connectrpc/connect-web": "^2.1.2",
-		"@lesomnus/payday": "^0.0.3",
+		"@lesomnus/payday": "^0.1.0",
 		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"react-dom": "^19.2.0",
+		"react-router-dom": "^7.9.4",
+		"qrcode": "^1.5.4",
+		"jsqr": "^1.4.0"
 	},
 	"devDependencies": {
 		"@bufbuild/protoc-gen-es": "^2.12.1",
@@ -25,6 +28,7 @@
 		"@types/react-dom": "^19.2.2",
 		"@vitejs/plugin-react": "^5.0.4",
 		"typescript": "~5.9.3",
-		"vite": "^7.1.14"
+		"vite": "^7.1.14",
+		"@types/qrcode": "^1.5.5"
 	}
 }

@@ -16208,6 +16208,11 @@ func (s interceptEvent) List(ctx context.Context, req *rove.EventListRequest) (*
 		rove.EventService_List_FullMethodName, req, s.EventServiceServer.List)
 }
 
+func (s interceptEvent) Recent(ctx context.Context, req *rove.EventRecentRequest) (*rove.EventRecentResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.EventServiceServer,
+		rove.EventService_Recent_FullMethodName, req, s.EventServiceServer.Recent)
+}
+
 func (s Intercept) Notification() rove.NotificationServiceServer {
 	return interceptNotification{s, s.Next().Notification()}
 }
@@ -16333,6 +16338,11 @@ func (s interceptAudit) Erase(ctx context.Context, req *rove.AuditRef) (*rove.Au
 func (s interceptAudit) List(ctx context.Context, req *rove.AuditListRequest) (*rove.AuditListResponse, error) {
 	return grpcx.RunUnary(ctx, s.unary, s.AuditServiceServer,
 		rove.AuditService_List_FullMethodName, req, s.AuditServiceServer.List)
+}
+
+func (s interceptAudit) Recent(ctx context.Context, req *rove.AuditRecentRequest) (*rove.AuditRecentResponse, error) {
+	return grpcx.RunUnary(ctx, s.unary, s.AuditServiceServer,
+		rove.AuditService_Recent_FullMethodName, req, s.AuditServiceServer.Recent)
 }
 
 func (s Intercept) WorkOrder() rove.WorkOrderServiceServer {
@@ -19746,6 +19756,19 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 
 		return anypb.New(res)
 
+	case rove.EventService_Recent_FullMethodName:
+		v := &rove.EventRecentRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Event().Recent(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
 	case rove.NotificationService_Add_FullMethodName:
 		v := &rove.NotificationAddRequest{}
 		if err := op.GetRequest().UnmarshalTo(v); err != nil {
@@ -20000,6 +20023,19 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Audit().List(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+
+		return anypb.New(res)
+
+	case rove.AuditService_Recent_FullMethodName:
+		v := &rove.AuditRecentRequest{}
+		if err := op.GetRequest().UnmarshalTo(v); err != nil {
+			return nil, batch.ErrRequest(m, err)
+		}
+
+		res, err := s.Audit().Recent(ctx, v)
 		if err != nil {
 			return nil, err
 		}

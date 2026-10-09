@@ -20,6 +20,9 @@ service AuditService {
   rpc Erase(AuditRef) returns (AuditEraseResponse);
   // List reads Audits a page at a time.
   rpc List(AuditListRequest) returns (AuditListResponse);
+  // Recent answers the newest trail rows first, for a person reading what
+  // happened lately.
+  rpc Recent(AuditRecentRequest) returns (AuditRecentResponse);
 }
 
 message AuditAddRequest {
@@ -132,4 +135,13 @@ message AuditFilter {
   bytes tenant_id = 3;
   bytes actor_tenant_id = 4;
   bytes counterpart_tenant_id = 5;
+}
+
+message AuditRecentRequest {
+  uint32 size = 1 [features.field_presence = IMPLICIT];
+  google.protobuf.Timestamp before = 2;
+}
+
+message AuditRecentResponse {
+  repeated Audit items = 1;
 }

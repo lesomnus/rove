@@ -1935,6 +1935,147 @@ func (b0 AuditFilter_builder) Build() *AuditFilter {
 	return m0
 }
 
+type AuditRecentRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Size   uint32                 `protobuf:"varint,1,opt,name=size"`
+	xxx_hidden_Before *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=before"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AuditRecentRequest) Reset() {
+	*x = AuditRecentRequest{}
+	mi := &file_rove_payday_audit_svc_g_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuditRecentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuditRecentRequest) ProtoMessage() {}
+
+func (x *AuditRecentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_payday_audit_svc_g_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AuditRecentRequest) GetSize() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *AuditRecentRequest) GetBefore() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_Before
+	}
+	return nil
+}
+
+func (x *AuditRecentRequest) SetSize(v uint32) {
+	x.xxx_hidden_Size = v
+}
+
+func (x *AuditRecentRequest) SetBefore(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Before = v
+}
+
+func (x *AuditRecentRequest) HasBefore() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Before != nil
+}
+
+func (x *AuditRecentRequest) ClearBefore() {
+	x.xxx_hidden_Before = nil
+}
+
+type AuditRecentRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Size   uint32
+	Before *timestamppb.Timestamp
+}
+
+func (b0 AuditRecentRequest_builder) Build() *AuditRecentRequest {
+	m0 := &AuditRecentRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Size = b.Size
+	x.xxx_hidden_Before = b.Before
+	return m0
+}
+
+type AuditRecentResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*Audit              `protobuf:"bytes,1,rep,name=items"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AuditRecentResponse) Reset() {
+	*x = AuditRecentResponse{}
+	mi := &file_rove_payday_audit_svc_g_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuditRecentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuditRecentResponse) ProtoMessage() {}
+
+func (x *AuditRecentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_payday_audit_svc_g_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AuditRecentResponse) GetItems() []*Audit {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *AuditRecentResponse) SetItems(v []*Audit) {
+	x.xxx_hidden_Items = &v
+}
+
+type AuditRecentResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*Audit
+}
+
+func (b0 AuditRecentResponse_builder) Build() *AuditRecentResponse {
+	m0 := &AuditRecentResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	return m0
+}
+
 var File_rove_payday_audit_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_payday_audit_svc_g_proto_rawDesc = "" +
@@ -2004,16 +2145,22 @@ const file_rove_payday_audit_svc_g_proto_rawDesc = "" +
 	"\bactor_id\x18\x02 \x01(\fR\aactorId\x12\x1b\n" +
 	"\ttenant_id\x18\x03 \x01(\fR\btenantId\x12&\n" +
 	"\x0factor_tenant_id\x18\x04 \x01(\fR\ractorTenantId\x122\n" +
-	"\x15counterpart_tenant_id\x18\x05 \x01(\fR\x13counterpartTenantId2\xae\x02\n" +
+	"\x15counterpart_tenant_id\x18\x05 \x01(\fR\x13counterpartTenantId\"c\n" +
+	"\x12AuditRecentRequest\x12\x19\n" +
+	"\x04size\x18\x01 \x01(\rB\x05\xaa\x01\x02\b\x02R\x04size\x122\n" +
+	"\x06before\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x06before\"8\n" +
+	"\x13AuditRecentResponse\x12!\n" +
+	"\x05items\x18\x01 \x03(\v2\v.rove.AuditR\x05items2\xed\x02\n" +
 	"\fAuditService\x12)\n" +
 	"\x03Add\x12\x15.rove.AuditAddRequest\x1a\v.rove.Audit\x12)\n" +
 	"\x03Get\x12\x15.rove.AuditGetRequest\x1a\v.rove.Audit\x12-\n" +
 	"\x05Patch\x12\x17.rove.AuditPatchRequest\x1a\v.rove.Audit\x12-\n" +
 	"\x05Apply\x12\x17.rove.AuditApplyRequest\x1a\v.rove.Audit\x121\n" +
 	"\x05Erase\x12\x0e.rove.AuditRef\x1a\x18.rove.AuditEraseResponse\x127\n" +
-	"\x04List\x12\x16.rove.AuditListRequest\x1a\x17.rove.AuditListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
+	"\x04List\x12\x16.rove.AuditListRequest\x1a\x17.rove.AuditListResponse\x12=\n" +
+	"\x06Recent\x12\x18.rove.AuditRecentRequest\x1a\x19.rove.AuditRecentResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_payday_audit_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_rove_payday_audit_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_rove_payday_audit_svc_g_proto_goTypes = []any{
 	(*AuditAddRequest)(nil),       // 0: rove.AuditAddRequest
 	(*AuditGetRequest)(nil),       // 1: rove.AuditGetRequest
@@ -2025,36 +2172,42 @@ var file_rove_payday_audit_svc_g_proto_goTypes = []any{
 	(*AuditListRequest)(nil),      // 7: rove.AuditListRequest
 	(*AuditListResponse)(nil),     // 8: rove.AuditListResponse
 	(*AuditFilter)(nil),           // 9: rove.AuditFilter
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*patchpb.Patch)(nil),         // 11: patch.Patch
-	(*Audit)(nil),                 // 12: rove.Audit
+	(*AuditRecentRequest)(nil),    // 10: rove.AuditRecentRequest
+	(*AuditRecentResponse)(nil),   // 11: rove.AuditRecentResponse
+	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
+	(*patchpb.Patch)(nil),         // 13: patch.Patch
+	(*Audit)(nil),                 // 14: rove.Audit
 }
 var file_rove_payday_audit_svc_g_proto_depIdxs = []int32{
-	10, // 0: rove.AuditAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	12, // 0: rove.AuditAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 1: rove.AuditGetRequest.ref:type_name -> rove.AuditRef
 	3,  // 2: rove.AuditGetRequest.select:type_name -> rove.AuditSelect
 	2,  // 3: rove.AuditPatchRequest.ref:type_name -> rove.AuditRef
 	2,  // 4: rove.AuditApplyRequest.ref:type_name -> rove.AuditRef
-	11, // 5: rove.AuditApplyRequest.patch:type_name -> patch.Patch
+	13, // 5: rove.AuditApplyRequest.patch:type_name -> patch.Patch
 	9,  // 6: rove.AuditListRequest.filters:type_name -> rove.AuditFilter
-	12, // 7: rove.AuditListResponse.items:type_name -> rove.Audit
-	0,  // 8: rove.AuditService.Add:input_type -> rove.AuditAddRequest
-	1,  // 9: rove.AuditService.Get:input_type -> rove.AuditGetRequest
-	4,  // 10: rove.AuditService.Patch:input_type -> rove.AuditPatchRequest
-	5,  // 11: rove.AuditService.Apply:input_type -> rove.AuditApplyRequest
-	2,  // 12: rove.AuditService.Erase:input_type -> rove.AuditRef
-	7,  // 13: rove.AuditService.List:input_type -> rove.AuditListRequest
-	12, // 14: rove.AuditService.Add:output_type -> rove.Audit
-	12, // 15: rove.AuditService.Get:output_type -> rove.Audit
-	12, // 16: rove.AuditService.Patch:output_type -> rove.Audit
-	12, // 17: rove.AuditService.Apply:output_type -> rove.Audit
-	6,  // 18: rove.AuditService.Erase:output_type -> rove.AuditEraseResponse
-	8,  // 19: rove.AuditService.List:output_type -> rove.AuditListResponse
-	14, // [14:20] is the sub-list for method output_type
-	8,  // [8:14] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	14, // 7: rove.AuditListResponse.items:type_name -> rove.Audit
+	12, // 8: rove.AuditRecentRequest.before:type_name -> google.protobuf.Timestamp
+	14, // 9: rove.AuditRecentResponse.items:type_name -> rove.Audit
+	0,  // 10: rove.AuditService.Add:input_type -> rove.AuditAddRequest
+	1,  // 11: rove.AuditService.Get:input_type -> rove.AuditGetRequest
+	4,  // 12: rove.AuditService.Patch:input_type -> rove.AuditPatchRequest
+	5,  // 13: rove.AuditService.Apply:input_type -> rove.AuditApplyRequest
+	2,  // 14: rove.AuditService.Erase:input_type -> rove.AuditRef
+	7,  // 15: rove.AuditService.List:input_type -> rove.AuditListRequest
+	10, // 16: rove.AuditService.Recent:input_type -> rove.AuditRecentRequest
+	14, // 17: rove.AuditService.Add:output_type -> rove.Audit
+	14, // 18: rove.AuditService.Get:output_type -> rove.Audit
+	14, // 19: rove.AuditService.Patch:output_type -> rove.Audit
+	14, // 20: rove.AuditService.Apply:output_type -> rove.Audit
+	6,  // 21: rove.AuditService.Erase:output_type -> rove.AuditEraseResponse
+	8,  // 22: rove.AuditService.List:output_type -> rove.AuditListResponse
+	11, // 23: rove.AuditService.Recent:output_type -> rove.AuditRecentResponse
+	17, // [17:24] is the sub-list for method output_type
+	10, // [10:17] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_rove_payday_audit_svc_g_proto_init() }
@@ -2072,7 +2225,7 @@ func file_rove_payday_audit_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_payday_audit_svc_g_proto_rawDesc), len(file_rove_payday_audit_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

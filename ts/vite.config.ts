@@ -2,14 +2,27 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 /**
- * `npm run dev` serves this on 5173 and the app answers on 8080, which is two
- * origins -- so the server has to say the page may call it. That is the
- * `origins:` list under `server.http` in the app's configuration, and it is a
- * list rather than a wildcard on purpose.
- *
- * A deployment that serves `dist/` from the app itself is one origin and needs
- * none of it.
+ * `npm run dev` serves the page on 5173 and the app answers on 8080. Rather
+ * than two origins -- and a cookie that has to cross between them -- the dev
+ * server passes everything that is not the page through to the app, so the
+ * page sees one origin exactly as it does when the app serves `dist/` itself.
  */
+const app = process.env['ROVE_ADDR'] ?? 'http://localhost:8080'
+
 export default defineConfig({
 	plugins: [react()],
+	server: {
+		proxy: {
+			'^/(rove|payday)\\.[A-Za-z]+Service/': { target: app, changeOrigin: false },
+			'/session': { target: app, changeOrigin: false },
+			'/files/': { target: app, changeOrigin: false },
+			'/l/': { target: app, changeOrigin: false },
+			'/healthz': { target: app, changeOrigin: false },
+		},
+	},
+	build: {
+		chunkSizeWarningLimit: 2000,
+		// Not `assets`, which is a page here: `/assets/<id>` is an asset.
+		assetsDir: 'static',
+	},
 })

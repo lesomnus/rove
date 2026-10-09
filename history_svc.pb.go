@@ -9576,6 +9576,163 @@ func (b0 EventFilter_builder) Build() *EventFilter {
 	return m0
 }
 
+type EventRecentRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Size   uint32                 `protobuf:"varint,1,opt,name=size"`
+	xxx_hidden_Kind   string                 `protobuf:"bytes,2,opt,name=kind"`
+	xxx_hidden_Before *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=before"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *EventRecentRequest) Reset() {
+	*x = EventRecentRequest{}
+	mi := &file_rove_history_svc_g_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventRecentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventRecentRequest) ProtoMessage() {}
+
+func (x *EventRecentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_history_svc_g_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *EventRecentRequest) GetSize() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *EventRecentRequest) GetKind() string {
+	if x != nil {
+		return x.xxx_hidden_Kind
+	}
+	return ""
+}
+
+func (x *EventRecentRequest) GetBefore() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_Before
+	}
+	return nil
+}
+
+func (x *EventRecentRequest) SetSize(v uint32) {
+	x.xxx_hidden_Size = v
+}
+
+func (x *EventRecentRequest) SetKind(v string) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *EventRecentRequest) SetBefore(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Before = v
+}
+
+func (x *EventRecentRequest) HasBefore() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Before != nil
+}
+
+func (x *EventRecentRequest) ClearBefore() {
+	x.xxx_hidden_Before = nil
+}
+
+type EventRecentRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Size uint32
+	// Only events whose kind starts with this: "asset.", "custody.".
+	Kind string
+	// Only events recorded before this, for the next page.
+	Before *timestamppb.Timestamp
+}
+
+func (b0 EventRecentRequest_builder) Build() *EventRecentRequest {
+	m0 := &EventRecentRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Size = b.Size
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_Before = b.Before
+	return m0
+}
+
+type EventRecentResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*Event              `protobuf:"bytes,1,rep,name=items"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *EventRecentResponse) Reset() {
+	*x = EventRecentResponse{}
+	mi := &file_rove_history_svc_g_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventRecentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventRecentResponse) ProtoMessage() {}
+
+func (x *EventRecentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_history_svc_g_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *EventRecentResponse) GetItems() []*Event {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *EventRecentResponse) SetItems(v []*Event) {
+	x.xxx_hidden_Items = &v
+}
+
+type EventRecentResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*Event
+}
+
+func (b0 EventRecentResponse_builder) Build() *EventRecentResponse {
+	m0 := &EventRecentResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	return m0
+}
+
 var File_rove_history_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_history_svc_g_proto_rawDesc = "" +
@@ -9940,7 +10097,13 @@ const file_rove_history_svc_g_proto_rawDesc = "" +
 	"\n" +
 	"subject_id\x18\x02 \x01(\fR\tsubjectId\x12\x12\n" +
 	"\x04kind\x18\x03 \x01(\tR\x04kind\x12\x19\n" +
-	"\bactor_id\x18\x04 \x01(\fR\aactorId2\xe2\x02\n" +
+	"\bactor_id\x18\x04 \x01(\fR\aactorId\"~\n" +
+	"\x12EventRecentRequest\x12\x19\n" +
+	"\x04size\x18\x01 \x01(\rB\x05\xaa\x01\x02\b\x02R\x04size\x12\x19\n" +
+	"\x04kind\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04kind\x122\n" +
+	"\x06before\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x06before\"8\n" +
+	"\x13EventRecentResponse\x12!\n" +
+	"\x05items\x18\x01 \x03(\v2\v.rove.EventR\x05items2\xe2\x02\n" +
 	"\x10PlacementService\x121\n" +
 	"\x03Add\x12\x19.rove.PlacementAddRequest\x1a\x0f.rove.Placement\x121\n" +
 	"\x03Get\x12\x19.rove.PlacementGetRequest\x1a\x0f.rove.Placement\x125\n" +
@@ -9976,16 +10139,17 @@ const file_rove_history_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x16.rove.FactApplyRequest\x1a\n" +
 	".rove.Fact\x12/\n" +
 	"\x05Erase\x12\r.rove.FactRef\x1a\x17.rove.FactEraseResponse\x125\n" +
-	"\x04List\x12\x15.rove.FactListRequest\x1a\x16.rove.FactListResponse2\xae\x02\n" +
+	"\x04List\x12\x15.rove.FactListRequest\x1a\x16.rove.FactListResponse2\xed\x02\n" +
 	"\fEventService\x12)\n" +
 	"\x03Add\x12\x15.rove.EventAddRequest\x1a\v.rove.Event\x12)\n" +
 	"\x03Get\x12\x15.rove.EventGetRequest\x1a\v.rove.Event\x12-\n" +
 	"\x05Patch\x12\x17.rove.EventPatchRequest\x1a\v.rove.Event\x12-\n" +
 	"\x05Apply\x12\x17.rove.EventApplyRequest\x1a\v.rove.Event\x121\n" +
 	"\x05Erase\x12\x0e.rove.EventRef\x1a\x18.rove.EventEraseResponse\x127\n" +
-	"\x04List\x12\x16.rove.EventListRequest\x1a\x17.rove.EventListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
+	"\x04List\x12\x16.rove.EventListRequest\x1a\x17.rove.EventListResponse\x12=\n" +
+	"\x06Recent\x12\x18.rove.EventRecentRequest\x1a\x19.rove.EventRecentResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_history_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
+var file_rove_history_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
 var file_rove_history_svc_g_proto_goTypes = []any{
 	(*PlacementAddRequest)(nil),      // 0: rove.PlacementAddRequest
 	(*PlacementGetRequest)(nil),      // 1: rove.PlacementGetRequest
@@ -10037,195 +10201,201 @@ var file_rove_history_svc_g_proto_goTypes = []any{
 	(*EventListRequest)(nil),         // 47: rove.EventListRequest
 	(*EventListResponse)(nil),        // 48: rove.EventListResponse
 	(*EventFilter)(nil),              // 49: rove.EventFilter
-	nil,                              // 50: rove.LinkAddRequest.LabelsEntry
-	nil,                              // 51: rove.LinkPatchRequest.LabelsEntry
-	(*TenantRef)(nil),                // 52: rove.TenantRef
-	(*AssetRef)(nil),                 // 53: rove.AssetRef
-	(*timestamppb.Timestamp)(nil),    // 54: google.protobuf.Timestamp
-	(*TenantSelect)(nil),             // 55: rove.TenantSelect
-	(*AssetSelect)(nil),              // 56: rove.AssetSelect
-	(*patchpb.Patch)(nil),            // 57: patch.Patch
-	(*Placement)(nil),                // 58: rove.Placement
-	(*Link)(nil),                     // 59: rove.Link
-	(*PartyRef)(nil),                 // 60: rove.PartyRef
-	(*PartySelect)(nil),              // 61: rove.PartySelect
-	(*Stewardship)(nil),              // 62: rove.Stewardship
-	(*Fact)(nil),                     // 63: rove.Fact
-	(*Event)(nil),                    // 64: rove.Event
+	(*EventRecentRequest)(nil),       // 50: rove.EventRecentRequest
+	(*EventRecentResponse)(nil),      // 51: rove.EventRecentResponse
+	nil,                              // 52: rove.LinkAddRequest.LabelsEntry
+	nil,                              // 53: rove.LinkPatchRequest.LabelsEntry
+	(*TenantRef)(nil),                // 54: rove.TenantRef
+	(*AssetRef)(nil),                 // 55: rove.AssetRef
+	(*timestamppb.Timestamp)(nil),    // 56: google.protobuf.Timestamp
+	(*TenantSelect)(nil),             // 57: rove.TenantSelect
+	(*AssetSelect)(nil),              // 58: rove.AssetSelect
+	(*patchpb.Patch)(nil),            // 59: patch.Patch
+	(*Placement)(nil),                // 60: rove.Placement
+	(*Link)(nil),                     // 61: rove.Link
+	(*PartyRef)(nil),                 // 62: rove.PartyRef
+	(*PartySelect)(nil),              // 63: rove.PartySelect
+	(*Stewardship)(nil),              // 64: rove.Stewardship
+	(*Fact)(nil),                     // 65: rove.Fact
+	(*Event)(nil),                    // 66: rove.Event
 }
 var file_rove_history_svc_g_proto_depIdxs = []int32{
-	52,  // 0: rove.PlacementAddRequest.tenant:type_name -> rove.TenantRef
-	53,  // 1: rove.PlacementAddRequest.child:type_name -> rove.AssetRef
-	53,  // 2: rove.PlacementAddRequest.parent:type_name -> rove.AssetRef
-	54,  // 3: rove.PlacementAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	54,  // 4: rove.PlacementAddRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 5: rove.PlacementAddRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 6: rove.PlacementAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	54,  // 0: rove.PlacementAddRequest.tenant:type_name -> rove.TenantRef
+	55,  // 1: rove.PlacementAddRequest.child:type_name -> rove.AssetRef
+	55,  // 2: rove.PlacementAddRequest.parent:type_name -> rove.AssetRef
+	56,  // 3: rove.PlacementAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	56,  // 4: rove.PlacementAddRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 5: rove.PlacementAddRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 6: rove.PlacementAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	2,   // 7: rove.PlacementGetRequest.ref:type_name -> rove.PlacementRef
 	3,   // 8: rove.PlacementGetRequest.select:type_name -> rove.PlacementSelect
-	55,  // 9: rove.PlacementSelect.tenant:type_name -> rove.TenantSelect
-	56,  // 10: rove.PlacementSelect.child:type_name -> rove.AssetSelect
-	56,  // 11: rove.PlacementSelect.parent:type_name -> rove.AssetSelect
+	57,  // 9: rove.PlacementSelect.tenant:type_name -> rove.TenantSelect
+	58,  // 10: rove.PlacementSelect.child:type_name -> rove.AssetSelect
+	58,  // 11: rove.PlacementSelect.parent:type_name -> rove.AssetSelect
 	2,   // 12: rove.PlacementPatchRequest.ref:type_name -> rove.PlacementRef
-	54,  // 13: rove.PlacementPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	54,  // 14: rove.PlacementPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 15: rove.PlacementPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 16: rove.PlacementPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	56,  // 13: rove.PlacementPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	56,  // 14: rove.PlacementPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 15: rove.PlacementPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 16: rove.PlacementPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	2,   // 17: rove.PlacementApplyRequest.ref:type_name -> rove.PlacementRef
-	57,  // 18: rove.PlacementApplyRequest.patch:type_name -> patch.Patch
+	59,  // 18: rove.PlacementApplyRequest.patch:type_name -> patch.Patch
 	9,   // 19: rove.PlacementListRequest.filters:type_name -> rove.PlacementFilter
-	58,  // 20: rove.PlacementListResponse.items:type_name -> rove.Placement
+	60,  // 20: rove.PlacementListResponse.items:type_name -> rove.Placement
 	2,   // 21: rove.PlacementFilter.ref:type_name -> rove.PlacementRef
-	53,  // 22: rove.PlacementFilter.child:type_name -> rove.AssetRef
-	53,  // 23: rove.PlacementFilter.parent:type_name -> rove.AssetRef
-	52,  // 24: rove.LinkAddRequest.tenant:type_name -> rove.TenantRef
-	50,  // 25: rove.LinkAddRequest.labels:type_name -> rove.LinkAddRequest.LabelsEntry
-	53,  // 26: rove.LinkAddRequest.source:type_name -> rove.AssetRef
-	53,  // 27: rove.LinkAddRequest.target:type_name -> rove.AssetRef
-	54,  // 28: rove.LinkAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	54,  // 29: rove.LinkAddRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 30: rove.LinkAddRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 31: rove.LinkAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	55,  // 22: rove.PlacementFilter.child:type_name -> rove.AssetRef
+	55,  // 23: rove.PlacementFilter.parent:type_name -> rove.AssetRef
+	54,  // 24: rove.LinkAddRequest.tenant:type_name -> rove.TenantRef
+	52,  // 25: rove.LinkAddRequest.labels:type_name -> rove.LinkAddRequest.LabelsEntry
+	55,  // 26: rove.LinkAddRequest.source:type_name -> rove.AssetRef
+	55,  // 27: rove.LinkAddRequest.target:type_name -> rove.AssetRef
+	56,  // 28: rove.LinkAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	56,  // 29: rove.LinkAddRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 30: rove.LinkAddRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 31: rove.LinkAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	12,  // 32: rove.LinkGetRequest.ref:type_name -> rove.LinkRef
 	13,  // 33: rove.LinkGetRequest.select:type_name -> rove.LinkSelect
-	55,  // 34: rove.LinkSelect.tenant:type_name -> rove.TenantSelect
-	56,  // 35: rove.LinkSelect.source:type_name -> rove.AssetSelect
-	56,  // 36: rove.LinkSelect.target:type_name -> rove.AssetSelect
+	57,  // 34: rove.LinkSelect.tenant:type_name -> rove.TenantSelect
+	58,  // 35: rove.LinkSelect.source:type_name -> rove.AssetSelect
+	58,  // 36: rove.LinkSelect.target:type_name -> rove.AssetSelect
 	12,  // 37: rove.LinkPatchRequest.ref:type_name -> rove.LinkRef
-	51,  // 38: rove.LinkPatchRequest.labels:type_name -> rove.LinkPatchRequest.LabelsEntry
-	54,  // 39: rove.LinkPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	54,  // 40: rove.LinkPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 41: rove.LinkPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 42: rove.LinkPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	53,  // 38: rove.LinkPatchRequest.labels:type_name -> rove.LinkPatchRequest.LabelsEntry
+	56,  // 39: rove.LinkPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	56,  // 40: rove.LinkPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 41: rove.LinkPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 42: rove.LinkPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	12,  // 43: rove.LinkApplyRequest.ref:type_name -> rove.LinkRef
-	57,  // 44: rove.LinkApplyRequest.patch:type_name -> patch.Patch
+	59,  // 44: rove.LinkApplyRequest.patch:type_name -> patch.Patch
 	19,  // 45: rove.LinkListRequest.filters:type_name -> rove.LinkFilter
-	59,  // 46: rove.LinkListResponse.items:type_name -> rove.Link
+	61,  // 46: rove.LinkListResponse.items:type_name -> rove.Link
 	12,  // 47: rove.LinkFilter.ref:type_name -> rove.LinkRef
-	53,  // 48: rove.LinkFilter.source:type_name -> rove.AssetRef
-	53,  // 49: rove.LinkFilter.target:type_name -> rove.AssetRef
-	52,  // 50: rove.StewardshipAddRequest.tenant:type_name -> rove.TenantRef
-	53,  // 51: rove.StewardshipAddRequest.asset:type_name -> rove.AssetRef
-	60,  // 52: rove.StewardshipAddRequest.party:type_name -> rove.PartyRef
-	54,  // 53: rove.StewardshipAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	54,  // 54: rove.StewardshipAddRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 55: rove.StewardshipAddRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 56: rove.StewardshipAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	55,  // 48: rove.LinkFilter.source:type_name -> rove.AssetRef
+	55,  // 49: rove.LinkFilter.target:type_name -> rove.AssetRef
+	54,  // 50: rove.StewardshipAddRequest.tenant:type_name -> rove.TenantRef
+	55,  // 51: rove.StewardshipAddRequest.asset:type_name -> rove.AssetRef
+	62,  // 52: rove.StewardshipAddRequest.party:type_name -> rove.PartyRef
+	56,  // 53: rove.StewardshipAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	56,  // 54: rove.StewardshipAddRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 55: rove.StewardshipAddRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 56: rove.StewardshipAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	22,  // 57: rove.StewardshipGetRequest.ref:type_name -> rove.StewardshipRef
 	23,  // 58: rove.StewardshipGetRequest.select:type_name -> rove.StewardshipSelect
-	55,  // 59: rove.StewardshipSelect.tenant:type_name -> rove.TenantSelect
-	56,  // 60: rove.StewardshipSelect.asset:type_name -> rove.AssetSelect
-	61,  // 61: rove.StewardshipSelect.party:type_name -> rove.PartySelect
+	57,  // 59: rove.StewardshipSelect.tenant:type_name -> rove.TenantSelect
+	58,  // 60: rove.StewardshipSelect.asset:type_name -> rove.AssetSelect
+	63,  // 61: rove.StewardshipSelect.party:type_name -> rove.PartySelect
 	22,  // 62: rove.StewardshipPatchRequest.ref:type_name -> rove.StewardshipRef
-	54,  // 63: rove.StewardshipPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	54,  // 64: rove.StewardshipPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 65: rove.StewardshipPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
-	54,  // 66: rove.StewardshipPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	56,  // 63: rove.StewardshipPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	56,  // 64: rove.StewardshipPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 65: rove.StewardshipPatchRequest.valid_to:type_name -> google.protobuf.Timestamp
+	56,  // 66: rove.StewardshipPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	22,  // 67: rove.StewardshipApplyRequest.ref:type_name -> rove.StewardshipRef
-	57,  // 68: rove.StewardshipApplyRequest.patch:type_name -> patch.Patch
+	59,  // 68: rove.StewardshipApplyRequest.patch:type_name -> patch.Patch
 	29,  // 69: rove.StewardshipListRequest.filters:type_name -> rove.StewardshipFilter
-	62,  // 70: rove.StewardshipListResponse.items:type_name -> rove.Stewardship
+	64,  // 70: rove.StewardshipListResponse.items:type_name -> rove.Stewardship
 	22,  // 71: rove.StewardshipFilter.ref:type_name -> rove.StewardshipRef
-	53,  // 72: rove.StewardshipFilter.asset:type_name -> rove.AssetRef
-	60,  // 73: rove.StewardshipFilter.party:type_name -> rove.PartyRef
-	52,  // 74: rove.FactAddRequest.tenant:type_name -> rove.TenantRef
-	53,  // 75: rove.FactAddRequest.asset:type_name -> rove.AssetRef
-	54,  // 76: rove.FactAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	54,  // 77: rove.FactAddRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 78: rove.FactAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	55,  // 72: rove.StewardshipFilter.asset:type_name -> rove.AssetRef
+	62,  // 73: rove.StewardshipFilter.party:type_name -> rove.PartyRef
+	54,  // 74: rove.FactAddRequest.tenant:type_name -> rove.TenantRef
+	55,  // 75: rove.FactAddRequest.asset:type_name -> rove.AssetRef
+	56,  // 76: rove.FactAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	56,  // 77: rove.FactAddRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 78: rove.FactAddRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	32,  // 79: rove.FactGetRequest.ref:type_name -> rove.FactRef
 	33,  // 80: rove.FactGetRequest.select:type_name -> rove.FactSelect
-	55,  // 81: rove.FactSelect.tenant:type_name -> rove.TenantSelect
-	56,  // 82: rove.FactSelect.asset:type_name -> rove.AssetSelect
+	57,  // 81: rove.FactSelect.tenant:type_name -> rove.TenantSelect
+	58,  // 82: rove.FactSelect.asset:type_name -> rove.AssetSelect
 	32,  // 83: rove.FactPatchRequest.ref:type_name -> rove.FactRef
-	54,  // 84: rove.FactPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	54,  // 85: rove.FactPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
-	54,  // 86: rove.FactPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
+	56,  // 84: rove.FactPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	56,  // 85: rove.FactPatchRequest.valid_from:type_name -> google.protobuf.Timestamp
+	56,  // 86: rove.FactPatchRequest.superseded_at:type_name -> google.protobuf.Timestamp
 	32,  // 87: rove.FactApplyRequest.ref:type_name -> rove.FactRef
-	57,  // 88: rove.FactApplyRequest.patch:type_name -> patch.Patch
+	59,  // 88: rove.FactApplyRequest.patch:type_name -> patch.Patch
 	39,  // 89: rove.FactListRequest.filters:type_name -> rove.FactFilter
-	63,  // 90: rove.FactListResponse.items:type_name -> rove.Fact
+	65,  // 90: rove.FactListResponse.items:type_name -> rove.Fact
 	32,  // 91: rove.FactFilter.ref:type_name -> rove.FactRef
-	53,  // 92: rove.FactFilter.asset:type_name -> rove.AssetRef
-	52,  // 93: rove.EventAddRequest.tenant:type_name -> rove.TenantRef
-	54,  // 94: rove.EventAddRequest.occurred_at:type_name -> google.protobuf.Timestamp
-	54,  // 95: rove.EventAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	55,  // 92: rove.FactFilter.asset:type_name -> rove.AssetRef
+	54,  // 93: rove.EventAddRequest.tenant:type_name -> rove.TenantRef
+	56,  // 94: rove.EventAddRequest.occurred_at:type_name -> google.protobuf.Timestamp
+	56,  // 95: rove.EventAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	42,  // 96: rove.EventGetRequest.ref:type_name -> rove.EventRef
 	43,  // 97: rove.EventGetRequest.select:type_name -> rove.EventSelect
-	55,  // 98: rove.EventSelect.tenant:type_name -> rove.TenantSelect
+	57,  // 98: rove.EventSelect.tenant:type_name -> rove.TenantSelect
 	42,  // 99: rove.EventPatchRequest.ref:type_name -> rove.EventRef
-	54,  // 100: rove.EventPatchRequest.occurred_at:type_name -> google.protobuf.Timestamp
-	54,  // 101: rove.EventPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	56,  // 100: rove.EventPatchRequest.occurred_at:type_name -> google.protobuf.Timestamp
+	56,  // 101: rove.EventPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	42,  // 102: rove.EventApplyRequest.ref:type_name -> rove.EventRef
-	57,  // 103: rove.EventApplyRequest.patch:type_name -> patch.Patch
+	59,  // 103: rove.EventApplyRequest.patch:type_name -> patch.Patch
 	49,  // 104: rove.EventListRequest.filters:type_name -> rove.EventFilter
-	64,  // 105: rove.EventListResponse.items:type_name -> rove.Event
+	66,  // 105: rove.EventListResponse.items:type_name -> rove.Event
 	42,  // 106: rove.EventFilter.ref:type_name -> rove.EventRef
-	0,   // 107: rove.PlacementService.Add:input_type -> rove.PlacementAddRequest
-	1,   // 108: rove.PlacementService.Get:input_type -> rove.PlacementGetRequest
-	4,   // 109: rove.PlacementService.Patch:input_type -> rove.PlacementPatchRequest
-	5,   // 110: rove.PlacementService.Apply:input_type -> rove.PlacementApplyRequest
-	2,   // 111: rove.PlacementService.Erase:input_type -> rove.PlacementRef
-	7,   // 112: rove.PlacementService.List:input_type -> rove.PlacementListRequest
-	10,  // 113: rove.LinkService.Add:input_type -> rove.LinkAddRequest
-	11,  // 114: rove.LinkService.Get:input_type -> rove.LinkGetRequest
-	14,  // 115: rove.LinkService.Patch:input_type -> rove.LinkPatchRequest
-	15,  // 116: rove.LinkService.Apply:input_type -> rove.LinkApplyRequest
-	12,  // 117: rove.LinkService.Erase:input_type -> rove.LinkRef
-	17,  // 118: rove.LinkService.List:input_type -> rove.LinkListRequest
-	20,  // 119: rove.StewardshipService.Add:input_type -> rove.StewardshipAddRequest
-	21,  // 120: rove.StewardshipService.Get:input_type -> rove.StewardshipGetRequest
-	24,  // 121: rove.StewardshipService.Patch:input_type -> rove.StewardshipPatchRequest
-	25,  // 122: rove.StewardshipService.Apply:input_type -> rove.StewardshipApplyRequest
-	22,  // 123: rove.StewardshipService.Erase:input_type -> rove.StewardshipRef
-	27,  // 124: rove.StewardshipService.List:input_type -> rove.StewardshipListRequest
-	30,  // 125: rove.FactService.Add:input_type -> rove.FactAddRequest
-	31,  // 126: rove.FactService.Get:input_type -> rove.FactGetRequest
-	34,  // 127: rove.FactService.Patch:input_type -> rove.FactPatchRequest
-	35,  // 128: rove.FactService.Apply:input_type -> rove.FactApplyRequest
-	32,  // 129: rove.FactService.Erase:input_type -> rove.FactRef
-	37,  // 130: rove.FactService.List:input_type -> rove.FactListRequest
-	40,  // 131: rove.EventService.Add:input_type -> rove.EventAddRequest
-	41,  // 132: rove.EventService.Get:input_type -> rove.EventGetRequest
-	44,  // 133: rove.EventService.Patch:input_type -> rove.EventPatchRequest
-	45,  // 134: rove.EventService.Apply:input_type -> rove.EventApplyRequest
-	42,  // 135: rove.EventService.Erase:input_type -> rove.EventRef
-	47,  // 136: rove.EventService.List:input_type -> rove.EventListRequest
-	58,  // 137: rove.PlacementService.Add:output_type -> rove.Placement
-	58,  // 138: rove.PlacementService.Get:output_type -> rove.Placement
-	58,  // 139: rove.PlacementService.Patch:output_type -> rove.Placement
-	58,  // 140: rove.PlacementService.Apply:output_type -> rove.Placement
-	6,   // 141: rove.PlacementService.Erase:output_type -> rove.PlacementEraseResponse
-	8,   // 142: rove.PlacementService.List:output_type -> rove.PlacementListResponse
-	59,  // 143: rove.LinkService.Add:output_type -> rove.Link
-	59,  // 144: rove.LinkService.Get:output_type -> rove.Link
-	59,  // 145: rove.LinkService.Patch:output_type -> rove.Link
-	59,  // 146: rove.LinkService.Apply:output_type -> rove.Link
-	16,  // 147: rove.LinkService.Erase:output_type -> rove.LinkEraseResponse
-	18,  // 148: rove.LinkService.List:output_type -> rove.LinkListResponse
-	62,  // 149: rove.StewardshipService.Add:output_type -> rove.Stewardship
-	62,  // 150: rove.StewardshipService.Get:output_type -> rove.Stewardship
-	62,  // 151: rove.StewardshipService.Patch:output_type -> rove.Stewardship
-	62,  // 152: rove.StewardshipService.Apply:output_type -> rove.Stewardship
-	26,  // 153: rove.StewardshipService.Erase:output_type -> rove.StewardshipEraseResponse
-	28,  // 154: rove.StewardshipService.List:output_type -> rove.StewardshipListResponse
-	63,  // 155: rove.FactService.Add:output_type -> rove.Fact
-	63,  // 156: rove.FactService.Get:output_type -> rove.Fact
-	63,  // 157: rove.FactService.Patch:output_type -> rove.Fact
-	63,  // 158: rove.FactService.Apply:output_type -> rove.Fact
-	36,  // 159: rove.FactService.Erase:output_type -> rove.FactEraseResponse
-	38,  // 160: rove.FactService.List:output_type -> rove.FactListResponse
-	64,  // 161: rove.EventService.Add:output_type -> rove.Event
-	64,  // 162: rove.EventService.Get:output_type -> rove.Event
-	64,  // 163: rove.EventService.Patch:output_type -> rove.Event
-	64,  // 164: rove.EventService.Apply:output_type -> rove.Event
-	46,  // 165: rove.EventService.Erase:output_type -> rove.EventEraseResponse
-	48,  // 166: rove.EventService.List:output_type -> rove.EventListResponse
-	137, // [137:167] is the sub-list for method output_type
-	107, // [107:137] is the sub-list for method input_type
-	107, // [107:107] is the sub-list for extension type_name
-	107, // [107:107] is the sub-list for extension extendee
-	0,   // [0:107] is the sub-list for field type_name
+	56,  // 107: rove.EventRecentRequest.before:type_name -> google.protobuf.Timestamp
+	66,  // 108: rove.EventRecentResponse.items:type_name -> rove.Event
+	0,   // 109: rove.PlacementService.Add:input_type -> rove.PlacementAddRequest
+	1,   // 110: rove.PlacementService.Get:input_type -> rove.PlacementGetRequest
+	4,   // 111: rove.PlacementService.Patch:input_type -> rove.PlacementPatchRequest
+	5,   // 112: rove.PlacementService.Apply:input_type -> rove.PlacementApplyRequest
+	2,   // 113: rove.PlacementService.Erase:input_type -> rove.PlacementRef
+	7,   // 114: rove.PlacementService.List:input_type -> rove.PlacementListRequest
+	10,  // 115: rove.LinkService.Add:input_type -> rove.LinkAddRequest
+	11,  // 116: rove.LinkService.Get:input_type -> rove.LinkGetRequest
+	14,  // 117: rove.LinkService.Patch:input_type -> rove.LinkPatchRequest
+	15,  // 118: rove.LinkService.Apply:input_type -> rove.LinkApplyRequest
+	12,  // 119: rove.LinkService.Erase:input_type -> rove.LinkRef
+	17,  // 120: rove.LinkService.List:input_type -> rove.LinkListRequest
+	20,  // 121: rove.StewardshipService.Add:input_type -> rove.StewardshipAddRequest
+	21,  // 122: rove.StewardshipService.Get:input_type -> rove.StewardshipGetRequest
+	24,  // 123: rove.StewardshipService.Patch:input_type -> rove.StewardshipPatchRequest
+	25,  // 124: rove.StewardshipService.Apply:input_type -> rove.StewardshipApplyRequest
+	22,  // 125: rove.StewardshipService.Erase:input_type -> rove.StewardshipRef
+	27,  // 126: rove.StewardshipService.List:input_type -> rove.StewardshipListRequest
+	30,  // 127: rove.FactService.Add:input_type -> rove.FactAddRequest
+	31,  // 128: rove.FactService.Get:input_type -> rove.FactGetRequest
+	34,  // 129: rove.FactService.Patch:input_type -> rove.FactPatchRequest
+	35,  // 130: rove.FactService.Apply:input_type -> rove.FactApplyRequest
+	32,  // 131: rove.FactService.Erase:input_type -> rove.FactRef
+	37,  // 132: rove.FactService.List:input_type -> rove.FactListRequest
+	40,  // 133: rove.EventService.Add:input_type -> rove.EventAddRequest
+	41,  // 134: rove.EventService.Get:input_type -> rove.EventGetRequest
+	44,  // 135: rove.EventService.Patch:input_type -> rove.EventPatchRequest
+	45,  // 136: rove.EventService.Apply:input_type -> rove.EventApplyRequest
+	42,  // 137: rove.EventService.Erase:input_type -> rove.EventRef
+	47,  // 138: rove.EventService.List:input_type -> rove.EventListRequest
+	50,  // 139: rove.EventService.Recent:input_type -> rove.EventRecentRequest
+	60,  // 140: rove.PlacementService.Add:output_type -> rove.Placement
+	60,  // 141: rove.PlacementService.Get:output_type -> rove.Placement
+	60,  // 142: rove.PlacementService.Patch:output_type -> rove.Placement
+	60,  // 143: rove.PlacementService.Apply:output_type -> rove.Placement
+	6,   // 144: rove.PlacementService.Erase:output_type -> rove.PlacementEraseResponse
+	8,   // 145: rove.PlacementService.List:output_type -> rove.PlacementListResponse
+	61,  // 146: rove.LinkService.Add:output_type -> rove.Link
+	61,  // 147: rove.LinkService.Get:output_type -> rove.Link
+	61,  // 148: rove.LinkService.Patch:output_type -> rove.Link
+	61,  // 149: rove.LinkService.Apply:output_type -> rove.Link
+	16,  // 150: rove.LinkService.Erase:output_type -> rove.LinkEraseResponse
+	18,  // 151: rove.LinkService.List:output_type -> rove.LinkListResponse
+	64,  // 152: rove.StewardshipService.Add:output_type -> rove.Stewardship
+	64,  // 153: rove.StewardshipService.Get:output_type -> rove.Stewardship
+	64,  // 154: rove.StewardshipService.Patch:output_type -> rove.Stewardship
+	64,  // 155: rove.StewardshipService.Apply:output_type -> rove.Stewardship
+	26,  // 156: rove.StewardshipService.Erase:output_type -> rove.StewardshipEraseResponse
+	28,  // 157: rove.StewardshipService.List:output_type -> rove.StewardshipListResponse
+	65,  // 158: rove.FactService.Add:output_type -> rove.Fact
+	65,  // 159: rove.FactService.Get:output_type -> rove.Fact
+	65,  // 160: rove.FactService.Patch:output_type -> rove.Fact
+	65,  // 161: rove.FactService.Apply:output_type -> rove.Fact
+	36,  // 162: rove.FactService.Erase:output_type -> rove.FactEraseResponse
+	38,  // 163: rove.FactService.List:output_type -> rove.FactListResponse
+	66,  // 164: rove.EventService.Add:output_type -> rove.Event
+	66,  // 165: rove.EventService.Get:output_type -> rove.Event
+	66,  // 166: rove.EventService.Patch:output_type -> rove.Event
+	66,  // 167: rove.EventService.Apply:output_type -> rove.Event
+	46,  // 168: rove.EventService.Erase:output_type -> rove.EventEraseResponse
+	48,  // 169: rove.EventService.List:output_type -> rove.EventListResponse
+	51,  // 170: rove.EventService.Recent:output_type -> rove.EventRecentResponse
+	140, // [140:171] is the sub-list for method output_type
+	109, // [109:140] is the sub-list for method input_type
+	109, // [109:109] is the sub-list for extension type_name
+	109, // [109:109] is the sub-list for extension extendee
+	0,   // [0:109] is the sub-list for field type_name
 }
 
 func init() { file_rove_history_svc_g_proto_init() }
@@ -10258,7 +10428,7 @@ func file_rove_history_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_history_svc_g_proto_rawDesc), len(file_rove_history_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   52,
+			NumMessages:   54,
 			NumExtensions: 0,
 			NumServices:   5,
 		},

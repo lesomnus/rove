@@ -83,6 +83,9 @@ service EventService {
   rpc Erase(EventRef) returns (EventEraseResponse);
   // List reads Events a page at a time.
   rpc List(EventListRequest) returns (EventListResponse);
+  // Recent answers the newest events first, which a generated List -- oldest
+  // first, so that a cursor is stable -- does not.
+  rpc Recent(EventRecentRequest) returns (EventRecentResponse);
 }
 
 message PlacementAddRequest {
@@ -739,4 +742,16 @@ message EventFilter {
   bytes subject_id = 2;
   string kind = 3;
   bytes actor_id = 4;
+}
+
+message EventRecentRequest {
+  uint32 size = 1 [features.field_presence = IMPLICIT];
+  // Only events whose kind starts with this: "asset.", "custody.".
+  string kind = 2 [features.field_presence = IMPLICIT];
+  // Only events recorded before this, for the next page.
+  google.protobuf.Timestamp before = 3;
+}
+
+message EventRecentResponse {
+  repeated Event items = 1;
 }

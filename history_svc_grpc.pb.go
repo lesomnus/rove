@@ -1235,12 +1235,13 @@ var FactService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	EventService_Add_FullMethodName   = "/rove.EventService/Add"
-	EventService_Get_FullMethodName   = "/rove.EventService/Get"
-	EventService_Patch_FullMethodName = "/rove.EventService/Patch"
-	EventService_Apply_FullMethodName = "/rove.EventService/Apply"
-	EventService_Erase_FullMethodName = "/rove.EventService/Erase"
-	EventService_List_FullMethodName  = "/rove.EventService/List"
+	EventService_Add_FullMethodName    = "/rove.EventService/Add"
+	EventService_Get_FullMethodName    = "/rove.EventService/Get"
+	EventService_Patch_FullMethodName  = "/rove.EventService/Patch"
+	EventService_Apply_FullMethodName  = "/rove.EventService/Apply"
+	EventService_Erase_FullMethodName  = "/rove.EventService/Erase"
+	EventService_List_FullMethodName   = "/rove.EventService/List"
+	EventService_Recent_FullMethodName = "/rove.EventService/Recent"
 )
 
 // EventServiceClient is the client API for EventService service.
@@ -1259,6 +1260,9 @@ type EventServiceClient interface {
 	Erase(ctx context.Context, in *EventRef, opts ...grpc.CallOption) (*EventEraseResponse, error)
 	// List reads Events a page at a time.
 	List(ctx context.Context, in *EventListRequest, opts ...grpc.CallOption) (*EventListResponse, error)
+	// Recent answers the newest events first, which a generated List -- oldest
+	// first, so that a cursor is stable -- does not.
+	Recent(ctx context.Context, in *EventRecentRequest, opts ...grpc.CallOption) (*EventRecentResponse, error)
 }
 
 type eventServiceClient struct {
@@ -1329,6 +1333,16 @@ func (c *eventServiceClient) List(ctx context.Context, in *EventListRequest, opt
 	return out, nil
 }
 
+func (c *eventServiceClient) Recent(ctx context.Context, in *EventRecentRequest, opts ...grpc.CallOption) (*EventRecentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EventRecentResponse)
+	err := c.cc.Invoke(ctx, EventService_Recent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServiceServer is the server API for EventService service.
 // All implementations must embed UnimplementedEventServiceServer
 // for forward compatibility.
@@ -1345,6 +1359,9 @@ type EventServiceServer interface {
 	Erase(context.Context, *EventRef) (*EventEraseResponse, error)
 	// List reads Events a page at a time.
 	List(context.Context, *EventListRequest) (*EventListResponse, error)
+	// Recent answers the newest events first, which a generated List -- oldest
+	// first, so that a cursor is stable -- does not.
+	Recent(context.Context, *EventRecentRequest) (*EventRecentResponse, error)
 	mustEmbedUnimplementedEventServiceServer()
 }
 
@@ -1372,6 +1389,9 @@ func (UnimplementedEventServiceServer) Erase(context.Context, *EventRef) (*Event
 }
 func (UnimplementedEventServiceServer) List(context.Context, *EventListRequest) (*EventListResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedEventServiceServer) Recent(context.Context, *EventRecentRequest) (*EventRecentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Recent not implemented")
 }
 func (UnimplementedEventServiceServer) mustEmbedUnimplementedEventServiceServer() {}
 func (UnimplementedEventServiceServer) testEmbeddedByValue()                      {}
@@ -1502,6 +1522,24 @@ func _EventService_List_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EventService_Recent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventRecentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).Recent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_Recent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).Recent(ctx, req.(*EventRecentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EventService_ServiceDesc is the grpc.ServiceDesc for EventService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1532,6 +1570,10 @@ var EventService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _EventService_List_Handler,
+		},
+		{
+			MethodName: "Recent",
+			Handler:    _EventService_Recent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
