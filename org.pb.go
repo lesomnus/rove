@@ -299,7 +299,8 @@ type Party_builder struct {
 	// The team a person is in, or the organization a team is in.
 	ParentId []byte
 	// The login account, for a person who has one. Named after its target:
-	// a unique index over an edge named otherwise does not generate.
+	// a unique index over an edge named otherwise does not generate
+	// (protobuf-orm/protoc-gen-orm-ent#1).
 	Holder      *Holder
 	Email       string
 	Phone       string

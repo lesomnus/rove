@@ -47,8 +47,10 @@ message Stock {
         refs: [{name: "date_created", number: 15}, {name: "id", number: 1}]
       },
       {
-        // Unique in pg-extra rather than here: a unique index over edges
-        // named otherwise than their targets does not generate.
+        // Not unique here, though a model is kept once per space: a unique
+        // index over edges named otherwise than their targets does not
+        // generate (protobuf-orm/protoc-gen-orm-ent#1), so Stock.Add refuses
+        // a second one instead.
         name: "slot"
         refs: [{name: "model", number: 8}, {name: "space", number: 9}]
       }
