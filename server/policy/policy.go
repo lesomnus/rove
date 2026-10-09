@@ -160,6 +160,8 @@ func init() {
 	Table["/payday.BatchService/Do"] = rule{min: Read}
 }
 
+var roleWord = map[string]string{"owner": "소유자", "admin": "관리자", "manager": "매니저", "member": "구성원", "auditor": "감사자"}
+
 // Policy is the table, asked.
 type Policy struct{}
 
@@ -180,7 +182,7 @@ func (Policy) May(ctx context.Context, c gate.Call) error {
 			// Health and reflection, which a frame never reaches anyway.
 			return nil
 		}
-		return status.Errorf(codes.PermissionDenied, "%s is not something anybody calls", c.Action)
+		return status.Errorf(codes.PermissionDenied, "직접 호출할 수 없는 작업입니다 (%s)", c.Action)
 	}
 	role := Role(c)
 	lv := Levels[role]
@@ -191,9 +193,9 @@ func (Policy) May(ctx context.Context, c gate.Call) error {
 		return nil
 	}
 	if r.min == Nobody {
-		return status.Errorf(codes.PermissionDenied, "%s is not something anybody calls", c.Action)
+		return status.Errorf(codes.PermissionDenied, "직접 호출할 수 없는 작업입니다 (%s)", c.Action)
 	}
-	return status.Errorf(codes.PermissionDenied, "%s is not for a %s", c.Action, or(role, "nobody"))
+	return status.Errorf(codes.PermissionDenied, "%s 역할로는 할 수 없는 작업입니다 (%s)", or(roleWord[role], "알 수 없는"), c.Action)
 }
 
 // Where is the caller's own tenant, and nothing else: rove has no operator

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
 	"github.com/lesomnus/payday/frame"
 	"github.com/lesomnus/payday/pdid"
@@ -16,8 +17,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	app "github.com/lesomnus/rove"
+	"github.com/lesomnus/rove/cli"
 	"github.com/lesomnus/rove/cmd"
-	entmigrate "github.com/lesomnus/rove/internal/ent/migrate"
 	"github.com/lesomnus/rove/server/domain"
 	"github.com/lesomnus/rove/server/pd"
 )
@@ -54,7 +55,7 @@ func newEnv(t *testing.T) *env {
 	s, err := cmd.Build(ctx, c)
 	x.NoError(err)
 	t.Cleanup(func() { s.Close() })
-	x.NoError(entmigrate.NewSchema(s.Drv).Create(ctx))
+	x.NoError(cli.Migrate(ctx, s))
 
 	e := &env{t: t, x: x, s: s, cfg: c, now: time.Now().Truncate(time.Second)}
 	s.Deps.Now = func() time.Time { return e.now }
@@ -165,3 +166,10 @@ func sameId(a, b []byte) bool { return string(a) == string(b) }
 // newOp is a fresh operation identifier, what a client mints so that a retry
 // is the same operation.
 func newOp() []byte { return pdid.New(pd.EventDomain).Bytes() }
+
+func newOpUUID() uuid.UUID { return pdid.New(pd.AllocationDomain).Uuid() }
+
+func idUUID(b []byte) uuid.UUID {
+	v, _ := pdid.From(b)
+	return v.Uuid()
+}

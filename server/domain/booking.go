@@ -74,7 +74,7 @@ func (s domainBookable) Add(ctx context.Context, req *app.BookableAddRequest) (*
 			row.SetTimezone("Asia/Seoul")
 		}
 		if _, err := time.LoadLocation(row.GetTimezone()); err != nil {
-			return invalid("timezone", "is an IANA zone such as Asia/Seoul")
+			return invalid("timezone", "시간대가 올바르지 않습니다 (예: Asia/Seoul)")
 		}
 		if row.GetUnits() == 0 {
 			row.SetUnits(1)
@@ -119,7 +119,7 @@ func (s domainBookable) Update(ctx context.Context, req *app.BookableUpdateReque
 		}.Build()
 		if tz := req.GetTimezone(); tz != "" {
 			if _, err := time.LoadLocation(tz); err != nil {
-				return invalid("timezone", "is an IANA zone such as Asia/Seoul")
+				return invalid("timezone", "시간대가 올바르지 않습니다 (예: Asia/Seoul)")
 			}
 			patch.SetTimezone(tz)
 		}
@@ -128,7 +128,7 @@ func (s domainBookable) Update(ctx context.Context, req *app.BookableUpdateReque
 		} else if req.HasHours() {
 			for i, r := range req.GetHours().GetRanges() {
 				if r.GetWeekday() < 0 || r.GetWeekday() > 6 || r.GetFromMinute() < 0 || r.GetToMinute() > 24*60 || r.GetFromMinute() >= r.GetToMinute() {
-					return invalid(fmt.Sprintf("hours.ranges[%d]", i), "is a weekday 0-6 and minutes from < to within a day")
+					return invalid(fmt.Sprintf("hours.ranges[%d]", i), "운영 시간이 올바르지 않습니다")
 				}
 			}
 			patch.SetHours(req.GetHours())
@@ -154,14 +154,14 @@ type resource struct {
 func (t *Tx) resourceOf(id uuid.UUID) (*resource, error) {
 	a, err := t.db.Asset.Query().Where(asset.Id(id), asset.TenantId(t.tenant.Uuid()), asset.DateErasedIsNil()).Only(t.ctx)
 	if err != nil {
-		return nil, status.Error(codes.NotFound, "there is no such resource")
+		return nil, status.Error(codes.NotFound, "예약할 자원을 찾을 수 없습니다")
 	}
 	b, err := t.db.Bookable.Query().Where(bookable.TenantId(t.tenant.Uuid()), bookable.AssetId(id), bookable.DateErasedIsNil()).Only(t.ctx)
 	if err != nil {
-		return nil, failed("%s %s is not reservable", a.Tag, a.Name)
+		return nil, failed("%s %s은(는) 예약할 수 있는 자원이 아닙니다", a.Tag, a.Name)
 	}
 	if !b.Enabled {
-		return nil, failed("%s %s is not taking reservations", a.Tag, a.Name)
+		return nil, failed("%s %s은(는) 지금 예약을 받지 않습니다", a.Tag, a.Name)
 	}
 	return &resource{a, b}, nil
 }
@@ -368,7 +368,7 @@ func (s Domain) Reservation() app.ReservationServiceServer {
 func (t *Tx) partyOf() (*ent.Party, error) {
 	p, err := t.db.Party.Query().Where(party.TenantId(t.tenant.Uuid()), party.HolderId(t.actor.Uuid()), party.DateErasedIsNil()).First(t.ctx)
 	if err != nil {
-		return nil, failed("your login is not a person in this organization yet; ask an admin")
+		return nil, failed("로그인이 아직 구성원과 연결되지 않았습니다. 관리자에게 문의하세요")
 	}
 	return p, nil
 }
@@ -391,25 +391,25 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 	var out *app.Reservation
 	err := s.tx(ctx, func(t *Tx) error {
 		if !req.HasBeginsAt() || !req.HasEndsAt() {
-			return invalid("begins_at", "a reservation is from a moment to a moment")
+			return invalid("begins_at", "시작과 끝을 정하세요")
 		}
 		begins, ends := req.GetBeginsAt().AsTime(), req.GetEndsAt().AsTime()
 		if !ends.After(begins) {
-			return invalid("ends_at", "is after begins_at")
+			return invalid("ends_at", "끝은 시작보다 뒤여야 합니다")
 		}
 		if ends.Before(t.now) {
-			return invalid("ends_at", "is in the past")
+			return invalid("ends_at", "이미 지난 시간입니다")
 		}
 		if len(req.GetItems()) == 0 {
-			return invalid("items", "say what to reserve")
+			return invalid("items", "무엇을 예약할지 고르세요")
 		}
 		override := req.GetOverride()
 		if override {
 			if !manages(t.roleOf()) {
-				return status.Error(codes.PermissionDenied, "only a manager books over a conflict")
+				return status.Error(codes.PermissionDenied, "겹치게 예약하는 것은 매니저만 할 수 있습니다")
 			}
 			if strings.TrimSpace(req.GetReason()) == "" {
-				return invalid("reason", "booking over a conflict says why")
+				return invalid("reason", "겹치게 예약하는 사유를 적어 주세요")
 			}
 		}
 
@@ -422,7 +422,7 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 				return err
 			}
 			if me, _ := t.partyOf(); (me == nil || pdid.Id(me.Id) != idOf(p.GetId())) && !manages(t.roleOf()) {
-				return status.Error(codes.PermissionDenied, "only a manager reserves for somebody else")
+				return status.Error(codes.PermissionDenied, "다른 사람의 예약은 매니저만 할 수 있습니다")
 			}
 			who, err = t.db.Party.Query().Where(party.Id(uuidOf(p.GetId()))).Only(t.ctx)
 			if err != nil {
@@ -450,7 +450,7 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 			}
 			units := max(it.GetUnits(), 1)
 			if units > r.book.Units {
-				return invalid(fmt.Sprintf("items[%d].units", i), "%s has %d", r.asset.Name, r.book.Units)
+				return invalid(fmt.Sprintf("items[%d].units", i), "%s은(는) %d개뿐입니다", r.asset.Name, r.book.Units)
 			}
 			wants = append(wants, want{r, units, true})
 			if r.asset.Kind == "kit" {
@@ -494,17 +494,17 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 			approval = approval || w.r.book.Approval
 			d := int32(ends.Sub(begins).Minutes())
 			if w.item && w.r.book.MinMinutes > 0 && d < w.r.book.MinMinutes {
-				return invalid("ends_at", "%s is reserved for at least %d minutes", w.r.asset.Name, w.r.book.MinMinutes)
+				return invalid("ends_at", "%s은(는) %d분 이상 예약합니다", w.r.asset.Name, w.r.book.MinMinutes)
 			}
 			if w.item && w.r.book.MaxMinutes > 0 && d > w.r.book.MaxMinutes {
-				return invalid("ends_at", "%s is reserved for at most %d minutes", w.r.asset.Name, w.r.book.MaxMinutes)
+				return invalid("ends_at", "%s은(는) 한 번에 %s까지 예약할 수 있습니다", w.r.asset.Name, minutes(w.r.book.MaxMinutes))
 			}
 			if h := w.r.book.HorizonDays; w.item && h > 0 && begins.After(t.now.AddDate(0, 0, int(h))) {
-				return invalid("begins_at", "%s is reserved at most %d days ahead", w.r.asset.Name, h)
+				return invalid("begins_at", "%s은(는) %d일 앞까지만 예약할 수 있습니다", w.r.asset.Name, h)
 			}
 			for _, o := range occs {
 				if w.item && !open(w.r.book, o[0], o[1]) && !override {
-					return failed("%s is closed then (%s)", w.r.asset.Name, o[0].Format("2006-01-02 15:04"))
+					return failed("%s은(는) 그 시간에 운영하지 않습니다 (%s)", w.r.asset.Name, when(o[0]))
 				}
 				from, to := window(w.r.book, o[0], o[1])
 				cs, err := t.conflicts(w.r, from, to, w.units, nil)
@@ -512,8 +512,8 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 					return err
 				}
 				if len(cs) > 0 && !override {
-					return status.Errorf(codes.Aborted, "%s is taken then (%s); pick another time",
-						w.r.asset.Name, o[0].Format("2006-01-02 15:04"))
+					return status.Errorf(codes.Aborted, "%s은(는) %s에 이미 예약되어 있습니다. 다른 시간을 고르세요",
+						w.r.asset.Name, when(o[0]))
 				}
 			}
 		}
@@ -636,19 +636,19 @@ func occurrences(begins, ends time.Time, rule string) ([][2]time.Time, error) {
 		case "INTERVAL":
 			n, err := strconv.Atoi(v)
 			if err != nil || n < 1 {
-				return nil, invalid("repeat", "INTERVAL is a positive number")
+				return nil, invalid("repeat", "반복 간격(INTERVAL)은 1 이상입니다")
 			}
 			interval = n
 		case "COUNT":
 			n, err := strconv.Atoi(v)
 			if err != nil || n < 1 {
-				return nil, invalid("repeat", "COUNT is a positive number")
+				return nil, invalid("repeat", "반복 횟수(COUNT)는 1 이상입니다")
 			}
 			count = n
 		case "UNTIL":
 			u, err := time.Parse("20060102", v[:min(8, len(v))])
 			if err != nil {
-				return nil, invalid("repeat", "UNTIL is a date, YYYYMMDD")
+				return nil, invalid("repeat", "반복 끝(UNTIL)은 YYYYMMDD 날짜입니다")
 			}
 			u = u.Add(24 * time.Hour)
 			until = &u
@@ -664,10 +664,10 @@ func occurrences(begins, ends time.Time, rule string) ([][2]time.Time, error) {
 	case "MONTHLY":
 		at = func(i int) (int, int, int) { return 0, interval * i, 0 }
 	default:
-		return nil, invalid("repeat", "FREQ is DAILY, WEEKLY or MONTHLY")
+		return nil, invalid("repeat", "반복 주기(FREQ)는 DAILY, WEEKLY, MONTHLY 가운데 하나입니다")
 	}
 	if count == 0 && until == nil {
-		return nil, invalid("repeat", "say COUNT or UNTIL")
+		return nil, invalid("repeat", "반복 횟수(COUNT)나 끝(UNTIL)을 정하세요")
 	}
 	for i := 1; len(out) < 52; i++ {
 		y, m, d := at(i)
@@ -722,7 +722,7 @@ func (s domainReservation) decide(ctx context.Context, req *app.ReservationDecid
 		for _, r := range targets {
 			if !slices.Contains(from, r.GetStatus()) {
 				if len(targets) == 1 {
-					return failed("this reservation is %s", r.GetStatus())
+					return failed("이 예약은 %s 상태입니다", or(reservationSay[r.GetStatus()], r.GetStatus()))
 				}
 				continue
 			}
@@ -770,7 +770,7 @@ func (s domainReservation) decide(ctx context.Context, req *app.ReservationDecid
 			}
 		}
 		if out == nil {
-			return failed("nothing in the series was %s", strings.Join(from, " or "))
+			return failed("반복 예약 가운데 처리할 것이 없습니다")
 		}
 		return nil
 	})
@@ -829,7 +829,7 @@ func (s domainReservation) Confirm(ctx context.Context, req *app.ReservationDeci
 	var to string
 	return s.decideTo(ctx, req, "reservation.confirm", []string{resHeld}, &to, func(t *Tx, r *app.Reservation) error {
 		if r.HasExpiresAt() && r.GetExpiresAt().AsTime().Before(t.now) {
-			return failed("the hold expired; reserve again")
+			return failed("임시로 잡아 둔 시간이 지났습니다. 다시 예약하세요")
 		}
 		to = resConfirmed
 		needs, err := t.needsApproval(idOf(r.GetId()))
@@ -851,7 +851,7 @@ func (s domainReservation) decideTo(ctx context.Context, req *app.ReservationDec
 			return err
 		}
 		if !slices.Contains(from, r.GetStatus()) {
-			return failed("this reservation is %s", r.GetStatus())
+			return failed("이 예약은 %s 상태입니다", or(reservationSay[r.GetStatus()], r.GetStatus()))
 		}
 		if err := check(t, r); err != nil {
 			return err
@@ -895,7 +895,7 @@ func (t *Tx) needsApproval(rid pdid.Id) (bool, error) {
 // says so already for a call from outside; this says it for any other way in.
 func managerOnly(t *Tx, _ *app.Reservation) error {
 	if !manages(t.roleOf()) {
-		return status.Error(codes.PermissionDenied, "a manager decides this")
+		return status.Error(codes.PermissionDenied, "매니저가 결정할 일입니다")
 	}
 	return nil
 }
@@ -920,7 +920,7 @@ func (s domainReservation) CheckIn(ctx context.Context, req *app.ReservationDeci
 			return err
 		}
 		if t.now.Before(r.GetBeginsAt().AsTime().Add(-30 * time.Minute)) {
-			return failed("check-in opens 30 minutes before it begins")
+			return failed("체크인은 시작 30분 전부터 할 수 있습니다")
 		}
 		return nil
 	})
@@ -943,7 +943,7 @@ func (t *Tx) mineOrManager(r *app.Reservation) error {
 		return err
 	}
 	if pdid.Id(me.Id) != idOf(r.GetParty().GetId()) && idOf(r.GetRequestedBy()) != t.actor {
-		return status.Error(codes.PermissionDenied, "this is somebody else's reservation")
+		return status.Error(codes.PermissionDenied, "다른 사람의 예약입니다")
 	}
 	return nil
 }
@@ -1032,7 +1032,7 @@ func (s domainBookable) Availability(ctx context.Context, req *app.BookableAvail
 		to = req.GetTo().AsTime()
 	}
 	if to.Sub(from) > 92*24*time.Hour {
-		return nil, invalid("to", "a span of at most three months")
+		return nil, invalid("to", "한 번에 석 달까지 볼 수 있습니다")
 	}
 
 	busy := []*app.BusySpan{}

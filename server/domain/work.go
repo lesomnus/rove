@@ -29,7 +29,9 @@ type domainWorkOrder struct {
 	app.WorkOrderServiceServer
 }
 
-func (s Domain) WorkOrder() app.WorkOrderServiceServer { return domainWorkOrder{s, s.Next().WorkOrder()} }
+func (s Domain) WorkOrder() app.WorkOrderServiceServer {
+	return domainWorkOrder{s, s.Next().WorkOrder()}
+}
 
 // Add opens a work order. One that blocks takes the asset's time from its
 // beginning to its end, as maintenance, which reservations then cannot take
@@ -43,20 +45,20 @@ func (s domainWorkOrder) Add(ctx context.Context, req *app.WorkOrderAddRequest) 
 		}
 		kind := or(req.GetKind(), "repair")
 		if !slices.Contains(WorkKinds, kind) {
-			return invalid("kind", "is one of %s", strings.Join(WorkKinds, ", "))
+			return invalid("kind", "작업 구분이 올바르지 않습니다 (%s)", strings.Join(WorkKinds, ", "))
 		}
 		if strings.TrimSpace(req.GetName()) == "" {
-			return invalid("name", "say what the work is")
+			return invalid("name", "작업 내용을 적어 주세요")
 		}
 		mgr := manages(t.roleOf())
 		if !mgr {
 			// What a member can do is report something broken. When it is
 			// looked at, by whom and for how much is a manager's to decide.
 			if kind != "repair" {
-				return grpcstatus.Error(codes.PermissionDenied, "a member reports a repair; other work is a manager's")
+				return grpcstatus.Error(codes.PermissionDenied, "구성원은 고장 신고만 할 수 있습니다")
 			}
 			if req.GetBlocking() || req.HasBeginsAt() || req.HasEndsAt() || req.GetEveryDays() != 0 || req.GetCost() != 0 || req.HasVendor() {
-				return grpcstatus.Error(codes.PermissionDenied, "scheduling and costs are a manager's")
+				return grpcstatus.Error(codes.PermissionDenied, "일정과 비용은 매니저가 정합니다")
 			}
 		}
 		status := "open"
@@ -64,7 +66,7 @@ func (s domainWorkOrder) Add(ctx context.Context, req *app.WorkOrderAddRequest) 
 			status = "scheduled"
 		}
 		if req.HasBeginsAt() && req.HasEndsAt() && !req.GetEndsAt().AsTime().After(req.GetBeginsAt().AsTime()) {
-			return invalid("ends_at", "is after begins_at")
+			return invalid("ends_at", "끝은 시작보다 뒤여야 합니다")
 		}
 		if err := t.begin(nil, "work.open", aid, t.now, fmt.Sprintf("작업 열림: %s (%s)", req.GetName(), a.GetTag()), "", map[string]string{"kind": kind}); err != nil {
 			return err
@@ -170,7 +172,7 @@ func (s domainWorkOrder) Update(ctx context.Context, req *app.WorkOrderUpdateReq
 		}
 		if v := req.GetStatus(); v != "" {
 			if !slices.Contains(WorkStatuses, v) || v == "done" || v == "cancelled" {
-				return invalid("status", "is open, scheduled or in_progress; complete or cancel it instead")
+				return invalid("status", "상태는 접수, 예정, 진행 중 가운데 하나입니다. 끝내려면 완료나 취소를 쓰세요")
 			}
 			patch.SetStatus(v)
 		}
@@ -307,7 +309,7 @@ func (s domainPurchase) Add(ctx context.Context, req *app.PurchaseAddRequest) (*
 	var out *app.Purchase
 	err := s.tx(ctx, func(t *Tx) error {
 		if len(req.GetLines()) == 0 {
-			return invalid("lines", "say what was bought")
+			return invalid("lines", "구매한 품목을 적어 주세요")
 		}
 		if req.HasVendor() {
 			v, err := t.next.Party().Get(t.ctx, app.PartyGetRequest_builder{Ref: req.GetVendor()}.Build())
@@ -315,20 +317,20 @@ func (s domainPurchase) Add(ctx context.Context, req *app.PurchaseAddRequest) (*
 				return err
 			}
 			if v.GetKind() != "vendor" {
-				return invalid("vendor", "is a vendor")
+				return invalid("vendor", "업체는 거래처여야 합니다")
 			}
 		}
 		var total int64
 		for i, l := range req.GetLines() {
 			if l.GetQuantity() <= 0 {
-				return invalid(fmt.Sprintf("lines[%d].quantity", i), "is at least 1")
+				return invalid(fmt.Sprintf("lines[%d].quantity", i), "수량은 1 이상입니다")
 			}
 			as := or(l.GetReceiveAs(), "asset")
 			if as != "asset" && as != "stock" {
-				return invalid(fmt.Sprintf("lines[%d].receive_as", i), "is asset or stock")
+				return invalid(fmt.Sprintf("lines[%d].receive_as", i), "입고 형태는 자산 또는 재고입니다")
 			}
 			if as == "stock" && !l.HasModel() {
-				return invalid(fmt.Sprintf("lines[%d].model", i), "stock is kept by model")
+				return invalid(fmt.Sprintf("lines[%d].model", i), "재고로 받으려면 모델을 정하세요")
 			}
 			total += l.GetQuantity() * l.GetUnitCost()
 		}
@@ -394,14 +396,14 @@ func (s domainPurchase) Receive(ctx context.Context, req *app.PurchaseReceiveReq
 			return err
 		}
 		if p.GetStatus() != "ordered" {
-			return failed("this purchase is %s", p.GetStatus())
+			return failed("이 구매는 %s 상태입니다", or(purchaseSay[p.GetStatus()], p.GetStatus()))
 		}
 		into, intoId, err := t.get(req.GetInto(), "into")
 		if err != nil {
 			return err
 		}
 		if into.GetKind() != "space" {
-			return invalid("into", "what arrives goes into a space")
+			return invalid("into", "입고는 공간으로 받습니다")
 		}
 		lines, err := t.db.PurchaseLine.Query().Where(purchaseline.TenantId(t.tenant.Uuid()), purchaseline.PurchaseId(uuidOf(p.GetId()))).All(t.ctx)
 		if err != nil {

@@ -160,6 +160,9 @@ func TestAttributesAndHistory(t *testing.T) {
 	x.NoError(err)
 	_, err = e.app().Asset().Get(e.owner, app.AssetGetRequest_builder{Ref: assetRef(a)}.Build())
 	x.Equal(codes.NotFound, codeOf(err))
+	// The tag of what was voided is free again: the unique index covers the
+	// rows that are still here.
+	e.item("모니터", "MN-1", room, 0)
 }
 
 func TestTheWall(t *testing.T) {

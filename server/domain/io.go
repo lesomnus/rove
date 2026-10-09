@@ -62,9 +62,12 @@ var (
 	statusWords    = map[string]string{"주문": "ordered", "사용중": "active", "운용": "active", "수리중": "in_repair", "분실": "lost", "불용": "retired", "폐기": "disposed"}
 	conditionWords = map[string]string{"양호": "good", "손상": "damaged", "고장": "broken"}
 
-	kindSay      = map[string]string{"item": "물품", "space": "공간", "kit": "키트", "group": "그룹"}
-	statusSay    = map[string]string{"ordered": "주문", "active": "사용중", "in_repair": "수리중", "lost": "분실", "retired": "불용", "disposed": "폐기"}
-	conditionSay = map[string]string{"good": "양호", "damaged": "손상", "broken": "고장"}
+	kindSay        = map[string]string{"item": "물품", "space": "공간", "kit": "키트", "group": "그룹"}
+	reservationSay = map[string]string{"held": "임시 홀드", "requested": "승인 대기", "confirmed": "확정", "in_use": "이용 중", "completed": "완료", "cancelled": "취소", "rejected": "거절", "expired": "만료", "no_show": "노쇼"}
+	custodySay     = map[string]string{"open": "진행 중", "returned": "반납 완료"}
+	purchaseSay    = map[string]string{"ordered": "주문", "received": "입고 완료", "cancelled": "취소"}
+	statusSay      = map[string]string{"ordered": "주문", "active": "사용중", "in_repair": "수리중", "lost": "분실", "retired": "불용", "disposed": "폐기"}
+	conditionSay   = map[string]string{"good": "양호", "damaged": "손상", "broken": "고장"}
 )
 
 func word(v string, words map[string]string) string {
@@ -192,17 +195,17 @@ var errDry = errors.New("domain: dry run")
 // answer lists every row that is wrong so that one round of fixes is enough.
 func (s domainAsset) Import(ctx context.Context, req *app.AssetImportRequest) (*app.AssetImportResponse, error) {
 	if len(req.GetData()) > MaxUpload {
-		return nil, invalid("data", "is at most %d MiB", MaxUpload>>20)
+		return nil, invalid("data", "파일은 %dMB까지입니다", MaxUpload>>20)
 	}
 	table, err := readTable(req.GetFormat(), req.GetData())
 	if err != nil {
-		return nil, invalid("data", "%v", err)
+		return nil, invalid("data", "파일을 읽을 수 없습니다: %v", err)
 	}
 	if len(table) < 2 {
-		return nil, invalid("data", "is a header and at least one row")
+		return nil, invalid("data", "머리글 줄과 자료가 한 줄 이상 있어야 합니다")
 	}
 	if len(table)-1 > MaxImportRows {
-		return nil, invalid("data", "is at most %d rows; import it in parts", MaxImportRows)
+		return nil, invalid("data", "한 번에 %d줄까지입니다. 나눠서 가져오세요", MaxImportRows)
 	}
 
 	out := &app.AssetImportResponse{}
@@ -825,7 +828,7 @@ func (s domainAsset) Export(ctx context.Context, req *app.AssetExportRequest) (*
 	}
 	format := strings.ToLower(or(req.GetFormat(), "csv"))
 	if format != "csv" && format != "xlsx" {
-		return nil, invalid("format", "is csv or xlsx")
+		return nil, invalid("format", "CSV 또는 엑셀(xlsx)만 됩니다")
 	}
 
 	as, err := t.db.Asset.Query().Where(asset.TenantId(t.tenant.Uuid()), asset.DateErasedIsNil()).All(ctx)

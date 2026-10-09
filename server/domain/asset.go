@@ -66,12 +66,12 @@ var allAsset = app.AssetSelect_builder{All: z.Ptr(true)}.Build()
 // may see it.
 func (t *Tx) get(ref *app.AssetRef, field string) (*app.Asset, pdid.Id, error) {
 	if ref == nil {
-		return nil, pdid.Nil, invalid(field, "says no asset")
+		return nil, pdid.Nil, invalid(field, "자산을 지정하세요")
 	}
 	v, err := t.next.Asset().Get(t.ctx, app.AssetGetRequest_builder{Ref: ref, Select: allAsset}.Build())
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
-			return nil, pdid.Nil, status.Errorf(codes.NotFound, "%s: there is no such asset", field)
+			return nil, pdid.Nil, status.Error(codes.NotFound, "자산을 찾을 수 없습니다")
 		}
 		return nil, pdid.Nil, err
 	}
@@ -79,7 +79,9 @@ func (t *Tx) get(ref *app.AssetRef, field string) (*app.Asset, pdid.Id, error) {
 	return v, id, err
 }
 
-func assetRef(id uuid.UUID) *app.AssetRef { return app.AssetRef_builder{Id: pdid.Id(id).Bytes()}.Build() }
+func assetRef(id uuid.UUID) *app.AssetRef {
+	return app.AssetRef_builder{Id: pdid.Id(id).Bytes()}.Build()
+}
 
 // Add registers an asset: the row, the facts it starts with, and where it is
 // (design 6, D24). The facts are valid from `since`, which is how a register
@@ -92,7 +94,7 @@ func (s domainAsset) Add(ctx context.Context, req *app.AssetAddRequest) (*app.As
 			return err
 		}
 		if req.HasCustodian() {
-			return invalid("custodian", "is given by a custody, not set on an asset")
+			return invalid("custodian", "사용자는 지급·대여로 정해집니다")
 		}
 
 		row := proto.Clone(req).(*app.AssetAddRequest)
@@ -124,22 +126,22 @@ func (s domainAsset) Add(ctx context.Context, req *app.AssetAddRequest) (*app.As
 			row.SetKind("item")
 		}
 		if !slices.Contains(Kinds, row.GetKind()) {
-			return invalid("kind", "is one of %s", strings.Join(Kinds, ", "))
+			return invalid("kind", "종류가 올바르지 않습니다 (%s)", strings.Join(Kinds, ", "))
 		}
 		if row.GetStatus() == "" {
 			row.SetStatus("active")
 		}
 		if !slices.Contains(Statuses, row.GetStatus()) {
-			return invalid("status", "is one of %s", strings.Join(Statuses, ", "))
+			return invalid("status", "상태가 올바르지 않습니다 (%s)", strings.Join(Statuses, ", "))
 		}
 		if row.GetCondition() == "" {
 			row.SetCondition("good")
 		}
 		if !slices.Contains(Conditions, row.GetCondition()) {
-			return invalid("condition", "is one of %s", strings.Join(Conditions, ", "))
+			return invalid("condition", "컨디션이 올바르지 않습니다 (%s)", strings.Join(Conditions, ", "))
 		}
 		if strings.TrimSpace(row.GetName()) == "" {
-			return invalid("name", "must not be empty")
+			return invalid("name", "이름을 입력하세요")
 		}
 		row.SetName(strings.TrimSpace(row.GetName()))
 		if err := checkAttributes(spec, row.GetAttributes(), true); err != nil {
@@ -171,7 +173,7 @@ func (s domainAsset) Add(ctx context.Context, req *app.AssetAddRequest) (*app.As
 				mode = "located"
 			}
 			if !slices.Contains(Modes, mode) {
-				return invalid("mode", "is one of %s", strings.Join(Modes, ", "))
+				return invalid("mode", "배치 방식이 올바르지 않습니다 (%s)", strings.Join(Modes, ", "))
 			}
 			row.SetParentId(to.GetId())
 			row.SetPlacementMode(mode)
@@ -239,7 +241,7 @@ func (s domainAsset) Add(ctx context.Context, req *app.AssetAddRequest) (*app.As
 		if len(req.GetId()) > 0 {
 			return s.AssetServiceServer.Get(ctx, app.AssetGetRequest_builder{Ref: app.AssetRef_builder{Id: req.GetId()}.Build(), Select: allAsset}.Build())
 		}
-		return nil, status.Error(codes.AlreadyExists, "this registration already happened")
+		return nil, status.Error(codes.AlreadyExists, "이미 처리된 등록입니다")
 	}
 	return out, err
 }
@@ -268,10 +270,10 @@ func (t *Tx) nextTag(kind string) (string, error) {
 // space holds anything, and only a space holds a space.
 func canHold(parent *app.Asset, kind string) error {
 	if kind == "space" && parent.GetKind() != "space" {
-		return invalid("to", "a space can only be inside another space")
+		return invalid("to", "공간은 다른 공간 안에만 둘 수 있습니다")
 	}
 	if parent.GetKind() == "group" {
-		return invalid("to", "a group is a set of assets, not a place; relate to it instead")
+		return invalid("to", "그룹은 장소가 아니라 묶음입니다. 안에 넣지 말고 연결하세요")
 	}
 	return nil
 }
@@ -294,7 +296,7 @@ func (s domainAsset) Erase(ctx context.Context, ref *app.AssetRef) (*app.AssetEr
 			return err
 		}
 		if inside > 0 {
-			return failed("%d assets are inside it; move them out first", inside)
+			return failed("안에 자산이 %d개 있습니다. 먼저 옮기세요", inside)
 		}
 
 		if err := t.begin(nil, "asset.void", id, t.now, fmt.Sprintf("%s 등록 취소", a.GetTag()), "", nil); err != nil {
@@ -379,10 +381,10 @@ func (s domainAsset) Move(ctx context.Context, req *app.AssetMoveRequest) (*app.
 				mode = "located"
 			}
 			if !slices.Contains(Modes, mode) {
-				return invalid("mode", "is one of %s", strings.Join(Modes, ", "))
+				return invalid("mode", "배치 방식이 올바르지 않습니다 (%s)", strings.Join(Modes, ", "))
 			}
 			if req.GetUFrom() < 0 || req.GetUTo() < req.GetUFrom() {
-				return invalid("u_from", "a rack position is from <= to, both from 1")
+				return invalid("u_from", "랙 위치는 1U부터이고, 시작이 끝보다 클 수 없습니다")
 			}
 			v = &place{parent: uuidOf(to.GetId()), mode: mode, slot: strings.TrimSpace(req.GetSlot()), uFrom: req.GetUFrom(), uTo: req.GetUTo()}
 			if v.uFrom > 0 && v.uTo == 0 {
@@ -467,7 +469,7 @@ func (t *Tx) checkPlacements(child uuid.UUID, tl, old timeline[place]) error {
 	for _, s := range added {
 		p := s.state.parent
 		if p == child {
-			return invalid("to", "an asset cannot be inside itself")
+			return invalid("to", "자산을 자기 안에 둘 수 없습니다")
 		}
 
 		// Its ancestors at the start, and at every change among them during
@@ -483,7 +485,7 @@ func (t *Tx) checkPlacements(child uuid.UUID, tl, old timeline[place]) error {
 				return err
 			}
 			if slices.Contains(chain, child) {
-				return failed("that would put the asset inside itself")
+				return failed("그렇게 옮기면 자산이 자기 안에 들어가게 됩니다")
 			}
 			for _, c := range changes {
 				if !slices.ContainsFunc(times, c.Equal) {
@@ -505,7 +507,7 @@ func (t *Tx) checkPlacements(child uuid.UUID, tl, old timeline[place]) error {
 				return err
 			}
 			if n > 0 {
-				return failed("slot %s is taken at that time", s.state.slot)
+				return failed("그 시점에 자리 %s는 이미 차 있습니다", s.state.slot)
 			}
 		}
 		if s.state.uFrom > 0 {
@@ -523,7 +525,7 @@ func (t *Tx) checkPlacements(child uuid.UUID, tl, old timeline[place]) error {
 				return err
 			}
 			if n > 0 {
-				return failed("rack units %d-%d are taken at that time", s.state.uFrom, s.state.uTo)
+				return failed("그 시점에 랙 %d–%dU는 이미 차 있습니다", s.state.uFrom, s.state.uTo)
 			}
 		}
 	}
@@ -811,15 +813,15 @@ func (s domainAsset) SetAttributes(ctx context.Context, req *app.AssetSetAttribu
 			switch key {
 			case "status":
 				if !slices.Contains(Statuses, val) {
-					return invalid("set", "status is one of %s", strings.Join(Statuses, ", "))
+					return invalid("set", "상태가 올바르지 않습니다 (%s)", strings.Join(Statuses, ", "))
 				}
 			case "condition":
 				if !slices.Contains(Conditions, val) {
-					return invalid("set", "condition is one of %s", strings.Join(Conditions, ", "))
+					return invalid("set", "컨디션이 올바르지 않습니다 (%s)", strings.Join(Conditions, ", "))
 				}
 			case "name", "tag":
 				if val == "" {
-					return invalid("set", "%s must not be empty", key)
+					return invalid("set", "%s 항목은 비울 수 없습니다", factName(key))
 				}
 			case "type":
 				ty, err := t.next.AssetType().Get(t.ctx, app.AssetTypeGetRequest_builder{
@@ -884,7 +886,7 @@ func factKey(k string) (string, error) {
 	if k != "" && !strings.ContainsAny(k, " .") {
 		return "attr." + k, nil
 	}
-	return "", invalid("set", "%q is not a field of an asset", k)
+	return "", invalid("set", "%q는 자산의 항목이 아닙니다", k)
 }
 
 func stringsOf(m map[string]*string) map[string]string {
@@ -987,9 +989,9 @@ func (s domainAsset) Assign(ctx context.Context, req *app.AssetAssignRequest) (*
 		switch role {
 		case "owner", "manager":
 		case "custodian":
-			return invalid("role", "a custodian is given by a custody; issue one instead")
+			return invalid("role", "사용자는 지급·대여로 정합니다")
 		default:
-			return invalid("role", "is owner or manager")
+			return invalid("role", "역할은 소유 또는 관리 담당입니다")
 		}
 		a, id, err := t.get(req.GetRef(), "ref")
 		if err != nil {
@@ -1113,7 +1115,7 @@ func (s domainAsset) Relate(ctx context.Context, req *app.AssetRelateRequest) (*
 			kind = "member_of"
 		}
 		if !slices.Contains(LinkKinds, kind) {
-			return invalid("kind", "is one of %s", strings.Join(LinkKinds, ", "))
+			return invalid("kind", "관계 종류가 올바르지 않습니다 (%s)", strings.Join(LinkKinds, ", "))
 		}
 		a, id, err := t.get(req.GetRef(), "ref")
 		if err != nil {
@@ -1124,10 +1126,10 @@ func (s domainAsset) Relate(ctx context.Context, req *app.AssetRelateRequest) (*
 			return err
 		}
 		if id == target {
-			return invalid("target", "an asset is not related to itself")
+			return invalid("target", "자산을 자기 자신과 연결할 수 없습니다")
 		}
 		if kind == "member_of" && b.GetKind() != "kit" && b.GetKind() != "group" {
-			return invalid("target", "only a kit or a group has members")
+			return invalid("target", "구성품은 키트나 그룹에만 연결할 수 있습니다")
 		}
 
 		old, err := t.links(id.Uuid(), target.Uuid(), kind)
@@ -1213,10 +1215,10 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 	var out *app.Asset
 	err := s.tx(ctx, func(t *Tx) error {
 		if strings.TrimSpace(req.GetReason()) == "" {
-			return invalid("reason", "a correction says why")
+			return invalid("reason", "정정 사유를 적어 주세요")
 		}
 		if !req.GetRetract() && !req.HasValidFrom() {
-			return invalid("valid_from", "say when it happened instead, or retract it")
+			return invalid("valid_from", "실제 시점을 적거나, 없었던 일로 취소하세요")
 		}
 		var when time.Time
 		if req.HasValidFrom() {
@@ -1245,7 +1247,7 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 			}
 			tl, gone, ok := old.retract(row)
 			if !ok {
-				return status.Error(codes.NotFound, "row_id: no current placement of this asset")
+				return status.Error(codes.NotFound, "이 자산의 현재 위치 기록이 아닙니다")
 			}
 			if !req.GetRetract() {
 				tl, _ = tl.set(when, &gone.state)
@@ -1265,7 +1267,7 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 		case pd.StewardshipDomain:
 			r, err := t.db.Stewardship.Query().Where(stewardship.Id(row), stewardship.TenantId(t.tenant.Uuid()), stewardship.AssetId(id.Uuid()), stewardship.SupersededAtIsNil()).Only(t.ctx)
 			if err != nil {
-				return status.Error(codes.NotFound, "row_id: no current stewardship of this asset")
+				return status.Error(codes.NotFound, "이 자산의 현재 담당 기록이 아닙니다")
 			}
 			old, err := t.stewards(id.Uuid(), r.Role)
 			if err != nil {
@@ -1285,7 +1287,7 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 		case pd.LinkDomain:
 			r, err := t.db.Link.Query().Where(link.Id(row), link.TenantId(t.tenant.Uuid()), link.SourceId(id.Uuid()), link.SupersededAtIsNil()).Only(t.ctx)
 			if err != nil {
-				return status.Error(codes.NotFound, "row_id: no current relation of this asset")
+				return status.Error(codes.NotFound, "이 자산의 현재 관계 기록이 아닙니다")
 			}
 			old, err := t.links(id.Uuid(), r.TargetId, r.Kind)
 			if err != nil {
@@ -1305,7 +1307,7 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 		case pd.FactDomain:
 			r, err := t.db.Fact.Query().Where(fact.Id(row), fact.TenantId(t.tenant.Uuid()), fact.AssetId(id.Uuid()), fact.SupersededAtIsNil()).Only(t.ctx)
 			if err != nil {
-				return status.Error(codes.NotFound, "row_id: no current fact of this asset")
+				return status.Error(codes.NotFound, "이 자산의 현재 항목 기록이 아닙니다")
 			}
 			if err := begin(r.Key); err != nil {
 				return err
@@ -1322,7 +1324,7 @@ func (s domainAsset) Correct(ctx context.Context, req *app.AssetCorrectRequest) 
 			return err
 
 		default:
-			return invalid("row_id", "is not a time row")
+			return invalid("row_id", "정정할 수 있는 기록이 아닙니다")
 		}
 
 		out, _, err = t.get(assetRef(id.Uuid()), "ref")
@@ -1398,26 +1400,26 @@ func checkAttributes(spec *app.TypeSpec, attrs map[string]string, creating bool)
 		switch d.GetType() {
 		case "number":
 			if _, err := strconv.ParseFloat(v, 64); err != nil {
-				return invalid("attributes", "%s is a number", d.GetLabel())
+				return invalid("attributes", "%s은(는) 숫자입니다", d.GetLabel())
 			}
 		case "bool":
 			if v != "true" && v != "false" {
-				return invalid("attributes", "%s is true or false", d.GetLabel())
+				return invalid("attributes", "%s은(는) 예 또는 아니오입니다", d.GetLabel())
 			}
 		case "date":
 			if _, err := time.Parse(time.DateOnly, v); err != nil {
-				return invalid("attributes", "%s is a date, YYYY-MM-DD", d.GetLabel())
+				return invalid("attributes", "%s은(는) 날짜입니다 (예: 2024-03-01)", d.GetLabel())
 			}
 		case "enum":
 			if !slices.Contains(d.GetOptions(), v) {
-				return invalid("attributes", "%s is one of %s", d.GetLabel(), strings.Join(d.GetOptions(), ", "))
+				return invalid("attributes", "%s은(는) %s 중 하나입니다", d.GetLabel(), strings.Join(d.GetOptions(), ", "))
 			}
 		}
 	}
 	if creating {
 		for _, d := range spec.GetAttributes() {
 			if d.GetRequired() && attrs[d.GetKey()] == "" {
-				return invalid("attributes", "%s is required", d.GetLabel())
+				return invalid("attributes", "%s을(를) 입력하세요", d.GetLabel())
 			}
 		}
 	}

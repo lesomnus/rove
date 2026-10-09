@@ -35,7 +35,7 @@ func (s domainStock) Add(ctx context.Context, req *app.StockAddRequest) (*app.St
 			return err
 		}
 		if sp.GetKind() != "space" {
-			return invalid("space", "stock is kept in a space")
+			return invalid("space", "재고는 공간에 보관합니다")
 		}
 		dup, err := t.db.Stock.Query().Where(
 			stock.TenantId(t.tenant.Uuid()),
@@ -47,10 +47,10 @@ func (s domainStock) Add(ctx context.Context, req *app.StockAddRequest) (*app.St
 			return err
 		}
 		if dup {
-			return failed("%s is already kept in %s; change that stock instead", m.GetName(), sp.GetName())
+			return failed("%s은(는) 이미 %s에 재고가 있습니다. 그 재고의 수량을 바꾸세요", m.GetName(), sp.GetName())
 		}
 		if req.GetQuantity() < 0 || req.GetThreshold() < 0 {
-			return invalid("quantity", "is not negative")
+			return invalid("quantity", "수량은 0 이상입니다")
 		}
 
 		row := proto.Clone(req).(*app.StockAddRequest)
@@ -87,7 +87,7 @@ func (t *Tx) moveStock(st *app.Stock, delta int64, reason string, ref pdid.Id, a
 	}
 	next := cur.Quantity + delta
 	if next < 0 {
-		return failed("%s has %d; %d cannot be taken", cur.Name, cur.Quantity, -delta)
+		return failed("%s은(는) %d%s 남아 %d%s를 뺄 수 없습니다", cur.Name, cur.Quantity, cur.Unit, -delta, cur.Unit)
 	}
 	if _, err := t.next.Stock().Patch(t.ctx, app.StockPatchRequest_builder{
 		Ref:              app.StockRef_builder{Id: st.GetId()}.Build(),
@@ -135,10 +135,10 @@ func (s domainStock) change(ctx context.Context, req *app.StockChangeRequest, re
 		}
 		q := req.GetQuantity()
 		if sign != 0 && q <= 0 {
-			return invalid("quantity", "is at least 1")
+			return invalid("quantity", "수량은 1 이상입니다")
 		}
 		if sign == 0 && q == 0 {
-			return invalid("quantity", "an adjustment changes something")
+			return invalid("quantity", "늘리거나 줄일 수량을 적어 주세요")
 		}
 		if sign != 0 {
 			q *= sign
@@ -182,7 +182,7 @@ func (s domainStock) Transfer(ctx context.Context, req *app.StockTransferRequest
 		}
 		q := req.GetQuantity()
 		if q <= 0 {
-			return invalid("quantity", "is at least 1")
+			return invalid("quantity", "수량은 1 이상입니다")
 		}
 		st, err := t.next.Stock().Get(t.ctx, app.StockGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {
@@ -193,7 +193,7 @@ func (s domainStock) Transfer(ctx context.Context, req *app.StockTransferRequest
 			return err
 		}
 		if sp.GetKind() != "space" {
-			return invalid("to", "stock is kept in a space")
+			return invalid("to", "재고는 공간에 보관합니다")
 		}
 		if err := t.begin(req.GetOp(), "stock.transfer", pdid.Nil, at, fmt.Sprintf("재고 이동: %s %d → %s", st.GetName(), q, sp.GetName()), req.GetReason(), nil); err != nil {
 			return err
@@ -246,7 +246,7 @@ func (s domainStock) Convert(ctx context.Context, req *app.StockConvertRequest) 
 	err := s.tx(ctx, func(t *Tx) error {
 		q := req.GetQuantity()
 		if q <= 0 || q > 200 {
-			return invalid("quantity", "is 1 to 200")
+			return invalid("quantity", "한 번에 1~200개까지 전환합니다")
 		}
 		st, err := t.next.Stock().Get(t.ctx, app.StockGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {

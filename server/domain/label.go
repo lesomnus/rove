@@ -101,10 +101,10 @@ func (s domainTenantDomain) Add(ctx context.Context, req *app.TenantDomainAddReq
 
 		if sub := strings.ToLower(strings.TrimSpace(req.GetSub())); sub != "" {
 			if t.deps.LabelSuffix == "" {
-				return failed("this deployment offers no default subdomain")
+				return failed("이 서버에는 기본 라벨 주소가 없습니다. 자체 도메인을 쓰세요")
 			}
 			if !regexp.MustCompile(`^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`).MatchString(sub) {
-				return invalid("sub", "is lowercase letters, digits and hyphens")
+				return invalid("sub", "영문 소문자, 숫자, -로 씁니다")
 			}
 			row.SetHost(sub + "." + t.deps.LabelSuffix)
 			row.SetSource("default")
@@ -112,10 +112,10 @@ func (s domainTenantDomain) Add(ctx context.Context, req *app.TenantDomainAddReq
 		} else {
 			host := strings.TrimSuffix(strings.ToLower(strings.TrimSpace(req.GetHost())), ".")
 			if !hostOk.MatchString(host) {
-				return invalid("host", "is a host name such as assets.example.com")
+				return invalid("host", "호스트 이름을 적어 주세요 (예: assets.example.com)")
 			}
 			if s := t.deps.LabelSuffix; s != "" && (host == s || strings.HasSuffix(host, "."+s)) {
-				return invalid("host", "a subdomain of %s is a default one; ask for it by `sub`", s)
+				return invalid("host", "%s의 하위 주소는 기본 주소로 추가하세요", s)
 			}
 			row.SetHost(host)
 			row.SetSource("custom")
@@ -211,10 +211,10 @@ func (s domainTenantDomain) Verify(ctx context.Context, req *app.TenantDomainVer
 		}
 		ok, err := t.deps.verify(t.ctx, v.GetHost(), v.GetToken())
 		if err != nil {
-			return status.Errorf(codes.Unavailable, "the TXT record could not be read: %v", err)
+			return status.Errorf(codes.Unavailable, "TXT 레코드를 읽을 수 없습니다: %v", err)
 		}
 		if !ok {
-			return failed("_rove-challenge.%s has no TXT record saying %s yet", v.GetHost(), v.GetToken())
+			return failed("_rove-challenge.%s에 TXT 레코드 %s가 아직 없습니다. DNS 반영에 시간이 걸릴 수 있습니다", v.GetHost(), v.GetToken())
 		}
 		if err := t.begin(nil, "domain.verify", pdid.Nil, t.now, "라벨 도메인 확인: "+v.GetHost(), "", nil); err != nil {
 			return err
@@ -253,7 +253,7 @@ func (s domainTenantDomain) Activate(ctx context.Context, req *app.TenantDomainA
 		switch v.GetState() {
 		case domainReady, domainLegacy, domainActive:
 		default:
-			return failed("%s is %s; only a verified domain can be activated", v.GetHost(), v.GetState())
+			return failed("%s은(는) 아직 확인되지 않았습니다. 확인된 도메인만 쓸 수 있습니다", v.GetHost())
 		}
 		if err := t.begin(nil, "domain.activate", pdid.Nil, t.now, "라벨 도메인 활성화: "+v.GetHost(), "", nil); err != nil {
 			return err
@@ -278,7 +278,7 @@ func (s domainTenantDomain) Retire(ctx context.Context, req *app.TenantDomainRet
 			return err
 		}
 		if n > 0 && !req.GetForce() {
-			return failed("%d labels were printed with %s and would stop opening; say force to retire it anyway", n, v.GetHost())
+			return failed("%s로 인쇄된 라벨 %d장이 더 이상 열리지 않게 됩니다. 그래도 중지하려면 강제로 중지하세요", v.GetHost(), n)
 		}
 		if err := t.begin(nil, "domain.retire", pdid.Nil, t.now, "라벨 도메인 은퇴: "+v.GetHost(), "", nil); err != nil {
 			return err
@@ -328,7 +328,7 @@ func (s Domain) Label() app.LabelServiceServer { return domainLabel{s, s.Next().
 // errLabelsOff is the answer while a tenant has no active label domain: a
 // label printed without one would encode a host the tenant cannot keep.
 func errLabelsOff() error {
-	return failed("labels are off until the tenant has an active label domain; add one in settings")
+	return failed("라벨 도메인이 없어 QR 라벨이 꺼져 있습니다. 설정에서 도메인을 추가하세요")
 }
 
 // Print makes labels with the active domain.
@@ -345,7 +345,7 @@ func (s domainLabel) Print(ctx context.Context, req *app.LabelPrintRequest) (*ap
 		n := int(req.GetCount())
 		ids := req.GetAssetIds()
 		if len(ids) == 0 && (n <= 0 || n > 500) {
-			return invalid("count", "is 1 to 500, or name the assets")
+			return invalid("count", "한 번에 1~500장, 또는 자산을 고르세요")
 		}
 		batch := strings.TrimSpace(req.GetBatch())
 		if batch == "" {
@@ -420,13 +420,13 @@ func (s domainLabel) Bind(ctx context.Context, req *app.LabelBindRequest) (*app.
 		}
 		switch l.GetState() {
 		case "void":
-			return failed("this label was voided")
+			return failed("폐기된 라벨입니다")
 		case "bound":
 			if idOf(l.GetSubjectId()) == id {
 				out = l
 				return nil
 			}
-			return failed("this label is on another asset; unbind it first")
+			return failed("다른 자산에 붙은 라벨입니다. 먼저 떼세요")
 		}
 		if err := t.begin(req.GetOp(), "label.bind", id, t.now, fmt.Sprintf("%s 라벨 부착", a.GetTag()), "", nil); err != nil {
 			return err
@@ -485,7 +485,7 @@ func (s domainLabel) Resolve(ctx context.Context, req *app.LabelResolveRequest) 
 		// Not a label: perhaps an asset tag typed or printed as a barcode.
 		a, err := t.db.Asset.Query().Where(asset.TenantId(t.tenant.Uuid()), asset.Tag(strings.TrimSpace(req.GetCode())), asset.DateErasedIsNil()).First(ctx)
 		if err != nil {
-			return nil, status.Error(codes.NotFound, "nothing here reads that code")
+			return nil, status.Error(codes.NotFound, "이 코드로 찾을 수 있는 것이 없습니다")
 		}
 		v, _, err := t.get(assetRef(a.Id), "code")
 		if err != nil {
@@ -532,14 +532,14 @@ func (s domainAttachment) Upload(ctx context.Context, req *app.AttachmentUploadR
 	var out *app.Attachment
 	err := s.tx(ctx, func(t *Tx) error {
 		if t.deps.Files == nil {
-			return failed("this deployment keeps no files")
+			return failed("이 서버는 파일을 보관하지 않습니다")
 		}
 		data := req.GetData()
 		if len(data) == 0 {
-			return invalid("data", "is empty")
+			return invalid("data", "빈 파일입니다")
 		}
 		if len(data) > MaxUpload {
-			return invalid("data", "is larger than %d MiB", MaxUpload>>20)
+			return invalid("data", "파일은 %dMB까지입니다", MaxUpload>>20)
 		}
 		subject := idOf(req.GetSubjectId())
 		if err := t.exists(subject); err != nil {
@@ -605,13 +605,13 @@ func (t *Tx) exists(id pdid.Id) error {
 	case pd.CountFindingDomain:
 		ok, err = t.db.CountFinding.Query().Where(countfinding.Id(u), countfinding.TenantId(tid)).Exist(t.ctx)
 	default:
-		return invalid("subject_id", "files are kept for assets, custodies, work orders, purchases and count findings")
+		return invalid("subject_id", "첨부는 자산, 지급, 작업, 구매, 실사 결과에만 합니다")
 	}
 	if err != nil {
 		return err
 	}
 	if !ok {
-		return status.Error(codes.NotFound, "subject_id: there is no such thing")
+		return status.Error(codes.NotFound, "첨부할 대상을 찾을 수 없습니다")
 	}
 	return nil
 }
@@ -629,4 +629,3 @@ func (s domainAttachment) Url(ctx context.Context, req *app.AttachmentUrlRequest
 	u, exp := t.deps.Sign.URL(v.GetObjectKey(), v.GetName(), t.now)
 	return app.AttachmentUrlResponse_builder{Url: u, ExpiresAt: ts(exp)}.Build(), nil
 }
-

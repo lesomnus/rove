@@ -21,8 +21,8 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	app "github.com/lesomnus/rove"
+	"github.com/lesomnus/rove/cli"
 	"github.com/lesomnus/rove/cmd"
-	entmigrate "github.com/lesomnus/rove/internal/ent/migrate"
 	"github.com/lesomnus/rove/server/password"
 	"github.com/lesomnus/rove/server/session"
 )
@@ -69,7 +69,7 @@ func newWorld(t *testing.T) *world {
 	s, err := cmd.Build(ctx, c)
 	x.NoError(err)
 	t.Cleanup(func() { s.Close() })
-	x.NoError(entmigrate.NewSchema(s.Drv).Create(ctx))
+	x.NoError(cli.Migrate(ctx, s))
 
 	tn, err := s.Base.Tenant().Add(ctx, app.TenantAddRequest_builder{Alias: "acme"}.Build())
 	x.NoError(err)

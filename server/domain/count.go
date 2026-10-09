@@ -36,7 +36,7 @@ func (s domainCount) Add(ctx context.Context, req *app.InventoryCountAddRequest)
 			return err
 		}
 		if sp.GetKind() != "space" {
-			return invalid("scope", "a count covers a space")
+			return invalid("scope", "실사 범위는 공간입니다")
 		}
 		name := strings.TrimSpace(req.GetName())
 		if name == "" {
@@ -70,10 +70,10 @@ func (s domainCount) Scan(ctx context.Context, req *app.InventoryCountScanReques
 			return err
 		}
 		if c.GetStatus() != "open" {
-			return failed("this count is closed")
+			return failed("종료된 실사입니다")
 		}
 		if !c.GetSelfService() && !manages(t.roleOf()) {
-			return status.Error(codes.PermissionDenied, "this count is for managers; a self-audit is open to everybody")
+			return status.Error(codes.PermissionDenied, "이 실사는 매니저만 스캔합니다. 자가 실사에서는 누구나 스캔할 수 있습니다")
 		}
 		seen, err := t.at(req.GetSeenAt(), "seen_at")
 		if err != nil {
@@ -86,7 +86,7 @@ func (s domainCount) Scan(ctx context.Context, req *app.InventoryCountScanReques
 				return err
 			}
 			if sp.GetKind() != "space" {
-				return invalid("at", "things are seen in a space")
+				return invalid("at", "발견 위치는 공간이어야 합니다")
 			}
 			where = id
 		}
@@ -116,7 +116,7 @@ func (s domainCount) Scan(ctx context.Context, req *app.InventoryCountScanReques
 				}
 			}
 		default:
-			return invalid("code", "say what was scanned")
+			return invalid("code", "스캔한 코드를 보내 주세요")
 		}
 
 		if err := t.begin(req.GetOp(), "count.scan", aid, seen, "실사 스캔", req.GetNote(), nil); err != nil {
@@ -177,7 +177,7 @@ func (s domainCount) Scan(ctx context.Context, req *app.InventoryCountScanReques
 		return err
 	})
 	if err == errDone {
-		return nil, status.Error(codes.AlreadyExists, "this scan was recorded already")
+		return nil, status.Error(codes.AlreadyExists, "이미 기록된 스캔입니다")
 	}
 	return out, err
 }
@@ -271,14 +271,14 @@ func (s domainCount) Resolve(ctx context.Context, req *app.InventoryCountResolve
 		}
 		res := req.GetResolution()
 		if !slices.Contains([]string{"moved", "lost", "ignored"}, res) {
-			return invalid("resolution", "is moved, lost or ignored")
+			return invalid("resolution", "처리는 위치 반영, 분실, 무시 가운데 하나입니다")
 		}
 		aid := idOf(f.GetAsset().GetId())
 		layer := t.layer()
 		switch res {
 		case "moved":
 			if aid.IsZero() || len(f.GetObservedParentId()) == 0 {
-				return failed("only something seen somewhere can be moved there")
+				return failed("발견된 위치가 있는 것만 옮길 수 있습니다")
 			}
 			if _, err := layer.Asset().Move(t.ctx, app.AssetMoveRequest_builder{
 				Ref:    app.AssetRef_builder{Id: aid.Bytes()}.Build(),
@@ -290,7 +290,7 @@ func (s domainCount) Resolve(ctx context.Context, req *app.InventoryCountResolve
 			}
 		case "lost":
 			if aid.IsZero() {
-				return failed("only an asset can be lost")
+				return failed("등록된 자산만 분실 처리할 수 있습니다")
 			}
 			if _, err := layer.Asset().SetAttributes(t.ctx, app.AssetSetAttributesRequest_builder{
 				Ref:    app.AssetRef_builder{Id: aid.Bytes()}.Build(),

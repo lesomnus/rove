@@ -36,10 +36,10 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 			return err
 		}
 		if p.GetKind() == "vendor" {
-			return invalid("party", "assets are handed to people, teams and organizations")
+			return invalid("party", "거래처에는 지급할 수 없습니다")
 		}
 		if len(req.GetLines()) == 0 {
-			return invalid("lines", "say what is handed over")
+			return invalid("lines", "건넬 품목을 고르세요")
 		}
 		kind := req.GetKind()
 		if kind == "" {
@@ -49,10 +49,10 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 			}
 		}
 		if kind != "issue" && kind != "loan" {
-			return invalid("kind", "is issue or loan")
+			return invalid("kind", "지급 또는 대여입니다")
 		}
 		if req.HasDueAt() && !req.GetDueAt().AsTime().After(t.now) {
-			return invalid("due_at", "is in the future")
+			return invalid("due_at", "반납 기한은 지금 이후여야 합니다")
 		}
 
 		id := pdid.New(pd.CustodyDomain)
@@ -84,7 +84,7 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 				return err
 			}
 			if r.GetStatus() != resConfirmed {
-				return failed("the reservation is %s; only a confirmed one is picked up", r.GetStatus())
+				return failed("예약이 %s 상태입니다. 확정된 예약만 수령할 수 있습니다", or(reservationSay[r.GetStatus()], r.GetStatus()))
 			}
 			if _, err := t.next.Reservation().Patch(t.ctx, app.ReservationPatchRequest_builder{
 				Ref:              app.ReservationRef_builder{Id: r.GetId()}.Build(),
@@ -115,13 +115,13 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 					return err
 				}
 				if slices.Contains([]string{"disposed", "lost", "retired"}, a.GetStatus()) {
-					return failed("%s is %s", a.GetTag(), a.GetStatus())
+					return failed("%s은(는) %s 상태입니다", a.GetTag(), or(statusSay[a.GetStatus()], a.GetStatus()))
 				}
 				if a.GetKind() == "space" || a.GetKind() == "group" {
-					return invalid(fmt.Sprintf("lines[%d].asset", i), "a %s is not handed over", a.GetKind())
+					return invalid(fmt.Sprintf("lines[%d].asset", i), "%s은(는) 건넬 수 없습니다", or(kindSay[a.GetKind()], a.GetKind()))
 				}
 				if a.HasCustodian() {
-					return failed("%s is held by somebody already; return it first", a.GetTag())
+					return failed("%s은(는) 이미 누군가 가지고 있습니다. 먼저 반납을 받으세요", a.GetTag())
 				}
 				line.SetAsset(app.AssetRef_builder{Id: aid.Bytes()}.Build())
 				line.SetQuantity(1)
@@ -139,7 +139,7 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 			case l.HasStock():
 				q := l.GetQuantity()
 				if q <= 0 {
-					return invalid(fmt.Sprintf("lines[%d].quantity", i), "is at least 1")
+					return invalid(fmt.Sprintf("lines[%d].quantity", i), "수량은 1 이상입니다")
 				}
 				st, err := t.next.Stock().Get(t.ctx, app.StockGetRequest_builder{Ref: l.GetStock()}.Build())
 				if err != nil {
@@ -151,7 +151,7 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 				line.SetStock(app.StockRef_builder{Id: st.GetId()}.Build())
 				line.SetQuantity(q)
 			default:
-				return invalid(fmt.Sprintf("lines[%d]", i), "is an asset or a stock")
+				return invalid(fmt.Sprintf("lines[%d]", i), "품목은 자산이나 재고입니다")
 			}
 			if _, err := t.next.CustodyLine().Add(t.ctx, line); err != nil {
 				return err
@@ -166,7 +166,7 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 		return nil
 	})
 	if err == errDone {
-		return nil, status.Error(codes.AlreadyExists, "this hand-over already happened")
+		return nil, status.Error(codes.AlreadyExists, "이미 처리된 지급입니다")
 	}
 	return out, err
 }
@@ -189,7 +189,7 @@ func (s domainCustody) Acknowledge(ctx context.Context, req *app.CustodyAcknowle
 				return err
 			}
 			if pdid.Id(me.Id) != idOf(c.GetParty().GetId()) {
-				return status.Error(codes.PermissionDenied, "only the receiver acknowledges")
+				return status.Error(codes.PermissionDenied, "받은 사람만 인수 확인을 할 수 있습니다")
 			}
 		}
 		if err := t.begin(nil, "custody.acknowledge", idOf(c.GetId()), t.now, "인수 확인", "", nil); err != nil {
@@ -218,7 +218,7 @@ func (s domainCustody) Return(ctx context.Context, req *app.CustodyReturnRequest
 			return err
 		}
 		if c.GetStatus() != "open" {
-			return failed("this custody is %s", c.GetStatus())
+			return failed("이 지급은 %s 상태입니다", or(custodySay[c.GetStatus()], c.GetStatus()))
 		}
 		cid := idOf(c.GetId())
 		lines, err := t.db.CustodyLine.Query().Where(custodyline.TenantId(t.tenant.Uuid()), custodyline.CustodyId(cid.Uuid())).All(t.ctx)
@@ -365,10 +365,10 @@ func (s domainCustody) Extend(ctx context.Context, req *app.CustodyExtendRequest
 			return err
 		}
 		if c.GetStatus() != "open" {
-			return failed("this custody is %s", c.GetStatus())
+			return failed("이 지급은 %s 상태입니다", or(custodySay[c.GetStatus()], c.GetStatus()))
 		}
 		if !req.HasDueAt() || !req.GetDueAt().AsTime().After(t.now) {
-			return invalid("due_at", "is in the future")
+			return invalid("due_at", "반납 기한은 지금 이후여야 합니다")
 		}
 		if err := t.begin(nil, "custody.extend", idOf(c.GetId()), t.now, "반납 기한 연장: "+req.GetDueAt().AsTime().Format(time.DateOnly), "", nil); err != nil {
 			return err
@@ -384,4 +384,3 @@ func (s domainCustody) Extend(ctx context.Context, req *app.CustodyExtendRequest
 	})
 	return out, err
 }
-

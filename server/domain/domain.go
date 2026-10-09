@@ -25,6 +25,7 @@ import (
 	"github.com/lesomnus/payday/pdid"
 	"github.com/protobuf-orm/ent/dialect"
 	"github.com/protobuf-orm/protoc-gen-orm-ent/runtime/enttx"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -228,7 +229,7 @@ func (t *Tx) at(v *timestamppb.Timestamp, field string) (time.Time, error) {
 
 	at := v.AsTime()
 	if at.After(t.now.Add(5 * time.Minute)) {
-		return time.Time{}, invalid(field, "is in the future; what is recorded is what has happened")
+		return time.Time{}, invalid(field, "미래 시각은 기록할 수 없습니다. 이미 일어난 일을 기록합니다")
 	}
 
 	return at, nil
@@ -241,10 +242,10 @@ func (t *Tx) begin(op []byte, kind string, subject pdid.Id, at time.Time, desc, 
 	if len(op) > 0 {
 		v, err := pdid.From(op)
 		if err != nil {
-			return invalid("op", "is not an identifier: %v", err)
+			return invalid("op", "작업 식별자가 올바르지 않습니다: %v", err)
 		}
 		if v.Domain() != pd.EventDomain {
-			return invalid("op", "is not an event identifier")
+			return invalid("op", "작업 식별자가 올바르지 않습니다")
 		}
 
 		n, err := t.db.Event.Query().
@@ -313,9 +314,27 @@ func (t *Tx) lockTree() error {
 	return err
 }
 
-// invalid is a refusal about one field of a request.
+// invalid is a refusal about one field of a request: the sentence a person
+// reads, and the field beside it, in a BadRequest, for a form to point at.
 func invalid(field, format string, args ...any) error {
-	return status.Error(codes.InvalidArgument, field+": "+fmt.Sprintf(format, args...))
+	msg := fmt.Sprintf(format, args...)
+	st := status.New(codes.InvalidArgument, msg)
+	v, err := st.WithDetails(&errdetails.BadRequest{FieldViolations: []*errdetails.BadRequest_FieldViolation{{Field: field, Description: msg}}})
+	if err != nil {
+		return st.Err()
+	}
+	return v.Err()
+}
+
+// when is a moment as a person here reads one, in a refusal.
+func when(t time.Time) string { return t.In(Zone).Format("1월 2일 15:04") }
+
+// minutes is a duration as a person says it.
+func minutes(n int32) string {
+	if n%60 == 0 {
+		return fmt.Sprintf("%d시간", n/60)
+	}
+	return fmt.Sprintf("%d분", n)
 }
 
 // failed is a refusal because of the state things are in.

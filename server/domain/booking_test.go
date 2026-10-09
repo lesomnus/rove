@@ -298,3 +298,32 @@ func TestMaintenanceBlocks(t *testing.T) {
 	x.NoError(err)
 	x.NotZero(in.GetUnread(), "the managers were told")
 }
+
+// The second answer to a double booking, on PostgreSQL: written straight to
+// the table, around the domain layer, it is still refused.
+func TestPostgresBackstop(t *testing.T) {
+	e := newEnv(t)
+	if e.s.Dialect != "postgres" {
+		t.Skip("PostgreSQL only; set PDTEST_POSTGRES")
+	}
+	room := e.space("회의실", nil)
+	ctx := context.Background()
+	tx, err := e.s.Ent.Tx(ctx)
+	e.x.NoError(err)
+	at := e.now.Add(day)
+	for range 2 {
+		e.x.NoError(tx.Allocation.Create().
+			SetId(newOpUUID()).
+			SetTenantId(e.tenant.Uuid()).
+			SetResourceId(idUUID(room.GetId())).
+			SetKind("reservation").
+			SetBeginsAt(at).
+			SetEndsAt(at.Add(time.Hour)).
+			SetBlocking(true).
+			SetExclusive(true).
+			SetUnits(1).
+			SetDateUpdated(e.now).
+			Exec(ctx))
+	}
+	e.x.Error(tx.Commit(), "two blocking allocations of one room at one time")
+}

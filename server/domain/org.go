@@ -17,8 +17,8 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/credential"
 	"github.com/lesomnus/rove/internal/ent/holder"
-	"github.com/lesomnus/rove/internal/ent/session"
 	"github.com/lesomnus/rove/internal/ent/party"
+	"github.com/lesomnus/rove/internal/ent/session"
 	"github.com/lesomnus/rove/server/password"
 )
 
@@ -45,14 +45,14 @@ func (s domainParty) Add(ctx context.Context, req *app.PartyAddRequest) (*app.Pa
 			row.SetKind("person")
 		}
 		if !slices.Contains(PartyKinds, row.GetKind()) {
-			return invalid("kind", "is one of %s", strings.Join(PartyKinds, ", "))
+			return invalid("kind", "구분이 올바르지 않습니다 (%s)", strings.Join(PartyKinds, ", "))
 		}
 		row.SetName(strings.TrimSpace(row.GetName()))
 		if row.GetName() == "" {
-			return invalid("name", "must not be empty")
+			return invalid("name", "이름을 입력하세요")
 		}
 		if req.HasHolder() {
-			return invalid("holder", "a login is given by Invite")
+			return invalid("holder", "로그인은 로그인 발급으로 만듭니다")
 		}
 		if p := idOf(req.GetParentId()); !p.IsZero() {
 			if err := t.parentParty(p); err != nil {
@@ -74,10 +74,10 @@ func (s domainParty) Add(ctx context.Context, req *app.PartyAddRequest) (*app.Pa
 func (t *Tx) parentParty(id pdid.Id) error {
 	p, err := t.db.Party.Query().Where(party.Id(id.Uuid()), party.TenantId(t.tenant.Uuid()), party.DateErasedIsNil()).Only(t.ctx)
 	if err != nil {
-		return status.Error(codes.NotFound, "parent_id: there is no such party")
+		return status.Error(codes.NotFound, "소속을 찾을 수 없습니다")
 	}
 	if p.Kind != "team" && p.Kind != "org" {
-		return invalid("parent_id", "a party is in a team or an organization")
+		return invalid("parent_id", "소속은 팀이나 조직이어야 합니다")
 	}
 	return nil
 }
@@ -122,7 +122,7 @@ func (s domainParty) Update(ctx context.Context, req *app.PartyUpdateRequest) (*
 		}
 		if v := req.GetKind(); v != "" {
 			if !slices.Contains(PartyKinds, v) {
-				return invalid("kind", "is one of %s", strings.Join(PartyKinds, ", "))
+				return invalid("kind", "구분이 올바르지 않습니다 (%s)", strings.Join(PartyKinds, ", "))
 			}
 			patch.SetKind(v)
 		}
@@ -130,7 +130,7 @@ func (s domainParty) Update(ctx context.Context, req *app.PartyUpdateRequest) (*
 			patch.SetParentIdNull(true)
 		} else if v := idOf(req.GetParentId()); !v.IsZero() {
 			if v == idOf(p.GetId()) {
-				return invalid("parent_id", "a party is not inside itself")
+				return invalid("parent_id", "자기 자신에게 소속될 수 없습니다")
 			}
 			if err := t.parentParty(v); err != nil {
 				return err
@@ -167,18 +167,18 @@ func (s domainParty) Invite(ctx context.Context, req *app.PartyInviteRequest) (*
 			return err
 		}
 		if p.GetKind() != "person" {
-			return invalid("ref", "only a person signs in")
+			return invalid("ref", "사람에게만 로그인을 발급합니다")
 		}
 		if p.HasHolder() {
-			return failed("%s already has a login", p.GetName())
+			return failed("%s은(는) 이미 로그인이 있습니다", p.GetName())
 		}
 		alias, err := slug.ParseAlias(req.GetAlias())
 		if err != nil {
-			return invalid("alias", "%v", err)
+			return invalid("alias", "아이디는 영문 소문자, 숫자, -로 씁니다 (%v)", err)
 		}
 		role := or(req.GetRole(), "member")
 		if !slices.Contains(Roles, role) {
-			return invalid("role", "is one of %s", strings.Join(Roles, ", "))
+			return invalid("role", "역할이 올바르지 않습니다 (%s)", strings.Join(Roles, ", "))
 		}
 		pw := req.GetPassword()
 		made := ""
@@ -230,7 +230,7 @@ func (s domainParty) SetRole(ctx context.Context, req *app.PartySetRoleRequest) 
 	var out *app.Party
 	err := s.tx(ctx, func(t *Tx) error {
 		if !slices.Contains(Roles, req.GetRole()) {
-			return invalid("role", "is one of %s", strings.Join(Roles, ", "))
+			return invalid("role", "역할이 올바르지 않습니다 (%s)", strings.Join(Roles, ", "))
 		}
 		p, err := t.next.Party().Get(t.ctx, app.PartyGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {
@@ -238,7 +238,7 @@ func (s domainParty) SetRole(ctx context.Context, req *app.PartySetRoleRequest) 
 		}
 		h := idOf(p.GetHolder().GetId())
 		if h.IsZero() {
-			return failed("%s has no login", p.GetName())
+			return failed("%s은(는) 로그인이 없습니다", p.GetName())
 		}
 		cur, err := t.db.Holder.Query().Where(holder.Id(h.Uuid())).Only(t.ctx)
 		if err != nil {
@@ -250,7 +250,7 @@ func (s domainParty) SetRole(ctx context.Context, req *app.PartySetRoleRequest) 
 				return err
 			}
 			if n <= 1 {
-				return failed("this is the last owner; make somebody else an owner first")
+				return failed("마지막 소유자입니다. 먼저 다른 사람을 소유자로 정하세요")
 			}
 		}
 		if err := t.begin(nil, "party.role", pdid.Nil, t.now, fmt.Sprintf("역할 변경: %s → %s", p.GetName(), req.GetRole()), "", nil); err != nil {
@@ -290,18 +290,18 @@ func (s domainParty) SetPassword(ctx context.Context, req *app.PartySetPasswordR
 				return err
 			}
 			if me.Role != "owner" && me.Role != "admin" {
-				return status.Error(codes.PermissionDenied, "only an admin sets another person's password")
+				return status.Error(codes.PermissionDenied, "다른 사람의 비밀번호는 관리자만 바꿀 수 있습니다")
 			}
 		}
 
 		c, err := t.db.Credential.Query().Where(credential.TenantId(t.tenant.Uuid()), credential.HolderId(target.Uuid())).Only(t.ctx)
 		if err != nil {
-			return failed("this person has no password to change")
+			return failed("바꿀 비밀번호가 없는 사람입니다")
 		}
 		if own {
 			ok, err := password.Check(string(c.Secret), req.GetCurrent())
 			if err != nil || !ok {
-				return invalid("current", "is not the current password")
+				return invalid("current", "지금 비밀번호가 맞지 않습니다")
 			}
 		}
 		hash, err := password.Hash(req.GetPassword())
@@ -345,7 +345,7 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 			return nil
 		}
 		if h == t.actor {
-			return failed("you cannot deactivate yourself")
+			return failed("자기 로그인은 중지할 수 없습니다")
 		}
 		if err := t.begin(nil, "party.deactivate", pdid.Nil, t.now, "로그인 비활성화: "+p.GetName(), "", nil); err != nil {
 			return err
@@ -377,7 +377,7 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 			return err
 		}
 		if p.GetKind() != "person" {
-			return invalid("ref", "only a person is forgotten")
+			return invalid("ref", "개인정보 삭제는 사람에게만 합니다")
 		}
 		id := idOf(p.GetId())
 		if err := t.begin(nil, "party.pseudonymize", pdid.Nil, t.now, "개인정보 삭제", "", nil); err != nil {
@@ -434,13 +434,13 @@ func (s domainAssetType) Add(ctx context.Context, req *app.AssetTypeAddRequest) 
 		row := proto.Clone(req).(*app.AssetTypeAddRequest)
 		row.SetTenant(t.tenantRef())
 		if strings.TrimSpace(row.GetName()) == "" {
-			return invalid("name", "must not be empty")
+			return invalid("name", "이름을 입력하세요")
 		}
 		if row.GetKind() == "" {
 			row.SetKind("item")
 		}
 		if !slices.Contains(Kinds, row.GetKind()) {
-			return invalid("kind", "is one of %s", strings.Join(Kinds, ", "))
+			return invalid("kind", "종류가 올바르지 않습니다 (%s)", strings.Join(Kinds, ", "))
 		}
 		if err := checkSpec(row.GetSpec()); err != nil {
 			return err
@@ -466,20 +466,20 @@ func checkSpec(spec *app.TypeSpec) error {
 	for i, a := range spec.GetAttributes() {
 		k := a.GetKey()
 		if k == "" || strings.ContainsAny(k, " .") {
-			return invalid(fmt.Sprintf("spec.attributes[%d].key", i), "is a word with no spaces or dots")
+			return invalid(fmt.Sprintf("spec.attributes[%d].key", i), "속성 키는 띄어쓰기나 점 없이 씁니다")
 		}
 		if seen[k] {
-			return invalid(fmt.Sprintf("spec.attributes[%d].key", i), "%q is declared twice", k)
+			return invalid(fmt.Sprintf("spec.attributes[%d].key", i), "속성 키 %q가 두 번 있습니다", k)
 		}
 		seen[k] = true
 		switch a.GetType() {
 		case "", "text", "number", "bool", "date":
 		case "enum":
 			if len(a.GetOptions()) == 0 {
-				return invalid(fmt.Sprintf("spec.attributes[%d].options", i), "an enum offers options")
+				return invalid(fmt.Sprintf("spec.attributes[%d].options", i), "선택형 속성에는 선택지가 있어야 합니다")
 			}
 		default:
-			return invalid(fmt.Sprintf("spec.attributes[%d].type", i), "is text, number, bool, date or enum")
+			return invalid(fmt.Sprintf("spec.attributes[%d].type", i), "속성 형식이 올바르지 않습니다")
 		}
 	}
 	return nil
@@ -503,7 +503,7 @@ func (s domainAssetType) Update(ctx context.Context, req *app.AssetTypeUpdateReq
 		}
 		if k := req.GetKind(); k != "" {
 			if !slices.Contains(Kinds, k) {
-				return invalid("kind", "is one of %s", strings.Join(Kinds, ", "))
+				return invalid("kind", "종류가 올바르지 않습니다 (%s)", strings.Join(Kinds, ", "))
 			}
 			patch.SetKind(k)
 		}
@@ -514,7 +514,7 @@ func (s domainAssetType) Update(ctx context.Context, req *app.AssetTypeUpdateReq
 			cur := p
 			for range 16 {
 				if cur == idOf(v.GetId()) {
-					return invalid("parent_id", "that would make the type its own ancestor")
+					return invalid("parent_id", "유형이 자기 자신의 상위가 될 수 없습니다")
 				}
 				pv, err := t.next.AssetType().Get(t.ctx, app.AssetTypeGetRequest_builder{Ref: app.AssetTypeRef_builder{Id: cur.Bytes()}.Build()}.Build())
 				if err != nil {
@@ -563,7 +563,7 @@ func (s domainItemModel) Add(ctx context.Context, req *app.ItemModelAddRequest) 
 		row.SetName(strings.TrimSpace(row.GetName()))
 		row.SetMaker(strings.TrimSpace(row.GetMaker()))
 		if row.GetName() == "" {
-			return invalid("name", "must not be empty")
+			return invalid("name", "이름을 입력하세요")
 		}
 		if req.HasType() {
 			if _, err := t.next.AssetType().Get(t.ctx, app.AssetTypeGetRequest_builder{Ref: req.GetType()}.Build()); err != nil {
@@ -572,7 +572,7 @@ func (s domainItemModel) Add(ctx context.Context, req *app.ItemModelAddRequest) 
 		}
 		for i, sl := range row.GetSpec().GetSlots() {
 			if strings.TrimSpace(sl.GetName()) == "" {
-				return invalid(fmt.Sprintf("spec.slots[%d].name", i), "must not be empty")
+				return invalid(fmt.Sprintf("spec.slots[%d].name", i), "이름을 입력하세요")
 			}
 		}
 		if err := t.begin(nil, "model.add", pdid.Nil, t.now, "모델 추가: "+strings.TrimSpace(row.GetMaker()+" "+row.GetName()), "", nil); err != nil {

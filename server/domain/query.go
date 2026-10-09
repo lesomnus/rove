@@ -18,12 +18,12 @@ import (
 	"github.com/lesomnus/rove/internal/ent"
 	"github.com/lesomnus/rove/internal/ent/allocation"
 	"github.com/lesomnus/rove/internal/ent/asset"
-	"github.com/lesomnus/rove/internal/ent/itemmodel"
 	"github.com/lesomnus/rove/internal/ent/assettype"
 	"github.com/lesomnus/rove/internal/ent/custody"
 	"github.com/lesomnus/rove/internal/ent/event"
 	"github.com/lesomnus/rove/internal/ent/fact"
 	"github.com/lesomnus/rove/internal/ent/holder"
+	"github.com/lesomnus/rove/internal/ent/itemmodel"
 	"github.com/lesomnus/rove/internal/ent/link"
 	"github.com/lesomnus/rove/internal/ent/party"
 	"github.com/lesomnus/rove/internal/ent/placement"
@@ -529,7 +529,7 @@ func (s domainAsset) Diff(ctx context.Context, req *app.AssetDiffRequest) (*app.
 		return nil, err
 	}
 	if !req.HasFrom() || !req.HasTo() {
-		return nil, invalid("from", "a diff is between two moments")
+		return nil, invalid("from", "비교할 두 시점을 정하세요")
 	}
 	a, err := t.subtree(id.Uuid(), req.GetFrom().AsTime(), visible{}, 0)
 	if err != nil {
@@ -831,7 +831,7 @@ func (s domainAsset) Report(ctx context.Context, req *app.AssetReportRequest) (*
 		row("cost", "total", "비용 합계", float64(cost), nil)
 
 	default:
-		return nil, status.Error(codes.InvalidArgument, "kind: summary, custody, utilization, stock or work")
+		return nil, status.Error(codes.InvalidArgument, "보고서 종류가 올바르지 않습니다")
 	}
 
 	slices.SortStableFunc(rows, func(a, b *app.ReportRow) int { return strings.Compare(a.GetGroup(), b.GetGroup()) })

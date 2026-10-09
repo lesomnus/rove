@@ -23,6 +23,8 @@ package cli
 
 import (
 	"context"
+	_ "embed"
+	"fmt"
 
 	"github.com/lesomnus/xli"
 	"github.com/lesomnus/xli/cfg"
@@ -84,5 +86,19 @@ func Cmd(c *cmd.Config) *xli.Command {
 // migration engine, and `cmd` is what an app's sandbox imports. A sandbox does
 // not migrate: there is no database there that outlives the page.
 func Migrate(ctx context.Context, s *cmd.Server) error {
-	return entmigrate.NewSchema(s.Drv).Create(ctx)
+	if err := entmigrate.NewSchema(s.Drv).Create(ctx); err != nil {
+		return err
+	}
+	if s.Dialect != "postgres" {
+		return nil
+	}
+	if _, err := s.Db.ExecContext(ctx, pgExtras); err != nil {
+		return fmt.Errorf("postgres extras: %w", err)
+	}
+	return nil
 }
+
+// pgExtras is what PostgreSQL promises beyond the schema; see the file.
+//
+//go:embed pg.sql
+var pgExtras string

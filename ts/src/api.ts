@@ -155,6 +155,9 @@ export function dateInput(d: Date | undefined): string {
 export function errorText(err: unknown): string {
 	if (err instanceof ConnectError) {
 		const m = err.rawMessage
+		// The server says most things in Korean already; what it says in
+		// English is from a layer below rove, and is given a Korean head.
+		if (/[가-힣]/.test(m) && err.code !== Code.Unauthenticated) return m
 		switch (err.code) {
 			case Code.PermissionDenied:
 				return `권한이 없습니다. (${m})`

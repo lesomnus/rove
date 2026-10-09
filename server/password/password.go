@@ -28,7 +28,7 @@ const (
 const MinLen = 8
 
 // ErrWeak is a password too short to keep.
-var ErrWeak = fmt.Errorf("a password is at least %d characters", MinLen)
+var ErrWeak = fmt.Errorf("비밀번호는 %d자 이상이어야 합니다", MinLen)
 
 // Hash answers what is stored for `pw`.
 func Hash(pw string) (string, error) {
