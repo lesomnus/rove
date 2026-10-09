@@ -1,0 +1,113 @@
+edition = "2023";
+
+package rove;
+
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+import "payday.proto";
+import "rove/payday/holder.proto";
+import "rove/payday/tenant.proto";
+
+option features.field_presence = IMPLICIT;
+option go_package = "github.com/lesomnus/rove";
+
+// Notification is a message for one holder: an overdue loan, a reservation to
+// approve, a stock running low.
+message Notification {
+  bytes id = 1 [(orm.field) = {
+    type: TYPE_UUID
+    key: true
+    default: ""
+  }];
+  Tenant tenant = 2 [(orm.edge) = {immutable: true}];
+
+  string name = 5;
+  string desc = 6;
+
+  Holder holder = 8 [(orm.edge) = {immutable: true}];
+  // custody.overdue | reservation.requested | reservation.decided | stock.low | work.due | count.finding
+  string kind = 9;
+  bytes subject_id = 10 [(orm.field) = {
+    type: TYPE_UUID
+    nullable: true
+  }];
+  google.protobuf.Timestamp read_at = 11 [(orm.field) = {nullable: true}];
+  // Where a page goes to act on it.
+  string link = 12;
+
+  google.protobuf.Timestamp date_updated = 13 [(orm.field) = {version: {}}];
+  google.protobuf.Timestamp date_created = 15 [(orm.field) = {
+    immutable: true
+    default: ""
+  }];
+
+  option (orm.message) = {
+    rpc: {crud: true}
+    indexes: [
+      {
+        name: "page"
+        refs: [{name: "date_created", number: 15}, {name: "id", number: 1}]
+      },
+      {
+        name: "holder"
+        refs: [{name: "holder", number: 8}, {name: "date_created", number: 15}]
+      }
+    ]
+  };
+  option (payday.entity) = {
+    domain: 36
+    erase: {hard: {}}
+    tenanted: {via: "tenant", agrees: ["holder.tenant"]}
+    list: {
+      order: [{field: {name: "date_created"}, desc: true}, {field: {name: "id"}, desc: true}]
+      by: [{name: "ref"}, {name: "holder"}, {name: "kind"}]
+      size: 50
+      max: 200
+    }
+  };
+}
+
+// UsageSnapshot is one tenant's usage on one day (design 7.1).
+message UsageSnapshot {
+  bytes id = 1 [(orm.field) = {
+    type: TYPE_UUID
+    key: true
+    default: ""
+  }];
+  Tenant tenant = 2 [(orm.edge) = {immutable: true}];
+
+  // YYYY-MM-DD, UTC.
+  string day = 8;
+  map<string, string> metrics = 9;
+
+  google.protobuf.Timestamp date_updated = 13 [(orm.field) = {version: {}}];
+  google.protobuf.Timestamp date_created = 15 [(orm.field) = {
+    immutable: true
+    default: ""
+  }];
+
+  option (orm.message) = {
+    rpc: {crud: true}
+    indexes: [
+      {
+        name: "page"
+        refs: [{name: "date_created", number: 15}, {name: "id", number: 1}]
+      },
+      {
+        name: "day"
+        refs: [{name: "tenant", number: 2}, {name: "day", number: 8}]
+        unique: true
+      }
+    ]
+  };
+  option (payday.entity) = {
+    domain: 20
+    erase: {hard: {}}
+    list: {
+      order: [{field: {name: "date_created"}, desc: true}, {field: {name: "id"}, desc: true}]
+      by: [{name: "ref"}, {name: "day"}]
+      size: 31
+      max: 400
+    }
+  };
+}

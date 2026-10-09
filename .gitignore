@@ -1,0 +1,6 @@
+.gen/
+dist/
+node_modules/
+*.db
+*.db-*
+/data/
