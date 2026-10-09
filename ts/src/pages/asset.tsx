@@ -34,6 +34,7 @@ import {
 	workKindWord,
 	workStatusWord,
 } from '../words.js'
+import { plugins } from '../plugins.js'
 import { AttrFields } from './assets.js'
 import { NewCustody } from './custody.js'
 import { NewWorkOrder } from './work.js'
@@ -65,8 +66,11 @@ function AssetView(props: { a: Asset }): ReactNode {
 	const bookable = c.bookable(a.id)
 	const holds = a.kind === 'space' || a.kind === 'kit' || a.kind === 'group'
 
+	const pp = { a, type: ty, model: c.model(a.model?.id), manage: mgr }
+	const extra = plugins.filter((p) => p.matches(pp))
 	const tabs = [
 		{ key: 'timeline', label: '이력' },
+		...extra.filter((p) => p.slot === 'tab').map((p) => ({ key: `plugin:${p.id}`, label: p.title })),
 		...(holds ? [{ key: 'inside', label: a.kind === 'space' ? '안에 있는 것' : '구성' }] : []),
 		...(bookable !== undefined ? [{ key: 'bookings', label: '예약' }] : []),
 		{ key: 'work', label: '작업' },
@@ -129,6 +133,11 @@ function AssetView(props: { a: Asset }): ReactNode {
 					/>
 					{a.desc !== '' && <p className="desc">{a.desc}</p>}
 					<Stewards a={a} />
+					{extra
+						.filter((p) => p.slot === 'panel')
+						.map((p) => (
+							<p.View key={p.id} {...pp} />
+						))}
 					{mgr && (
 						<div className="row-actions">
 							<button className="small" onClick={() => setDialog('assign')}>
@@ -170,6 +179,11 @@ function AssetView(props: { a: Asset }): ReactNode {
 					{tab === 'work' && <WorkTab a={a} />}
 					{tab === 'files' && <Files a={a} onUpload={() => setDialog('upload')} />}
 					{tab === 'labels' && <Labels a={a} />}
+					{extra
+						.filter((p) => p.slot === 'tab' && tab === `plugin:${p.id}`)
+						.map((p) => (
+							<p.View key={p.id} {...pp} />
+						))}
 				</div>
 			</div>
 

@@ -1267,3 +1267,35 @@ ul.state-tree .space {
 		grid-template-columns: 1fr;
 	}
 }
+
+/* the rack plugin */
+.rack {
+	border: 2px solid #4b5563;
+	border-radius: 6px;
+	background: #f9fafb;
+	max-width: 520px;
+}
+.rack .u {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: 22px;
+	border-bottom: 1px solid #e5e7eb;
+	padding: 0 8px;
+	font-size: 12.5px;
+}
+.rack .u .num {
+	width: 64px;
+	color: var(--mute);
+	font-variant-numeric: tabular-nums;
+}
+.rack .u.taken {
+	background: var(--accent-soft);
+	border-left: 4px solid var(--accent);
+}
+.rack .u.free button {
+	opacity: 0;
+}
+.rack .u.free:hover button {
+	opacity: 1;
+}

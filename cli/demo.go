@@ -202,6 +202,7 @@ func (d *demo) spaces() error {
 		{"영업팀", "영업팀 사무실", "사무실", "4f", map[string]string{"seats": "12"}},
 		{"경영지원팀", "경영지원팀 사무실", "사무실", "4f", map[string]string{"seats": "12"}},
 		{"store", "창고", "창고", "4f", nil},
+		{"srv", "서버실", "서버실", "4f", nil},
 	}
 	for i, sp := range tree {
 		req := app.AssetAddRequest_builder{
@@ -240,6 +241,8 @@ func (d *demo) catalog() error {
 		{"paper", "A4 복사용지 (2500매)", "", "소모품"},
 		{"battery", "AA 건전지", "", "소모품"},
 		{"mouse", "M650 마우스", "Logitech", "주변기기"},
+		{"r660", "PowerEdge R660", "Dell", "서버"},
+		{"switch", "Catalyst 9300", "Cisco", "네트워크 장비"},
 	}
 	for _, m := range models {
 		v, err := d.s.ItemModel().Add(d.ctx, app.ItemModelAddRequest_builder{
@@ -252,6 +255,16 @@ func (d *demo) catalog() error {
 		}
 		d.models[m.key] = v.GetId()
 	}
+	v, err := d.s.ItemModel().Add(d.ctx, app.ItemModelAddRequest_builder{
+		Name:  "42U 서버 랙",
+		Maker: "APC",
+		Type:  d.ty("랙"),
+		Spec:  app.ModelSpec_builder{RackUnits: 42}.Build(),
+	}.Build())
+	if err != nil {
+		return err
+	}
+	d.models["rack"] = v.GetId()
 	return nil
 }
 
@@ -269,6 +282,8 @@ func (d *demo) assets() error {
 		if p.team == "개발팀" || p.team == "디자인팀" {
 			model, attrs = "mbp", map[string]string{"cpu": "Apple M3 Pro", "ram": "36", "disk": "1024", "os": "macOS"}
 		}
+		// Three years from when it was bought.
+		attrs["warranty_until"] = time.Now().AddDate(0, 0, -bought).AddDate(3, 0, 0).Format(time.DateOnly)
 		nb, err := d.add(app.AssetAddRequest_builder{
 			Name:       fmt.Sprintf("%s 노트북", p.name),
 			Type:       d.ty(ty),
@@ -289,7 +304,7 @@ func (d *demo) assets() error {
 			Model:      d.model(map[bool]string{true: "u27", false: "lg27"}[i%2 == 0]),
 			Tag:        fmt.Sprintf("MN-%03d", i+1),
 			Serial:     fmt.Sprintf("MN%08d", 52000000+i*13),
-			Attributes: map[string]string{"size": "27", "resolution": "3840x2160"},
+			Attributes: map[string]string{"size": "27", "resolution": "3840x2160", "warranty_until": time.Now().AddDate(0, 0, -bought).AddDate(2, 0, 0).Format(time.DateOnly)},
 			AcquiredAt: ago(bought),
 			Since:      ago(bought),
 			To:         ref(d.space["store"]),
@@ -423,6 +438,57 @@ func (d *demo) assets() error {
 			return err
 		}
 		d.asset[fmt.Sprintf("ap-%d", i)] = id
+	}
+
+	// A rack in the server room, with what is mounted in it.
+	rk, err := d.add(app.AssetAddRequest_builder{
+		Name:  "서버 랙 A",
+		Type:  d.ty("랙"),
+		Model: d.model("rack"),
+		Tag:   "RK-001",
+		Since: ago(600),
+		To:    ref(d.space["srv"]),
+	}.Build())
+	if err != nil {
+		return err
+	}
+	for _, sv := range []struct {
+		tag, name, model string
+		from, to         int32
+		attrs            map[string]string
+	}{
+		{"SV-001", "웹 서버 1", "r660", 10, 10, map[string]string{"ip": "10.0.10.11", "cpu": "Xeon Silver 4510", "ram": "128"}},
+		{"SV-002", "웹 서버 2", "r660", 11, 11, map[string]string{"ip": "10.0.10.12", "cpu": "Xeon Silver 4510", "ram": "128"}},
+		{"SV-003", "DB 서버", "r660", 14, 15, map[string]string{"ip": "10.0.10.20", "cpu": "Xeon Gold 6526Y", "ram": "512"}},
+		{"NW-001", "코어 스위치", "switch", 40, 40, nil},
+	} {
+		ty := "서버"
+		if sv.model == "switch" {
+			ty = "네트워크 장비"
+		}
+		id, err := d.add(app.AssetAddRequest_builder{
+			Name:       sv.name,
+			Type:       d.ty(ty),
+			Model:      d.model(sv.model),
+			Tag:        sv.tag,
+			Attributes: sv.attrs,
+			AcquiredAt: ago(600),
+			Since:      ago(600),
+		}.Build())
+		if err != nil {
+			return err
+		}
+		if _, err := d.s.Asset().Move(d.ctx, app.AssetMoveRequest_builder{
+			Ref:    ref(id),
+			To:     ref(rk),
+			Mode:   "installed",
+			UFrom:  sv.from,
+			UTo:    sv.to,
+			At:     ago(598),
+			Reason: "랙 설치",
+		}.Build()); err != nil {
+			return err
+		}
 	}
 	return nil
 }
