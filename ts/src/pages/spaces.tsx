@@ -14,7 +14,8 @@ export function Spaces(): ReactNode {
 	const c = useCatalog()
 	const roots = c.spaces.filter((s) => s.parentId.length === 0 || c.space(s.parentId) === undefined)
 	const [tab, setTab] = useState('now')
-	const [root, setRoot] = useState(roots[0] === undefined ? '' : idStr(roots[0].id))
+	const [picked, setRoot] = useState('')
+	const root = picked !== '' ? picked : roots[0] === undefined ? '' : idStr(roots[0].id)
 
 	return (
 		<>
@@ -185,16 +186,37 @@ function Then(props: { root: string }): ReactNode {
 function StateTree(props: { items: AssetState[] }): ReactNode {
 	const shown = props.items.filter((s) => s.existed)
 	if (shown.length === 0) return <Empty>그때는 아무것도 없었습니다.</Empty>
+
+	// Depth first, each thing under what held it then, spaces before things.
+	const ids = new Set(shown.map((s) => idStr(s.id)))
+	const under = new Map<string, AssetState[]>()
+	for (const s of shown) {
+		const p = ids.has(idStr(s.parentId)) ? idStr(s.parentId) : ''
+		under.set(p, [...(under.get(p) ?? []), s])
+	}
+	for (const v of under.values()) {
+		v.sort((a, b) => (a.kind === b.kind ? a.tag.localeCompare(b.tag) : a.kind === 'space' ? -1 : b.kind === 'space' ? 1 : a.tag.localeCompare(b.tag)))
+	}
+	const rows: { s: AssetState; depth: number }[] = []
+	const walk = (p: string, depth: number) => {
+		for (const s of under.get(p) ?? []) {
+			rows.push({ s, depth })
+			walk(idStr(s.id), depth + 1)
+		}
+	}
+	walk('', 0)
+
 	return (
 		<ul className="state-tree">
-			{shown.map((s) => (
-				<li key={idStr(s.id)} style={{ paddingLeft: `${s.depth * 18}px` }}>
+			{rows.map(({ s, depth }) => (
+				<li key={idStr(s.id)} style={{ paddingLeft: `${depth * 18}px` }}>
 					<span className={s.kind === 'space' ? 'space' : ''}>
 						{s.kind === 'space' ? '⌂' : '•'} <code>{s.tag}</code>{' '}
 						<Link to={`/assets/${idStr(s.id)}`}>{s.facts['name'] ?? ''}</Link>
 					</span>
 					<span className="mute small">
 						{s.mode !== '' && s.mode !== 'located' && ` ${modeWord[s.mode]}`}
+						{s.uFrom > 0 && ` U${s.uFrom}${s.uTo > s.uFrom ? `–${s.uTo}` : ''}`}
 						{s.slot !== '' && ` · ${s.slot}`}
 						{s.stewardNames['custodian'] !== undefined && ` · ${s.stewardNames['custodian']}`}
 						{s.facts['status'] !== undefined && s.facts['status'] !== 'active' && ` · ${statusWord[s.facts['status']] ?? s.facts['status']}`}
@@ -204,6 +226,32 @@ function StateTree(props: { items: AssetState[] }): ReactNode {
 			))}
 		</ul>
 	)
+}
+
+/** What a changed field is called, for a person. */
+function fieldName(f: string): string {
+	const names: Record<string, string> = {
+		parent: '위치',
+		name: '이름',
+		desc: '설명',
+		status: '상태',
+		condition: '컨디션',
+		serial: '시리얼',
+		tag: '태그',
+		type: '유형',
+		model: '모델',
+		'steward.custodian': '사용자',
+		'steward.owner': '소유',
+		'steward.manager': '관리 담당',
+	}
+	return names[f] ?? f.replace(/^attr\./, '속성 ')
+}
+
+/** A value as a person reads it: a status word rather than the code. */
+function valueOf(f: string, v: string): string {
+	if (f === 'status') return statusWord[v] ?? v
+	if (f === 'condition') return conditionWord[v] ?? v
+	return v
 }
 
 const whatWord: Record<string, string> = { entered: '들어옴', left: '나감', moved: '자리 바뀜', changed: '바뀜' }
@@ -249,9 +297,9 @@ function Diff(props: { root: string }): ReactNode {
 											<td>
 												<Badge v={x.what === 'left' ? 'missing' : x.what === 'entered' ? 'ok' : 'pending'}>{whatWord[x.what] ?? x.what}</Badge>
 											</td>
-											<td>{x.field}</td>
-											<td className="mute">{x.before}</td>
-											<td>{x.after}</td>
+											<td>{fieldName(x.field)}</td>
+											<td className="mute">{valueOf(x.field, x.before)}</td>
+											<td>{valueOf(x.field, x.after)}</td>
 										</tr>
 									))}
 								</tbody>

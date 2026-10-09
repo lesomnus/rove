@@ -277,7 +277,7 @@ function Invite(props: { p: Party; onMade: (v: { alias: string; password: string
 			}}
 		>
 			<Field label="아이디 *" hint="영문 소문자, 숫자, -">
-				<input value={alias} onChange={(e) => setAlias(e.target.value)} required pattern="[a-z0-9][a-z0-9-]*" />
+				<input value={alias} onChange={(e) => setAlias(e.target.value)} required pattern="[a-z0-9][a-z0-9\-]*" />
 			</Field>
 			<Field label="역할">
 				<Select value={role} onChange={setRole} options={Object.entries(roleWord).filter(([k]) => k !== 'owner').map(([value, label]) => ({ value, label }))} />

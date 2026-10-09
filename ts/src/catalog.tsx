@@ -98,7 +98,10 @@ export function CatalogProvider(props: { children: ReactNode }): ReactNode {
 		}
 	}, [me.data, types.data, models.data, parties.data, spaces.data, bookables.data])
 
-	if (v === undefined) {
+	// Every list once before anything is drawn, so that a page reading a
+	// default out of them on its first render does not read an empty one.
+	const ready = [types, models, parties, spaces, bookables].every((q) => q.data !== undefined || q.state === 'error')
+	if (v === undefined || !ready) {
 		return <div className="boot">{me.state === 'error' ? '불러오지 못했습니다.' : <Spinner />}</div>
 	}
 	return <Ctx.Provider value={v}>{props.children}</Ctx.Provider>
