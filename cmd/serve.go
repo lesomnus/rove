@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -427,6 +428,13 @@ func or[T comparable](v, otherwise T) T {
 	return v
 }
 
+const notBuilt = `<!doctype html><meta charset="utf-8"><title>Rove</title>
+<body style="font-family:sans-serif;max-width:40em;margin:4em auto;line-height:1.6">
+<h1>UI가 아직 빌드되지 않았습니다</h1>
+<p><code>%s</code>에 빌드된 화면이 없습니다. 저장소에서 다음을 실행한 뒤 새로 고치세요.</p>
+<pre>cd ts &amp;&amp; npm install &amp;&amp; npm run build</pre>
+<p>API는 이미 돌고 있습니다.</p>`
+
 // spinEvery runs `f` every `d`, and logs a pass that failed rather than
 // stopping: tidying a table is not a reason to stop serving.
 func spinEvery(d time.Duration, f func(ctx context.Context) error) spin.Func {
@@ -488,8 +496,17 @@ func (s *Server) routes(mux *http.ServeMux, c Config) {
 					http.NotFound(w, r)
 					return
 				}
+				index := filepath.Join(dir, "index.html")
+				if _, err := os.Stat(index); err != nil {
+					// A checkout that has not built the UI yet: say how,
+					// rather than answer a 404 nobody can act on.
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					w.WriteHeader(http.StatusServiceUnavailable)
+					fmt.Fprintf(w, notBuilt, dir)
+					return
+				}
 				w.Header().Set("Cache-Control", "no-cache")
-				http.ServeFile(w, r, filepath.Join(dir, "index.html"))
+				http.ServeFile(w, r, index)
 				return
 			}
 			if strings.HasPrefix(r.URL.Path, "/static/") {

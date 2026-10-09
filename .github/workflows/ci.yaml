@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [main, prototype]
+  pull_request:
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: rove
+          POSTGRES_PASSWORD: rove
+          POSTGRES_DB: rove
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rove"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: generated code matches the schema
+        run: go tool pd gen --check .
+      - name: vet
+        run: go vet ./...
+      - name: test on SQLite
+        run: go test ./...
+      - name: test on PostgreSQL
+        env:
+          PDTEST_POSTGRES: postgres://rove:rove@localhost:5432/rove?sslmode=disable
+        run: go test ./...
+
+  ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ts/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npx vite build
