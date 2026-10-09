@@ -54,10 +54,11 @@ BEGIN
 			WHERE (superseded_at IS NULL)
 			DEFERRABLE INITIALLY DEFERRED;
 	END IF;
-
-	-- Stock is never below nothing.
-	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'stock_not_negative') THEN
-		ALTER TABLE stock ADD CONSTRAINT stock_not_negative CHECK (quantity >= 0);
-	END IF;
 END
 $$;
+
+-- No CHECK constraints here, though "stock is never negative" wants one: the
+-- schema check `serve` runs without `db.migrate` sees a CHECK it was not told
+-- about and refuses the database (lesomnus/payday#33). The EXCLUDE
+-- constraints above it does not see. The domain layer refuses a negative
+-- stock on its own, inside the transaction that would make it.

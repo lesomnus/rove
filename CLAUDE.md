@@ -4,7 +4,8 @@ A [payday](https://github.com/lesomnus/payday) app. Most of it is **generated
 from `proto/`**, so the usual shape of a change is: edit the schema, regenerate,
 then write the part no schema can state.
 
-`README.md` is the long version of everything below.
+`README.md` is how to run it, `design.md` why it is shaped this way, and
+`report.md` the decisions the prototype made.
 
 ## Regenerate after touching the schema
 
@@ -90,9 +91,10 @@ in front of it, or into the `gate.Policy` you inject.
 
 ## Two servers, and one of them has no wall
 
-`cmd/serve.go` builds `Walled` and `Ungated`. `Ungated` is not a privilege — it
-is an instance the wall was never installed on, for work that cannot be done
-from inside a tenant (`init`, resolving who is calling).
+`cmd/serve.go` builds `Walled` and `Ungated` (and `Base`, which is `Ungated`
+without the domain layer). `Ungated` is not a privilege — it is an instance the
+wall was never installed on, for work that cannot be done from inside a tenant
+(`init`, resolving who is calling, the background sweeps).
 
 **Never hand `Ungated` to anything a caller can reach.** There is no superuser
 flag to check; the wiring is the whole of the control.
@@ -106,23 +108,44 @@ is decided.
 ## Running
 
 ```sh
-go run ./cmd/rove init          # the first tenant, and somebody in it
-go run ./cmd/rove serve
+go run ./cmd/rove init --demo   # the first tenant, its owner, and five teams to try things on
+go run ./cmd/rove serve         # :8080 serves the UI in ts/dist and the API
 go run ./cmd/rove config env    # every variable this can be told through
 
-cd ts && npm install && npm run dev
+cd ts && npm install && npm run build   # or `npm run dev` on :5173, proxied to :8080
 ```
 
-## `auth.Plain` is not for production
+`init` prints the owner's login; everybody `--demo` makes signs in with
+`demo1234`. Delete `data/` to start over. PostgreSQL is
+`ROVE_DB_DRIVER=pgx ROVE_DB_DSN=...`, and `cli.Migrate` then also installs
+`cli/pg.sql` -- the constraints the schema cannot state.
 
-It believes what the caller writes. It is right for tests and a sandbox, and
-`serve.go` wires it because the alternative is an app that cannot be run until
-there is a certificate authority. For a browser there is `auth/authsession`,
-which serves the sign-in endpoint and mints the cookie; what it takes from this
-app is a `Verify`, since only this app knows what checking a secret means.
+## Signing in
+
+A browser signs in at `POST /session` (`server/session`): a password checked
+against the argon2id hash in `Credential`, and a cookie whose session row is in
+the database. `auth.Plain` is not wired; tests mint a session with
+`Server.Sessions.Mint` and send its cookie.
+
+## What may be called
+
+`server/policy` is one table of role → RPC, and what is not in it is refused --
+which is also what keeps callers off the history rows only the domain layer
+writes. A new RPC is closed until it is added there.
+
+## The domain layer
+
+`server/domain` sits **above** the gate, completes the generated verbs
+(`Asset.Add`, `Reservation.Add`, ...) and adds the rest. An operation is one
+transaction (`Domain.tx`), records an `Event`, and writes the time rows with the
+state they describe. Read `server/domain/domain.go` first. Its tests
+(`go test ./server/domain`) go through the whole stack; set `PDTEST_POSTGRES` to
+run them on PostgreSQL.
 
 ## Reference
 
-- `README.md` — the same ground at length, including upgrading payday
+- `README.md` — running it, in Korean
+- `design.md`, `plan.md` — the design and the plan; `report.md` — what the
+  prototype decided and why
 - <https://github.com/lesomnus/payday/tree/main/docs> — the guides and the
   references behind them
