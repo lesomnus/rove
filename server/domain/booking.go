@@ -564,7 +564,7 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 				out = v
 				if len(occs) > 1 {
 					series = v.GetId()
-					if _, err := t.next.Reservation().Patch(t.ctx, app.ReservationPatchRequest_builder{
+					if out, err = t.next.Reservation().Patch(t.ctx, app.ReservationPatchRequest_builder{
 						Ref:              app.ReservationRef_builder{Id: v.GetId()}.Build(),
 						SeriesId:         v.GetId(),
 						DateUpdatedForce: z.Ptr(true),
@@ -618,8 +618,8 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 	return out, err
 }
 
-// occurrences reads the small part of RFC 5545 a person books with: DAILY or
-// WEEKLY, every INTERVAL, COUNT times or UNTIL a date. At most 52.
+// occurrences reads the small part of RFC 5545 a person books with: DAILY,
+// WEEKLY or MONTHLY, every INTERVAL, COUNT times or UNTIL a date. At most 52.
 func occurrences(begins, ends time.Time, rule string) ([][2]time.Time, error) {
 	out := [][2]time.Time{{begins, ends}}
 	rule = strings.TrimSpace(strings.TrimPrefix(strings.ToUpper(rule), "RRULE:"))
@@ -654,22 +654,38 @@ func occurrences(begins, ends time.Time, rule string) ([][2]time.Time, error) {
 			until = &u
 		}
 	}
-	step := map[string]int{"DAILY": 1, "WEEKLY": 7}[freq]
-	if step == 0 {
-		return nil, invalid("repeat", "FREQ is DAILY or WEEKLY")
+	// How far the i-th occurrence is from the first, in years, months, days.
+	var at func(i int) (int, int, int)
+	switch freq {
+	case "DAILY":
+		at = func(i int) (int, int, int) { return 0, 0, interval * i }
+	case "WEEKLY":
+		at = func(i int) (int, int, int) { return 0, 0, 7 * interval * i }
+	case "MONTHLY":
+		at = func(i int) (int, int, int) { return 0, interval * i, 0 }
+	default:
+		return nil, invalid("repeat", "FREQ is DAILY, WEEKLY or MONTHLY")
 	}
 	if count == 0 && until == nil {
 		return nil, invalid("repeat", "say COUNT or UNTIL")
 	}
 	for i := 1; len(out) < 52; i++ {
-		b := begins.AddDate(0, 0, step*interval*i)
+		y, m, d := at(i)
+		b := begins.AddDate(y, m, d)
+		if freq == "MONTHLY" && b.Day() != begins.Day() {
+			// The 31st of a month that has none is skipped, not moved.
+			if count > 0 && i > 4*count {
+				break
+			}
+			continue
+		}
 		if count > 0 && len(out) >= count {
 			break
 		}
 		if until != nil && !b.Before(*until) {
 			break
 		}
-		out = append(out, [2]time.Time{b, ends.AddDate(0, 0, step*interval*i)})
+		out = append(out, [2]time.Time{b, ends.AddDate(y, m, d)})
 	}
 	return out, nil
 }
@@ -875,12 +891,21 @@ func (t *Tx) needsApproval(rid pdid.Id) (bool, error) {
 	return false, nil
 }
 
+// managerOnly is the check of a decision that is a manager's. The role table
+// says so already for a call from outside; this says it for any other way in.
+func managerOnly(t *Tx, _ *app.Reservation) error {
+	if !manages(t.roleOf()) {
+		return status.Error(codes.PermissionDenied, "a manager decides this")
+	}
+	return nil
+}
+
 func (s domainReservation) Approve(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.approve", []string{resRequested}, resConfirmed, nil)
+	return s.decide(ctx, req, "reservation.approve", []string{resRequested}, resConfirmed, managerOnly)
 }
 
 func (s domainReservation) Reject(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.reject", []string{resRequested, resHeld}, resRejected, nil)
+	return s.decide(ctx, req, "reservation.reject", []string{resRequested, resHeld}, resRejected, managerOnly)
 }
 
 func (s domainReservation) Cancel(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {

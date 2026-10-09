@@ -166,7 +166,14 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		rec = append(rec, pd.OutboxRecorder())
 	}
 
-	opts := []bare.Option{bare.WithMinter(pd.Minter()), bare.WithRecorder(rec)}
+	deps, err := depsOf(c)
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	// One clock for every stamp, the domain layer's and the servers' alike.
+	opts := []bare.Option{bare.WithMinter(pd.Minter()), bare.WithRecorder(rec), bare.WithClock(deps.Clock)}
 
 	sink, err := pd.NewSink(client, opts...)
 	if err != nil {
@@ -175,12 +182,6 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	}
 
 	walled, err := pd.NewSink(client, append(opts, bare.WithScope(pd.Wall()))...)
-	if err != nil {
-		db.Close()
-		return nil, err
-	}
-
-	deps, err := depsOf(c)
 	if err != nil {
 		db.Close()
 		return nil, err

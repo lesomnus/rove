@@ -74,6 +74,11 @@ func (d *Deps) now() time.Time {
 	return d.Now()
 }
 
+// Clock is the time everything in the stack stamps: the domain layer's
+// moments and the servers' `date_created`. Two clocks would be two answers to
+// "when was this recorded", and an as-of read compares the two.
+func (d *Deps) Clock() time.Time { return d.now() }
+
 // Domain is the layer.
 type Domain struct {
 	app.Overlay
