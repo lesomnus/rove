@@ -17,6 +17,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/credential"
 	"github.com/lesomnus/rove/internal/ent/holder"
+	"github.com/lesomnus/rove/internal/ent/session"
 	"github.com/lesomnus/rove/internal/ent/party"
 	"github.com/lesomnus/rove/server/password"
 )
@@ -310,12 +311,19 @@ func (s domainParty) SetPassword(ctx context.Context, req *app.PartySetPasswordR
 		if err := t.begin(nil, "party.password", pdid.Nil, t.now, "비밀번호 변경", "", nil); err != nil {
 			return err
 		}
-		_, err = t.next.Credential().Patch(t.ctx, app.CredentialPatchRequest_builder{
+		if _, err := t.next.Credential().Patch(t.ctx, app.CredentialPatchRequest_builder{
 			Ref:              app.CredentialRef_builder{Id: pdid.Id(c.Id).Bytes()}.Build(),
 			Secret:           []byte(hash),
 			DateUpdatedForce: z.Ptr(true),
-		}.Build())
-		return err
+		}.Build()); err != nil {
+			return err
+		}
+		if !own {
+			// A password reset by somebody else is somebody being locked out
+			// of wherever they are signed in.
+			return t.signOut(target)
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -343,6 +351,9 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 			return err
 		}
 		if _, err := t.next.Holder().Erase(t.ctx, app.HolderRef_builder{Id: h.Bytes()}.Build()); err != nil {
+			return err
+		}
+		if err := t.signOut(h); err != nil {
 			return err
 		}
 		out, err = t.next.Party().Patch(t.ctx, app.PartyPatchRequest_builder{
@@ -374,6 +385,9 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 		}
 		if h := idOf(p.GetHolder().GetId()); !h.IsZero() {
 			if _, err := t.next.Holder().Erase(t.ctx, app.HolderRef_builder{Id: h.Bytes()}.Build()); err != nil {
+				return err
+			}
+			if err := t.signOut(h); err != nil {
 				return err
 			}
 		}
@@ -540,6 +554,37 @@ func (s Domain) ItemModel() app.ItemModelServiceServer {
 	return domainItemModel{s, s.Next().ItemModel()}
 }
 
+// Add keeps a maker's model, in the caller's tenant.
+func (s domainItemModel) Add(ctx context.Context, req *app.ItemModelAddRequest) (*app.ItemModel, error) {
+	var out *app.ItemModel
+	err := s.tx(ctx, func(t *Tx) error {
+		row := proto.Clone(req).(*app.ItemModelAddRequest)
+		row.SetTenant(t.tenantRef())
+		row.SetName(strings.TrimSpace(row.GetName()))
+		row.SetMaker(strings.TrimSpace(row.GetMaker()))
+		if row.GetName() == "" {
+			return invalid("name", "must not be empty")
+		}
+		if req.HasType() {
+			if _, err := t.next.AssetType().Get(t.ctx, app.AssetTypeGetRequest_builder{Ref: req.GetType()}.Build()); err != nil {
+				return err
+			}
+		}
+		for i, sl := range row.GetSpec().GetSlots() {
+			if strings.TrimSpace(sl.GetName()) == "" {
+				return invalid(fmt.Sprintf("spec.slots[%d].name", i), "must not be empty")
+			}
+		}
+		if err := t.begin(nil, "model.add", pdid.Nil, t.now, "모델 추가: "+strings.TrimSpace(row.GetMaker()+" "+row.GetName()), "", nil); err != nil {
+			return err
+		}
+		v, err := t.next.ItemModel().Add(t.ctx, row)
+		out = v
+		return err
+	})
+	return out, err
+}
+
 func (s domainItemModel) Update(ctx context.Context, req *app.ItemModelUpdateRequest) (*app.ItemModel, error) {
 	var out *app.ItemModel
 	err := s.tx(ctx, func(t *Tx) error {
@@ -575,4 +620,10 @@ func (s domainItemModel) Update(ctx context.Context, req *app.ItemModelUpdateReq
 		return err
 	})
 	return out, err
+}
+
+// signOut ends every session a holder has.
+func (t *Tx) signOut(h pdid.Id) error {
+	_, err := t.db.Session.Delete().Where(session.TenantId(t.tenant.Uuid()), session.HolderId(h.Uuid())).Exec(t.ctx)
+	return err
 }

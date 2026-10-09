@@ -14,6 +14,7 @@ import (
 
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/internal/ent/custodyline"
+	"github.com/lesomnus/rove/internal/ent/reservation"
 	"github.com/lesomnus/rove/server/pd"
 )
 
@@ -76,6 +77,23 @@ func (s domainCustody) Add(ctx context.Context, req *app.CustodyAddRequest) (*ap
 			row.SetDueAt(req.GetDueAt())
 		}
 		if len(req.GetReservationId()) > 0 {
+			// A pickup fulfils a reservation: it is in use from now, and what
+			// it held is now held by this custody instead.
+			r, err := t.next.Reservation().Get(t.ctx, app.ReservationGetRequest_builder{Ref: app.ReservationRef_builder{Id: req.GetReservationId()}.Build()}.Build())
+			if err != nil {
+				return err
+			}
+			if r.GetStatus() != resConfirmed {
+				return failed("the reservation is %s; only a confirmed one is picked up", r.GetStatus())
+			}
+			if _, err := t.next.Reservation().Patch(t.ctx, app.ReservationPatchRequest_builder{
+				Ref:              app.ReservationRef_builder{Id: r.GetId()}.Build(),
+				Status:           z.Ptr(resInUse),
+				CheckedInAt:      ts(t.now),
+				DateUpdatedForce: z.Ptr(true),
+			}.Build()); err != nil {
+				return err
+			}
 			row.SetReservationId(req.GetReservationId())
 		}
 		c, err := t.next.Custody().Add(t.ctx, row)
@@ -310,8 +328,30 @@ func (s domainCustody) Return(ctx context.Context, req *app.CustodyReturnRequest
 			patch.SetStatus("returned")
 			patch.SetReturnedAt(ts(at))
 		}
-		out, err = t.next.Custody().Patch(t.ctx, patch)
-		return err
+		if out, err = t.next.Custody().Patch(t.ctx, patch); err != nil {
+			return err
+		}
+		if open > 0 || len(c.GetReservationId()) == 0 {
+			return nil
+		}
+
+		// Everything is back, so the reservation it fulfilled is over and
+		// whatever time it still held is free.
+		r, err := t.db.Reservation.Query().Where(reservation.Id(uuidOf(c.GetReservationId())), reservation.TenantId(t.tenant.Uuid())).Only(t.ctx)
+		if err != nil || r.Status != resInUse {
+			return nil
+		}
+		if err := t.lockAllocations(pdid.Id(r.Id)); err != nil {
+			return err
+		}
+		if _, err := t.next.Reservation().Patch(t.ctx, app.ReservationPatchRequest_builder{
+			Ref:              app.ReservationRef_builder{Id: pdid.Id(r.Id).Bytes()}.Build(),
+			Status:           z.Ptr(resCompleted),
+			DateUpdatedForce: z.Ptr(true),
+		}.Build()); err != nil {
+			return err
+		}
+		return t.settleAllocations(pdid.Id(r.Id), resCompleted)
 	})
 	return out, err
 }

@@ -61,6 +61,10 @@ type Deps struct {
 
 	// LookupTXT reads TXT records, for verifying a custom domain.
 	LookupTXT func(ctx context.Context, name string) ([]string, error)
+
+	// NoShowAfter is how long after a room reservation begins it is released
+	// when nobody checked in. Zero holds nobody to checking in.
+	NoShowAfter time.Duration
 }
 
 func (d *Deps) now() time.Time {

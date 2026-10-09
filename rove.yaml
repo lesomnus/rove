@@ -6,10 +6,18 @@
 
 db:
   driver: sqlite3
-  dsn: "file:rove.db?_pragma=foreign_keys(1)"
+  # WAL and a busy timeout, because the background sweeps write while requests
+  # do, and SQLite has one writer.
+  dsn: "file:data/rove.db?_pragma=foreign_keys(1)&_pragma=journal_mode(wal)&_pragma=busy_timeout(10000)"
+  # A checkout brings its tables up to date as it starts. A deployment says
+  # this on purpose, or migrates before it serves.
+  migrate: true
 
 server:
   addr: ":50051"
+  # An attachment or an imported sheet is up to 20 MiB, and a page sends it as
+  # base64 inside JSON.
+  max_recv_msg_size: 33554432
 
   # The second listener, for whatever cannot speak gRPC -- which is every
   # browser. Delete this block and no port is opened, which is what an app with
@@ -32,6 +40,29 @@ watch:
   # replica and silently wrong for two -- a client watching against one never
   # hears about a write that landed on another, and nothing reports it.
   broker: memory
+
+# rove's own.
+app:
+  # Where a browser reaches the HTTP listener. Its scheme says whether the
+  # session cookie needs HTTPS.
+  public_url: http://localhost:8080
+  # The built UI (`cd ts && npm run build`), served at `/`. During
+  # `npm run dev` the page is on :5173 and talks to this server through Vite's
+  # proxy; set `app_url` to it so a scanned label opens there.
+  web: ts/dist
+  # app_url: http://localhost:5173
+  files: data/files
+  labels:
+    # A tenant's default label host is `<tenant>.l.localhost`, which a browser
+    # resolves to this machine. A deployment names its own, such as
+    # `l.rove.example`.
+    suffix: l.localhost
+  session:
+    idle: 24h
+    lifetime: 168h
+  # A room nobody checked into is released this long after it began.
+  no_show_after: 15m
+  sweep: 1m
 
 # How long the trail keeps a row. Every write this app makes is recorded, and
 # **nothing else applies a window**: with no block here the table is kept whole,

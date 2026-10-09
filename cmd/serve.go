@@ -2,11 +2,16 @@ package cmd
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"errors"
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/lesomnus/otx/log"
 	"github.com/protobuf-orm/ent/dialect"
@@ -14,17 +19,24 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/lesomnus/payday/auth"
+	"github.com/lesomnus/payday/auth/authsession"
 	"github.com/lesomnus/payday/gate"
 	"github.com/lesomnus/payday/grpcx"
 	"github.com/lesomnus/payday/pdpb"
+	"github.com/lesomnus/payday/spin"
 	"github.com/lesomnus/payday/trail"
 	"github.com/lesomnus/payday/watch"
 	"github.com/lesomnus/payday/web"
 
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/internal/ent"
+	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/server/bare"
+	"github.com/lesomnus/rove/server/domain"
 	"github.com/lesomnus/rove/server/pd"
+	"github.com/lesomnus/rove/server/policy"
+	"github.com/lesomnus/rove/server/session"
+	"github.com/lesomnus/rove/server/storage"
 )
 
 // Server is a built app: the database it runs on and the two stacks it answers
@@ -58,6 +70,17 @@ type Server struct {
 	// nobody is asking.
 	Walled  app.Server
 	Ungated app.Server
+
+	// Base is Ungated without the domain layer: what puts up a tenant and the
+	// first person in it, before there is anybody to act as.
+	Base app.Server
+
+	// Deps is what the domain layer of both stacks shares: the clock, the
+	// files, how labels are addressed.
+	Deps *domain.Deps
+
+	// Sessions mints and reads the cookie a browser signs in with.
+	Sessions *authsession.Sessions
 
 	// Auth is how a credential is read, and nothing that faces anybody is
 	// [auth.Plain] -- which believes what the caller writes about themselves.
@@ -157,9 +180,17 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		return nil, err
 	}
 
-	// The stack a caller reaches. `pd.Gate` is outermost, so nothing behind it
-	// asks again.
-	stacked, err := app.Build(walled.WithWatch(w), pd.AuditBuild(), pd.GateBuild())
+	deps, err := depsOf(c)
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	// The stack a caller reaches. The domain layer is outermost, **above**
+	// the gate: every write it makes on a caller's behalf goes through the
+	// same edge checks the caller's own would (design D20). The policy is
+	// asked once, about the method the caller named, before any of this.
+	stacked, err := app.Build(walled.WithWatch(w), pd.AuditBuild(), pd.SecretBuild(), pd.GateBuild(), domain.Build(drv, deps))
 	if err != nil {
 		db.Close()
 		return nil, err
@@ -170,13 +201,34 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	// holds: it is an instance somebody was handed, so going around the wall
 	// is a line of wiring a reader can find rather than a rule that opens up
 	// whenever nobody is asking.
-	ungated, err := app.Build(sink.WithWatch(w), pd.AuditBuild())
+	base, err := app.Build(sink.WithWatch(w), pd.AuditBuild(), pd.SecretBuild())
 	if err != nil {
 		db.Close()
 		return nil, err
 	}
+	ungated := domain.New(base, drv, deps)
 
-	s := &Server{Db: db, Ent: client, Drv: drv, Dialect: dialect, Watch: w, Walled: stacked, Ungated: ungated}
+	s := &Server{Db: db, Ent: client, Drv: drv, Dialect: dialect, Watch: w, Walled: stacked, Ungated: ungated, Base: base, Deps: deps}
+
+	// Who is calling is a session cookie, and what they may do is their role.
+	store := session.Store{Db: client}
+	opts2 := []authsession.Option{
+		authsession.WithIdle(or(c.App.Session.Idle, 24*time.Hour)),
+		authsession.WithLifetime(or(c.App.Session.Lifetime, 7*24*time.Hour)),
+	}
+	if c.App.Public().Scheme != "https" {
+		opts2 = append(opts2, authsession.Insecure())
+	}
+	s.Sessions = authsession.New(store, opts2...)
+	s.Auth = s.Sessions.Handler()
+	s.Policy = policy.Policy{}
+
+	// What happens because time passed: holds that ran out, rooms nobody came
+	// to, loans that are late, the day's usage.
+	s.Spin = append(s.Spin,
+		domain.Sweeper{Server: base, Drv: drv, Deps: deps, Every: c.App.Sweep},
+		spinEvery(time.Hour, store.Sweep),
+	)
 	if c.Watch.Outbox && b != nil {
 		// The loop that makes an event durable. It is not a layer and not a
 		// method on any server -- `spin.Run` finds it in whatever is handed
@@ -314,17 +366,9 @@ func (s *Server) serveHttp(ctx context.Context, c Config, g *grpc.Server) (func(
 	}
 
 	// Whatever this app serves over HTTP goes here, on the same mux and behind
-	// the same cross-origin answer. Signing a browser in is the one to expect,
-	// and `auth/authsession` is most of it: the endpoint, the cookie and its
-	// attributes, the expiry and the store it is kept in. What it takes from
-	// this app is a `Verify`, because the people are in this app's schema and
-	// what checking their secret means is this app's to say.
-	//
-	//	h.Handle("POST /session", sessions.Serve(login))
-	//
-	// A gRPC path is `/<service>/<method>`, so an ordinary route cannot collide
-	// with one -- and `ServeMux` panics rather than shadowing if one somehow
-	// does.
+	// the same cross-origin answer. A gRPC path is `/<service>/<method>`, so
+	// an ordinary route cannot collide with one.
+	s.routes(h.ServeMux, c)
 
 	l, err := net.Listen("tcp", c.Server.Http.Addr)
 	if err != nil {
@@ -341,4 +385,116 @@ func (s *Server) serveHttp(ctx context.Context, c Config, g *grpc.Server) (func(
 	log.From(ctx).InfoContext(ctx, "http", slog.String("addr", l.Addr().String()))
 
 	return func() { srv.Close() }, nil
+}
+
+// depsOf is what the domain layer is told by the configuration.
+func depsOf(c Config) (*domain.Deps, error) {
+	key := []byte(c.App.SigningKey)
+	if len(key) == 0 {
+		key = make([]byte, 32)
+		if _, err := rand.Read(key); err != nil {
+			return nil, err
+		}
+	}
+	files := c.App.Files
+	if files == "" {
+		files = filepath.Join("data", "files")
+	}
+	if err := os.MkdirAll(files, 0o750); err != nil {
+		return nil, err
+	}
+
+	pub := c.App.Public()
+	port := pub.Port()
+	return &domain.Deps{
+		Files:       storage.Dir(files),
+		Sign:        storage.Signer{Key: key, Base: strings.TrimSuffix(pub.String(), "/"), TTL: 10 * time.Minute},
+		LabelSuffix: c.App.Labels.Suffix,
+		LabelTarget: c.App.Labels.Target,
+		LabelScheme: pub.Scheme,
+		LabelPort:   port,
+		LookupTXT:   net.DefaultResolver.LookupTXT,
+		NoShowAfter: c.App.NoShowAfter,
+	}, nil
+}
+
+func or[T comparable](v, otherwise T) T {
+	var zero T
+	if v == zero {
+		return otherwise
+	}
+	return v
+}
+
+// spinEvery runs `f` every `d`, and logs a pass that failed rather than
+// stopping: tidying a table is not a reason to stop serving.
+func spinEvery(d time.Duration, f func(ctx context.Context) error) spin.Func {
+	return spin.Every(d, func(ctx context.Context) error {
+		if err := f(ctx); err != nil {
+			log.From(ctx).WarnContext(ctx, "tidy", slog.String("error", err.Error()))
+		}
+		return nil
+	})
+}
+
+// routes is what this app serves over HTTP besides its Rpcs.
+func (s *Server) routes(mux *http.ServeMux, c Config) {
+	// Signing in and out. What is checked is a password against the hash in
+	// the Credential table; see `server/session`.
+	login := s.Sessions.Serve(session.Verify(s.Ent))
+	mux.Handle("POST /session", login)
+	mux.Handle("DELETE /session", login)
+
+	// Attachments, by the signed links the API answers with.
+	mux.Handle("GET /files/", s.Deps.Sign.Handler(s.Deps.Files, time.Now))
+
+	// A printed label: whatever host it was printed with, the code is sent to
+	// the page that resolves it. The page asks the API, through the wall, so
+	// a label of another tenant reads as nothing there.
+	app := strings.TrimSuffix(c.App.App(), "/")
+	mux.HandleFunc("GET /l/{code}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, app+"/scan/"+r.PathValue("code"), http.StatusFound)
+	})
+
+	// What a reverse proxy issuing certificates on demand asks before it
+	// asks for one: only a host that is some tenant's label domain.
+	mux.HandleFunc("GET /internal/tls-ask", func(w http.ResponseWriter, r *http.Request) {
+		host := strings.ToLower(r.URL.Query().Get("domain"))
+		ok, err := s.Ent.TenantDomain.Query().Where(
+			tenantdomain.Host(host),
+			tenantdomain.StateIn("ready", "active", "legacy"),
+			tenantdomain.DateErasedIsNil(),
+		).Exist(r.Context())
+		if err != nil || !ok {
+			http.Error(w, "not a label domain here", http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	})
+
+	// The built UI, with every path it does not have answered by its index,
+	// which is how a page that routes on the client is served.
+	if dir := c.App.Web; dir != "" {
+		files := http.FileServer(http.Dir(dir))
+		mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+			p := filepath.Join(dir, filepath.FromSlash(filepath.Clean("/"+r.URL.Path)))
+			if st, err := os.Stat(p); err != nil || st.IsDir() {
+				if strings.HasPrefix(r.URL.Path, "/assets/") {
+					http.NotFound(w, r)
+					return
+				}
+				w.Header().Set("Cache-Control", "no-cache")
+				http.ServeFile(w, r, filepath.Join(dir, "index.html"))
+				return
+			}
+			if strings.HasPrefix(r.URL.Path, "/assets/") {
+				w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+			}
+			files.ServeHTTP(w, r)
+		})
+	}
 }

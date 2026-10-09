@@ -18,6 +18,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent"
 	"github.com/lesomnus/rove/internal/ent/allocation"
 	"github.com/lesomnus/rove/internal/ent/asset"
+	"github.com/lesomnus/rove/internal/ent/itemmodel"
 	"github.com/lesomnus/rove/internal/ent/assettype"
 	"github.com/lesomnus/rove/internal/ent/custody"
 	"github.com/lesomnus/rove/internal/ent/event"
@@ -170,6 +171,12 @@ func (s domainAsset) Timeline(ctx context.Context, req *app.AssetTimelineRequest
 			v = "(지움)"
 		case r.Key == "type":
 			v = names.kind(uuidOf(idFromString(r.Value).Bytes()))
+		case r.Key == "model":
+			v = names.model(uuidOf(idFromString(r.Value).Bytes()))
+		case r.Key == "status":
+			v = or(statusSay[v], v)
+		case r.Key == "condition":
+			v = or(conditionSay[v], v)
 		}
 		e.SetSummary(fmt.Sprintf("%s = %s", factName(r.Key), v))
 		e.SetDetail(map[string]string{"key": r.Key, "value": r.Value})
@@ -265,6 +272,7 @@ type namer struct {
 	partys map[uuid.UUID]string
 	actors map[uuid.UUID]string
 	kinds  map[uuid.UUID]string
+	models map[uuid.UUID]string
 }
 
 func (n *namer) asset(id uuid.UUID) string {
@@ -332,6 +340,21 @@ func (n *namer) kind(id uuid.UUID) string {
 	return v
 }
 
+func (n *namer) model(id uuid.UUID) string {
+	if n.models == nil {
+		n.models = map[uuid.UUID]string{}
+	}
+	if v, ok := n.models[id]; ok {
+		return v
+	}
+	v := "?"
+	if m, err := n.t.db.ItemModel.Query().Where(itemmodel.Id(id), itemmodel.TenantId(n.t.tenant.Uuid())).Only(n.t.ctx); err == nil {
+		v = strings.TrimSpace(m.Maker + " " + m.Name)
+	}
+	n.models[id] = v
+	return v
+}
+
 func modeName(v string) string {
 	return map[string]string{"located": "놓임", "installed": "장착", "part": "구성품"}[v]
 }
@@ -342,7 +365,7 @@ func roleName(v string) string {
 
 func factName(k string) string {
 	if v, ok := map[string]string{
-		"name": "이름", "desc": "설명", "status": "상태", "condition": "물리 상태",
+		"name": "이름", "desc": "설명", "status": "상태", "condition": "컨디션",
 		"serial": "시리얼", "tag": "자산 번호", "type": "유형", "model": "모델",
 	}[k]; ok {
 		return v
@@ -575,7 +598,16 @@ func (s domainAsset) Search(ctx context.Context, req *app.AssetSearchRequest) (*
 	tid := t.tenant.Uuid()
 	ps := []predicate.Asset{asset.TenantId(tid), asset.DateErasedIsNil()}
 	if q := strings.TrimSpace(req.GetQ()); q != "" {
-		ps = append(ps, asset.Or(asset.NameContainsFold(q), asset.TagContainsFold(q), asset.SerialContainsFold(q)))
+		// What a person would type: a name, a tag, a serial, or what it is,
+		// who made it and who has it.
+		ps = append(ps, asset.Or(
+			asset.NameContainsFold(q),
+			asset.TagContainsFold(q),
+			asset.SerialContainsFold(q),
+			asset.HasTypeWith(assettype.NameContainsFold(q)),
+			asset.HasModelWith(itemmodel.Or(itemmodel.NameContainsFold(q), itemmodel.MakerContainsFold(q))),
+			asset.HasCustodianWith(party.NameContainsFold(q)),
+		))
 	}
 	if v := req.GetKind(); v != "" {
 		ps = append(ps, asset.Kind(v))

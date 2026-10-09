@@ -150,8 +150,18 @@ func (s Signer) Handler(files Store, now func() time.Time) http.Handler {
 		}
 		defer f.Close()
 
-		w.Header().Set("Cache-Control", "private, max-age=600")
-		w.Header().Set("Content-Disposition", "inline; filename*=UTF-8''"+urlEscape(name))
+		// A file somebody uploaded is served from this origin, so it is never
+		// allowed to be a page: nothing is sniffed into HTML, and whatever a
+		// browser does render runs sandboxed with nothing to load.
+		h := w.Header()
+		h.Set("Cache-Control", "private, max-age=600")
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("Content-Security-Policy", "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox")
+		disposition := "attachment"
+		if inline(name) {
+			disposition = "inline"
+		}
+		h.Set("Content-Disposition", disposition+"; filename*=UTF-8''"+urlEscape(name))
 		http.ServeContent(w, r, name, time.Time{}, f)
 	})
 }
@@ -167,4 +177,14 @@ func urlEscape(v string) string {
 		}
 	}
 	return b.String()
+}
+
+// inline answers whether a file is shown in the browser rather than saved:
+// pictures and documents a browser shows without running anything.
+func inline(name string) bool {
+	switch strings.ToLower(filepath.Ext(name)) {
+	case ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".heic", ".pdf", ".txt", ".mp4", ".webm":
+		return true
+	}
+	return false
 }
