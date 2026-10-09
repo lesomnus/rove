@@ -1,0 +1,32 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
+
+    user: "1000"
+    environment:
+      - SHELL=/bin/zsh
+
+    volumes:
+      - command.history:/commandhistory
+      - go.cache.mod:/go/pkg/mod
+      - go.cache.bin:/home/hypnos/.cache/go-build
+
+      - ..:/workspace
+
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+          pids: 2048
+        reservations:
+          cpus: "2"
+          memory: 4G
+
+volumes:
+  command.history:
+  go.cache.mod:
+  go.cache.bin:
