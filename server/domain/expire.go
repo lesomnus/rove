@@ -339,7 +339,7 @@ func (w Expirer) Pass(ctx context.Context) error {
 		if x.Total() > 0 {
 			log.From(ctx).InfoContext(ctx, "expire",
 				slog.String("tenant", x.Tenant.String()),
-				slog.Time("before", x.Before),
+				slog.String("before", x.Before.UTC().Format(time.RFC3339)),
 				slog.Int("rows", x.Total()))
 		}
 	}
