@@ -20,11 +20,16 @@ EXCEPTION WHEN unique_violation THEN
 END
 $$;
 
+-- Each is asked after on its own table, which is the one this schema's
+-- search path finds: `pg_constraint` is the whole database's, and a name
+-- another schema's table has is not a constraint here. Two schemas in one
+-- database -- every PostgreSQL test has its own -- otherwise left the second
+-- with none of them.
 DO $$
 BEGIN
 	-- Two blocking allocations of one exclusive resource never overlap: a
 	-- room is not booked twice, and not booked while it is being repaired.
-	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'allocation_exclusive_no_overlap') THEN
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'allocation_exclusive_no_overlap' AND conrelid = 'allocation'::regclass) THEN
 		ALTER TABLE allocation ADD CONSTRAINT allocation_exclusive_no_overlap
 			EXCLUDE USING gist (resource_id WITH =, tstzrange(begins_at, ends_at, '[)') WITH &&)
 			WHERE (blocking AND exclusive)
@@ -32,7 +37,7 @@ BEGIN
 	END IF;
 
 	-- A thing is in one place at a time, as far as is known now.
-	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'placement_one_parent') THEN
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'placement_one_parent' AND conrelid = 'placement'::regclass) THEN
 		ALTER TABLE placement ADD CONSTRAINT placement_one_parent
 			EXCLUDE USING gist (child_id WITH =, tstzrange(valid_from, valid_to, '[)') WITH &&)
 			WHERE (superseded_at IS NULL)
@@ -40,7 +45,7 @@ BEGIN
 	END IF;
 
 	-- One owner, one manager and one custodian at a time.
-	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'stewardship_one_per_role') THEN
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'stewardship_one_per_role' AND conrelid = 'stewardship'::regclass) THEN
 		ALTER TABLE stewardship ADD CONSTRAINT stewardship_one_per_role
 			EXCLUDE USING gist (asset_id WITH =, role WITH =, tstzrange(valid_from, valid_to, '[)') WITH &&)
 			WHERE (superseded_at IS NULL)
@@ -48,7 +53,7 @@ BEGIN
 	END IF;
 
 	-- A relation between two things holds or does not, once at a time.
-	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'link_once') THEN
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'link_once' AND conrelid = 'link'::regclass) THEN
 		ALTER TABLE link ADD CONSTRAINT link_once
 			EXCLUDE USING gist (source_id WITH =, target_id WITH =, kind WITH =, tstzrange(valid_from, valid_to, '[)') WITH &&)
 			WHERE (superseded_at IS NULL)
