@@ -92,6 +92,18 @@ go run ./cmd/rove tenant purge --tenant rove --yes             # 실제로 지�
 
 내보내기에는 비밀번호 해시·세션·운영자의 hold는 들어가지 않고, 무엇을 왜 뺐는지가 `manifest.json`에 적힙니다. hold가 걸린 조직은 지우지 않습니다. 사람 한 명의 개인정보 삭제는 사람 화면의 '개인정보 삭제'(가명화)이며, 감사 기록의 사본도 DB와 보관소에서 함께 비웁니다(hold가 걸린 것은 남김).
 
+### 감사 기록 보관소 확인 (운영자)
+
+`audit.archive` 를 두면 DB에서 나간 감사 기록이 보관소에 쌓이고, 보관소에 무엇이 있어야 하는지는 DB가 따로 기록합니다(payday의 manifest). 감사 기록의 보존 패스는 시작할 때마다 둘을 가볍게 맞춰 보고, 끝날 때 체크포인트를 남깁니다.
+
+```sh
+go run ./cmd/rove trail verify          # 보관소를 DB의 기록·최신 체크포인트와 비교 (아무것도 바꾸지 않음)
+go run ./cmd/rove trail verify --full   # 모든 청크를 다 읽어 내용이 바뀌지 않았는지까지
+go run ./cmd/rove trail accept --why "백업에서 복원한 청크를 확인함"   # 살펴본 뒤, 보관소가 맞다고 DB의 기록을 맞춤
+```
+
+`verify` 는 무언가 찾으면 실패로 끝나므로 일정에 걸어 둘 수 있습니다. 체크포인트는 삭제를 거부하는 디스크(`audit.checkpoints.dir`)에 따로 두고, `audit.checkpoints.key` 로 서명하는 것을 권합니다. 키는 파일 경로로 주거나 `ROVE_AUDIT_CHECKPOINTS_KEY` 에 PEM 문서 자체를 넣습니다. 조직 내보내기의 감사 기록도 DB가 기록해 둔 청크만, 내용이 그대로인 것만 읽습니다.
+
 ## 무엇이 있나
 
 | 화면 | 할 수 있는 일 |
