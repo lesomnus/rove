@@ -128,11 +128,20 @@ func TestAMomentBeforeTheViewWindowIsNotOneToAskAbout(t *testing.T) {
 	e := newEnv(t)
 	x := e.x
 	hq, _, b, laptop := e.aYearOfALaptop()
+
+	me, err := e.app().Party().Me(e.owner, &app.PartyMeRequest{})
+	x.NoError(err)
+	x.False(me.HasHistorySince(), "with no contract, all of the history")
+
 	e.contract(180, 0)
+	me, err = e.app().Party().Me(e.owner, &app.PartyMeRequest{})
+	x.NoError(err)
+	x.EqualValues(180, me.GetHistoryDays())
+	x.WithinDuration(e.now.Add(-180*day), me.GetHistorySince().AsTime(), time.Second, "where the window begins, for a page to keep to")
 
 	x.Equal(b.GetId(), e.where(hq, laptop, e.now.Add(-170*day), nil), "inside the window, the state then")
 
-	_, err := e.app().Asset().QueryAt(e.owner, app.AssetQueryAtRequest_builder{Root: assetRef(hq), At: e.ago(190 * day)}.Build())
+	_, err = e.app().Asset().QueryAt(e.owner, app.AssetQueryAtRequest_builder{Root: assetRef(hq), At: e.ago(190 * day)}.Build())
 	x.Equal(codes.OutOfRange, codeOf(err))
 	_, err = e.app().Asset().QueryAt(e.owner, app.AssetQueryAtRequest_builder{Root: assetRef(hq), Known: e.ago(190 * day)}.Build())
 	x.Equal(codes.OutOfRange, codeOf(err))
