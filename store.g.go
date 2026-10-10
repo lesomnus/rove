@@ -31,7 +31,6 @@ type Server interface {
 	ItemModel() ItemModelServiceServer
 	Holder() HolderServiceServer
 	Party() PartyServiceServer
-	Credential() CredentialServiceServer
 	Session() SessionServiceServer
 	Asset() AssetServiceServer
 	TreeLock() TreeLockServiceServer
@@ -75,7 +74,6 @@ func RegisterServer(g grpc.ServiceRegistrar, s Server) {
 	RegisterItemModelServiceServer(g, s.ItemModel())
 	RegisterHolderServiceServer(g, s.Holder())
 	RegisterPartyServiceServer(g, s.Party())
-	RegisterCredentialServiceServer(g, s.Credential())
 	RegisterSessionServiceServer(g, s.Session())
 	RegisterAssetServiceServer(g, s.Asset())
 	RegisterTreeLockServiceServer(g, s.TreeLock())
@@ -115,7 +113,6 @@ type UnimplementedServer struct {
 	ItemModelServer       ItemModelServiceServer
 	HolderServer          HolderServiceServer
 	PartyServer           PartyServiceServer
-	CredentialServer      CredentialServiceServer
 	SessionServer         SessionServiceServer
 	AssetServer           AssetServiceServer
 	TreeLockServer        TreeLockServiceServer
@@ -156,11 +153,8 @@ func (UnimplementedServer) AssetType() AssetTypeServiceServer {
 func (UnimplementedServer) ItemModel() ItemModelServiceServer {
 	return UnimplementedItemModelServiceServer{}
 }
-func (UnimplementedServer) Holder() HolderServiceServer { return UnimplementedHolderServiceServer{} }
-func (UnimplementedServer) Party() PartyServiceServer   { return UnimplementedPartyServiceServer{} }
-func (UnimplementedServer) Credential() CredentialServiceServer {
-	return UnimplementedCredentialServiceServer{}
-}
+func (UnimplementedServer) Holder() HolderServiceServer   { return UnimplementedHolderServiceServer{} }
+func (UnimplementedServer) Party() PartyServiceServer     { return UnimplementedPartyServiceServer{} }
 func (UnimplementedServer) Session() SessionServiceServer { return UnimplementedSessionServiceServer{} }
 func (UnimplementedServer) Asset() AssetServiceServer     { return UnimplementedAssetServiceServer{} }
 func (UnimplementedServer) TreeLock() TreeLockServiceServer {
@@ -241,7 +235,6 @@ type StaticServer struct {
 	ItemModelServer       ItemModelServiceServer
 	HolderServer          HolderServiceServer
 	PartyServer           PartyServiceServer
-	CredentialServer      CredentialServiceServer
 	SessionServer         SessionServiceServer
 	AssetServer           AssetServiceServer
 	TreeLockServer        TreeLockServiceServer
@@ -280,7 +273,6 @@ func (s StaticServer) AssetType() AssetTypeServiceServer             { return s.
 func (s StaticServer) ItemModel() ItemModelServiceServer             { return s.ItemModelServer }
 func (s StaticServer) Holder() HolderServiceServer                   { return s.HolderServer }
 func (s StaticServer) Party() PartyServiceServer                     { return s.PartyServer }
-func (s StaticServer) Credential() CredentialServiceServer           { return s.CredentialServer }
 func (s StaticServer) Session() SessionServiceServer                 { return s.SessionServer }
 func (s StaticServer) Asset() AssetServiceServer                     { return s.AssetServer }
 func (s StaticServer) TreeLock() TreeLockServiceServer               { return s.TreeLockServer }
@@ -319,7 +311,6 @@ type Client interface {
 	ItemModel() ItemModelServiceClient
 	Holder() HolderServiceClient
 	Party() PartyServiceClient
-	Credential() CredentialServiceClient
 	Session() SessionServiceClient
 	Asset() AssetServiceClient
 	TreeLock() TreeLockServiceClient
@@ -360,7 +351,6 @@ func NewClient(c *grpc.ClientConn) Client {
 		_ItemModel:       NewItemModelServiceClient(c),
 		_Holder:          NewHolderServiceClient(c),
 		_Party:           NewPartyServiceClient(c),
-		_Credential:      NewCredentialServiceClient(c),
 		_Session:         NewSessionServiceClient(c),
 		_Asset:           NewAssetServiceClient(c),
 		_TreeLock:        NewTreeLockServiceClient(c),
@@ -401,7 +391,6 @@ type client struct {
 	_ItemModel       ItemModelServiceClient
 	_Holder          HolderServiceClient
 	_Party           PartyServiceClient
-	_Credential      CredentialServiceClient
 	_Session         SessionServiceClient
 	_Asset           AssetServiceClient
 	_TreeLock        TreeLockServiceClient
@@ -440,7 +429,6 @@ func (c *client) AssetType() AssetTypeServiceClient             { return c._Asse
 func (c *client) ItemModel() ItemModelServiceClient             { return c._ItemModel }
 func (c *client) Holder() HolderServiceClient                   { return c._Holder }
 func (c *client) Party() PartyServiceClient                     { return c._Party }
-func (c *client) Credential() CredentialServiceClient           { return c._Credential }
 func (c *client) Session() SessionServiceClient                 { return c._Session }
 func (c *client) Asset() AssetServiceClient                     { return c._Asset }
 func (c *client) TreeLock() TreeLockServiceClient               { return c._TreeLock }

@@ -52,9 +52,6 @@ func BookableOrErr(p Bookable, err error) Bookable {
 // CountFinding is the predicate function for countfinding builders.
 type CountFinding func(*sql.Selector)
 
-// Credential is the predicate function for credential builders.
-type Credential func(*sql.Selector)
-
 // Custody is the predicate function for custody builders.
 type Custody func(*sql.Selector)
 

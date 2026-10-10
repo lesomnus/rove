@@ -2421,6 +2421,7 @@ type PartyMeResponse struct {
 	xxx_hidden_Role         string                 `protobuf:"bytes,4,opt,name=role"`
 	xxx_hidden_HistorySince *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=history_since,json=historySince"`
 	xxx_hidden_HistoryDays  uint32                 `protobuf:"varint,6,opt,name=history_days,json=historyDays"`
+	xxx_hidden_AccountsHere bool                   `protobuf:"varint,7,opt,name=accounts_here,json=accountsHere"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -2492,6 +2493,13 @@ func (x *PartyMeResponse) GetHistoryDays() uint32 {
 	return 0
 }
 
+func (x *PartyMeResponse) GetAccountsHere() bool {
+	if x != nil {
+		return x.xxx_hidden_AccountsHere
+	}
+	return false
+}
+
 func (x *PartyMeResponse) SetHolder(v *Holder) {
 	x.xxx_hidden_Holder = v
 }
@@ -2514,6 +2522,10 @@ func (x *PartyMeResponse) SetHistorySince(v *timestamppb.Timestamp) {
 
 func (x *PartyMeResponse) SetHistoryDays(v uint32) {
 	x.xxx_hidden_HistoryDays = v
+}
+
+func (x *PartyMeResponse) SetAccountsHere(v bool) {
+	x.xxx_hidden_AccountsHere = v
 }
 
 func (x *PartyMeResponse) HasHolder() bool {
@@ -2572,6 +2584,10 @@ type PartyMeResponse_builder struct {
 	HistorySince *timestamppb.Timestamp
 	// How many days back that is, for a person to read. Zero is all of it.
 	HistoryDays uint32
+	// Whether logins and passwords are made and changed here -- the roster in
+	// this process -- or at a roster of its own, by whoever administers the
+	// tenant there (design 9.10).
+	AccountsHere bool
 }
 
 func (b0 PartyMeResponse_builder) Build() *PartyMeResponse {
@@ -2584,6 +2600,7 @@ func (b0 PartyMeResponse_builder) Build() *PartyMeResponse {
 	x.xxx_hidden_Role = b.Role
 	x.xxx_hidden_HistorySince = b.HistorySince
 	x.xxx_hidden_HistoryDays = b.HistoryDays
+	x.xxx_hidden_AccountsHere = b.AccountsHere
 	return m0
 }
 
@@ -3362,1081 +3379,6 @@ func (b0 PartyPseudonymizeRequest_builder) Build() *PartyPseudonymizeRequest {
 	return m0
 }
 
-type CredentialAddRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Tenant      *TenantRef             `protobuf:"bytes,2,opt,name=tenant"`
-	xxx_hidden_Holder      *HolderRef             `protobuf:"bytes,8,opt,name=holder"`
-	xxx_hidden_Secret      []byte                 `protobuf:"bytes,9,opt,name=secret"`
-	xxx_hidden_DateCreated *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CredentialAddRequest) Reset() {
-	*x = CredentialAddRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[24]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialAddRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialAddRequest) ProtoMessage() {}
-
-func (x *CredentialAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[24]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialAddRequest) GetId() []byte {
-	if x != nil {
-		return x.xxx_hidden_Id
-	}
-	return nil
-}
-
-func (x *CredentialAddRequest) GetTenant() *TenantRef {
-	if x != nil {
-		return x.xxx_hidden_Tenant
-	}
-	return nil
-}
-
-func (x *CredentialAddRequest) GetHolder() *HolderRef {
-	if x != nil {
-		return x.xxx_hidden_Holder
-	}
-	return nil
-}
-
-func (x *CredentialAddRequest) GetSecret() []byte {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *CredentialAddRequest) GetDateCreated() *timestamppb.Timestamp {
-	if x != nil {
-		return x.xxx_hidden_DateCreated
-	}
-	return nil
-}
-
-func (x *CredentialAddRequest) SetId(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Id = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *CredentialAddRequest) SetTenant(v *TenantRef) {
-	x.xxx_hidden_Tenant = v
-}
-
-func (x *CredentialAddRequest) SetHolder(v *HolderRef) {
-	x.xxx_hidden_Holder = v
-}
-
-func (x *CredentialAddRequest) SetSecret(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Secret = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
-}
-
-func (x *CredentialAddRequest) SetDateCreated(v *timestamppb.Timestamp) {
-	x.xxx_hidden_DateCreated = v
-}
-
-func (x *CredentialAddRequest) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CredentialAddRequest) HasTenant() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Tenant != nil
-}
-
-func (x *CredentialAddRequest) HasHolder() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Holder != nil
-}
-
-func (x *CredentialAddRequest) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *CredentialAddRequest) HasDateCreated() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_DateCreated != nil
-}
-
-func (x *CredentialAddRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-func (x *CredentialAddRequest) ClearTenant() {
-	x.xxx_hidden_Tenant = nil
-}
-
-func (x *CredentialAddRequest) ClearHolder() {
-	x.xxx_hidden_Holder = nil
-}
-
-func (x *CredentialAddRequest) ClearSecret() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Secret = nil
-}
-
-func (x *CredentialAddRequest) ClearDateCreated() {
-	x.xxx_hidden_DateCreated = nil
-}
-
-type CredentialAddRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id          []byte
-	Tenant      *TenantRef
-	Holder      *HolderRef
-	Secret      []byte
-	DateCreated *timestamppb.Timestamp
-}
-
-func (b0 CredentialAddRequest_builder) Build() *CredentialAddRequest {
-	m0 := &CredentialAddRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Id = b.Id
-	}
-	x.xxx_hidden_Tenant = b.Tenant
-	x.xxx_hidden_Holder = b.Holder
-	if b.Secret != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_Secret = b.Secret
-	}
-	x.xxx_hidden_DateCreated = b.DateCreated
-	return m0
-}
-
-type CredentialGetRequest struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Ref    *CredentialRef         `protobuf:"bytes,1,opt,name=ref"`
-	xxx_hidden_Select *CredentialSelect      `protobuf:"bytes,2,opt,name=select"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *CredentialGetRequest) Reset() {
-	*x = CredentialGetRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialGetRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialGetRequest) ProtoMessage() {}
-
-func (x *CredentialGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialGetRequest) GetRef() *CredentialRef {
-	if x != nil {
-		return x.xxx_hidden_Ref
-	}
-	return nil
-}
-
-func (x *CredentialGetRequest) GetSelect() *CredentialSelect {
-	if x != nil {
-		return x.xxx_hidden_Select
-	}
-	return nil
-}
-
-func (x *CredentialGetRequest) SetRef(v *CredentialRef) {
-	x.xxx_hidden_Ref = v
-}
-
-func (x *CredentialGetRequest) SetSelect(v *CredentialSelect) {
-	x.xxx_hidden_Select = v
-}
-
-func (x *CredentialGetRequest) HasRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Ref != nil
-}
-
-func (x *CredentialGetRequest) HasSelect() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Select != nil
-}
-
-func (x *CredentialGetRequest) ClearRef() {
-	x.xxx_hidden_Ref = nil
-}
-
-func (x *CredentialGetRequest) ClearSelect() {
-	x.xxx_hidden_Select = nil
-}
-
-type CredentialGetRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Ref    *CredentialRef
-	Select *CredentialSelect
-}
-
-func (b0 CredentialGetRequest_builder) Build() *CredentialGetRequest {
-	m0 := &CredentialGetRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Ref = b.Ref
-	x.xxx_hidden_Select = b.Select
-	return m0
-}
-
-type CredentialRef struct {
-	state          protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Key isCredentialRef_Key    `protobuf_oneof:"key"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *CredentialRef) Reset() {
-	*x = CredentialRef{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialRef) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialRef) ProtoMessage() {}
-
-func (x *CredentialRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialRef) GetId() []byte {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Key.(*credentialRef_Id); ok {
-			return x.Id
-		}
-	}
-	return nil
-}
-
-func (x *CredentialRef) GetHolder() *CredentialRefByHolder {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Key.(*credentialRef_Holder); ok {
-			return x.Holder
-		}
-	}
-	return nil
-}
-
-func (x *CredentialRef) SetId(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Key = &credentialRef_Id{v}
-}
-
-func (x *CredentialRef) SetHolder(v *CredentialRefByHolder) {
-	if v == nil {
-		x.xxx_hidden_Key = nil
-		return
-	}
-	x.xxx_hidden_Key = &credentialRef_Holder{v}
-}
-
-func (x *CredentialRef) HasKey() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Key != nil
-}
-
-func (x *CredentialRef) HasId() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Key.(*credentialRef_Id)
-	return ok
-}
-
-func (x *CredentialRef) HasHolder() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Key.(*credentialRef_Holder)
-	return ok
-}
-
-func (x *CredentialRef) ClearKey() {
-	x.xxx_hidden_Key = nil
-}
-
-func (x *CredentialRef) ClearId() {
-	if _, ok := x.xxx_hidden_Key.(*credentialRef_Id); ok {
-		x.xxx_hidden_Key = nil
-	}
-}
-
-func (x *CredentialRef) ClearHolder() {
-	if _, ok := x.xxx_hidden_Key.(*credentialRef_Holder); ok {
-		x.xxx_hidden_Key = nil
-	}
-}
-
-const CredentialRef_Key_not_set_case case_CredentialRef_Key = 0
-const CredentialRef_Id_case case_CredentialRef_Key = 1
-const CredentialRef_Holder_case case_CredentialRef_Key = 8
-
-func (x *CredentialRef) WhichKey() case_CredentialRef_Key {
-	if x == nil {
-		return CredentialRef_Key_not_set_case
-	}
-	switch x.xxx_hidden_Key.(type) {
-	case *credentialRef_Id:
-		return CredentialRef_Id_case
-	case *credentialRef_Holder:
-		return CredentialRef_Holder_case
-	default:
-		return CredentialRef_Key_not_set_case
-	}
-}
-
-type CredentialRef_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_Key:
-	Id     []byte
-	Holder *CredentialRefByHolder
-	// -- end of xxx_hidden_Key
-}
-
-func (b0 CredentialRef_builder) Build() *CredentialRef {
-	m0 := &CredentialRef{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		x.xxx_hidden_Key = &credentialRef_Id{b.Id}
-	}
-	if b.Holder != nil {
-		x.xxx_hidden_Key = &credentialRef_Holder{b.Holder}
-	}
-	return m0
-}
-
-type case_CredentialRef_Key protoreflect.FieldNumber
-
-func (x case_CredentialRef_Key) String() string {
-	md := file_rove_org_svc_g_proto_msgTypes[26].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isCredentialRef_Key interface {
-	isCredentialRef_Key()
-}
-
-type credentialRef_Id struct {
-	Id []byte `protobuf:"bytes,1,opt,name=id,oneof"`
-}
-
-type credentialRef_Holder struct {
-	Holder *CredentialRefByHolder `protobuf:"bytes,8,opt,name=holder,oneof"`
-}
-
-func (*credentialRef_Id) isCredentialRef_Key() {}
-
-func (*credentialRef_Holder) isCredentialRef_Key() {}
-
-type CredentialRefByHolder struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Holder *HolderRef             `protobuf:"bytes,8,opt,name=holder"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *CredentialRefByHolder) Reset() {
-	*x = CredentialRefByHolder{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialRefByHolder) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialRefByHolder) ProtoMessage() {}
-
-func (x *CredentialRefByHolder) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialRefByHolder) GetHolder() *HolderRef {
-	if x != nil {
-		return x.xxx_hidden_Holder
-	}
-	return nil
-}
-
-func (x *CredentialRefByHolder) SetHolder(v *HolderRef) {
-	x.xxx_hidden_Holder = v
-}
-
-func (x *CredentialRefByHolder) HasHolder() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Holder != nil
-}
-
-func (x *CredentialRefByHolder) ClearHolder() {
-	x.xxx_hidden_Holder = nil
-}
-
-type CredentialRefByHolder_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Holder *HolderRef
-}
-
-func (b0 CredentialRefByHolder_builder) Build() *CredentialRefByHolder {
-	m0 := &CredentialRefByHolder{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Holder = b.Holder
-	return m0
-}
-
-type CredentialSelect struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_All         bool                   `protobuf:"varint,1,opt,name=all"`
-	xxx_hidden_Tenant      *TenantSelect          `protobuf:"bytes,2,opt,name=tenant"`
-	xxx_hidden_Holder      *HolderSelect          `protobuf:"bytes,8,opt,name=holder"`
-	xxx_hidden_Secret      bool                   `protobuf:"varint,9,opt,name=secret"`
-	xxx_hidden_DateUpdated bool                   `protobuf:"varint,13,opt,name=date_updated,json=dateUpdated"`
-	xxx_hidden_DateCreated bool                   `protobuf:"varint,15,opt,name=date_created,json=dateCreated"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CredentialSelect) Reset() {
-	*x = CredentialSelect{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialSelect) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialSelect) ProtoMessage() {}
-
-func (x *CredentialSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[28]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialSelect) GetAll() bool {
-	if x != nil {
-		return x.xxx_hidden_All
-	}
-	return false
-}
-
-func (x *CredentialSelect) GetTenant() *TenantSelect {
-	if x != nil {
-		return x.xxx_hidden_Tenant
-	}
-	return nil
-}
-
-func (x *CredentialSelect) GetHolder() *HolderSelect {
-	if x != nil {
-		return x.xxx_hidden_Holder
-	}
-	return nil
-}
-
-func (x *CredentialSelect) GetSecret() bool {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return false
-}
-
-func (x *CredentialSelect) GetDateUpdated() bool {
-	if x != nil {
-		return x.xxx_hidden_DateUpdated
-	}
-	return false
-}
-
-func (x *CredentialSelect) GetDateCreated() bool {
-	if x != nil {
-		return x.xxx_hidden_DateCreated
-	}
-	return false
-}
-
-func (x *CredentialSelect) SetAll(v bool) {
-	x.xxx_hidden_All = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
-}
-
-func (x *CredentialSelect) SetTenant(v *TenantSelect) {
-	x.xxx_hidden_Tenant = v
-}
-
-func (x *CredentialSelect) SetHolder(v *HolderSelect) {
-	x.xxx_hidden_Holder = v
-}
-
-func (x *CredentialSelect) SetSecret(v bool) {
-	x.xxx_hidden_Secret = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
-}
-
-func (x *CredentialSelect) SetDateUpdated(v bool) {
-	x.xxx_hidden_DateUpdated = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
-}
-
-func (x *CredentialSelect) SetDateCreated(v bool) {
-	x.xxx_hidden_DateCreated = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
-}
-
-func (x *CredentialSelect) HasAll() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CredentialSelect) HasTenant() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Tenant != nil
-}
-
-func (x *CredentialSelect) HasHolder() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Holder != nil
-}
-
-func (x *CredentialSelect) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *CredentialSelect) HasDateUpdated() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
-func (x *CredentialSelect) HasDateCreated() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
-}
-
-func (x *CredentialSelect) ClearAll() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_All = false
-}
-
-func (x *CredentialSelect) ClearTenant() {
-	x.xxx_hidden_Tenant = nil
-}
-
-func (x *CredentialSelect) ClearHolder() {
-	x.xxx_hidden_Holder = nil
-}
-
-func (x *CredentialSelect) ClearSecret() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Secret = false
-}
-
-func (x *CredentialSelect) ClearDateUpdated() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_DateUpdated = false
-}
-
-func (x *CredentialSelect) ClearDateCreated() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_DateCreated = false
-}
-
-type CredentialSelect_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	All         *bool
-	Tenant      *TenantSelect
-	Holder      *HolderSelect
-	Secret      *bool
-	DateUpdated *bool
-	DateCreated *bool
-}
-
-func (b0 CredentialSelect_builder) Build() *CredentialSelect {
-	m0 := &CredentialSelect{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.All != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
-		x.xxx_hidden_All = *b.All
-	}
-	x.xxx_hidden_Tenant = b.Tenant
-	x.xxx_hidden_Holder = b.Holder
-	if b.Secret != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
-		x.xxx_hidden_Secret = *b.Secret
-	}
-	if b.DateUpdated != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
-		x.xxx_hidden_DateUpdated = *b.DateUpdated
-	}
-	if b.DateCreated != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
-		x.xxx_hidden_DateCreated = *b.DateCreated
-	}
-	return m0
-}
-
-type CredentialPatchRequest struct {
-	state                       protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Ref              *CredentialRef         `protobuf:"bytes,1,opt,name=ref"`
-	xxx_hidden_Secret           []byte                 `protobuf:"bytes,18,opt,name=secret"`
-	xxx_hidden_DateUpdated      *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=date_updated,json=dateUpdated"`
-	xxx_hidden_DateUpdatedForce bool                   `protobuf:"varint,27,opt,name=date_updated_force,json=dateUpdatedForce"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
-}
-
-func (x *CredentialPatchRequest) Reset() {
-	*x = CredentialPatchRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialPatchRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialPatchRequest) ProtoMessage() {}
-
-func (x *CredentialPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialPatchRequest) GetRef() *CredentialRef {
-	if x != nil {
-		return x.xxx_hidden_Ref
-	}
-	return nil
-}
-
-func (x *CredentialPatchRequest) GetSecret() []byte {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *CredentialPatchRequest) GetDateUpdated() *timestamppb.Timestamp {
-	if x != nil {
-		return x.xxx_hidden_DateUpdated
-	}
-	return nil
-}
-
-func (x *CredentialPatchRequest) GetDateUpdatedForce() bool {
-	if x != nil {
-		return x.xxx_hidden_DateUpdatedForce
-	}
-	return false
-}
-
-func (x *CredentialPatchRequest) SetRef(v *CredentialRef) {
-	x.xxx_hidden_Ref = v
-}
-
-func (x *CredentialPatchRequest) SetSecret(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Secret = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
-}
-
-func (x *CredentialPatchRequest) SetDateUpdated(v *timestamppb.Timestamp) {
-	x.xxx_hidden_DateUpdated = v
-}
-
-func (x *CredentialPatchRequest) SetDateUpdatedForce(v bool) {
-	x.xxx_hidden_DateUpdatedForce = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
-}
-
-func (x *CredentialPatchRequest) HasRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Ref != nil
-}
-
-func (x *CredentialPatchRequest) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *CredentialPatchRequest) HasDateUpdated() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_DateUpdated != nil
-}
-
-func (x *CredentialPatchRequest) HasDateUpdatedForce() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *CredentialPatchRequest) ClearRef() {
-	x.xxx_hidden_Ref = nil
-}
-
-func (x *CredentialPatchRequest) ClearSecret() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Secret = nil
-}
-
-func (x *CredentialPatchRequest) ClearDateUpdated() {
-	x.xxx_hidden_DateUpdated = nil
-}
-
-func (x *CredentialPatchRequest) ClearDateUpdatedForce() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_DateUpdatedForce = false
-}
-
-type CredentialPatchRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Ref    *CredentialRef
-	Secret []byte
-	// The version this update requires the stored date_updated to be.
-	// It is a precondition, not a write: the update applies only if the row
-	// still holds this value, and the server stamps the new version itself.
-	// Setting it together with date_updated_force is an error --
-	// the version is the token every client's compare-and-swap is measured
-	// against, so it is not the caller's to choose.
-	DateUpdated *timestamppb.Timestamp
-	// Update whatever the stored date_updated is, with no precondition.
-	// The server still stamps a new version, so other clients' tokens are
-	// invalidated as usual; this declines the check for THIS update only.
-	// One of date_updated or this must be set. An omitted version is
-	// refused rather than assumed, because an unset field cannot be told
-	// apart from a caller who never considered locking at all.
-	DateUpdatedForce *bool
-}
-
-func (b0 CredentialPatchRequest_builder) Build() *CredentialPatchRequest {
-	m0 := &CredentialPatchRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Ref = b.Ref
-	if b.Secret != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Secret = b.Secret
-	}
-	x.xxx_hidden_DateUpdated = b.DateUpdated
-	if b.DateUpdatedForce != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_DateUpdatedForce = *b.DateUpdatedForce
-	}
-	return m0
-}
-
-type CredentialApplyRequest struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Ref   *CredentialRef         `protobuf:"bytes,1,opt,name=ref"`
-	xxx_hidden_Patch *patchpb.Patch         `protobuf:"bytes,2,opt,name=patch"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *CredentialApplyRequest) Reset() {
-	*x = CredentialApplyRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[30]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialApplyRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialApplyRequest) ProtoMessage() {}
-
-func (x *CredentialApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[30]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialApplyRequest) GetRef() *CredentialRef {
-	if x != nil {
-		return x.xxx_hidden_Ref
-	}
-	return nil
-}
-
-func (x *CredentialApplyRequest) GetPatch() *patchpb.Patch {
-	if x != nil {
-		return x.xxx_hidden_Patch
-	}
-	return nil
-}
-
-func (x *CredentialApplyRequest) SetRef(v *CredentialRef) {
-	x.xxx_hidden_Ref = v
-}
-
-func (x *CredentialApplyRequest) SetPatch(v *patchpb.Patch) {
-	x.xxx_hidden_Patch = v
-}
-
-func (x *CredentialApplyRequest) HasRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Ref != nil
-}
-
-func (x *CredentialApplyRequest) HasPatch() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Patch != nil
-}
-
-func (x *CredentialApplyRequest) ClearRef() {
-	x.xxx_hidden_Ref = nil
-}
-
-func (x *CredentialApplyRequest) ClearPatch() {
-	x.xxx_hidden_Patch = nil
-}
-
-type CredentialApplyRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Ref   *CredentialRef
-	Patch *patchpb.Patch
-}
-
-func (b0 CredentialApplyRequest_builder) Build() *CredentialApplyRequest {
-	m0 := &CredentialApplyRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Ref = b.Ref
-	x.xxx_hidden_Patch = b.Patch
-	return m0
-}
-
-type CredentialEraseResponse struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Erased      bool                   `protobuf:"varint,1,opt,name=erased"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CredentialEraseResponse) Reset() {
-	*x = CredentialEraseResponse{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CredentialEraseResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CredentialEraseResponse) ProtoMessage() {}
-
-func (x *CredentialEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CredentialEraseResponse) GetErased() bool {
-	if x != nil {
-		return x.xxx_hidden_Erased
-	}
-	return false
-}
-
-func (x *CredentialEraseResponse) SetErased(v bool) {
-	x.xxx_hidden_Erased = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *CredentialEraseResponse) HasErased() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CredentialEraseResponse) ClearErased() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Erased = false
-}
-
-type CredentialEraseResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Erased is whether this call is the one that erased the row.
-	//
-	// False for a row that was already gone, was never there, or is out
-	// of this caller's reach -- which are one answer on purpose, and the
-	// reason the RPC does not fail instead.
-	Erased *bool
-}
-
-func (b0 CredentialEraseResponse_builder) Build() *CredentialEraseResponse {
-	m0 := &CredentialEraseResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Erased != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Erased = *b.Erased
-	}
-	return m0
-}
-
 type SessionAddRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
@@ -4455,7 +3397,7 @@ type SessionAddRequest struct {
 
 func (x *SessionAddRequest) Reset() {
 	*x = SessionAddRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[32]
+	mi := &file_rove_org_svc_g_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4467,7 +3409,7 @@ func (x *SessionAddRequest) String() string {
 func (*SessionAddRequest) ProtoMessage() {}
 
 func (x *SessionAddRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[32]
+	mi := &file_rove_org_svc_g_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4716,7 +3658,7 @@ type SessionGetRequest struct {
 
 func (x *SessionGetRequest) Reset() {
 	*x = SessionGetRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[33]
+	mi := &file_rove_org_svc_g_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4728,7 +3670,7 @@ func (x *SessionGetRequest) String() string {
 func (*SessionGetRequest) ProtoMessage() {}
 
 func (x *SessionGetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[33]
+	mi := &file_rove_org_svc_g_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4808,7 +3750,7 @@ type SessionRef struct {
 
 func (x *SessionRef) Reset() {
 	*x = SessionRef{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[34]
+	mi := &file_rove_org_svc_g_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4820,7 +3762,7 @@ func (x *SessionRef) String() string {
 func (*SessionRef) ProtoMessage() {}
 
 func (x *SessionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[34]
+	mi := &file_rove_org_svc_g_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4908,7 +3850,7 @@ func (b0 SessionRef_builder) Build() *SessionRef {
 type case_SessionRef_Key protoreflect.FieldNumber
 
 func (x case_SessionRef_Key) String() string {
-	md := file_rove_org_svc_g_proto_msgTypes[34].Descriptor()
+	md := file_rove_org_svc_g_proto_msgTypes[26].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -4945,7 +3887,7 @@ type SessionSelect struct {
 
 func (x *SessionSelect) Reset() {
 	*x = SessionSelect{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[35]
+	mi := &file_rove_org_svc_g_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4957,7 +3899,7 @@ func (x *SessionSelect) String() string {
 func (*SessionSelect) ProtoMessage() {}
 
 func (x *SessionSelect) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[35]
+	mi := &file_rove_org_svc_g_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5279,7 +4221,7 @@ type SessionPatchRequest struct {
 
 func (x *SessionPatchRequest) Reset() {
 	*x = SessionPatchRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[36]
+	mi := &file_rove_org_svc_g_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5291,7 +4233,7 @@ func (x *SessionPatchRequest) String() string {
 func (*SessionPatchRequest) ProtoMessage() {}
 
 func (x *SessionPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[36]
+	mi := &file_rove_org_svc_g_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5591,7 +4533,7 @@ type SessionApplyRequest struct {
 
 func (x *SessionApplyRequest) Reset() {
 	*x = SessionApplyRequest{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[37]
+	mi := &file_rove_org_svc_g_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5603,7 +4545,7 @@ func (x *SessionApplyRequest) String() string {
 func (*SessionApplyRequest) ProtoMessage() {}
 
 func (x *SessionApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[37]
+	mi := &file_rove_org_svc_g_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5685,7 +4627,7 @@ type SessionEraseResponse struct {
 
 func (x *SessionEraseResponse) Reset() {
 	*x = SessionEraseResponse{}
-	mi := &file_rove_org_svc_g_proto_msgTypes[38]
+	mi := &file_rove_org_svc_g_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5697,7 +4639,7 @@ func (x *SessionEraseResponse) String() string {
 func (*SessionEraseResponse) ProtoMessage() {}
 
 func (x *SessionEraseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_svc_g_proto_msgTypes[38]
+	mi := &file_rove_org_svc_g_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5854,14 +4796,15 @@ const file_rove_org_svc_g_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12!\n" +
 	"\x05value\x18\x02 \x01(\v2\v.rove.PartyR\x05value\x12\x1d\n" +
 	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x10\n" +
-	"\x0ePartyMeRequest\"\x86\x02\n" +
+	"\x0ePartyMeRequest\"\xb2\x02\n" +
 	"\x0fPartyMeResponse\x12$\n" +
 	"\x06holder\x18\x01 \x01(\v2\f.rove.HolderR\x06holder\x12!\n" +
 	"\x05party\x18\x02 \x01(\v2\v.rove.PartyR\x05party\x12$\n" +
 	"\x06tenant\x18\x03 \x01(\v2\f.rove.TenantR\x06tenant\x12\x19\n" +
 	"\x04role\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04role\x12?\n" +
 	"\rhistory_since\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\fhistorySince\x12(\n" +
-	"\fhistory_days\x18\x06 \x01(\rB\x05\xaa\x01\x02\b\x02R\vhistoryDays\"\xa1\x03\n" +
+	"\fhistory_days\x18\x06 \x01(\rB\x05\xaa\x01\x02\b\x02R\vhistoryDays\x12*\n" +
+	"\raccounts_here\x18\a \x01(\bB\x05\xaa\x01\x02\b\x02R\faccountsHere\"\xa1\x03\n" +
 	"\x12PartyUpdateRequest\x12 \n" +
 	"\x03ref\x18\x01 \x01(\v2\x0e.rove.PartyRefR\x03ref\x12\x19\n" +
 	"\x04name\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
@@ -5898,39 +4841,7 @@ const file_rove_org_svc_g_proto_rawDesc = "" +
 	"\x16PartyDeactivateRequest\x12 \n" +
 	"\x03ref\x18\x01 \x01(\v2\x0e.rove.PartyRefR\x03ref\"<\n" +
 	"\x18PartyPseudonymizeRequest\x12 \n" +
-	"\x03ref\x18\x01 \x01(\v2\x0e.rove.PartyRefR\x03ref\"\xcf\x01\n" +
-	"\x14CredentialAddRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
-	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12'\n" +
-	"\x06holder\x18\b \x01(\v2\x0f.rove.HolderRefR\x06holder\x12\x16\n" +
-	"\x06secret\x18\t \x01(\fR\x06secret\x12=\n" +
-	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\"m\n" +
-	"\x14CredentialGetRequest\x12%\n" +
-	"\x03ref\x18\x01 \x01(\v2\x13.rove.CredentialRefR\x03ref\x12.\n" +
-	"\x06select\x18\x02 \x01(\v2\x16.rove.CredentialSelectR\x06select\"_\n" +
-	"\rCredentialRef\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\fH\x00R\x02id\x125\n" +
-	"\x06holder\x18\b \x01(\v2\x1b.rove.CredentialRefByHolderH\x00R\x06holderB\x05\n" +
-	"\x03key\"@\n" +
-	"\x15CredentialRefByHolder\x12'\n" +
-	"\x06holder\x18\b \x01(\v2\x0f.rove.HolderRefR\x06holder\"\xda\x01\n" +
-	"\x10CredentialSelect\x12\x10\n" +
-	"\x03all\x18\x01 \x01(\bR\x03all\x12*\n" +
-	"\x06tenant\x18\x02 \x01(\v2\x12.rove.TenantSelectR\x06tenant\x12*\n" +
-	"\x06holder\x18\b \x01(\v2\x12.rove.HolderSelectR\x06holder\x12\x16\n" +
-	"\x06secret\x18\t \x01(\bR\x06secret\x12!\n" +
-	"\fdate_updated\x18\r \x01(\bR\vdateUpdated\x12!\n" +
-	"\fdate_created\x18\x0f \x01(\bR\vdateCreated\"\xc4\x01\n" +
-	"\x16CredentialPatchRequest\x12%\n" +
-	"\x03ref\x18\x01 \x01(\v2\x13.rove.CredentialRefR\x03ref\x12\x16\n" +
-	"\x06secret\x18\x12 \x01(\fR\x06secret\x12=\n" +
-	"\fdate_updated\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampR\vdateUpdated\x12,\n" +
-	"\x12date_updated_force\x18\x1b \x01(\bR\x10dateUpdatedForce\"c\n" +
-	"\x16CredentialApplyRequest\x12%\n" +
-	"\x03ref\x18\x01 \x01(\v2\x13.rove.CredentialRefR\x03ref\x12\"\n" +
-	"\x05patch\x18\x02 \x01(\v2\f.patch.PatchR\x05patch\"1\n" +
-	"\x17CredentialEraseResponse\x12\x16\n" +
-	"\x06erased\x18\x01 \x01(\bR\x06erased\"\xda\x02\n" +
+	"\x03ref\x18\x01 \x01(\v2\x0e.rove.PartyRefR\x03ref\"\xda\x02\n" +
 	"\x11SessionAddRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
 	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12'\n" +
@@ -5991,13 +4902,7 @@ const file_rove_org_svc_g_proto_rawDesc = "" +
 	"\vSetPassword\x12\x1d.rove.PartySetPasswordRequest\x1a\x1e.rove.PartySetPasswordResponse\x127\n" +
 	"\n" +
 	"Deactivate\x12\x1c.rove.PartyDeactivateRequest\x1a\v.rove.Party\x12;\n" +
-	"\fPseudonymize\x12\x1e.rove.PartyPseudonymizeRequest\x1a\v.rove.Party2\xac\x02\n" +
-	"\x11CredentialService\x123\n" +
-	"\x03Add\x12\x1a.rove.CredentialAddRequest\x1a\x10.rove.Credential\x123\n" +
-	"\x03Get\x12\x1a.rove.CredentialGetRequest\x1a\x10.rove.Credential\x127\n" +
-	"\x05Patch\x12\x1c.rove.CredentialPatchRequest\x1a\x10.rove.Credential\x127\n" +
-	"\x05Apply\x12\x1c.rove.CredentialApplyRequest\x1a\x10.rove.Credential\x12;\n" +
-	"\x05Erase\x12\x13.rove.CredentialRef\x1a\x1d.rove.CredentialEraseResponse2\x8b\x02\n" +
+	"\fPseudonymize\x12\x1e.rove.PartyPseudonymizeRequest\x1a\v.rove.Party2\x8b\x02\n" +
 	"\x0eSessionService\x12-\n" +
 	"\x03Add\x12\x17.rove.SessionAddRequest\x1a\r.rove.Session\x12-\n" +
 	"\x03Get\x12\x17.rove.SessionGetRequest\x1a\r.rove.Session\x121\n" +
@@ -6005,7 +4910,7 @@ const file_rove_org_svc_g_proto_rawDesc = "" +
 	"\x05Apply\x12\x19.rove.SessionApplyRequest\x1a\r.rove.Session\x125\n" +
 	"\x05Erase\x12\x10.rove.SessionRef\x1a\x1a.rove.SessionEraseResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_org_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_rove_org_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_rove_org_svc_g_proto_goTypes = []any{
 	(*PartyAddRequest)(nil),          // 0: rove.PartyAddRequest
 	(*PartyGetRequest)(nil),          // 1: rove.PartyGetRequest
@@ -6031,156 +4936,124 @@ var file_rove_org_svc_g_proto_goTypes = []any{
 	(*PartySetPasswordResponse)(nil), // 21: rove.PartySetPasswordResponse
 	(*PartyDeactivateRequest)(nil),   // 22: rove.PartyDeactivateRequest
 	(*PartyPseudonymizeRequest)(nil), // 23: rove.PartyPseudonymizeRequest
-	(*CredentialAddRequest)(nil),     // 24: rove.CredentialAddRequest
-	(*CredentialGetRequest)(nil),     // 25: rove.CredentialGetRequest
-	(*CredentialRef)(nil),            // 26: rove.CredentialRef
-	(*CredentialRefByHolder)(nil),    // 27: rove.CredentialRefByHolder
-	(*CredentialSelect)(nil),         // 28: rove.CredentialSelect
-	(*CredentialPatchRequest)(nil),   // 29: rove.CredentialPatchRequest
-	(*CredentialApplyRequest)(nil),   // 30: rove.CredentialApplyRequest
-	(*CredentialEraseResponse)(nil),  // 31: rove.CredentialEraseResponse
-	(*SessionAddRequest)(nil),        // 32: rove.SessionAddRequest
-	(*SessionGetRequest)(nil),        // 33: rove.SessionGetRequest
-	(*SessionRef)(nil),               // 34: rove.SessionRef
-	(*SessionSelect)(nil),            // 35: rove.SessionSelect
-	(*SessionPatchRequest)(nil),      // 36: rove.SessionPatchRequest
-	(*SessionApplyRequest)(nil),      // 37: rove.SessionApplyRequest
-	(*SessionEraseResponse)(nil),     // 38: rove.SessionEraseResponse
-	nil,                              // 39: rove.PartyAddRequest.LabelsEntry
-	nil,                              // 40: rove.PartyPatchRequest.LabelsEntry
-	nil,                              // 41: rove.PartyFilter.LabelsEntry
-	nil,                              // 42: rove.PartyUpdateRequest.LabelsEntry
-	(*TenantRef)(nil),                // 43: rove.TenantRef
-	(*HolderRef)(nil),                // 44: rove.HolderRef
-	(*timestamppb.Timestamp)(nil),    // 45: google.protobuf.Timestamp
-	(*TenantSelect)(nil),             // 46: rove.TenantSelect
-	(*HolderSelect)(nil),             // 47: rove.HolderSelect
-	(*patchpb.Patch)(nil),            // 48: patch.Patch
-	(*Party)(nil),                    // 49: rove.Party
-	(*Holder)(nil),                   // 50: rove.Holder
-	(*Tenant)(nil),                   // 51: rove.Tenant
-	(*Credential)(nil),               // 52: rove.Credential
-	(*Session)(nil),                  // 53: rove.Session
+	(*SessionAddRequest)(nil),        // 24: rove.SessionAddRequest
+	(*SessionGetRequest)(nil),        // 25: rove.SessionGetRequest
+	(*SessionRef)(nil),               // 26: rove.SessionRef
+	(*SessionSelect)(nil),            // 27: rove.SessionSelect
+	(*SessionPatchRequest)(nil),      // 28: rove.SessionPatchRequest
+	(*SessionApplyRequest)(nil),      // 29: rove.SessionApplyRequest
+	(*SessionEraseResponse)(nil),     // 30: rove.SessionEraseResponse
+	nil,                              // 31: rove.PartyAddRequest.LabelsEntry
+	nil,                              // 32: rove.PartyPatchRequest.LabelsEntry
+	nil,                              // 33: rove.PartyFilter.LabelsEntry
+	nil,                              // 34: rove.PartyUpdateRequest.LabelsEntry
+	(*TenantRef)(nil),                // 35: rove.TenantRef
+	(*HolderRef)(nil),                // 36: rove.HolderRef
+	(*timestamppb.Timestamp)(nil),    // 37: google.protobuf.Timestamp
+	(*TenantSelect)(nil),             // 38: rove.TenantSelect
+	(*HolderSelect)(nil),             // 39: rove.HolderSelect
+	(*patchpb.Patch)(nil),            // 40: patch.Patch
+	(*Party)(nil),                    // 41: rove.Party
+	(*Holder)(nil),                   // 42: rove.Holder
+	(*Tenant)(nil),                   // 43: rove.Tenant
+	(*Session)(nil),                  // 44: rove.Session
 }
 var file_rove_org_svc_g_proto_depIdxs = []int32{
-	43, // 0: rove.PartyAddRequest.tenant:type_name -> rove.TenantRef
-	39, // 1: rove.PartyAddRequest.labels:type_name -> rove.PartyAddRequest.LabelsEntry
-	44, // 2: rove.PartyAddRequest.holder:type_name -> rove.HolderRef
-	45, // 3: rove.PartyAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	35, // 0: rove.PartyAddRequest.tenant:type_name -> rove.TenantRef
+	31, // 1: rove.PartyAddRequest.labels:type_name -> rove.PartyAddRequest.LabelsEntry
+	36, // 2: rove.PartyAddRequest.holder:type_name -> rove.HolderRef
+	37, // 3: rove.PartyAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 4: rove.PartyGetRequest.ref:type_name -> rove.PartyRef
 	4,  // 5: rove.PartyGetRequest.select:type_name -> rove.PartySelect
 	3,  // 6: rove.PartyRef.holder:type_name -> rove.PartyRefByHolder
-	44, // 7: rove.PartyRefByHolder.holder:type_name -> rove.HolderRef
-	46, // 8: rove.PartySelect.tenant:type_name -> rove.TenantSelect
-	47, // 9: rove.PartySelect.holder:type_name -> rove.HolderSelect
+	36, // 7: rove.PartyRefByHolder.holder:type_name -> rove.HolderRef
+	38, // 8: rove.PartySelect.tenant:type_name -> rove.TenantSelect
+	39, // 9: rove.PartySelect.holder:type_name -> rove.HolderSelect
 	2,  // 10: rove.PartyPatchRequest.ref:type_name -> rove.PartyRef
-	40, // 11: rove.PartyPatchRequest.labels:type_name -> rove.PartyPatchRequest.LabelsEntry
-	44, // 12: rove.PartyPatchRequest.holder:type_name -> rove.HolderRef
-	45, // 13: rove.PartyPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	32, // 11: rove.PartyPatchRequest.labels:type_name -> rove.PartyPatchRequest.LabelsEntry
+	36, // 12: rove.PartyPatchRequest.holder:type_name -> rove.HolderRef
+	37, // 13: rove.PartyPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 14: rove.PartyApplyRequest.ref:type_name -> rove.PartyRef
-	48, // 15: rove.PartyApplyRequest.patch:type_name -> patch.Patch
+	40, // 15: rove.PartyApplyRequest.patch:type_name -> patch.Patch
 	10, // 16: rove.PartyListRequest.filters:type_name -> rove.PartyFilter
-	49, // 17: rove.PartyListResponse.items:type_name -> rove.Party
+	41, // 17: rove.PartyListResponse.items:type_name -> rove.Party
 	2,  // 18: rove.PartyFilter.ref:type_name -> rove.PartyRef
-	44, // 19: rove.PartyFilter.holder:type_name -> rove.HolderRef
-	41, // 20: rove.PartyFilter.labels:type_name -> rove.PartyFilter.LabelsEntry
+	36, // 19: rove.PartyFilter.holder:type_name -> rove.HolderRef
+	33, // 20: rove.PartyFilter.labels:type_name -> rove.PartyFilter.LabelsEntry
 	10, // 21: rove.PartyWatchRequest.filters:type_name -> rove.PartyFilter
 	13, // 22: rove.PartyWatchResponse.items:type_name -> rove.PartyWatchItem
-	49, // 23: rove.PartyWatchItem.value:type_name -> rove.Party
-	50, // 24: rove.PartyMeResponse.holder:type_name -> rove.Holder
-	49, // 25: rove.PartyMeResponse.party:type_name -> rove.Party
-	51, // 26: rove.PartyMeResponse.tenant:type_name -> rove.Tenant
-	45, // 27: rove.PartyMeResponse.history_since:type_name -> google.protobuf.Timestamp
+	41, // 23: rove.PartyWatchItem.value:type_name -> rove.Party
+	42, // 24: rove.PartyMeResponse.holder:type_name -> rove.Holder
+	41, // 25: rove.PartyMeResponse.party:type_name -> rove.Party
+	43, // 26: rove.PartyMeResponse.tenant:type_name -> rove.Tenant
+	37, // 27: rove.PartyMeResponse.history_since:type_name -> google.protobuf.Timestamp
 	2,  // 28: rove.PartyUpdateRequest.ref:type_name -> rove.PartyRef
-	42, // 29: rove.PartyUpdateRequest.labels:type_name -> rove.PartyUpdateRequest.LabelsEntry
+	34, // 29: rove.PartyUpdateRequest.labels:type_name -> rove.PartyUpdateRequest.LabelsEntry
 	2,  // 30: rove.PartyInviteRequest.ref:type_name -> rove.PartyRef
-	49, // 31: rove.PartyInviteResponse.party:type_name -> rove.Party
-	50, // 32: rove.PartyInviteResponse.holder:type_name -> rove.Holder
+	41, // 31: rove.PartyInviteResponse.party:type_name -> rove.Party
+	42, // 32: rove.PartyInviteResponse.holder:type_name -> rove.Holder
 	2,  // 33: rove.PartySetRoleRequest.ref:type_name -> rove.PartyRef
 	2,  // 34: rove.PartySetPasswordRequest.ref:type_name -> rove.PartyRef
 	2,  // 35: rove.PartyDeactivateRequest.ref:type_name -> rove.PartyRef
 	2,  // 36: rove.PartyPseudonymizeRequest.ref:type_name -> rove.PartyRef
-	43, // 37: rove.CredentialAddRequest.tenant:type_name -> rove.TenantRef
-	44, // 38: rove.CredentialAddRequest.holder:type_name -> rove.HolderRef
-	45, // 39: rove.CredentialAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	26, // 40: rove.CredentialGetRequest.ref:type_name -> rove.CredentialRef
-	28, // 41: rove.CredentialGetRequest.select:type_name -> rove.CredentialSelect
-	27, // 42: rove.CredentialRef.holder:type_name -> rove.CredentialRefByHolder
-	44, // 43: rove.CredentialRefByHolder.holder:type_name -> rove.HolderRef
-	46, // 44: rove.CredentialSelect.tenant:type_name -> rove.TenantSelect
-	47, // 45: rove.CredentialSelect.holder:type_name -> rove.HolderSelect
-	26, // 46: rove.CredentialPatchRequest.ref:type_name -> rove.CredentialRef
-	45, // 47: rove.CredentialPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	26, // 48: rove.CredentialApplyRequest.ref:type_name -> rove.CredentialRef
-	48, // 49: rove.CredentialApplyRequest.patch:type_name -> patch.Patch
-	43, // 50: rove.SessionAddRequest.tenant:type_name -> rove.TenantRef
-	44, // 51: rove.SessionAddRequest.holder:type_name -> rove.HolderRef
-	45, // 52: rove.SessionAddRequest.date_expires:type_name -> google.protobuf.Timestamp
-	45, // 53: rove.SessionAddRequest.date_idle:type_name -> google.protobuf.Timestamp
-	45, // 54: rove.SessionAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	34, // 55: rove.SessionGetRequest.ref:type_name -> rove.SessionRef
-	35, // 56: rove.SessionGetRequest.select:type_name -> rove.SessionSelect
-	46, // 57: rove.SessionSelect.tenant:type_name -> rove.TenantSelect
-	47, // 58: rove.SessionSelect.holder:type_name -> rove.HolderSelect
-	34, // 59: rove.SessionPatchRequest.ref:type_name -> rove.SessionRef
-	45, // 60: rove.SessionPatchRequest.date_expires:type_name -> google.protobuf.Timestamp
-	45, // 61: rove.SessionPatchRequest.date_idle:type_name -> google.protobuf.Timestamp
-	45, // 62: rove.SessionPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	34, // 63: rove.SessionApplyRequest.ref:type_name -> rove.SessionRef
-	48, // 64: rove.SessionApplyRequest.patch:type_name -> patch.Patch
-	0,  // 65: rove.PartyService.Add:input_type -> rove.PartyAddRequest
-	1,  // 66: rove.PartyService.Get:input_type -> rove.PartyGetRequest
-	5,  // 67: rove.PartyService.Patch:input_type -> rove.PartyPatchRequest
-	6,  // 68: rove.PartyService.Apply:input_type -> rove.PartyApplyRequest
-	2,  // 69: rove.PartyService.Erase:input_type -> rove.PartyRef
-	8,  // 70: rove.PartyService.List:input_type -> rove.PartyListRequest
-	11, // 71: rove.PartyService.Watch:input_type -> rove.PartyWatchRequest
-	14, // 72: rove.PartyService.Me:input_type -> rove.PartyMeRequest
-	16, // 73: rove.PartyService.Update:input_type -> rove.PartyUpdateRequest
-	17, // 74: rove.PartyService.Invite:input_type -> rove.PartyInviteRequest
-	19, // 75: rove.PartyService.SetRole:input_type -> rove.PartySetRoleRequest
-	20, // 76: rove.PartyService.SetPassword:input_type -> rove.PartySetPasswordRequest
-	22, // 77: rove.PartyService.Deactivate:input_type -> rove.PartyDeactivateRequest
-	23, // 78: rove.PartyService.Pseudonymize:input_type -> rove.PartyPseudonymizeRequest
-	24, // 79: rove.CredentialService.Add:input_type -> rove.CredentialAddRequest
-	25, // 80: rove.CredentialService.Get:input_type -> rove.CredentialGetRequest
-	29, // 81: rove.CredentialService.Patch:input_type -> rove.CredentialPatchRequest
-	30, // 82: rove.CredentialService.Apply:input_type -> rove.CredentialApplyRequest
-	26, // 83: rove.CredentialService.Erase:input_type -> rove.CredentialRef
-	32, // 84: rove.SessionService.Add:input_type -> rove.SessionAddRequest
-	33, // 85: rove.SessionService.Get:input_type -> rove.SessionGetRequest
-	36, // 86: rove.SessionService.Patch:input_type -> rove.SessionPatchRequest
-	37, // 87: rove.SessionService.Apply:input_type -> rove.SessionApplyRequest
-	34, // 88: rove.SessionService.Erase:input_type -> rove.SessionRef
-	49, // 89: rove.PartyService.Add:output_type -> rove.Party
-	49, // 90: rove.PartyService.Get:output_type -> rove.Party
-	49, // 91: rove.PartyService.Patch:output_type -> rove.Party
-	49, // 92: rove.PartyService.Apply:output_type -> rove.Party
-	7,  // 93: rove.PartyService.Erase:output_type -> rove.PartyEraseResponse
-	9,  // 94: rove.PartyService.List:output_type -> rove.PartyListResponse
-	12, // 95: rove.PartyService.Watch:output_type -> rove.PartyWatchResponse
-	15, // 96: rove.PartyService.Me:output_type -> rove.PartyMeResponse
-	49, // 97: rove.PartyService.Update:output_type -> rove.Party
-	18, // 98: rove.PartyService.Invite:output_type -> rove.PartyInviteResponse
-	49, // 99: rove.PartyService.SetRole:output_type -> rove.Party
-	21, // 100: rove.PartyService.SetPassword:output_type -> rove.PartySetPasswordResponse
-	49, // 101: rove.PartyService.Deactivate:output_type -> rove.Party
-	49, // 102: rove.PartyService.Pseudonymize:output_type -> rove.Party
-	52, // 103: rove.CredentialService.Add:output_type -> rove.Credential
-	52, // 104: rove.CredentialService.Get:output_type -> rove.Credential
-	52, // 105: rove.CredentialService.Patch:output_type -> rove.Credential
-	52, // 106: rove.CredentialService.Apply:output_type -> rove.Credential
-	31, // 107: rove.CredentialService.Erase:output_type -> rove.CredentialEraseResponse
-	53, // 108: rove.SessionService.Add:output_type -> rove.Session
-	53, // 109: rove.SessionService.Get:output_type -> rove.Session
-	53, // 110: rove.SessionService.Patch:output_type -> rove.Session
-	53, // 111: rove.SessionService.Apply:output_type -> rove.Session
-	38, // 112: rove.SessionService.Erase:output_type -> rove.SessionEraseResponse
-	89, // [89:113] is the sub-list for method output_type
-	65, // [65:89] is the sub-list for method input_type
-	65, // [65:65] is the sub-list for extension type_name
-	65, // [65:65] is the sub-list for extension extendee
-	0,  // [0:65] is the sub-list for field type_name
+	35, // 37: rove.SessionAddRequest.tenant:type_name -> rove.TenantRef
+	36, // 38: rove.SessionAddRequest.holder:type_name -> rove.HolderRef
+	37, // 39: rove.SessionAddRequest.date_expires:type_name -> google.protobuf.Timestamp
+	37, // 40: rove.SessionAddRequest.date_idle:type_name -> google.protobuf.Timestamp
+	37, // 41: rove.SessionAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	26, // 42: rove.SessionGetRequest.ref:type_name -> rove.SessionRef
+	27, // 43: rove.SessionGetRequest.select:type_name -> rove.SessionSelect
+	38, // 44: rove.SessionSelect.tenant:type_name -> rove.TenantSelect
+	39, // 45: rove.SessionSelect.holder:type_name -> rove.HolderSelect
+	26, // 46: rove.SessionPatchRequest.ref:type_name -> rove.SessionRef
+	37, // 47: rove.SessionPatchRequest.date_expires:type_name -> google.protobuf.Timestamp
+	37, // 48: rove.SessionPatchRequest.date_idle:type_name -> google.protobuf.Timestamp
+	37, // 49: rove.SessionPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	26, // 50: rove.SessionApplyRequest.ref:type_name -> rove.SessionRef
+	40, // 51: rove.SessionApplyRequest.patch:type_name -> patch.Patch
+	0,  // 52: rove.PartyService.Add:input_type -> rove.PartyAddRequest
+	1,  // 53: rove.PartyService.Get:input_type -> rove.PartyGetRequest
+	5,  // 54: rove.PartyService.Patch:input_type -> rove.PartyPatchRequest
+	6,  // 55: rove.PartyService.Apply:input_type -> rove.PartyApplyRequest
+	2,  // 56: rove.PartyService.Erase:input_type -> rove.PartyRef
+	8,  // 57: rove.PartyService.List:input_type -> rove.PartyListRequest
+	11, // 58: rove.PartyService.Watch:input_type -> rove.PartyWatchRequest
+	14, // 59: rove.PartyService.Me:input_type -> rove.PartyMeRequest
+	16, // 60: rove.PartyService.Update:input_type -> rove.PartyUpdateRequest
+	17, // 61: rove.PartyService.Invite:input_type -> rove.PartyInviteRequest
+	19, // 62: rove.PartyService.SetRole:input_type -> rove.PartySetRoleRequest
+	20, // 63: rove.PartyService.SetPassword:input_type -> rove.PartySetPasswordRequest
+	22, // 64: rove.PartyService.Deactivate:input_type -> rove.PartyDeactivateRequest
+	23, // 65: rove.PartyService.Pseudonymize:input_type -> rove.PartyPseudonymizeRequest
+	24, // 66: rove.SessionService.Add:input_type -> rove.SessionAddRequest
+	25, // 67: rove.SessionService.Get:input_type -> rove.SessionGetRequest
+	28, // 68: rove.SessionService.Patch:input_type -> rove.SessionPatchRequest
+	29, // 69: rove.SessionService.Apply:input_type -> rove.SessionApplyRequest
+	26, // 70: rove.SessionService.Erase:input_type -> rove.SessionRef
+	41, // 71: rove.PartyService.Add:output_type -> rove.Party
+	41, // 72: rove.PartyService.Get:output_type -> rove.Party
+	41, // 73: rove.PartyService.Patch:output_type -> rove.Party
+	41, // 74: rove.PartyService.Apply:output_type -> rove.Party
+	7,  // 75: rove.PartyService.Erase:output_type -> rove.PartyEraseResponse
+	9,  // 76: rove.PartyService.List:output_type -> rove.PartyListResponse
+	12, // 77: rove.PartyService.Watch:output_type -> rove.PartyWatchResponse
+	15, // 78: rove.PartyService.Me:output_type -> rove.PartyMeResponse
+	41, // 79: rove.PartyService.Update:output_type -> rove.Party
+	18, // 80: rove.PartyService.Invite:output_type -> rove.PartyInviteResponse
+	41, // 81: rove.PartyService.SetRole:output_type -> rove.Party
+	21, // 82: rove.PartyService.SetPassword:output_type -> rove.PartySetPasswordResponse
+	41, // 83: rove.PartyService.Deactivate:output_type -> rove.Party
+	41, // 84: rove.PartyService.Pseudonymize:output_type -> rove.Party
+	44, // 85: rove.SessionService.Add:output_type -> rove.Session
+	44, // 86: rove.SessionService.Get:output_type -> rove.Session
+	44, // 87: rove.SessionService.Patch:output_type -> rove.Session
+	44, // 88: rove.SessionService.Apply:output_type -> rove.Session
+	30, // 89: rove.SessionService.Erase:output_type -> rove.SessionEraseResponse
+	71, // [71:90] is the sub-list for method output_type
+	52, // [52:71] is the sub-list for method input_type
+	52, // [52:52] is the sub-list for extension type_name
+	52, // [52:52] is the sub-list for extension extendee
+	0,  // [0:52] is the sub-list for field type_name
 }
 
 func init() { file_rove_org_svc_g_proto_init() }
@@ -6198,10 +5071,6 @@ func file_rove_org_svc_g_proto_init() {
 		(*partyRef_Holder)(nil),
 	}
 	file_rove_org_svc_g_proto_msgTypes[26].OneofWrappers = []any{
-		(*credentialRef_Id)(nil),
-		(*credentialRef_Holder)(nil),
-	}
-	file_rove_org_svc_g_proto_msgTypes[34].OneofWrappers = []any{
 		(*sessionRef_Id)(nil),
 	}
 	type x struct{}
@@ -6210,9 +5079,9 @@ func file_rove_org_svc_g_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_org_svc_g_proto_rawDesc), len(file_rove_org_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   43,
+			NumMessages:   35,
 			NumExtensions: 0,
-			NumServices:   3,
+			NumServices:   2,
 		},
 		GoTypes:           file_rove_org_svc_g_proto_goTypes,
 		DependencyIndexes: file_rove_org_svc_g_proto_depIdxs,

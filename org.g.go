@@ -68,68 +68,6 @@ func PartyGetByHolder(holder *HolderRef) *PartyGetRequest {
 	return PartyGetRequest_builder{Ref: PartyByHolder(holder)}.Build()
 }
 
-func (x *CredentialRef) Pick() *CredentialGetRequest {
-	return CredentialGetRequest_builder{Ref: x}.Build()
-}
-
-func (x *Credential) Ref() *CredentialRef {
-	if v := x.GetId(); len(v) > 0 {
-		return CredentialById(v)
-	}
-	{
-		v1 := x.GetHolder()
-		if v1 != nil {
-			return CredentialByHolder(v1.Ref())
-		}
-	}
-
-	return nil
-}
-
-func (x *Credential) Pick() *CredentialGetRequest {
-	return x.Ref().Pick()
-}
-
-func (x *CredentialRef) Picks(v *Credential) bool {
-	switch x.WhichKey() {
-	case CredentialRef_Id_case:
-		return bytes.Equal(x.GetId(), v.GetId())
-	case CredentialRef_Holder_case:
-		x := x.GetHolder()
-		return (x.GetHolder().Picks(v.GetHolder()))
-	default:
-		return false
-	}
-}
-
-func (x *CredentialGetRequest) WithSelect(f func(s *CredentialSelect)) *CredentialGetRequest {
-	if !x.HasSelect() {
-		x.SetSelect(&CredentialSelect{})
-	}
-	f(x.GetSelect())
-	return x
-}
-
-func CredentialById(v []byte) *CredentialRef {
-	x := &CredentialRef{}
-	x.SetId(v)
-	return x
-}
-
-func CredentialGetById(v []byte) *CredentialGetRequest {
-	return CredentialGetRequest_builder{Ref: CredentialById(v)}.Build()
-}
-
-func CredentialByHolder(holder *HolderRef) *CredentialRef {
-	x := &CredentialRefByHolder{}
-	x.SetHolder(holder)
-	return CredentialRef_builder{Holder: x}.Build()
-}
-
-func CredentialGetByHolder(holder *HolderRef) *CredentialGetRequest {
-	return CredentialGetRequest_builder{Ref: CredentialByHolder(holder)}.Build()
-}
-
 func (x *SessionRef) Pick() *SessionGetRequest {
 	return SessionGetRequest_builder{Ref: x}.Build()
 }

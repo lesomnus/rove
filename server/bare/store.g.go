@@ -17,7 +17,6 @@ import (
 	audit "github.com/lesomnus/rove/internal/ent/audit"
 	bookable "github.com/lesomnus/rove/internal/ent/bookable"
 	countfinding "github.com/lesomnus/rove/internal/ent/countfinding"
-	credential "github.com/lesomnus/rove/internal/ent/credential"
 	custody "github.com/lesomnus/rove/internal/ent/custody"
 	custodyline "github.com/lesomnus/rove/internal/ent/custodyline"
 	event "github.com/lesomnus/rove/internal/ent/event"
@@ -349,7 +348,6 @@ type Scope interface {
 	ItemModelScope(ctx context.Context) (predicate.ItemModel, error)
 	HolderScope(ctx context.Context) (predicate.Holder, error)
 	PartyScope(ctx context.Context) (predicate.Party, error)
-	CredentialScope(ctx context.Context) (predicate.Credential, error)
 	SessionScope(ctx context.Context) (predicate.Session, error)
 	AssetScope(ctx context.Context) (predicate.Asset, error)
 	TreeLockScope(ctx context.Context) (predicate.TreeLock, error)
@@ -408,9 +406,6 @@ func (Unscoped) HolderScope(_ context.Context) (predicate.Holder, error) {
 	return nil, nil
 }
 func (Unscoped) PartyScope(_ context.Context) (predicate.Party, error) {
-	return nil, nil
-}
-func (Unscoped) CredentialScope(_ context.Context) (predicate.Credential, error) {
 	return nil, nil
 }
 func (Unscoped) SessionScope(_ context.Context) (predicate.Session, error) {
@@ -624,26 +619,6 @@ func (ss Scopes) PartyScope(ctx context.Context) (predicate.Party, error) {
 	}
 
 	return party.And(ps...), nil
-}
-
-func (ss Scopes) CredentialScope(ctx context.Context) (predicate.Credential, error) {
-	ps := make([]predicate.Credential, 0, len(ss))
-	for _, s := range ss {
-		p, err := s.CredentialScope(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if p == nil {
-			continue
-		}
-
-		ps = append(ps, p)
-	}
-	if len(ps) == 0 {
-		return nil, nil
-	}
-
-	return credential.And(ps...), nil
 }
 
 func (ss Scopes) SessionScope(ctx context.Context) (predicate.Session, error) {
@@ -1391,11 +1366,8 @@ func (s Server) AssetType() rove.AssetTypeServiceServer {
 func (s Server) ItemModel() rove.ItemModelServiceServer {
 	return ItemModelServiceServer{Store: s.Store}
 }
-func (s Server) Holder() rove.HolderServiceServer { return HolderServiceServer{Store: s.Store} }
-func (s Server) Party() rove.PartyServiceServer   { return PartyServiceServer{Store: s.Store} }
-func (s Server) Credential() rove.CredentialServiceServer {
-	return CredentialServiceServer{Store: s.Store}
-}
+func (s Server) Holder() rove.HolderServiceServer     { return HolderServiceServer{Store: s.Store} }
+func (s Server) Party() rove.PartyServiceServer       { return PartyServiceServer{Store: s.Store} }
 func (s Server) Session() rove.SessionServiceServer   { return SessionServiceServer{Store: s.Store} }
 func (s Server) Asset() rove.AssetServiceServer       { return AssetServiceServer{Store: s.Store} }
 func (s Server) TreeLock() rove.TreeLockServiceServer { return TreeLockServiceServer{Store: s.Store} }

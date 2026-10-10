@@ -33,6 +33,7 @@ import (
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/internal/ent"
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
+	"github.com/lesomnus/rove/internal/identity"
 	"github.com/lesomnus/rove/server/bare"
 	"github.com/lesomnus/rove/server/domain"
 	"github.com/lesomnus/rove/server/offboard"
@@ -41,6 +42,7 @@ import (
 	"github.com/lesomnus/rove/server/retention"
 	"github.com/lesomnus/rove/server/session"
 	"github.com/lesomnus/rove/server/storage"
+	"github.com/lesomnus/rove/server/tenancy"
 )
 
 // Server is a built app: the database it runs on and the two stacks it answers
@@ -87,6 +89,10 @@ type Server struct {
 	// answered, whether or not `app.retention.apply` lets a pass destroy by
 	// them: what an erasure, an export and a purge go by.
 	Trail trail.Policy
+
+	// Identity is roster, beside this process or inside it: who people are,
+	// and the password they sign in with (design 9.10).
+	Identity *identity.Store
 
 	// Sessions mints and reads the cookie a browser signs in with.
 	Sessions *authsession.Sessions
@@ -182,11 +188,21 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		return nil, err
 	}
 
+	// Who people are is roster's: one of its own, or one in this process on a
+	// database of its own.
+	people, err := identity.Open(ctx, c.Auth.Roster, c.StateDir(), log.From(ctx))
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+	deps.People = people
+
 	// One clock for every stamp, the domain layer's and the servers' alike.
 	opts := []bare.Option{bare.WithMinter(pd.Minter()), bare.WithRecorder(rec), bare.WithClock(deps.Clock)}
 
 	sink, err := pd.NewSink(client, opts...)
 	if err != nil {
+		people.Close()
 		db.Close()
 		return nil, err
 	}
@@ -196,6 +212,7 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	scope := bare.Scopes{pd.Wall(), domain.View(client, deps)}
 	walled, err := pd.NewSink(client, append(opts, bare.WithScope(scope))...)
 	if err != nil {
+		people.Close()
 		db.Close()
 		return nil, err
 	}
@@ -206,6 +223,7 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	// asked once, about the method the caller named, before any of this.
 	stacked, err := app.Build(walled.WithWatch(w), pd.AuditBuild(), pd.SecretBuild(), pd.GateBuild(), domain.Build(drv, deps))
 	if err != nil {
+		people.Close()
 		db.Close()
 		return nil, err
 	}
@@ -217,15 +235,17 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	// whenever nobody is asking.
 	base, err := app.Build(sink.WithWatch(w), pd.AuditBuild(), pd.SecretBuild())
 	if err != nil {
+		people.Close()
 		db.Close()
 		return nil, err
 	}
 	ungated := domain.New(base, drv, deps)
 
-	s := &Server{Db: db, Ent: client, Drv: drv, Dialect: dialect, Watch: w, Walled: stacked, Ungated: ungated, Base: base, Deps: deps}
+	s := &Server{Db: db, Ent: client, Drv: drv, Dialect: dialect, Watch: w, Walled: stacked, Ungated: ungated, Base: base, Deps: deps, Identity: people}
 
-	// Who is calling is a session cookie, and what they may do is their role.
-	store := session.Store{Db: client}
+	// Who is calling is a session cookie, held on every call to what roster
+	// says of its person, and what they may do is their role.
+	store := session.Store{Db: client, People: people}
 	opts2 := []authsession.Option{
 		authsession.WithIdle(or(c.App.Session.Idle, 24*time.Hour)),
 		authsession.WithLifetime(or(c.App.Session.Lifetime, 7*24*time.Hour)),
@@ -242,6 +262,9 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	s.Spin = append(s.Spin,
 		domain.Sweeper{Server: base, Drv: drv, Deps: deps, Every: c.App.Sweep},
 		spinEvery(time.Hour, store.Sweep),
+		// The roster in this process's own housekeeping; nothing, for one of
+		// its own.
+		people,
 	)
 
 	// What the keep windows no longer reach, taken out of the history (design
@@ -304,7 +327,13 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) Close() error { return s.Db.Close() }
+func (s *Server) Close() error { return errors.Join(s.Identity.Close(), s.Db.Close()) }
+
+// Anchor is what makes this deployment's rows for somebody roster vouched for,
+// the first time they arrive.
+func (s *Server) Anchor(c Config) tenancy.Anchor {
+	return tenancy.Anchor{Base: s.Base, Drv: s.Drv, Ungated: s.Ungated, LabelSuffix: c.App.Labels.Suffix}
+}
 
 // Offboard is what a tenant's export and purge work on.
 func (s *Server) Offboard(c Config) offboard.Deployment {
@@ -499,9 +528,9 @@ func spinEvery(d time.Duration, f func(ctx context.Context) error) spin.Func {
 
 // routes is what this app serves over HTTP besides its Rpcs.
 func (s *Server) routes(mux *http.ServeMux, c Config) {
-	// Signing in and out. What is checked is a password against the hash in
-	// the Credential table; see `server/session`.
-	login := s.Sessions.Serve(session.Verify(s.Ent))
+	// Signing in and out. What is checked is a password, by roster, and a
+	// person who is new here is made here; see `server/session`.
+	login := session.SignIn(s.Sessions, s.Identity, s.Anchor(c))
 	mux.Handle("POST /session", login)
 	mux.Handle("DELETE /session", login)
 

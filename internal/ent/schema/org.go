@@ -74,56 +74,6 @@ func (Party) Annotations() []schema.Annotation {
 	}
 }
 
-type Credential struct {
-	ent.Schema
-}
-
-func (Credential) Fields() []ent.Field {
-	return []ent.Field{
-		field.Uuid("id").
-			Unique().
-			Immutable(),
-		field.Bytes("secret").
-			Optional(),
-		field.Time("date_updated"),
-		field.Time("date_created").
-			Immutable().
-			Optional(),
-		field.Uuid("tenant_id").
-			Immutable(),
-		field.Uuid("holder_id").
-			Immutable(),
-	}
-}
-
-func (Credential) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.To("tenant", Tenant.Type).
-			Unique().
-			Field("tenant_id").
-			Required().
-			Immutable(),
-		edge.To("holder", Holder.Type).
-			Unique().
-			Field("holder_id").
-			Required().
-			Immutable(),
-	}
-}
-
-func (Credential) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Edges("holder").
-			Unique(),
-	}
-}
-
-func (Credential) Annotations() []schema.Annotation {
-	return []schema.Annotation{
-		entsql.Annotation{Table: "credential"},
-	}
-}
-
 type Session struct {
 	ent.Schema
 }

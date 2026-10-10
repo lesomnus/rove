@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -17,11 +18,10 @@ import (
 
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/internal/ent/audit"
-	"github.com/lesomnus/rove/internal/ent/credential"
 	"github.com/lesomnus/rove/internal/ent/holder"
 	"github.com/lesomnus/rove/internal/ent/party"
 	"github.com/lesomnus/rove/internal/ent/session"
-	"github.com/lesomnus/rove/server/password"
+	"github.com/lesomnus/rove/internal/identity"
 )
 
 // The kinds of party and the roles a holder acts with.
@@ -98,7 +98,12 @@ func (s domainParty) Me(ctx context.Context, _ *app.PartyMeRequest) (*app.PartyM
 	if err != nil {
 		return nil, err
 	}
-	out := app.PartyMeResponse_builder{Holder: h, Tenant: tn, Role: h.GetRole()}.Build()
+	out := app.PartyMeResponse_builder{
+		Holder:       h,
+		Tenant:       tn,
+		Role:         h.GetRole(),
+		AccountsHere: s.deps.People != nil && s.deps.People.Embedded(),
+	}.Build()
 	if w, err := t.window(); err != nil {
 		return nil, err
 	} else if since := w.Since(t.now); !since.IsZero() {
@@ -168,8 +173,14 @@ func (s domainParty) Update(ctx context.Context, req *app.PartyUpdateRequest) (*
 
 // Invite gives a person a login.
 func (s domainParty) Invite(ctx context.Context, req *app.PartyInviteRequest) (*app.PartyInviteResponse, error) {
+	people, err := s.deps.here()
+	if err != nil {
+		return nil, err
+	}
+
 	var out *app.PartyInviteResponse
-	err := s.tx(ctx, func(t *Tx) error {
+	var made pdid.Id
+	err = s.tx(ctx, func(t *Tx) error {
 		p, err := t.next.Party().Get(t.ctx, app.PartyGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {
 			return err
@@ -188,34 +199,42 @@ func (s domainParty) Invite(ctx context.Context, req *app.PartyInviteRequest) (*
 		if !slices.Contains(Roles, role) {
 			return invalid("role", "역할이 올바르지 않습니다 (%s)", strings.Join(Roles, ", "))
 		}
-		pw := req.GetPassword()
-		made := ""
-		if pw == "" {
-			pw = password.Make()
-			made = pw
+		if taken, err := t.db.Holder.Query().Where(holder.TenantId(t.tenant.Uuid()), holder.Alias(alias), holder.DateErasedIsNil()).Exist(t.ctx); err != nil {
+			return err
+		} else if taken {
+			return invalid("alias", "이미 있는 아이디입니다")
 		}
-		hash, err := password.Hash(pw)
+
+		// The person first, at roster, which is where they sign in; Rove's
+		// holder is made with their identifier.
+		person, err := people.AddPerson(t.ctx, t.tenant, alias, p.GetName(), pdid.Nil)
 		if err != nil {
-			return invalid("password", "%v", err)
+			if status.Code(err) == codes.AlreadyExists {
+				return invalid("alias", "이미 있는 아이디입니다")
+			}
+			return err
+		}
+		made = person.Id
+		shown := ""
+		if pw := req.GetPassword(); pw != "" {
+			if err := people.SetPassword(t.ctx, person.Id, pw); err != nil {
+				return passwordRefused(err)
+			}
+		} else if shown, err = people.IssuePassword(t.ctx, person.Id); err != nil {
+			return err
 		}
 
 		if err := t.begin(nil, "party.invite", pdid.Nil, t.now, fmt.Sprintf("로그인 발급: %s (@%s)", p.GetName(), alias), "", map[string]string{"role": role}); err != nil {
 			return err
 		}
 		h, err := t.next.Holder().Add(t.ctx, app.HolderAddRequest_builder{
+			Id:     person.Id.Bytes(),
 			Tenant: t.tenantRef(),
 			Alias:  alias,
 			Name:   p.GetName(),
 			Role:   z.Ptr(role),
 		}.Build())
 		if err != nil {
-			return err
-		}
-		if _, err := t.next.Credential().Add(t.ctx, app.CredentialAddRequest_builder{
-			Tenant: t.tenantRef(),
-			Holder: app.HolderRef_builder{Id: h.GetId()}.Build(),
-			Secret: []byte(hash),
-		}.Build()); err != nil {
 			return err
 		}
 		v, err := t.next.Party().Patch(t.ctx, app.PartyPatchRequest_builder{
@@ -226,10 +245,25 @@ func (s domainParty) Invite(ctx context.Context, req *app.PartyInviteRequest) (*
 		if err != nil {
 			return err
 		}
-		out = app.PartyInviteResponse_builder{Party: v, Holder: h, Password: made}.Build()
+		out = app.PartyInviteResponse_builder{Party: v, Holder: h, Password: shown}.Build()
 		return nil
 	})
+	if err != nil && made != pdid.Nil {
+		// Rove kept nothing of them, so roster keeps nothing either.
+		if e := people.ForgetPerson(ctx, made); e != nil {
+			err = fmt.Errorf("%w (and the person made at roster for it is still there: %v)", err, e)
+		}
+	}
 	return out, err
+}
+
+// passwordRefused is a password roster would not take, as the field it was
+// typed into.
+func passwordRefused(err error) error {
+	if status.Code(err) == codes.InvalidArgument {
+		return invalid("password", "%s", status.Convert(err).Message())
+	}
+	return err
 }
 
 // SetRole changes what a person may do. The last owner of a tenant cannot be
@@ -280,7 +314,12 @@ func (s domainParty) SetRole(ctx context.Context, req *app.PartySetRoleRequest) 
 // SetPassword changes a password: the caller's own after checking the current
 // one, or anybody's for an admin, which the policy decides.
 func (s domainParty) SetPassword(ctx context.Context, req *app.PartySetPasswordRequest) (*app.PartySetPasswordResponse, error) {
-	err := s.tx(ctx, func(t *Tx) error {
+	people, err := s.deps.here()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.tx(ctx, func(t *Tx) error {
 		target := t.actor
 		own := true
 		if req.HasRef() {
@@ -302,33 +341,34 @@ func (s domainParty) SetPassword(ctx context.Context, req *app.PartySetPasswordR
 			}
 		}
 
-		c, err := t.db.Credential.Query().Where(credential.TenantId(t.tenant.Uuid()), credential.HolderId(target.Uuid())).Only(t.ctx)
-		if err != nil {
+		h, err := t.db.Holder.Get(t.ctx, target.Uuid())
+		if err != nil || h.DateErased != nil {
 			return failed("바꿀 비밀번호가 없는 사람입니다")
 		}
 		if own {
-			ok, err := password.Check(string(c.Secret), req.GetCurrent())
-			if err != nil || !ok {
-				return invalid("current", "지금 비밀번호가 맞지 않습니다")
+			tn, err := t.db.Tenant.Get(t.ctx, t.tenant.Uuid())
+			if err != nil {
+				return err
 			}
-		}
-		hash, err := password.Hash(req.GetPassword())
-		if err != nil {
-			return invalid("password", "%v", err)
+			if _, err := people.Verify(t.ctx, tn.Alias, h.Alias, req.GetCurrent()); err != nil {
+				if errors.Is(err, identity.ErrRefused) {
+					return invalid("current", "지금 비밀번호가 맞지 않습니다")
+				}
+				return err
+			}
 		}
 		if err := t.begin(nil, "party.password", pdid.Nil, t.now, "비밀번호 변경", "", nil); err != nil {
 			return err
 		}
-		if _, err := t.next.Credential().Patch(t.ctx, app.CredentialPatchRequest_builder{
-			Ref:              app.CredentialRef_builder{Id: pdid.Id(c.Id).Bytes()}.Build(),
-			Secret:           []byte(hash),
-			DateUpdatedForce: z.Ptr(true),
-		}.Build()); err != nil {
-			return err
+		if err := people.SetPassword(t.ctx, target, req.GetPassword()); err != nil {
+			return passwordRefused(err)
 		}
 		if !own {
 			// A password reset by somebody else is somebody being locked out
-			// of wherever they are signed in.
+			// of wherever they are signed in: here, and at roster.
+			if err := people.Invalidate(t.ctx, target); err != nil {
+				return err
+			}
 			return t.signOut(target)
 		}
 		return nil
@@ -342,6 +382,7 @@ func (s domainParty) SetPassword(ctx context.Context, req *app.PartySetPasswordR
 // Deactivate ends a login and keeps the person and their history.
 func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateRequest) (*app.Party, error) {
 	var out *app.Party
+	var ended pdid.Id
 	err := s.tx(ctx, func(t *Tx) error {
 		p, err := t.next.Party().Get(t.ctx, app.PartyGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {
@@ -364,6 +405,7 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 		if err := t.signOut(h); err != nil {
 			return err
 		}
+		ended = h
 		out, err = t.next.Party().Patch(t.ctx, app.PartyPatchRequest_builder{
 			Ref:              req.GetRef(),
 			HolderNull:       z.Ptr(true),
@@ -371,7 +413,27 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 		}.Build())
 		return err
 	})
+	if err == nil {
+		err = s.deps.endAtRoster(ctx, ended)
+	}
 	return out, err
+}
+
+// endAtRoster destroys what the roster in this process holds about a person
+// whose login ended here -- their password, their addresses, the trail's
+// copies -- which frees their alias there for somebody else. What stays of
+// them is Rove's: the party a deactivation keeps, or the pseudonym a
+// forgetting leaves. At an external roster the person is the tenant's and
+// stays: their login here stays ended, because Rove does not make a holder it
+// erased again.
+func (d *Deps) endAtRoster(ctx context.Context, h pdid.Id) error {
+	if h.IsZero() || d.People == nil || !d.People.Embedded() {
+		return nil
+	}
+	if err := d.People.ForgetPerson(ctx, h); err != nil {
+		return fmt.Errorf("the login ended here, and the person at roster is still there: %w", err)
+	}
+	return nil
 }
 
 // Pseudonymize forgets a person: the party keeps its identifier, so the
@@ -384,6 +446,7 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 // lifted finishes it.
 func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymizeRequest) (*app.Party, error) {
 	var out *app.Party
+	var ended pdid.Id
 	err := s.tx(ctx, func(t *Tx) error {
 		p, err := t.next.Party().Get(t.ctx, app.PartyGetRequest_builder{Ref: req.GetRef()}.Build())
 		if err != nil {
@@ -401,6 +464,7 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 			if err := t.signOut(h); err != nil {
 				return err
 			}
+			ended = h
 			objects = append(objects, h)
 		}
 		out, err = t.next.Party().Patch(t.ctx, app.PartyPatchRequest_builder{
@@ -430,6 +494,9 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 		}
 		return t.begin(nil, "party.pseudonymize", pdid.Nil, t.now, "개인정보 삭제", "", payload)
 	})
+	if err == nil {
+		err = s.deps.endAtRoster(ctx, ended)
+	}
 	return out, err
 }
 

@@ -8,7 +8,7 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Patch } from "../patch/patch_pb.js";
 import { file_patch_patch } from "../patch/patch_pb.js";
-import type { CredentialSchema, Party, PartySchema, SessionSchema } from "./org_pb.js";
+import type { Party, PartySchema, SessionSchema } from "./org_pb.js";
 import { file_rove_org } from "./org_pb.js";
 import type { Holder } from "./payday/holder_pb.js";
 import { file_rove_payday_holder } from "./payday/holder_pb.js";
@@ -24,7 +24,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rove/org_svc.g.proto.
  */
 export const file_rove_org_svc_g: GenFile = /*@__PURE__*/
-  fileDesc("ChRyb3ZlL29yZ19zdmMuZy5wcm90bxIEcm92ZSKGAwoPUGFydHlBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEhMKBG5hbWUYBSABKAlCBaoBAggCEhMKBGRlc2MYBiABKAlCBaoBAggCEjEKBmxhYmVscxgHIAMoCzIhLnJvdmUuUGFydHlBZGRSZXF1ZXN0LkxhYmVsc0VudHJ5EhMKBGtpbmQYCCABKAlCBaoBAggCEhEKCXBhcmVudF9pZBgJIAEoDBIfCgZob2xkZXIYCiABKAsyDy5yb3ZlLkhvbGRlclJlZhIUCgVlbWFpbBgLIAEoCUIFqgECCAISFAoFcGhvbmUYDCABKAlCBaoBAggCEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEwoEY29kZRgQIAEoCUIFqgECCAIaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJRCg9QYXJ0eUdldFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIhCgZzZWxlY3QYAiABKAsyES5yb3ZlLlBhcnR5U2VsZWN0IkkKCFBhcnR5UmVmEgwKAmlkGAEgASgMSAASKAoGaG9sZGVyGAogASgLMhYucm92ZS5QYXJ0eVJlZkJ5SG9sZGVySABCBQoDa2V5IjMKEFBhcnR5UmVmQnlIb2xkZXISHwoGaG9sZGVyGAogASgLMg8ucm92ZS5Ib2xkZXJSZWYinAIKC1BhcnR5U2VsZWN0EgsKA2FsbBgBIAEoCBIiCgZ0ZW5hbnQYAiABKAsyEi5yb3ZlLlRlbmFudFNlbGVjdBIMCgRuYW1lGAUgASgIEgwKBGRlc2MYBiABKAgSDgoGbGFiZWxzGAcgASgIEgwKBGtpbmQYCCABKAgSEQoJcGFyZW50X2lkGAkgASgIEiIKBmhvbGRlchgKIAEoCzISLnJvdmUuSG9sZGVyU2VsZWN0Eg0KBWVtYWlsGAsgASgIEg0KBXBob25lGAwgASgIEhQKDGRhdGVfdXBkYXRlZBgNIAEoCBITCgtkYXRlX2VyYXNlZBgOIAEoCBIUCgxkYXRlX2NyZWF0ZWQYDyABKAgSDAoEY29kZRgQIAEoCCKZAwoRUGFydHlQYXRjaFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIMCgRuYW1lGAogASgJEgwKBGRlc2MYDCABKAkSMwoGbGFiZWxzGA4gAygLMiMucm92ZS5QYXJ0eVBhdGNoUmVxdWVzdC5MYWJlbHNFbnRyeRIMCgRraW5kGBAgASgJEhEKCXBhcmVudF9pZBgSIAEoDBIWCg5wYXJlbnRfaWRfbnVsbBgTIAEoCBIfCgZob2xkZXIYFCABKAsyDy5yb3ZlLkhvbGRlclJlZhITCgtob2xkZXJfbnVsbBgVIAEoCBINCgVlbWFpbBgWIAEoCRINCgVwaG9uZRgYIAEoCRIwCgxkYXRlX3VwZGF0ZWQYGiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhoKEmRhdGVfdXBkYXRlZF9mb3JjZRgbIAEoCBIMCgRjb2RlGCAgASgJGi0KC0xhYmVsc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiTQoRUGFydHlBcHBseVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIiQKElBhcnR5RXJhc2VSZXNwb25zZRIOCgZlcmFzZWQYASABKAgiYQoQUGFydHlMaXN0UmVxdWVzdBIiCgdmaWx0ZXJzGAEgAygLMhEucm92ZS5QYXJ0eUZpbHRlchITCgRzaXplGAIgASgFQgWqAQIIAhIUCgVhZnRlchgDIAEoCUIFqgECCAIiRAoRUGFydHlMaXN0UmVzcG9uc2USGgoFaXRlbXMYASADKAsyCy5yb3ZlLlBhcnR5EhMKBG5leHQYAiABKAlCBaoBAggCIsoBCgtQYXJ0eUZpbHRlchIbCgNyZWYYASABKAsyDi5yb3ZlLlBhcnR5UmVmEgwKBGtpbmQYAiABKAkSEQoJcGFyZW50X2lkGAMgASgMEh8KBmhvbGRlchgEIAEoCzIPLnJvdmUuSG9sZGVyUmVmEi0KBmxhYmVscxgFIAMoCzIdLnJvdmUuUGFydHlGaWx0ZXIuTGFiZWxzRW50cnkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJVChFQYXJ0eVdhdGNoUmVxdWVzdBIiCgdmaWx0ZXJzGAEgAygLMhEucm92ZS5QYXJ0eUZpbHRlchIcCg1za2lwX3NuYXBzaG90GAIgASgIQgWqAQIIAiI5ChJQYXJ0eVdhdGNoUmVzcG9uc2USIwoFaXRlbXMYASADKAsyFC5yb3ZlLlBhcnR5V2F0Y2hJdGVtIk8KDlBhcnR5V2F0Y2hJdGVtEgoKAmlkGAEgASgMEhoKBXZhbHVlGAIgASgLMgsucm92ZS5QYXJ0eRIVCgZhY3Rpb24YAyABKAlCBaoBAggCIhAKDlBhcnR5TWVSZXF1ZXN0Is4BCg9QYXJ0eU1lUmVzcG9uc2USHAoGaG9sZGVyGAEgASgLMgwucm92ZS5Ib2xkZXISGgoFcGFydHkYAiABKAsyCy5yb3ZlLlBhcnR5EhwKBnRlbmFudBgDIAEoCzIMLnJvdmUuVGVuYW50EhMKBHJvbGUYBCABKAlCBaoBAggCEjEKDWhpc3Rvcnlfc2luY2UYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhsKDGhpc3RvcnlfZGF5cxgGIAEoDUIFqgECCAIizAIKElBhcnR5VXBkYXRlUmVxdWVzdBIbCgNyZWYYASABKAsyDi5yb3ZlLlBhcnR5UmVmEhMKBG5hbWUYAiABKAlCBaoBAggCEhMKBGRlc2MYAyABKAlCBaoBAggCEhMKBGtpbmQYBCABKAlCBaoBAggCEhgKCXBhcmVudF9pZBgFIAEoDEIFqgECCAISGgoLcGFyZW50X251bGwYBiABKAhCBaoBAggCEhQKBWVtYWlsGAcgASgJQgWqAQIIAhIUCgVwaG9uZRgIIAEoCUIFqgECCAISEwoEY29kZRgJIAEoCUIFqgECCAISNAoGbGFiZWxzGAogAygLMiQucm92ZS5QYXJ0eVVwZGF0ZVJlcXVlc3QuTGFiZWxzRW50cnkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJ1ChJQYXJ0eUludml0ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIUCgVhbGlhcxgCIAEoCUIFqgECCAISEwoEcm9sZRgDIAEoCUIFqgECCAISFwoIcGFzc3dvcmQYBCABKAlCBaoBAggCImgKE1BhcnR5SW52aXRlUmVzcG9uc2USGgoFcGFydHkYASABKAsyCy5yb3ZlLlBhcnR5EhwKBmhvbGRlchgCIAEoCzIMLnJvdmUuSG9sZGVyEhcKCHBhc3N3b3JkGAMgASgJQgWqAQIIAiJHChNQYXJ0eVNldFJvbGVSZXF1ZXN0EhsKA3JlZhgBIAEoCzIOLnJvdmUuUGFydHlSZWYSEwoEcm9sZRgCIAEoCUIFqgECCAIiZwoXUGFydHlTZXRQYXNzd29yZFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIWCgdjdXJyZW50GAIgASgJQgWqAQIIAhIXCghwYXNzd29yZBgDIAEoCUIFqgECCAIiGgoYUGFydHlTZXRQYXNzd29yZFJlc3BvbnNlIjUKFlBhcnR5RGVhY3RpdmF0ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZiI3ChhQYXJ0eVBzZXVkb255bWl6ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZiKmAQoUQ3JlZGVudGlhbEFkZFJlcXVlc3QSCgoCaWQYASABKAwSHwoGdGVuYW50GAIgASgLMg8ucm92ZS5UZW5hbnRSZWYSHwoGaG9sZGVyGAggASgLMg8ucm92ZS5Ib2xkZXJSZWYSDgoGc2VjcmV0GAkgASgMEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiYAoUQ3JlZGVudGlhbEdldFJlcXVlc3QSIAoDcmVmGAEgASgLMhMucm92ZS5DcmVkZW50aWFsUmVmEiYKBnNlbGVjdBgCIAEoCzIWLnJvdmUuQ3JlZGVudGlhbFNlbGVjdCJTCg1DcmVkZW50aWFsUmVmEgwKAmlkGAEgASgMSAASLQoGaG9sZGVyGAggASgLMhsucm92ZS5DcmVkZW50aWFsUmVmQnlIb2xkZXJIAEIFCgNrZXkiOAoVQ3JlZGVudGlhbFJlZkJ5SG9sZGVyEh8KBmhvbGRlchgIIAEoCzIPLnJvdmUuSG9sZGVyUmVmIqMBChBDcmVkZW50aWFsU2VsZWN0EgsKA2FsbBgBIAEoCBIiCgZ0ZW5hbnQYAiABKAsyEi5yb3ZlLlRlbmFudFNlbGVjdBIiCgZob2xkZXIYCCABKAsyEi5yb3ZlLkhvbGRlclNlbGVjdBIOCgZzZWNyZXQYCSABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCKYAQoWQ3JlZGVudGlhbFBhdGNoUmVxdWVzdBIgCgNyZWYYASABKAsyEy5yb3ZlLkNyZWRlbnRpYWxSZWYSDgoGc2VjcmV0GBIgASgMEjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIIlcKFkNyZWRlbnRpYWxBcHBseVJlcXVlc3QSIAoDcmVmGAEgASgLMhMucm92ZS5DcmVkZW50aWFsUmVmEhsKBXBhdGNoGAIgASgLMgwucGF0Y2guUGF0Y2giKQoXQ3JlZGVudGlhbEVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIIpMCChFTZXNzaW9uQWRkUmVxdWVzdBIKCgJpZBgBIAEoDBIfCgZ0ZW5hbnQYAiABKAsyDy5yb3ZlLlRlbmFudFJlZhIfCgZob2xkZXIYCCABKAsyDy5yb3ZlLkhvbGRlclJlZhIOCgZzZWNyZXQYCSABKAwSDQoFZ3JhbnQYCiABKAwSMAoMZGF0ZV9leHBpcmVzGAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBItCglkYXRlX2lkbGUYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiVwoRU2Vzc2lvbkdldFJlcXVlc3QSHQoDcmVmGAEgASgLMhAucm92ZS5TZXNzaW9uUmVmEiMKBnNlbGVjdBgCIAEoCzITLnJvdmUuU2Vzc2lvblNlbGVjdCIhCgpTZXNzaW9uUmVmEgwKAmlkGAEgASgMSABCBQoDa2V5Iu0BCg1TZXNzaW9uU2VsZWN0EgsKA2FsbBgBIAEoCBIiCgZ0ZW5hbnQYAiABKAsyEi5yb3ZlLlRlbmFudFNlbGVjdBIiCgZob2xkZXIYCCABKAsyEi5yb3ZlLkhvbGRlclNlbGVjdBIOCgZzZWNyZXQYCSABKAgSDQoFZ3JhbnQYCiABKAgSFAoMZGF0ZV9leHBpcmVzGAsgASgIEhEKCWRhdGVfaWRsZRgMIAEoCBIUCgxkYXRlX3VwZGF0ZWQYDSABKAgSEwoLZGF0ZV9lcmFzZWQYDiABKAgSFAoMZGF0ZV9jcmVhdGVkGA8gASgIIrUCChNTZXNzaW9uUGF0Y2hSZXF1ZXN0Eh0KA3JlZhgBIAEoCzIQLnJvdmUuU2Vzc2lvblJlZhIOCgZzZWNyZXQYEiABKAwSDQoFZ3JhbnQYFCABKAwSMAoMZGF0ZV9leHBpcmVzGBYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZChFkYXRlX2V4cGlyZXNfbnVsbBgXIAEoCBItCglkYXRlX2lkbGUYGCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhYKDmRhdGVfaWRsZV9udWxsGBkgASgIEjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIIlEKE1Nlc3Npb25BcHBseVJlcXVlc3QSHQoDcmVmGAEgASgLMhAucm92ZS5TZXNzaW9uUmVmEhsKBXBhdGNoGAIgASgLMgwucGF0Y2guUGF0Y2giJgoUU2Vzc2lvbkVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIMoYGCgxQYXJ0eVNlcnZpY2USKQoDQWRkEhUucm92ZS5QYXJ0eUFkZFJlcXVlc3QaCy5yb3ZlLlBhcnR5EikKA0dldBIVLnJvdmUuUGFydHlHZXRSZXF1ZXN0Ggsucm92ZS5QYXJ0eRItCgVQYXRjaBIXLnJvdmUuUGFydHlQYXRjaFJlcXVlc3QaCy5yb3ZlLlBhcnR5Ei0KBUFwcGx5Ehcucm92ZS5QYXJ0eUFwcGx5UmVxdWVzdBoLLnJvdmUuUGFydHkSMQoFRXJhc2USDi5yb3ZlLlBhcnR5UmVmGhgucm92ZS5QYXJ0eUVyYXNlUmVzcG9uc2USNwoETGlzdBIWLnJvdmUuUGFydHlMaXN0UmVxdWVzdBoXLnJvdmUuUGFydHlMaXN0UmVzcG9uc2USPAoFV2F0Y2gSFy5yb3ZlLlBhcnR5V2F0Y2hSZXF1ZXN0Ghgucm92ZS5QYXJ0eVdhdGNoUmVzcG9uc2UwARIxCgJNZRIULnJvdmUuUGFydHlNZVJlcXVlc3QaFS5yb3ZlLlBhcnR5TWVSZXNwb25zZRIvCgZVcGRhdGUSGC5yb3ZlLlBhcnR5VXBkYXRlUmVxdWVzdBoLLnJvdmUuUGFydHkSPQoGSW52aXRlEhgucm92ZS5QYXJ0eUludml0ZVJlcXVlc3QaGS5yb3ZlLlBhcnR5SW52aXRlUmVzcG9uc2USMQoHU2V0Um9sZRIZLnJvdmUuUGFydHlTZXRSb2xlUmVxdWVzdBoLLnJvdmUuUGFydHkSTAoLU2V0UGFzc3dvcmQSHS5yb3ZlLlBhcnR5U2V0UGFzc3dvcmRSZXF1ZXN0Gh4ucm92ZS5QYXJ0eVNldFBhc3N3b3JkUmVzcG9uc2USNwoKRGVhY3RpdmF0ZRIcLnJvdmUuUGFydHlEZWFjdGl2YXRlUmVxdWVzdBoLLnJvdmUuUGFydHkSOwoMUHNldWRvbnltaXplEh4ucm92ZS5QYXJ0eVBzZXVkb255bWl6ZVJlcXVlc3QaCy5yb3ZlLlBhcnR5MqwCChFDcmVkZW50aWFsU2VydmljZRIzCgNBZGQSGi5yb3ZlLkNyZWRlbnRpYWxBZGRSZXF1ZXN0GhAucm92ZS5DcmVkZW50aWFsEjMKA0dldBIaLnJvdmUuQ3JlZGVudGlhbEdldFJlcXVlc3QaEC5yb3ZlLkNyZWRlbnRpYWwSNwoFUGF0Y2gSHC5yb3ZlLkNyZWRlbnRpYWxQYXRjaFJlcXVlc3QaEC5yb3ZlLkNyZWRlbnRpYWwSNwoFQXBwbHkSHC5yb3ZlLkNyZWRlbnRpYWxBcHBseVJlcXVlc3QaEC5yb3ZlLkNyZWRlbnRpYWwSOwoFRXJhc2USEy5yb3ZlLkNyZWRlbnRpYWxSZWYaHS5yb3ZlLkNyZWRlbnRpYWxFcmFzZVJlc3BvbnNlMosCCg5TZXNzaW9uU2VydmljZRItCgNBZGQSFy5yb3ZlLlNlc3Npb25BZGRSZXF1ZXN0Gg0ucm92ZS5TZXNzaW9uEi0KA0dldBIXLnJvdmUuU2Vzc2lvbkdldFJlcXVlc3QaDS5yb3ZlLlNlc3Npb24SMQoFUGF0Y2gSGS5yb3ZlLlNlc3Npb25QYXRjaFJlcXVlc3QaDS5yb3ZlLlNlc3Npb24SMQoFQXBwbHkSGS5yb3ZlLlNlc3Npb25BcHBseVJlcXVlc3QaDS5yb3ZlLlNlc3Npb24SNQoFRXJhc2USEC5yb3ZlLlNlc3Npb25SZWYaGi5yb3ZlLlNlc3Npb25FcmFzZVJlc3BvbnNlQhpaGGdpdGh1Yi5jb20vbGVzb21udXMvcm92ZWIIZWRpdGlvbnNw6Ac", [file_google_protobuf_timestamp, file_patch_patch, file_rove_org, file_rove_payday_holder, file_rove_payday_holder_svc_g, file_rove_payday_tenant, file_rove_payday_tenant_svc_g]);
+  fileDesc("ChRyb3ZlL29yZ19zdmMuZy5wcm90bxIEcm92ZSKGAwoPUGFydHlBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEhMKBG5hbWUYBSABKAlCBaoBAggCEhMKBGRlc2MYBiABKAlCBaoBAggCEjEKBmxhYmVscxgHIAMoCzIhLnJvdmUuUGFydHlBZGRSZXF1ZXN0LkxhYmVsc0VudHJ5EhMKBGtpbmQYCCABKAlCBaoBAggCEhEKCXBhcmVudF9pZBgJIAEoDBIfCgZob2xkZXIYCiABKAsyDy5yb3ZlLkhvbGRlclJlZhIUCgVlbWFpbBgLIAEoCUIFqgECCAISFAoFcGhvbmUYDCABKAlCBaoBAggCEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEwoEY29kZRgQIAEoCUIFqgECCAIaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJRCg9QYXJ0eUdldFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIhCgZzZWxlY3QYAiABKAsyES5yb3ZlLlBhcnR5U2VsZWN0IkkKCFBhcnR5UmVmEgwKAmlkGAEgASgMSAASKAoGaG9sZGVyGAogASgLMhYucm92ZS5QYXJ0eVJlZkJ5SG9sZGVySABCBQoDa2V5IjMKEFBhcnR5UmVmQnlIb2xkZXISHwoGaG9sZGVyGAogASgLMg8ucm92ZS5Ib2xkZXJSZWYinAIKC1BhcnR5U2VsZWN0EgsKA2FsbBgBIAEoCBIiCgZ0ZW5hbnQYAiABKAsyEi5yb3ZlLlRlbmFudFNlbGVjdBIMCgRuYW1lGAUgASgIEgwKBGRlc2MYBiABKAgSDgoGbGFiZWxzGAcgASgIEgwKBGtpbmQYCCABKAgSEQoJcGFyZW50X2lkGAkgASgIEiIKBmhvbGRlchgKIAEoCzISLnJvdmUuSG9sZGVyU2VsZWN0Eg0KBWVtYWlsGAsgASgIEg0KBXBob25lGAwgASgIEhQKDGRhdGVfdXBkYXRlZBgNIAEoCBITCgtkYXRlX2VyYXNlZBgOIAEoCBIUCgxkYXRlX2NyZWF0ZWQYDyABKAgSDAoEY29kZRgQIAEoCCKZAwoRUGFydHlQYXRjaFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIMCgRuYW1lGAogASgJEgwKBGRlc2MYDCABKAkSMwoGbGFiZWxzGA4gAygLMiMucm92ZS5QYXJ0eVBhdGNoUmVxdWVzdC5MYWJlbHNFbnRyeRIMCgRraW5kGBAgASgJEhEKCXBhcmVudF9pZBgSIAEoDBIWCg5wYXJlbnRfaWRfbnVsbBgTIAEoCBIfCgZob2xkZXIYFCABKAsyDy5yb3ZlLkhvbGRlclJlZhITCgtob2xkZXJfbnVsbBgVIAEoCBINCgVlbWFpbBgWIAEoCRINCgVwaG9uZRgYIAEoCRIwCgxkYXRlX3VwZGF0ZWQYGiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhoKEmRhdGVfdXBkYXRlZF9mb3JjZRgbIAEoCBIMCgRjb2RlGCAgASgJGi0KC0xhYmVsc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiTQoRUGFydHlBcHBseVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIiQKElBhcnR5RXJhc2VSZXNwb25zZRIOCgZlcmFzZWQYASABKAgiYQoQUGFydHlMaXN0UmVxdWVzdBIiCgdmaWx0ZXJzGAEgAygLMhEucm92ZS5QYXJ0eUZpbHRlchITCgRzaXplGAIgASgFQgWqAQIIAhIUCgVhZnRlchgDIAEoCUIFqgECCAIiRAoRUGFydHlMaXN0UmVzcG9uc2USGgoFaXRlbXMYASADKAsyCy5yb3ZlLlBhcnR5EhMKBG5leHQYAiABKAlCBaoBAggCIsoBCgtQYXJ0eUZpbHRlchIbCgNyZWYYASABKAsyDi5yb3ZlLlBhcnR5UmVmEgwKBGtpbmQYAiABKAkSEQoJcGFyZW50X2lkGAMgASgMEh8KBmhvbGRlchgEIAEoCzIPLnJvdmUuSG9sZGVyUmVmEi0KBmxhYmVscxgFIAMoCzIdLnJvdmUuUGFydHlGaWx0ZXIuTGFiZWxzRW50cnkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJVChFQYXJ0eVdhdGNoUmVxdWVzdBIiCgdmaWx0ZXJzGAEgAygLMhEucm92ZS5QYXJ0eUZpbHRlchIcCg1za2lwX3NuYXBzaG90GAIgASgIQgWqAQIIAiI5ChJQYXJ0eVdhdGNoUmVzcG9uc2USIwoFaXRlbXMYASADKAsyFC5yb3ZlLlBhcnR5V2F0Y2hJdGVtIk8KDlBhcnR5V2F0Y2hJdGVtEgoKAmlkGAEgASgMEhoKBXZhbHVlGAIgASgLMgsucm92ZS5QYXJ0eRIVCgZhY3Rpb24YAyABKAlCBaoBAggCIhAKDlBhcnR5TWVSZXF1ZXN0IuwBCg9QYXJ0eU1lUmVzcG9uc2USHAoGaG9sZGVyGAEgASgLMgwucm92ZS5Ib2xkZXISGgoFcGFydHkYAiABKAsyCy5yb3ZlLlBhcnR5EhwKBnRlbmFudBgDIAEoCzIMLnJvdmUuVGVuYW50EhMKBHJvbGUYBCABKAlCBaoBAggCEjEKDWhpc3Rvcnlfc2luY2UYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhsKDGhpc3RvcnlfZGF5cxgGIAEoDUIFqgECCAISHAoNYWNjb3VudHNfaGVyZRgHIAEoCEIFqgECCAIizAIKElBhcnR5VXBkYXRlUmVxdWVzdBIbCgNyZWYYASABKAsyDi5yb3ZlLlBhcnR5UmVmEhMKBG5hbWUYAiABKAlCBaoBAggCEhMKBGRlc2MYAyABKAlCBaoBAggCEhMKBGtpbmQYBCABKAlCBaoBAggCEhgKCXBhcmVudF9pZBgFIAEoDEIFqgECCAISGgoLcGFyZW50X251bGwYBiABKAhCBaoBAggCEhQKBWVtYWlsGAcgASgJQgWqAQIIAhIUCgVwaG9uZRgIIAEoCUIFqgECCAISEwoEY29kZRgJIAEoCUIFqgECCAISNAoGbGFiZWxzGAogAygLMiQucm92ZS5QYXJ0eVVwZGF0ZVJlcXVlc3QuTGFiZWxzRW50cnkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJ1ChJQYXJ0eUludml0ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIUCgVhbGlhcxgCIAEoCUIFqgECCAISEwoEcm9sZRgDIAEoCUIFqgECCAISFwoIcGFzc3dvcmQYBCABKAlCBaoBAggCImgKE1BhcnR5SW52aXRlUmVzcG9uc2USGgoFcGFydHkYASABKAsyCy5yb3ZlLlBhcnR5EhwKBmhvbGRlchgCIAEoCzIMLnJvdmUuSG9sZGVyEhcKCHBhc3N3b3JkGAMgASgJQgWqAQIIAiJHChNQYXJ0eVNldFJvbGVSZXF1ZXN0EhsKA3JlZhgBIAEoCzIOLnJvdmUuUGFydHlSZWYSEwoEcm9sZRgCIAEoCUIFqgECCAIiZwoXUGFydHlTZXRQYXNzd29yZFJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZhIWCgdjdXJyZW50GAIgASgJQgWqAQIIAhIXCghwYXNzd29yZBgDIAEoCUIFqgECCAIiGgoYUGFydHlTZXRQYXNzd29yZFJlc3BvbnNlIjUKFlBhcnR5RGVhY3RpdmF0ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZiI3ChhQYXJ0eVBzZXVkb255bWl6ZVJlcXVlc3QSGwoDcmVmGAEgASgLMg4ucm92ZS5QYXJ0eVJlZiKTAgoRU2Vzc2lvbkFkZFJlcXVlc3QSCgoCaWQYASABKAwSHwoGdGVuYW50GAIgASgLMg8ucm92ZS5UZW5hbnRSZWYSHwoGaG9sZGVyGAggASgLMg8ucm92ZS5Ib2xkZXJSZWYSDgoGc2VjcmV0GAkgASgMEg0KBWdyYW50GAogASgMEjAKDGRhdGVfZXhwaXJlcxgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLQoJZGF0ZV9pZGxlGAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxkYXRlX2NyZWF0ZWQYDyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIlcKEVNlc3Npb25HZXRSZXF1ZXN0Eh0KA3JlZhgBIAEoCzIQLnJvdmUuU2Vzc2lvblJlZhIjCgZzZWxlY3QYAiABKAsyEy5yb3ZlLlNlc3Npb25TZWxlY3QiIQoKU2Vzc2lvblJlZhIMCgJpZBgBIAEoDEgAQgUKA2tleSLtAQoNU2Vzc2lvblNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSIgoGaG9sZGVyGAggASgLMhIucm92ZS5Ib2xkZXJTZWxlY3QSDgoGc2VjcmV0GAkgASgIEg0KBWdyYW50GAogASgIEhQKDGRhdGVfZXhwaXJlcxgLIAEoCBIRCglkYXRlX2lkbGUYDCABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhMKC2RhdGVfZXJhc2VkGA4gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCK1AgoTU2Vzc2lvblBhdGNoUmVxdWVzdBIdCgNyZWYYASABKAsyEC5yb3ZlLlNlc3Npb25SZWYSDgoGc2VjcmV0GBIgASgMEg0KBWdyYW50GBQgASgMEjAKDGRhdGVfZXhwaXJlcxgWIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGQoRZGF0ZV9leHBpcmVzX251bGwYFyABKAgSLQoJZGF0ZV9pZGxlGBggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIWCg5kYXRlX2lkbGVfbnVsbBgZIAEoCBIwCgxkYXRlX3VwZGF0ZWQYGiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhoKEmRhdGVfdXBkYXRlZF9mb3JjZRgbIAEoCCJRChNTZXNzaW9uQXBwbHlSZXF1ZXN0Eh0KA3JlZhgBIAEoCzIQLnJvdmUuU2Vzc2lvblJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIiYKFFNlc3Npb25FcmFzZVJlc3BvbnNlEg4KBmVyYXNlZBgBIAEoCDKGBgoMUGFydHlTZXJ2aWNlEikKA0FkZBIVLnJvdmUuUGFydHlBZGRSZXF1ZXN0Ggsucm92ZS5QYXJ0eRIpCgNHZXQSFS5yb3ZlLlBhcnR5R2V0UmVxdWVzdBoLLnJvdmUuUGFydHkSLQoFUGF0Y2gSFy5yb3ZlLlBhcnR5UGF0Y2hSZXF1ZXN0Ggsucm92ZS5QYXJ0eRItCgVBcHBseRIXLnJvdmUuUGFydHlBcHBseVJlcXVlc3QaCy5yb3ZlLlBhcnR5EjEKBUVyYXNlEg4ucm92ZS5QYXJ0eVJlZhoYLnJvdmUuUGFydHlFcmFzZVJlc3BvbnNlEjcKBExpc3QSFi5yb3ZlLlBhcnR5TGlzdFJlcXVlc3QaFy5yb3ZlLlBhcnR5TGlzdFJlc3BvbnNlEjwKBVdhdGNoEhcucm92ZS5QYXJ0eVdhdGNoUmVxdWVzdBoYLnJvdmUuUGFydHlXYXRjaFJlc3BvbnNlMAESMQoCTWUSFC5yb3ZlLlBhcnR5TWVSZXF1ZXN0GhUucm92ZS5QYXJ0eU1lUmVzcG9uc2USLwoGVXBkYXRlEhgucm92ZS5QYXJ0eVVwZGF0ZVJlcXVlc3QaCy5yb3ZlLlBhcnR5Ej0KBkludml0ZRIYLnJvdmUuUGFydHlJbnZpdGVSZXF1ZXN0Ghkucm92ZS5QYXJ0eUludml0ZVJlc3BvbnNlEjEKB1NldFJvbGUSGS5yb3ZlLlBhcnR5U2V0Um9sZVJlcXVlc3QaCy5yb3ZlLlBhcnR5EkwKC1NldFBhc3N3b3JkEh0ucm92ZS5QYXJ0eVNldFBhc3N3b3JkUmVxdWVzdBoeLnJvdmUuUGFydHlTZXRQYXNzd29yZFJlc3BvbnNlEjcKCkRlYWN0aXZhdGUSHC5yb3ZlLlBhcnR5RGVhY3RpdmF0ZVJlcXVlc3QaCy5yb3ZlLlBhcnR5EjsKDFBzZXVkb255bWl6ZRIeLnJvdmUuUGFydHlQc2V1ZG9ueW1pemVSZXF1ZXN0Ggsucm92ZS5QYXJ0eTKLAgoOU2Vzc2lvblNlcnZpY2USLQoDQWRkEhcucm92ZS5TZXNzaW9uQWRkUmVxdWVzdBoNLnJvdmUuU2Vzc2lvbhItCgNHZXQSFy5yb3ZlLlNlc3Npb25HZXRSZXF1ZXN0Gg0ucm92ZS5TZXNzaW9uEjEKBVBhdGNoEhkucm92ZS5TZXNzaW9uUGF0Y2hSZXF1ZXN0Gg0ucm92ZS5TZXNzaW9uEjEKBUFwcGx5Ehkucm92ZS5TZXNzaW9uQXBwbHlSZXF1ZXN0Gg0ucm92ZS5TZXNzaW9uEjUKBUVyYXNlEhAucm92ZS5TZXNzaW9uUmVmGhoucm92ZS5TZXNzaW9uRXJhc2VSZXNwb25zZUIaWhhnaXRodWIuY29tL2xlc29tbnVzL3JvdmViCGVkaXRpb25zcOgH", [file_google_protobuf_timestamp, file_patch_patch, file_rove_org, file_rove_payday_holder, file_rove_payday_holder_svc_g, file_rove_payday_tenant, file_rove_payday_tenant_svc_g]);
 
 /**
  * @generated from message rove.PartyAddRequest
@@ -658,6 +658,15 @@ export type PartyMeResponse = Message<"rove.PartyMeResponse"> & {
    * @generated from field: uint32 history_days = 6 [features.field_presence = IMPLICIT];
    */
   historyDays: number;
+
+  /**
+   * Whether logins and passwords are made and changed here -- the roster in
+   * this process -- or at a roster of its own, by whoever administers the
+   * tenant there (design 9.10).
+   *
+   * @generated from field: bool accounts_here = 7 [features.field_presence = IMPLICIT];
+   */
+  accountsHere: boolean;
 };
 
 /**
@@ -893,244 +902,6 @@ export const PartyPseudonymizeRequestSchema: GenMessage<PartyPseudonymizeRequest
   messageDesc(file_rove_org_svc_g, 23);
 
 /**
- * @generated from message rove.CredentialAddRequest
- */
-export type CredentialAddRequest = Message<"rove.CredentialAddRequest"> & {
-  /**
-   * @generated from field: bytes id = 1;
-   */
-  id: Uint8Array;
-
-  /**
-   * @generated from field: rove.TenantRef tenant = 2;
-   */
-  tenant?: TenantRef | undefined;
-
-  /**
-   * @generated from field: rove.HolderRef holder = 8;
-   */
-  holder?: HolderRef | undefined;
-
-  /**
-   * @generated from field: bytes secret = 9;
-   */
-  secret: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp date_created = 15;
-   */
-  dateCreated?: Timestamp | undefined;
-};
-
-/**
- * Describes the message rove.CredentialAddRequest.
- * Use `create(CredentialAddRequestSchema)` to create a new message.
- */
-export const CredentialAddRequestSchema: GenMessage<CredentialAddRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 24);
-
-/**
- * @generated from message rove.CredentialGetRequest
- */
-export type CredentialGetRequest = Message<"rove.CredentialGetRequest"> & {
-  /**
-   * @generated from field: rove.CredentialRef ref = 1;
-   */
-  ref?: CredentialRef | undefined;
-
-  /**
-   * @generated from field: rove.CredentialSelect select = 2;
-   */
-  select?: CredentialSelect | undefined;
-};
-
-/**
- * Describes the message rove.CredentialGetRequest.
- * Use `create(CredentialGetRequestSchema)` to create a new message.
- */
-export const CredentialGetRequestSchema: GenMessage<CredentialGetRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 25);
-
-/**
- * @generated from message rove.CredentialRef
- */
-export type CredentialRef = Message<"rove.CredentialRef"> & {
-  /**
-   * @generated from oneof rove.CredentialRef.key
-   */
-  key: {
-    /**
-     * @generated from field: bytes id = 1;
-     */
-    value: Uint8Array;
-    case: "id";
-  } | {
-    /**
-     * @generated from field: rove.CredentialRefByHolder holder = 8;
-     */
-    value: CredentialRefByHolder;
-    case: "holder";
-  } | { case: undefined; value?: undefined };
-};
-
-/**
- * Describes the message rove.CredentialRef.
- * Use `create(CredentialRefSchema)` to create a new message.
- */
-export const CredentialRefSchema: GenMessage<CredentialRef> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 26);
-
-/**
- * @generated from message rove.CredentialRefByHolder
- */
-export type CredentialRefByHolder = Message<"rove.CredentialRefByHolder"> & {
-  /**
-   * @generated from field: rove.HolderRef holder = 8;
-   */
-  holder?: HolderRef | undefined;
-};
-
-/**
- * Describes the message rove.CredentialRefByHolder.
- * Use `create(CredentialRefByHolderSchema)` to create a new message.
- */
-export const CredentialRefByHolderSchema: GenMessage<CredentialRefByHolder> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 27);
-
-/**
- * @generated from message rove.CredentialSelect
- */
-export type CredentialSelect = Message<"rove.CredentialSelect"> & {
-  /**
-   * @generated from field: bool all = 1;
-   */
-  all: boolean;
-
-  /**
-   * @generated from field: rove.TenantSelect tenant = 2;
-   */
-  tenant?: TenantSelect | undefined;
-
-  /**
-   * @generated from field: rove.HolderSelect holder = 8;
-   */
-  holder?: HolderSelect | undefined;
-
-  /**
-   * @generated from field: bool secret = 9;
-   */
-  secret: boolean;
-
-  /**
-   * @generated from field: bool date_updated = 13;
-   */
-  dateUpdated: boolean;
-
-  /**
-   * @generated from field: bool date_created = 15;
-   */
-  dateCreated: boolean;
-};
-
-/**
- * Describes the message rove.CredentialSelect.
- * Use `create(CredentialSelectSchema)` to create a new message.
- */
-export const CredentialSelectSchema: GenMessage<CredentialSelect> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 28);
-
-/**
- * @generated from message rove.CredentialPatchRequest
- */
-export type CredentialPatchRequest = Message<"rove.CredentialPatchRequest"> & {
-  /**
-   * @generated from field: rove.CredentialRef ref = 1;
-   */
-  ref?: CredentialRef | undefined;
-
-  /**
-   * @generated from field: bytes secret = 18;
-   */
-  secret: Uint8Array;
-
-  /**
-   * The version this update requires the stored date_updated to be.
-   * It is a precondition, not a write: the update applies only if the row
-   * still holds this value, and the server stamps the new version itself.
-   * Setting it together with date_updated_force is an error --
-   * the version is the token every client's compare-and-swap is measured
-   * against, so it is not the caller's to choose.
-   *
-   * @generated from field: google.protobuf.Timestamp date_updated = 26;
-   */
-  dateUpdated?: Timestamp | undefined;
-
-  /**
-   * Update whatever the stored date_updated is, with no precondition.
-   * The server still stamps a new version, so other clients' tokens are
-   * invalidated as usual; this declines the check for THIS update only.
-   * One of date_updated or this must be set. An omitted version is
-   * refused rather than assumed, because an unset field cannot be told
-   * apart from a caller who never considered locking at all.
-   *
-   * @generated from field: bool date_updated_force = 27;
-   */
-  dateUpdatedForce: boolean;
-};
-
-/**
- * Describes the message rove.CredentialPatchRequest.
- * Use `create(CredentialPatchRequestSchema)` to create a new message.
- */
-export const CredentialPatchRequestSchema: GenMessage<CredentialPatchRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 29);
-
-/**
- * @generated from message rove.CredentialApplyRequest
- */
-export type CredentialApplyRequest = Message<"rove.CredentialApplyRequest"> & {
-  /**
-   * @generated from field: rove.CredentialRef ref = 1;
-   */
-  ref?: CredentialRef | undefined;
-
-  /**
-   * @generated from field: patch.Patch patch = 2;
-   */
-  patch?: Patch | undefined;
-};
-
-/**
- * Describes the message rove.CredentialApplyRequest.
- * Use `create(CredentialApplyRequestSchema)` to create a new message.
- */
-export const CredentialApplyRequestSchema: GenMessage<CredentialApplyRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 30);
-
-/**
- * @generated from message rove.CredentialEraseResponse
- */
-export type CredentialEraseResponse = Message<"rove.CredentialEraseResponse"> & {
-  /**
-   * Erased is whether this call is the one that erased the row.
-   *
-   * False for a row that was already gone, was never there, or is out
-   * of this caller's reach -- which are one answer on purpose, and the
-   * reason the RPC does not fail instead.
-   *
-   * @generated from field: bool erased = 1;
-   */
-  erased: boolean;
-};
-
-/**
- * Describes the message rove.CredentialEraseResponse.
- * Use `create(CredentialEraseResponseSchema)` to create a new message.
- */
-export const CredentialEraseResponseSchema: GenMessage<CredentialEraseResponse> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 31);
-
-/**
  * @generated from message rove.SessionAddRequest
  */
 export type SessionAddRequest = Message<"rove.SessionAddRequest"> & {
@@ -1180,7 +951,7 @@ export type SessionAddRequest = Message<"rove.SessionAddRequest"> & {
  * Use `create(SessionAddRequestSchema)` to create a new message.
  */
 export const SessionAddRequestSchema: GenMessage<SessionAddRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 32);
+  messageDesc(file_rove_org_svc_g, 24);
 
 /**
  * @generated from message rove.SessionGetRequest
@@ -1202,7 +973,7 @@ export type SessionGetRequest = Message<"rove.SessionGetRequest"> & {
  * Use `create(SessionGetRequestSchema)` to create a new message.
  */
 export const SessionGetRequestSchema: GenMessage<SessionGetRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 33);
+  messageDesc(file_rove_org_svc_g, 25);
 
 /**
  * @generated from message rove.SessionRef
@@ -1225,7 +996,7 @@ export type SessionRef = Message<"rove.SessionRef"> & {
  * Use `create(SessionRefSchema)` to create a new message.
  */
 export const SessionRefSchema: GenMessage<SessionRef> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 34);
+  messageDesc(file_rove_org_svc_g, 26);
 
 /**
  * @generated from message rove.SessionSelect
@@ -1287,7 +1058,7 @@ export type SessionSelect = Message<"rove.SessionSelect"> & {
  * Use `create(SessionSelectSchema)` to create a new message.
  */
 export const SessionSelectSchema: GenMessage<SessionSelect> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 35);
+  messageDesc(file_rove_org_svc_g, 27);
 
 /**
  * @generated from message rove.SessionPatchRequest
@@ -1368,7 +1139,7 @@ export type SessionPatchRequest = Message<"rove.SessionPatchRequest"> & {
  * Use `create(SessionPatchRequestSchema)` to create a new message.
  */
 export const SessionPatchRequestSchema: GenMessage<SessionPatchRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 36);
+  messageDesc(file_rove_org_svc_g, 28);
 
 /**
  * @generated from message rove.SessionApplyRequest
@@ -1390,7 +1161,7 @@ export type SessionApplyRequest = Message<"rove.SessionApplyRequest"> & {
  * Use `create(SessionApplyRequestSchema)` to create a new message.
  */
 export const SessionApplyRequestSchema: GenMessage<SessionApplyRequest> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 37);
+  messageDesc(file_rove_org_svc_g, 29);
 
 /**
  * @generated from message rove.SessionEraseResponse
@@ -1413,7 +1184,7 @@ export type SessionEraseResponse = Message<"rove.SessionEraseResponse"> & {
  * Use `create(SessionEraseResponseSchema)` to create a new message.
  */
 export const SessionEraseResponseSchema: GenMessage<SessionEraseResponse> = /*@__PURE__*/
-  messageDesc(file_rove_org_svc_g, 38);
+  messageDesc(file_rove_org_svc_g, 30);
 
 /**
  * @generated from service rove.PartyService
@@ -1573,63 +1344,6 @@ export const PartyService: GenService<{
   serviceDesc(file_rove_org_svc_g, 0);
 
 /**
- * @generated from service rove.CredentialService
- */
-export const CredentialService: GenService<{
-  /**
-   * Add creates a new Credential
-   *
-   * @generated from rpc rove.CredentialService.Add
-   */
-  add: {
-    methodKind: "unary";
-    input: typeof CredentialAddRequestSchema;
-    output: typeof CredentialSchema;
-  },
-  /**
-   * Get retrieves a Credential
-   *
-   * @generated from rpc rove.CredentialService.Get
-   */
-  get: {
-    methodKind: "unary";
-    input: typeof CredentialGetRequestSchema;
-    output: typeof CredentialSchema;
-  },
-  /**
-   * Patch updates an existing Credential
-   *
-   * @generated from rpc rove.CredentialService.Patch
-   */
-  patch: {
-    methodKind: "unary";
-    input: typeof CredentialPatchRequestSchema;
-    output: typeof CredentialSchema;
-  },
-  /**
-   * Apply applies a patch document to an existing Credential
-   *
-   * @generated from rpc rove.CredentialService.Apply
-   */
-  apply: {
-    methodKind: "unary";
-    input: typeof CredentialApplyRequestSchema;
-    output: typeof CredentialSchema;
-  },
-  /**
-   * Erase deletes a Credential
-   *
-   * @generated from rpc rove.CredentialService.Erase
-   */
-  erase: {
-    methodKind: "unary";
-    input: typeof CredentialRefSchema;
-    output: typeof CredentialEraseResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_rove_org_svc_g, 1);
-
-/**
  * @generated from service rove.SessionService
  */
 export const SessionService: GenService<{
@@ -1684,5 +1398,5 @@ export const SessionService: GenService<{
     output: typeof SessionEraseResponseSchema;
   },
 }> = /*@__PURE__*/
-  serviceDesc(file_rove_org_svc_g, 2);
+  serviceDesc(file_rove_org_svc_g, 1);
 

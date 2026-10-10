@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"time"
 
 	"github.com/lesomnus/z"
 	"google.golang.org/grpc"
@@ -21,6 +22,7 @@ import (
 	rostercli "github.com/lesomnus/roster/cli"
 	rostercmd "github.com/lesomnus/roster/cmd"
 	"github.com/lesomnus/roster/rstr"
+	"github.com/lesomnus/roster/server/forget"
 )
 
 // embedded is roster in this process: its server on an in-process listener
@@ -305,6 +307,7 @@ func (s *Store) Disable(ctx context.Context, holder pdid.Id) error {
 	ctx, cancel := unframed(ctx)
 	defer cancel()
 	_, err := s.em.rs.Ungated.Holder().Disable(ctx, rstr.HolderDisableRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+	s.Recheck(holder)
 
 	return err
 }
@@ -329,8 +332,114 @@ func (s *Store) Invalidate(ctx context.Context, holder pdid.Id) error {
 	ctx, cancel := unframed(ctx)
 	defer cancel()
 	_, err := s.em.rs.Ungated.Holder().Invalidate(ctx, rstr.HolderInvalidateRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+	s.Recheck(holder)
 
 	return err
+}
+
+// ForgetPerson destroys what the embedded roster holds about a person -- their
+// addresses, their password, their sessions there and the trail's copies of
+// them -- and leaves their row an identifier naming nobody, which frees their
+// alias (roster's `forget`). It is what a login ending in Rove means when the
+// login is Rove's alone, and it is done at once: the grace roster gives an
+// erase is for undoing it, which Rove does not offer, and a grace with nothing
+// to undo is only a delay. At an external roster the person is the tenant's,
+// and Rove leaves them.
+func (s *Store) ForgetPerson(ctx context.Context, holder pdid.Id) error {
+	if s.em == nil {
+		return ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	_, err := s.em.rs.Ungated.Holder().Get(ctx, rstr.HolderGetRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+	switch {
+	case err == nil:
+	case status.Code(err) == codes.NotFound:
+		// A read leaves out somebody erased, who still has everything a
+		// forgetting takes.
+		erased, err := s.em.erased(ctx)
+		if err != nil {
+			return err
+		}
+		if _, ok := erased[holder]; !ok {
+			// Nobody, or forgotten already.
+			return nil
+		}
+	default:
+		return err
+	}
+	p, err := s.em.cfg.Audit.Policy()
+	if err != nil {
+		return err
+	}
+	_, err = forget.Forget(ctx, s.em.rs.Ent, holder, p)
+	s.Recheck(holder)
+
+	return err
+}
+
+// PeopleOf is everybody the embedded roster has in a tenant and has not
+// forgotten, Rove's own holder among them: what a tenant leaving takes out of
+// it.
+func (s *Store) PeopleOf(ctx context.Context, tenant pdid.Id) ([]pdid.Id, error) {
+	if s.em == nil {
+		return nil, ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	var vs []pdid.Id
+	after := ""
+	for {
+		res, err := s.em.rs.Ungated.Holder().List(ctx, rstr.HolderListRequest_builder{
+			Filters: []*rstr.HolderFilter{rstr.HolderFilter_builder{Tenant: rstr.TenantRef_builder{Id: tenant.Bytes()}.Build()}.Build()},
+			Size:    100,
+			After:   after,
+		}.Build())
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range res.GetItems() {
+			id, err := pdid.From(v.GetId())
+			if err != nil {
+				return nil, err
+			}
+			vs = append(vs, id)
+		}
+		if res.GetNext() == "" || len(res.GetItems()) == 0 {
+			break
+		}
+		after = res.GetNext()
+	}
+	erased, err := s.em.erased(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for id, of := range erased {
+		if of == tenant {
+			vs = append(vs, id)
+		}
+	}
+
+	return vs, nil
+}
+
+// erased is everybody erased here and not forgotten, by the tenant they are
+// in: what the servers' reads leave out.
+func (e *embedded) erased(ctx context.Context) (map[pdid.Id]pdid.Id, error) {
+	ids, err := forget.Due(ctx, e.rs.Ent, time.Now().Add(time.Hour))
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[pdid.Id]pdid.Id, len(ids))
+	for _, id := range ids {
+		v, err := e.rs.Ent.Holder.Get(ctx, id.Uuid())
+		if err != nil {
+			return nil, err
+		}
+		out[id] = pdid.Id(v.TenantId)
+	}
+
+	return out, nil
 }
 
 func (s *Store) lookupOwn(ctx context.Context, holder pdid.Id) (Person, error) {

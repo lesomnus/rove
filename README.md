@@ -25,6 +25,35 @@ go run ./cmd/rove serve
 
 체험용 데이터 없이 실제로 쓰려면 `--demo` 를 빼고, `--password` 를 빼면 비밀번호를 만들어 출력합니다. 처음부터 다시 하려면 `data/` 디렉터리를 지웁니다.
 
+### 로그인과 사람 (roster)
+
+사람과 비밀번호, 로그인할 수 있는지는 [roster](https://github.com/lesomnus/roster)가 정합니다(design 9.10). 기본은 roster를 Rove 프로세스 안에서 함께 띄우는 **내장** 모드라 따로 설치할 것이 없고, roster의 DB는 Rove의 SQLite 파일 옆 `data/roster.db` 입니다. 역할은 Rove의 것이라 사람 화면에서 정합니다.
+
+- 사람 화면의 로그인 발급과 비밀번호 재설정이 내장 roster에 씁니다. **로그인 중지**와 **개인정보 삭제**는 roster에 있던 그 사람의 비밀번호와 기록 사본을 바로 파기하고, 그 아이디는 다른 사람이 쓸 수 있게 됩니다.
+- 화면 없이 셸에서 할 때(예: 소유자가 비밀번호를 잊었을 때):
+
+  ```sh
+  go run ./cmd/rove holder add --tenant rove --login minsu --name 김민수 --role member   # 비밀번호를 만들어 한 번 출력
+  go run ./cmd/rove holder password --tenant rove --login admin   # 새 비밀번호를 한 번 출력, 로그인된 곳은 모두 끝남
+  ```
+
+- 로그인은 아이디로 합니다. 이메일로는 roster에서 확인된 주소만 로그인할 수 있습니다. 2단계 인증을 켠 사람은 비밀번호만으로 들어올 수 없고, SSO(다음 단계)로 들어옵니다.
+- 로그인한 사람이 roster에서 중지·삭제되거나 "모든 곳에서 로그아웃"되면 Rove의 세션도 30초 안에 끝납니다. roster에 물을 수 없으면 로그인과 세션이 거부됩니다(503).
+
+**roster를 따로 운영할 때**는 `auth.roster.addr` 에 주소를, `auth.roster.key` 에 키를 줍니다. 여러 조직을 섬기는 Rove 하나는 roster 운영자가 만든 배포 키(`rk_…`)를, 한 조직의 Rove는 그 조직의 키(`rt_…`)를 씁니다. 조직과 사람은 roster에서 만들고, 그 조직의 사람이 처음 로그인할 때 Rove에 조직과 그 사람이 생깁니다. 조직의 첫 사람이 소유자가 되고, 그다음부터는 구성원입니다. 이때 `rove init`, `rove holder`, 사람 화면의 로그인 발급·비밀번호 변경은 거부되고 roster에서 합니다.
+
+```sh
+# roster 운영자: 배포 키를 만들고(rk_… 출력), 조직에 Rove를 설치
+roster control key add --allow /roster.NominationService/List rove
+roster tenant add @acme '{"name": "Acme"}'
+roster app install --tenant acme --role /roster.VouchService/Verify,/roster.HolderService/Get,/roster.TenantService/Get,/roster.MeService/Get rove
+
+# Rove
+ROVE_AUTH_ROSTER_ADDR=roster.example.com:443 ROVE_AUTH_ROSTER_KEY=env:ROSTER_KEY ROSTER_KEY=rk_… go run ./cmd/rove serve
+```
+
+예전 배포(roster 이전에 만든 `data/`)는 사람이 Rove의 DB에 있어서 그대로는 로그인할 수 없습니다. `rove identity migrate` 로 옮깁니다(다음 단계에서 들어옵니다).
+
 ### UI 개발
 
 ```sh
@@ -38,10 +67,15 @@ cd ts && npm run dev             # :5173, API 호출은 Vite가 :8080으로 넘�
 
 배포 데이터베이스는 PostgreSQL입니다. SQLite에는 없는 안전장치(예약·위치가 겹치면 DB가 거부하는 EXCLUDE 제약 등)가 `serve` 의 마이그레이션 때 함께 설치됩니다.
 
+내장 roster도 같은 서버의 다른 데이터베이스를 씁니다.
+
 ```sh
 docker run -d --name rove-pg -e POSTGRES_USER=rove -e POSTGRES_PASSWORD=rove -p 5432:5432 postgres:18
-ROVE_DB_DRIVER=pgx ROVE_DB_DSN='postgres://rove:rove@localhost:5432/rove?sslmode=disable' go run ./cmd/rove init --demo
-ROVE_DB_DRIVER=pgx ROVE_DB_DSN='postgres://rove:rove@localhost:5432/rove?sslmode=disable' go run ./cmd/rove serve
+docker exec rove-pg createdb -U rove roster
+export ROVE_DB_DRIVER=pgx ROVE_DB_DSN='postgres://rove:rove@localhost:5432/rove?sslmode=disable'
+export ROVE_AUTH_ROSTER_DB_DRIVER=pgx ROVE_AUTH_ROSTER_DB_DSN='postgres://rove:rove@localhost:5432/roster?sslmode=disable'
+go run ./cmd/rove init --demo
+go run ./cmd/rove serve
 ```
 
 설정할 수 있는 모든 값은 `go run ./cmd/rove config env` 로 볼 수 있습니다. 기본값은 [`rove.yaml`](rove.yaml)에 있습니다.
@@ -90,7 +124,9 @@ go run ./cmd/rove tenant purge --tenant rove                   # 무엇이 몇 �
 go run ./cmd/rove tenant purge --tenant rove --yes             # 실제로 지움: 모든 행, 파일, 감사 기록(DB와 보관소), 마지막으로 조직
 ```
 
-내보내기에는 비밀번호 해시·세션·운영자의 hold는 들어가지 않고, 무엇을 왜 뺐는지가 `manifest.json`에 적힙니다. hold가 걸린 조직은 지우지 않습니다. 사람 한 명의 개인정보 삭제는 사람 화면의 '개인정보 삭제'(가명화)이며, 감사 기록의 사본도 DB와 보관소에서 함께 비웁니다(hold가 걸린 것은 남김).
+내보내기에는 세션과 운영자의 hold는 들어가지 않고, 무엇을 왜 뺐는지가 `manifest.json`에 적힙니다. 로그인과 비밀번호는 roster의 것이라 Rove의 내보내기에 없습니다. hold가 걸린 조직은 지우지 않습니다. 사람 한 명의 개인정보 삭제는 사람 화면의 '개인정보 삭제'(가명화)이며, 감사 기록의 사본도 DB와 보관소에서 함께 비웁니다(hold가 걸린 것은 남김).
+
+내장 roster면 `purge --yes` 가 그 조직의 사람들을 roster에서도 먼저 파기합니다. 조직 이름은 roster에 남습니다(roster에 아직 조직을 통째로 지우는 기능이 없습니다). roster를 따로 운영하면 순서는 Rove 내보내기 → Rove 전체 삭제 → roster에서 조직 정리이고, 마지막은 roster 운영자가 합니다.
 
 ### 감사 기록 보관소 확인 (운영자)
 
@@ -118,7 +154,7 @@ go run ./cmd/rove trail accept --why "백업에서 복원한 청크를 확인함
 | 실사 | 범위 지정, 카메라/스캐너로 스캔(오프라인이면 모아 두었다 전송), 대조, 위치 반영·분실 처리 |
 | 작업 | 수리·점검·정비, 예약 막기, 정기 점검 반복, 구성원의 고장 신고 |
 | 구매 | 주문, 입고 시 자산이나 재고로 등록 |
-| 사람 | 조직도, 로그인 발급, 역할, 비밀번호 재설정, 로그인 중지, 개인정보 삭제 |
+| 사람 | 조직도, 역할, 로그인 중지, 개인정보 삭제, 로그인 발급·비밀번호 재설정(내장 roster일 때) |
 | 설정 | 유형과 속성, 모델, 예약 자원, 라벨 도메인, 작업 기록, 감사 기록, 사용량 |
 
 역할: **소유자 · 관리자 · 매니저 · 구성원 · 감사자**. 무엇을 누가 할 수 있는지는 [`server/policy/policy.go`](server/policy/policy.go) 의 표 하나가 정하고, 표에 없는 것은 거부됩니다.
@@ -130,7 +166,9 @@ proto/rove/*.proto          엔터티 (스키마의 원천)
 proto/ext/rove/*.ext.proto  엔터티에 더한 RPC
 server/domain/              도메인 계층: 시간 기록, 예약 충돌, 지급, 재고, 실사 … 그리고 백그라운드 작업
 server/policy/              역할 → 호출할 수 있는 RPC
-server/session/             로그인(argon2id)과 DB에 두는 세션
+server/session/             로그인(roster에 묻는다)과 DB에 두는 세션
+server/tenancy/             roster가 확인한 사람이 처음 들어올 때 만드는 조직과 사람
+internal/identity/          roster: 따로 운영하는 것(gRPC) 또는 프로세스 안의 것(bufconn)
 server/storage/             첨부 파일과 서명된 다운로드 주소
 cmd/, cli/                  서버 조립, init, serve
 ts/src/                     React UI

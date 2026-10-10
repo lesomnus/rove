@@ -561,7 +561,7 @@ Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 
 **테스트**: 내장 roster는 진짜 roster이므로 테스트는 가짜 대신 내장 roster를 띄운다. 외부 모드는 같은 roster를 TCP 리스너와 키로 띄워 같은 테스트를 돈다.
 
-**정할 것**(plan 10장): 역할을 Rove와 roster 중 어디서 정할지, 사람 삭제의 방향, 테넌트를 만드는 사람과 탈퇴 순서, 옮길 기존 데이터.
+**정한 것**(2026-10-11, plan 10장): 역할은 Rove의 `Holder.role`로 둔다. 외부 roster의 테넌트는 roster 운영자가 만들고(셀프 가입 없음), 테넌트의 첫 사람이 처음 로그인할 때 Rove에 테넌트가 생기며 그 사람이 소유자가 된다. 탈퇴는 Rove 내보내기 → Rove 전체 삭제 → roster의 테넌트 정리 순서다. 사람을 지우는 것은 roster의 일이고, Rove의 '개인정보 삭제'는 Rove 쪽만 지운다. 다만 내장 roster는 Rove만 쓰므로, Rove에서 로그인이 끝나면(로그인 중지, 개인정보 삭제, 테넌트 전체 삭제) roster의 `forget`으로 그 사람을 바로 파기한다. roster의 삭제 유예는 복구(`roster restore`)를 위한 것인데 Rove는 복구를 열지 않으므로, 유예는 지연일 뿐이다. 기존 데이터는 `rove identity migrate`로 옮긴다.
 
 ## 10. 구현 단계 및 검증 기준
 

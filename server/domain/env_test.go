@@ -51,6 +51,8 @@ func newEnv(t *testing.T) *env {
 	c.App.Files = t.TempDir()
 	c.App.Labels.Suffix = "l.test"
 	c.App.NoShowAfter = 15 * time.Minute
+	// The roster in this process, on a database of its own beside.
+	c.Auth.Roster.Db.Driver, c.Auth.Roster.Db.Dsn = pdtest.DB(t)
 
 	s, err := cmd.Build(ctx, c)
 	x.NoError(err)
@@ -65,14 +67,17 @@ func newEnv(t *testing.T) *env {
 	return e
 }
 
-// newTenant puts up a tenant and its owner the way `rove init` does, and
-// answers with the owner signed in.
+// newTenant puts up a tenant and its owner the way `rove init` does -- at
+// roster, then here with roster's identifiers -- and answers with the owner
+// signed in.
 func (e *env) newTenant(alias string) (pdid.Id, context.Context) {
 	ctx := context.Background()
-	t, err := e.s.Base.Tenant().Add(ctx, app.TenantAddRequest_builder{Alias: alias, Name: alias}.Build())
+	p, _, err := e.s.Identity.Seed(ctx, alias, "owner", pdid.Nil)
+	e.x.NoError(err)
+	t, err := e.s.Base.Tenant().Add(ctx, app.TenantAddRequest_builder{Id: p.Tenant.Bytes(), Alias: alias, Name: alias}.Build())
 	e.x.NoError(err)
 	tenant := app.TenantRef_builder{Id: t.GetId()}.Build()
-	h, err := e.s.Base.Holder().Add(ctx, app.HolderAddRequest_builder{Tenant: tenant, Alias: "owner", Name: "Owner", Role: z.Ptr("owner")}.Build())
+	h, err := e.s.Base.Holder().Add(ctx, app.HolderAddRequest_builder{Id: p.Id.Bytes(), Tenant: tenant, Alias: "owner", Name: "Owner", Role: z.Ptr("owner")}.Build())
 	e.x.NoError(err)
 	_, err = e.s.Base.Party().Add(ctx, app.PartyAddRequest_builder{
 		Tenant: tenant,

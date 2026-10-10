@@ -95,6 +95,32 @@ func NewCmdTenant(c *cmd.Config) *xli.Command {
 					if err != nil {
 						return err
 					}
+
+					// The people of a roster in this process are Rove's to take
+					// with the tenant, and first: a purge that stops after them
+					// is run again and finishes, where one that stopped after the
+					// tenant could not be named again. At an external roster they
+					// are the tenant's, and its operator's to take.
+					forgotten := 0
+					if s.Identity.Embedded() {
+						people, err := s.Identity.PeopleOf(ctx, pdid.Id(t.Id))
+						if err != nil {
+							return fmt.Errorf("%s: roster: %w", t.Alias, err)
+						}
+						for _, p := range people {
+							if !yes {
+								break
+							}
+							if err := s.Identity.ForgetPerson(ctx, p); err != nil {
+								return fmt.Errorf("%s: roster: %d of %d people forgotten: %w", t.Alias, forgotten, len(people), err)
+							}
+							forgotten++
+						}
+						if !yes {
+							forgotten = len(people)
+						}
+					}
+
 					x, err := s.Offboard(*c).Purge(ctx, pdid.Id(t.Id), !yes)
 					if err != nil {
 						return fmt.Errorf("%s: %w", t.Alias, err)
@@ -110,6 +136,13 @@ func NewCmdTenant(c *cmd.Config) *xli.Command {
 					}
 					self.Printf("%s: %s %d rows (%s), %d files\n", t.Alias, verb, x.Total(), strings.Join(parts, ", "), x.Files)
 					self.Printf("  trail: %d rows removed, %d blanked, %d archived chunks\n", x.Trail.Removed, x.Trail.Blanked, x.Trail.Chunks)
+					if s.Identity.Embedded() {
+						verb := "forgot"
+						if !yes {
+							verb = "would forget"
+						}
+						self.Printf("  roster in this process: %s %d people, and what its trail said of them\n", verb, forgotten)
+					}
 					if len(x.Lost) > 0 {
 						self.Printf("  files that could not be removed: %s\n", strings.Join(x.Lost, ", "))
 					}

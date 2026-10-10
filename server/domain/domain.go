@@ -34,6 +34,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent"
 	"github.com/lesomnus/rove/internal/ent/event"
 	"github.com/lesomnus/rove/internal/ent/treelock"
+	"github.com/lesomnus/rove/internal/identity"
 	"github.com/lesomnus/rove/server/pd"
 	"github.com/lesomnus/rove/server/retention"
 	"github.com/lesomnus/rove/server/storage"
@@ -79,6 +80,33 @@ type Deps struct {
 	// blanks the database's rows only, which is all there is when the trail
 	// has no archive.
 	Forget func(ctx context.Context, db *ent.Client, objects []pdid.Id) (held int, err error)
+
+	// People is where the people of a tenant are: roster (design 9.10). Nil
+	// is a deployment whose people cannot be changed from here.
+	People People
+}
+
+// People is roster, as the people operations reach it. On the roster in this
+// process Rove makes people, gives them passwords and ends their logins there;
+// on an external one those are the tenant administrator's, at roster, and the
+// operations that would do them are refused.
+type People interface {
+	Embedded() bool
+	AddPerson(ctx context.Context, tenant pdid.Id, alias, name string, id pdid.Id) (identity.Person, error)
+	SetPassword(ctx context.Context, holder pdid.Id, password string) error
+	IssuePassword(ctx context.Context, holder pdid.Id) (string, error)
+	Verify(ctx context.Context, tenant, login, password string) (identity.Person, error)
+	Invalidate(ctx context.Context, holder pdid.Id) error
+	ForgetPerson(ctx context.Context, holder pdid.Id) error
+}
+
+// here answers the people a login is made and changed at, or the refusal a
+// deployment whose people are an external roster's gives.
+func (d *Deps) here() (People, error) {
+	if d.People == nil || !d.People.Embedded() {
+		return nil, failed("계정과 비밀번호는 roster에서 관리합니다. roster에 있는 사람은 처음 로그인할 때 Rove에 들어옵니다")
+	}
+	return d.People, nil
 }
 
 func (d *Deps) now() time.Time {

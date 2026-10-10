@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -14,11 +15,17 @@ import (
 
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/cmd"
-	"github.com/lesomnus/rove/server/password"
+	"github.com/lesomnus/rove/server/tenancy"
 )
 
 // NewCmdInit is `rove init`: the first tenant, the person who owns it, and
 // the types an asset register starts with.
+//
+// The tenant and the person are made at the roster in this process first --
+// that is where they sign in -- and here with the same identifiers (design
+// 9.10). A deployment whose roster is one of its own has no first tenant to
+// make: tenants and people are made there, and the first person of a tenant
+// to sign in here owns it.
 //
 // It exists because there is nowhere else it could happen. A tenant is not put
 // up from inside one, so the first row of a deployment cannot arrive over the
@@ -39,7 +46,7 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			&flg.String{Name: "name", Brief: "the organization's name"},
 			&flg.String{Name: "login", Brief: "the owner's login"},
 			&flg.String{Name: "person", Brief: "the owner's name"},
-			&flg.String{Name: "email", Brief: "the owner's e-mail, which also signs in"},
+			&flg.String{Name: "email", Brief: "the owner's e-mail, kept on their person record"},
 			&flg.String{Name: "password", Brief: "the owner's password; empty makes one up"},
 			&flg.Switch{Name: "demo", Brief: "also fill it with teams, people, spaces and assets to try things on"},
 		},
@@ -60,33 +67,41 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			pw := get("password", "")
 			demo, _ := flg.Find[bool](self, "demo")
 
-			made := ""
-			if pw == "" {
-				pw = password.Make()
-				made = pw
-			}
-			hash, err := password.Hash(pw)
-			if err != nil {
-				return err
-			}
-
 			s, err := cmd.Build(ctx, *c)
 			if err != nil {
 				return err
 			}
 			defer s.Close()
+			if !s.Identity.Embedded() {
+				return errors.New("auth.roster names a roster of its own, and tenants and people are made there: " +
+					"`roster tenant add`, then `roster app install --tenant <alias> rove`; the first person of a tenant to sign in here owns it")
+			}
 
 			// The schema, so that a fresh database is one this can run against.
 			if err := Migrate(ctx, s); err != nil {
 				return err
 			}
 
-			t, err := s.Base.Tenant().Add(ctx, app.TenantAddRequest_builder{Alias: alias, Name: name}.Build())
+			// At roster, which is where they sign in.
+			p, made, err := s.Identity.Seed(ctx, alias, login, pdid.Nil)
+			if err != nil {
+				return fmt.Errorf("roster: %w", err)
+			}
+			if pw != "" {
+				if err := s.Identity.SetPassword(ctx, p.Id, pw); err != nil {
+					return fmt.Errorf("roster: %w", err)
+				}
+				made = ""
+			}
+
+			// And here, with roster's identifiers.
+			t, err := s.Base.Tenant().Add(ctx, app.TenantAddRequest_builder{Id: p.Tenant.Bytes(), Alias: alias, Name: name}.Build())
 			if err != nil {
 				return fmt.Errorf("tenant %q: %w", alias, err)
 			}
 			tenant := app.TenantRef_builder{Id: t.GetId()}.Build()
 			h, err := s.Base.Holder().Add(ctx, app.HolderAddRequest_builder{
+				Id:     p.Id.Bytes(),
 				Tenant: tenant,
 				Alias:  login,
 				Name:   person,
@@ -94,13 +109,6 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			}.Build())
 			if err != nil {
 				return fmt.Errorf("holder %q: %w", login, err)
-			}
-			if _, err := s.Base.Credential().Add(ctx, app.CredentialAddRequest_builder{
-				Tenant: tenant,
-				Holder: app.HolderRef_builder{Id: h.GetId()}.Build(),
-				Secret: []byte(hash),
-			}.Build()); err != nil {
-				return err
 			}
 			if _, err := s.Base.Party().Add(ctx, app.PartyAddRequest_builder{
 				Tenant: tenant,
@@ -118,13 +126,8 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			hid, _ := pdid.From(h.GetId())
 			ctx = frame.Into(ctx, frame.New(hid, tid, frame.Whole()).WithScope(frame.Only(tid)).WithRow(h))
 
-			if err := seedTypes(ctx, s.Ungated); err != nil {
+			if err := tenancy.SetUp(ctx, s.Ungated, alias, c.App.Labels.Suffix); err != nil {
 				return err
-			}
-			if c.App.Labels.Suffix != "" {
-				if _, err := s.Ungated.TenantDomain().Add(ctx, app.TenantDomainAddRequest_builder{Sub: z.Ptr(alias)}.Build()); err != nil {
-					return fmt.Errorf("label domain: %w", err)
-				}
 			}
 			if demo {
 				if err := seedDemo(ctx, s.Ungated, self); err != nil {
@@ -141,75 +144,4 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			return nil
 		}),
 	}
-}
-
-type attr struct {
-	key, label, kind, unit string
-	options                []string
-}
-
-func spec(as ...attr) *app.TypeSpec {
-	out := &app.TypeSpec{}
-	for _, a := range as {
-		out.SetAttributes(append(out.GetAttributes(), app.AttributeDef_builder{
-			Key:     a.key,
-			Label:   a.label,
-			Type:    a.kind,
-			Unit:    a.unit,
-			Options: a.options,
-		}.Build()))
-	}
-	return out
-}
-
-// rack is a type whose assets hold others at rack positions, which is what
-// the rack view plugin draws.
-func rack(as ...attr) *app.TypeSpec {
-	v := spec(as...)
-	v.SetCapabilities([]string{"rack"})
-	return v
-}
-
-// seedTypes is what a register of an office starts with; a tenant changes
-// them as it likes.
-func seedTypes(ctx context.Context, s app.Server) error {
-	warranty := attr{"warranty_until", "보증 만료", "date", "", nil}
-	computer := []attr{
-		{"cpu", "CPU", "text", "", nil},
-		{"ram", "메모리", "number", "GB", nil},
-		{"disk", "저장장치", "number", "GB", nil},
-		{"os", "운영체제", "enum", "", []string{"Windows", "macOS", "Linux"}},
-		warranty,
-	}
-	types := []struct {
-		name, kind string
-		spec       *app.TypeSpec
-	}{
-		{"노트북", "item", spec(computer...)},
-		{"데스크톱", "item", spec(computer...)},
-		{"모니터", "item", spec(attr{"size", "크기", "number", "inch", nil}, attr{"resolution", "해상도", "text", "", nil}, warranty)},
-		{"휴대폰", "item", spec(attr{"os", "운영체제", "enum", "", []string{"iOS", "Android"}}, attr{"number", "전화번호", "text", "", nil})},
-		{"태블릿", "item", nil},
-		{"주변기기", "item", nil},
-		{"네트워크 장비", "item", spec(attr{"ip", "IP", "text", "", nil}, attr{"mac", "MAC", "text", "", nil})},
-		{"서버", "item", spec(attr{"ip", "IP", "text", "", nil}, attr{"cpu", "CPU", "text", "", nil}, attr{"ram", "메모리", "number", "GB", nil}, warranty)},
-		{"랙", "item", rack(attr{"units", "높이", "number", "U", nil})},
-		{"촬영 장비", "item", nil},
-		{"가구", "item", nil},
-		{"소모품", "item", nil},
-		{"키트", "kit", nil},
-		{"건물", "space", nil},
-		{"층", "space", nil},
-		{"사무실", "space", spec(attr{"seats", "좌석", "number", "석", nil})},
-		{"회의실", "space", spec(attr{"capacity", "정원", "number", "명", nil}, attr{"display", "디스플레이", "bool", "", nil})},
-		{"창고", "space", nil},
-		{"서버실", "space", nil},
-	}
-	for _, ty := range types {
-		req := app.AssetTypeAddRequest_builder{Name: ty.name, Kind: ty.kind, Spec: ty.spec}.Build()
-		if _, err := s.AssetType().Add(ctx, req); err != nil {
-			return fmt.Errorf("type %s: %w", ty.name, err)
-		}
-	}
-	return nil
 }

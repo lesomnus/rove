@@ -233,11 +233,12 @@ function PartyDialog(props: { p: Party; role: string | undefined; onClose: () =>
 			{admin && (
 				<footer className="modal-actions">
 					<button onClick={() => setMode('edit')}>수정</button>
-					{p.kind === 'person' && p.holder === undefined && <button className="primary" onClick={() => setMode('invite')}>로그인 발급</button>}
+					{p.kind === 'person' && p.holder === undefined && c.me.accountsHere && <button className="primary" onClick={() => setMode('invite')}>로그인 발급</button>}
+					{p.kind === 'person' && p.holder === undefined && !c.me.accountsHere && <span className="mute small">로그인은 roster에서 만듭니다. 그 사람이 처음 로그인하면 여기에 들어옵니다.</span>}
 					{p.kind === 'person' && p.holder !== undefined && !self && (
 						<>
 							<button onClick={() => setMode('role')}>역할 변경</button>
-							<button onClick={() => setMode('password')}>비밀번호 재설정</button>
+							{c.me.accountsHere && <button onClick={() => setMode('password')}>비밀번호 재설정</button>}
 							<Confirm label="로그인 중지" danger question={`${p.name}의 로그인을 중지합니다. 사람과 이력은 남습니다.`} onYes={() => act(PartyService.method.deactivate, { ref: ref(p.id) }, { ok: '중지했습니다.' })} />
 						</>
 					)}
