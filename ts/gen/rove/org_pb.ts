@@ -70,7 +70,8 @@ export type Party = Message<"rove.Party"> & {
 
   /**
    * The login account, for a person who has one. Named after its target:
-   * a unique index over an edge named otherwise does not generate.
+   * a unique index over an edge named otherwise does not generate
+   * (protobuf-orm/protoc-gen-orm-ent#1).
    *
    * @generated from field: rove.Holder holder = 10;
    */

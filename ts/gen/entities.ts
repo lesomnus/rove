@@ -133,6 +133,7 @@ export const Credential = {
 	refs: [{ field: "tenant", to: "rove.Tenant" }, { field: "holder", to: "rove.Holder" }],
 	key: "id",
 	ids: ["id"],
+	secrets: ["secret"],
 	service: CredentialService,
 } as const satisfies EntityDesc
 
@@ -348,6 +349,7 @@ export const Session = {
 	refs: [{ field: "tenant", to: "rove.Tenant" }, { field: "holder", to: "rove.Holder" }],
 	key: "id",
 	ids: ["id"],
+	secrets: ["secret"],
 	service: SessionService,
 } as const satisfies EntityDesc
 
