@@ -22,6 +22,7 @@ import (
 	rostercli "github.com/lesomnus/roster/cli"
 	rostercmd "github.com/lesomnus/roster/cmd"
 	"github.com/lesomnus/roster/rstr"
+	rostercore "github.com/lesomnus/roster/server/core"
 	"github.com/lesomnus/roster/server/forget"
 )
 
@@ -440,6 +441,96 @@ func (e *embedded) erased(ctx context.Context) (map[pdid.Id]pdid.Id, error) {
 	}
 
 	return out, nil
+}
+
+// Adoptee is a person [Store.Adopt] writes into the embedded roster, as Rove
+// has them.
+type Adoptee struct {
+	Id    pdid.Id
+	Alias string
+	Name  string
+}
+
+// Adopt writes a tenant and its people, made here before roster held them,
+// into the embedded roster with the identifiers they already have, and issues
+// each of them a password -- `password`, or one made up for each when it is
+// empty: the upgrade of a deployment from before roster (design 9.10). What
+// roster has already is left alone, so it can be run again. It answers the
+// passwords by alias, for the people it made.
+//
+// The verifiers they had are not brought along. Nothing says the two apps'
+// formats agree, and a road that brings in a verifier brings in whatever is
+// put on it.
+func (s *Store) Adopt(ctx context.Context, tenant pdid.Id, alias, name string, people []Adoptee, password string) (map[string]string, error) {
+	if s.em == nil {
+		return nil, ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	own := s.em.rs.Ungated
+	tref := rstr.TenantRef_builder{Id: tenant.Bytes()}.Build()
+	if _, err := own.Tenant().Get(ctx, rstr.TenantGetRequest_builder{Ref: tref}.Build()); err != nil {
+		if status.Code(err) != codes.NotFound {
+			return nil, err
+		}
+		if _, err := own.Tenant().Add(ctx, rstr.TenantAddRequest_builder{Id: tenant.Bytes(), Alias: alias, Name: name}.Build()); err != nil {
+			return nil, fmt.Errorf("tenant @%s: %w", alias, err)
+		}
+	}
+
+	passwords := map[string]string{}
+	for _, p := range people {
+		if p.Alias == Agent {
+			return nil, fmt.Errorf("@%s/%s: the name Rove acts by at roster; nobody else can have it there", alias, p.Alias)
+		}
+		if _, err := own.Holder().Get(ctx, rstr.HolderGetRequest_builder{Ref: rstr.HolderRef_builder{Id: p.Id.Bytes()}.Build()}.Build()); err == nil {
+			continue
+		} else if status.Code(err) != codes.NotFound {
+			return nil, err
+		}
+		v, err := own.Holder().Get(ctx, rstr.HolderGetRequest_builder{
+			Ref: rstr.HolderRef_builder{Slug: rstr.HolderRefBySlug_builder{Alias: z.Ptr(p.Alias), Tenant: tref}.Build()}.Build(),
+		}.Build())
+		switch {
+		case err == nil && p.Alias == rostercore.Administers:
+			// The one roster makes every tenant with, so that somebody can
+			// administer it, and gives no way to sign in: here, the person
+			// of that name is who it was for.
+			id, err := pdid.From(v.GetId())
+			if err != nil {
+				return nil, err
+			}
+			if err := s.ForgetPerson(ctx, id); err != nil {
+				return nil, fmt.Errorf("@%s/%s: %w", alias, p.Alias, err)
+			}
+		case err == nil:
+			return nil, fmt.Errorf("@%s/%s: somebody else at roster already", alias, p.Alias)
+		case status.Code(err) != codes.NotFound:
+			return nil, err
+		}
+		if _, err := own.Holder().Add(ctx, rstr.HolderAddRequest_builder{Id: p.Id.Bytes(), Tenant: tref, Alias: p.Alias, Name: p.Name}.Build()); err != nil {
+			return nil, fmt.Errorf("@%s/%s: %w", alias, p.Alias, err)
+		}
+		secret := password
+		if secret == "" {
+			secret, err = s.issue(ctx, p.Id)
+		} else {
+			_, err = own.Credential().Set(ctx, rstr.CredentialSetRequest_builder{
+				Ref: rstr.HolderRef_builder{Id: p.Id.Bytes()}.Build(), Kind: "password", Secret: []byte(secret),
+			}.Build())
+		}
+		if err != nil {
+			// Not left made with no way in: a run after this one would take
+			// them for brought in already, and pass them by.
+			if e := s.em.rs.Ent.Holder.DeleteOneId(p.Id.Uuid()).Exec(ctx); e != nil {
+				err = fmt.Errorf("%w (and they are at roster with no password: %v)", err, e)
+			}
+			return nil, fmt.Errorf("@%s/%s: %w", alias, p.Alias, err)
+		}
+		passwords[p.Alias] = secret
+	}
+
+	return passwords, nil
 }
 
 func (s *Store) lookupOwn(ctx context.Context, holder pdid.Id) (Person, error) {

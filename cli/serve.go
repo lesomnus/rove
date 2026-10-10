@@ -66,6 +66,11 @@ func NewCmdServe(c *cmd.Config) *xli.Command {
 			} else if err := entschema.Check(ctx, s.Db, s.Dialect, entmigrate.Tables); err != nil {
 				return err
 			}
+			if left, err := fromBeforeRoster(ctx, s); err != nil {
+				return err
+			} else if left {
+				log.From(ctx).WarnContext(ctx, "identity: this deployment's people are from before roster held them, and none of them can sign in until `rove identity migrate`")
+			}
 
 			l, err := net.Listen("tcp", c.Server.ListenAddr())
 			if err != nil {

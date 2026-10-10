@@ -52,7 +52,14 @@ roster app install --tenant acme --role /roster.VouchService/Verify,/roster.Hold
 ROVE_AUTH_ROSTER_ADDR=roster.example.com:443 ROVE_AUTH_ROSTER_KEY=env:ROSTER_KEY ROSTER_KEY=rk_… go run ./cmd/rove serve
 ```
 
-예전 배포(roster 이전에 만든 `data/`)는 사람이 Rove의 DB에 있어서 그대로는 로그인할 수 없습니다. `rove identity migrate` 로 옮깁니다(다음 단계에서 들어옵니다).
+**예전 배포**(roster 이전에 만든 `data/`)는 사람이 Rove의 DB에만 있어서, 업그레이드한 뒤에는 그대로 로그인할 수 없습니다. 한 번 옮깁니다.
+
+```sh
+go run ./cmd/rove identity migrate                       # 사람마다 새 비밀번호를 한 번 출력
+go run ./cmd/rove identity migrate --password demo1234   # 체험용 배포라면: 모두 같은 비밀번호로
+```
+
+조직과 로그인이 같은 ID로 내장 roster에 들어가므로 이력에 남은 행위자는 그대로입니다. 예전 비밀번호는 옮기지 않고 새로 발급하며, 예전 세션은 끝나고, 비밀번호를 담던 `credential` 테이블은 지웁니다. 다시 돌려도 이미 옮긴 사람은 건드리지 않습니다. roster를 따로 운영하면 대신 roster 운영자가 실행할 명령(같은 ID로 조직과 사람 만들기)을 출력합니다.
 
 ### UI 개발
 
