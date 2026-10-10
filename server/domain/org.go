@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"uuid"
 
 	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/payday/slug"
@@ -368,7 +369,12 @@ func (s domainParty) Deactivate(ctx context.Context, req *app.PartyDeactivateReq
 
 // Pseudonymize forgets a person: the party keeps its identifier, so the
 // history that names it still reads, and loses everything that said who it
-// was -- on the row, and in the trail's copies of the row (design 8.2, D13).
+// was -- on the row, and in the trail's copies of it and of their login, in
+// the database and in the archive (design 8.2, D13).
+//
+// What a legal hold is on stays as it was, since a legal claim outweighs an
+// erasure request; the event says how much, and asking again once the hold is
+// lifted finishes it.
 func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymizeRequest) (*app.Party, error) {
 	var out *app.Party
 	err := s.tx(ctx, func(t *Tx) error {
@@ -380,9 +386,7 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 			return invalid("ref", "개인정보 삭제는 사람에게만 합니다")
 		}
 		id := idOf(p.GetId())
-		if err := t.begin(nil, "party.pseudonymize", pdid.Nil, t.now, "개인정보 삭제", "", nil); err != nil {
-			return err
-		}
+		objects := []pdid.Id{id}
 		if h := idOf(p.GetHolder().GetId()); !h.IsZero() {
 			if _, err := t.next.Holder().Erase(t.ctx, app.HolderRef_builder{Id: h.Bytes()}.Build()); err != nil {
 				return err
@@ -390,6 +394,7 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 			if err := t.signOut(h); err != nil {
 				return err
 			}
+			objects = append(objects, h)
 		}
 		out, err = t.next.Party().Patch(t.ctx, app.PartyPatchRequest_builder{
 			Ref:              req.GetRef(),
@@ -406,17 +411,40 @@ func (s domainParty) Pseudonymize(ctx context.Context, req *app.PartyPseudonymiz
 			return err
 		}
 
-		// The trail kept the row as it was after every write; those copies
-		// are the person too. The trail's RPCs refuse writes, rightly, so
-		// this is the deployment going to the table it owns.
-		_, err = t.db.Audit.Update().
-			Where(audit.ObjectId(id.Uuid())).
-			SetValue([]byte{}).
-			SetPatch([]byte{}).
-			Save(t.ctx)
-		return err
+		// The trail kept the rows as they were after every write; those
+		// copies are the person too.
+		held, err := t.forget(objects)
+		if err != nil {
+			return err
+		}
+		payload := map[string]string{}
+		if held > 0 {
+			payload["held"] = fmt.Sprint(held)
+		}
+		return t.begin(nil, "party.pseudonymize", pdid.Nil, t.now, "개인정보 삭제", "", payload)
 	})
 	return out, err
+}
+
+// forget blanks what the trail kept of these objects; see [Deps.Forget].
+func (t *Tx) forget(objects []pdid.Id) (int, error) {
+	if t.deps != nil && t.deps.Forget != nil {
+		return t.deps.Forget(t.ctx, t.db, objects)
+	}
+
+	ids := make([]uuid.UUID, 0, len(objects))
+	for _, v := range objects {
+		ids = append(ids, v.Uuid())
+	}
+	q := t.db.Audit.Update().Where(audit.ObjectIdIn(ids...))
+	if w, err := t.window(); err != nil {
+		return 0, err
+	} else if w.Held() {
+		n, err := t.db.Audit.Query().Where(audit.ObjectIdIn(ids...)).Count(t.ctx)
+		return n, err
+	}
+	_, err := q.SetValue([]byte{}).SetPatch([]byte{}).Save(t.ctx)
+	return 0, err
 }
 
 type domainAssetType struct {

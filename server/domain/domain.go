@@ -71,6 +71,14 @@ type Deps struct {
 	// Retention is the windows of a tenant with no contract (design 8). The
 	// zero value shows all of the history.
 	Retention retention.Defaults
+
+	// Forget blanks what the trail kept of these objects -- its rows in the
+	// database `db` is a client on, which is the operation's transaction, and
+	// their copies in the archive -- except what a legal hold is on, and
+	// answers how much a hold kept (payday's `trail.Policy.Forget`). Nil
+	// blanks the database's rows only, which is all there is when the trail
+	// has no archive.
+	Forget func(ctx context.Context, db *ent.Client, objects []pdid.Id) (held int, err error)
 }
 
 func (d *Deps) now() time.Time {

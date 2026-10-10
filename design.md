@@ -315,7 +315,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
   2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 **그 조직의 계약이 정하는 보존 기간**을 따른다. payday가 조직마다 묻고, Rove가 `TenantContract`와 `LegalHold`로 답한다(`server/retention`). 그래서 제품에서 지운 이력이 trail에 값으로 남지 않고, 법적 보존은 둘을 함께 붙든다.
   3. 계정·권한 도메인(Holder, Identity)의 trail과 접근 기록 로그(9.7절)는 payday `pipa` 프로필(최소 1년) 이상으로 보존한다.
   4. trail 용량이 문제가 되면, 그 자체로 기록 시각을 가진 불변 기록인 시간 행·Event의 쓰기를 recorder에서 빼는 것을 검토한다(payday의 "Changing what the trail records").
-- **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party를 대상으로 한 trail 행의 `value`·`patch`를 비우고(DB에 있는 trail은 Rove가 직접 처리), 아카이브는 payday `trail.Forget`으로 지운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.
+- **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party와 Holder를 대상으로 한 trail 행의 `value`·`patch`를 DB와 아카이브에서 함께 비운다(payday `trail.Policy.Forget`, 가명화와 같은 트랜잭션). 법적 보존이 걸린 행은 그대로 두고 그 건수를 Event에 남기며, 보존이 풀린 뒤 다시 요청하면 마저 비운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.
 - **분할**: 시간 행과 Event는 테넌트와 시각 기준으로 지울 수 있게 인덱스를 둔다. 테넌트마다 보존 기간이 다르므로 파티션 통째 삭제는 가장 긴 보존 기간에만 쓸 수 있고, 나머지는 배치 삭제다.
 - 만료 예정 데이터 관리자 대시보드와 사전 알림, 고객 내보내기(CSV/JSON/첨부 패키지) 경로와 유예 기간을 제공한다.
 - 계약 변경(업그레이드·다운그레이드)은 미래 효력, 유예 기간, 기존 데이터의 취급을 명확히 기록한다. 결제가 한 번 실패했다고 바로 삭제하지 않는다.

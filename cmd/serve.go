@@ -23,6 +23,7 @@ import (
 	"github.com/lesomnus/payday/auth/authsession"
 	"github.com/lesomnus/payday/gate"
 	"github.com/lesomnus/payday/grpcx"
+	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/payday/pdpb"
 	"github.com/lesomnus/payday/spin"
 	"github.com/lesomnus/payday/trail"
@@ -276,6 +277,18 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	if c.App.Retention.Apply {
 		p.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
 	}
+
+	// What the trail kept of a person, forgotten in the database and in the
+	// archive both, when they are pseudonymized. Every tenant's legal holds
+	// are asked whether or not the windows may destroy: a hold outweighs an
+	// erasure either way.
+	fp := p
+	fp.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
+	deps.Forget = func(ctx context.Context, db *ent.Client, objects []pdid.Id) (int, error) {
+		v, err := fp.Forget(ctx, pd.TrailStore(db), objects)
+		return v.Held.Rows + v.Held.Chunks, err
+	}
+
 	if p.On() {
 		log.From(ctx).InfoContext(ctx, "trail: retention", "policy", p.String())
 
