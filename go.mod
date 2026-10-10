@@ -25,8 +25,9 @@ tool (
 )
 
 require (
+	github.com/lesomnus/flob v0.0.0-20261010120939-21f89e60609e
 	github.com/lesomnus/otx v0.0.0-20260807173743-977a5687d6ba
-	github.com/lesomnus/payday v0.0.0-20261010123503-e77246bbf437
+	github.com/lesomnus/payday v0.0.0-20261010204705-f381bc790c43
 	github.com/lesomnus/protobuf-patch v0.0.0-20260803175157-e1b7a0c2804f
 	github.com/lesomnus/xli v0.0.0-20261006051808-dadaa2417a76
 	github.com/lesomnus/xli/cfg v0.1.2
@@ -70,7 +71,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.10.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/lesomnus/flob v0.0.0-20261010120939-21f89e60609e // indirect
 	github.com/lesomnus/mkot v0.0.0-20260907012347-f3fd02e2da01 // indirect
 	github.com/lesomnus/mkot/mkotx v0.0.0-20260801183340-9c83100aa7c2 // indirect
 	github.com/lesomnus/mkot/pretty v0.0.0-20260907012347-f3fd02e2da01 // indirect

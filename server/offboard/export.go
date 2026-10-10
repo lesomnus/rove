@@ -12,7 +12,6 @@ import (
 	"uuid"
 
 	"github.com/lesomnus/payday/pdid"
-	"github.com/lesomnus/payday/trail"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
@@ -48,6 +47,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/internal/ent/usagesnapshot"
 	"github.com/lesomnus/rove/internal/ent/workorder"
+	"github.com/lesomnus/rove/server/pd"
 )
 
 // Manifest is what an export says about itself, as its `manifest.json`.
@@ -188,6 +188,7 @@ var Exported = map[string]reader{
 // this nor [Exported] is one nobody decided about, which a test refuses.
 var Withheld = map[string]string{
 	"audit":      "the trail, which is written apart as the tenant may read it",
+	"archived":   "the deployment's account of the trail's archive, every tenant's chunks at once",
 	"credential": "password hashes",
 	"session":    "who is signed in",
 	"outbox":     "the deployment's queue of what changed",
@@ -263,7 +264,9 @@ func (d Deployment) Export(ctx context.Context, tenant pdid.Id, w io.Writer) (Ma
 		if err != nil {
 			return out, err
 		}
-		if err := trail.ReadTenant(ctx, d.Trail.Archive, tenant, func(doc []byte) error {
+		// Through its manifest: only what the deployment wrote there, and
+		// only while its bytes are what was written.
+		if err := d.Trail.ReadTenant(ctx, pd.TrailStore(d.Ent), tenant, func(doc []byte) error {
 			out.Trail.Archive++
 			_, err := f.Write(append(doc, '\n'))
 			return err

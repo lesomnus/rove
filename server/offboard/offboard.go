@@ -66,17 +66,21 @@ func (d Deployment) held(ctx context.Context, tenant pdid.Id) error {
 	return nil
 }
 
+// Trail is the trail's tables: its rows, and the manifest of its archive.
+var Trail = []string{"audit", "archived"}
+
 // Tables is every table a tenant has rows in, each before every table it
 // points at, so that deleting in this order leaves no reference dangling. The
-// tenant's own row is not one of them, and is last; nor is the trail's, which
-// is the trail's to purge (`trail.Policy.PurgeTenant`).
+// tenant's own row is not one of them, and is last; nor are the trail's, which
+// are the trail's to purge (`trail.Policy.PurgeTenant`): its rows, and the
+// account the database keeps of its archive.
 //
 // It is read off the schema rather than written out, so that an entity added
 // later is purged without anybody remembering to.
 func Tables() ([]string, error) {
 	refs := map[string][]string{}
 	for _, t := range migrate.Tables {
-		if t.Name == "tenant" || t.Name == "audit" {
+		if t.Name == "tenant" || slices.Contains(Trail, t.Name) {
 			continue
 		}
 		if !slices.ContainsFunc(t.Columns, func(c *schema.Column) bool { return c.Name == "tenant_id" }) {

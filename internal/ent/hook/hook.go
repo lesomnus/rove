@@ -21,6 +21,18 @@ func (f AllocationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AllocationMutation", m)
 }
 
+// The ArchivedFunc type is an adapter to allow the use of ordinary
+// function as Archived mutator.
+type ArchivedFunc func(context.Context, *ent.ArchivedMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArchivedFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ArchivedMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArchivedMutation", m)
+}
+
 // The AssetFunc type is an adapter to allow the use of ordinary
 // function as Asset mutator.
 type AssetFunc func(context.Context, *ent.AssetMutation) (ent.Value, error)

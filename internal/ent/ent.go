@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/lesomnus/rove/internal/ent/allocation"
+	"github.com/lesomnus/rove/internal/ent/archived"
 	"github.com/lesomnus/rove/internal/ent/asset"
 	"github.com/lesomnus/rove/internal/ent/assettype"
 	"github.com/lesomnus/rove/internal/ent/attachment"
@@ -109,6 +110,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			allocation.Table:      allocation.ValidColumn,
+			archived.Table:        archived.ValidColumn,
 			asset.Table:           asset.ValidColumn,
 			assettype.Table:       assettype.ValidColumn,
 			attachment.Table:      attachment.ValidColumn,

@@ -4,13 +4,18 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"compress/gzip"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io"
 	"slices"
 	"testing"
+	"time"
+	"uuid"
 
+	"github.com/lesomnus/flob"
 	"github.com/lesomnus/payday/frame"
 	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/payday/pdtest"
@@ -26,6 +31,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/migrate"
 	"github.com/lesomnus/rove/server/offboard"
+	"github.com/lesomnus/rove/server/pd"
 )
 
 type env struct {
@@ -35,7 +41,7 @@ type env struct {
 	c cmd.Config
 }
 
-func newEnv(t *testing.T) *env {
+func newEnv(t *testing.T, opts ...func(*cmd.Config)) *env {
 	x := require.New(t)
 	driver, dsn := pdtest.DB(t)
 	c := cmd.Config{}
@@ -43,6 +49,9 @@ func newEnv(t *testing.T) *env {
 	c.Db.Dsn = dsn
 	c.Watch.Broker = "memory"
 	c.App.Files = t.TempDir()
+	for _, opt := range opts {
+		opt(&c)
+	}
 
 	s, err := cmd.Build(context.Background(), c)
 	x.NoError(err)
@@ -101,6 +110,12 @@ func (e *env) count(t pdid.Id) map[string]int {
 	out := map[string]int{}
 	drv := e.s.Ent.Driver()
 	for _, tb := range migrate.Tables {
+		if tb.Name == "archived" {
+			// The manifest of the trail's archive: a row per blob, and no
+			// tenant's.
+			continue
+		}
+
 		col := "tenant_id"
 		if tb.Name == "tenant" {
 			col = "id"
@@ -140,7 +155,7 @@ func TestEveryTableIsDecidedAbout(t *testing.T) {
 		_, held := offboard.Withheld[tb.Name]
 		x.True(out != held, "%s is exported, withheld, or both", tb.Name)
 
-		if tb.Name == "tenant" || tb.Name == "audit" {
+		if tb.Name == "tenant" || slices.Contains(offboard.Trail, tb.Name) {
 			x.NotContains(order, tb.Name)
 			continue
 		}
@@ -247,4 +262,89 @@ func TestAnExportHasAllOfIt(t *testing.T) {
 		x.NotContains(f.Name, "session")
 	}
 	x.NotContains(string(read("rows/party.jsonl")), "other", "another tenant's row")
+}
+
+// TestAnExportReadsTheArchiveThroughItsManifest: what the trail moved out of
+// the database is in the export, and a chunk put into the archive by somebody
+// who can write it and nothing else is not.
+func TestAnExportReadsTheArchiveThroughItsManifest(t *testing.T) {
+	e := newEnv(t, func(c *cmd.Config) {
+		c.Audit.Archive = t.TempDir()
+		c.Audit.Retain = time.Nanosecond
+	})
+	x := e.x
+	ctx := context.Background()
+	acme := e.tenant("acme")
+	e.tenant("other")
+
+	e.s.Trail.Pass(ctx, pd.TrailStore(e.s.Ent))
+	n, err := e.s.Ent.Audit.Query().Where(audit.TenantId(acme.id.Uuid())).Count(ctx)
+	x.NoError(err)
+	x.Zero(n, "the pass left acme's trail in the database")
+
+	export := func() (offboard.Manifest, []string) {
+		var buf bytes.Buffer
+		m, err := e.s.Offboard(e.c).Export(ctx, acme.id, &buf)
+		x.NoError(err)
+
+		z, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+		x.NoError(err)
+		f, err := z.Open("trail/archive.jsonl")
+		x.NoError(err)
+		defer f.Close()
+
+		ids := []string{}
+		s := bufio.NewScanner(f)
+		for s.Scan() {
+			var v struct {
+				Id string `json:"id"`
+			}
+			x.NoError(json.Unmarshal(s.Bytes(), &v))
+			ids = append(ids, v.Id)
+		}
+
+		return m, ids
+	}
+
+	m, ids := export()
+	x.Positive(m.Trail.Archive)
+	x.Len(ids, m.Trail.Archive)
+
+	// One of acme's rows under another identifier, beside the chunk it came
+	// from and with that chunk's labels.
+	a := e.s.Trail.Archive
+	cs, err := trail.Chunks(ctx, a)
+	x.NoError(err)
+	i := slices.IndexFunc(cs, func(c trail.Chunk) bool { return c.Namespace == acme.id.String() })
+	x.GreaterOrEqual(i, 0, "acme has no chunk of its own")
+	c := cs[i]
+
+	info, err := a.Use(c.Namespace).Stat(ctx, c.Digest)
+	x.NoError(err)
+	l, err := info.Labels(ctx)
+	x.NoError(err)
+
+	var row map[string]any
+	x.NoError(trail.ReadTenant(ctx, a, acme.id, func(doc []byte) error {
+		if row == nil {
+			return json.Unmarshal(doc, &row)
+		}
+		return nil
+	}))
+	forged := uuid.NewV7()
+	row["id"] = base64.StdEncoding.EncodeToString(forged[:])
+	b, err := json.Marshal(row)
+	x.NoError(err)
+
+	var gz bytes.Buffer
+	w := gzip.NewWriter(&gz)
+	_, err = w.Write(append(b, '\n'))
+	x.NoError(err)
+	x.NoError(w.Close())
+	_, err = a.Use(c.Namespace).Add(ctx, flob.Meta{Labels: l}, &gz)
+	x.NoError(err)
+
+	got, ids := export()
+	x.Equal(m.Trail.Archive, got.Trail.Archive, "the export took in a chunk nobody accounts for")
+	x.NotContains(ids, row["id"])
 }

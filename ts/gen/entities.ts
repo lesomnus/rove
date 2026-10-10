@@ -14,6 +14,7 @@
 import type { EntityDesc } from '@lesomnus/payday/store'
 
 import { AllocationSchema, BookableSchema, ReservationSchema, ReservationItemSchema } from './rove/booking_pb.js'
+import { ArchivedSchema } from './rove/payday/archived_pb.js'
 import { AssetSchema, AttachmentSchema, LabelSchema, TenantDomainSchema, TreeLockSchema } from './rove/asset_pb.js'
 import { AssetTypeSchema, ItemModelSchema } from './rove/catalog_pb.js'
 import { AuditSchema } from './rove/payday/audit_pb.js'
@@ -28,6 +29,7 @@ import { PurchaseSchema, PurchaseLineSchema, WorkOrderSchema } from './rove/work
 import { StockSchema, StockMovementSchema } from './rove/stock_pb.js'
 import { TenantSchema } from './rove/payday/tenant_pb.js'
 import { AllocationService, BookableService, ReservationService, ReservationItemService } from './rove/booking_svc_pb.js'
+import { ArchivedService } from './rove/payday/archived_svc_pb.js'
 import { AssetService, AttachmentService, LabelService, TenantDomainService, TreeLockService } from './rove/asset_svc_pb.js'
 import { AssetTypeService, ItemModelService } from './rove/catalog_svc_pb.js'
 import { AuditService } from './rove/payday/audit_svc_pb.js'
@@ -52,6 +54,17 @@ export const Allocation = {
 	key: "id",
 	ids: ["id", "refId"],
 	service: AllocationService,
+} as const satisfies EntityDesc
+
+/** rove.Archived, as the store holds it. */
+export const Archived = {
+	typeName: "rove.Archived",
+	schema: ArchivedSchema,
+	domain: 5,
+	version: "dateUpdated",
+	key: "id",
+	ids: ["id"],
+	service: ArchivedService,
 } as const satisfies EntityDesc
 
 /** rove.Asset, as the store holds it. */
@@ -472,5 +485,5 @@ export const WorkOrder = {
 } as const satisfies EntityDesc
 
 /** Every entity of this app, which is what a store is opened over. */
-export const entities = [Allocation, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
+export const entities = [Allocation, Archived, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
 

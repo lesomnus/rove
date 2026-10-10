@@ -57,6 +57,7 @@ type Server interface {
 	UsageSnapshot() UsageSnapshotServiceServer
 	TenantContract() TenantContractServiceServer
 	LegalHold() LegalHoldServiceServer
+	Archived() ArchivedServiceServer
 	Audit() AuditServiceServer
 	Outbox() OutboxServiceServer
 	WorkOrder() WorkOrderServiceServer
@@ -100,6 +101,7 @@ func RegisterServer(g grpc.ServiceRegistrar, s Server) {
 	RegisterUsageSnapshotServiceServer(g, s.UsageSnapshot())
 	RegisterTenantContractServiceServer(g, s.TenantContract())
 	RegisterLegalHoldServiceServer(g, s.LegalHold())
+	RegisterArchivedServiceServer(g, s.Archived())
 	RegisterAuditServiceServer(g, s.Audit())
 	RegisterOutboxServiceServer(g, s.Outbox())
 	RegisterWorkOrderServiceServer(g, s.WorkOrder())
@@ -139,6 +141,7 @@ type UnimplementedServer struct {
 	UsageSnapshotServer   UsageSnapshotServiceServer
 	TenantContractServer  TenantContractServiceServer
 	LegalHoldServer       LegalHoldServiceServer
+	ArchivedServer        ArchivedServiceServer
 	AuditServer           AuditServiceServer
 	OutboxServer          OutboxServiceServer
 	WorkOrderServer       WorkOrderServiceServer
@@ -217,6 +220,9 @@ func (UnimplementedServer) TenantContract() TenantContractServiceServer {
 func (UnimplementedServer) LegalHold() LegalHoldServiceServer {
 	return UnimplementedLegalHoldServiceServer{}
 }
+func (UnimplementedServer) Archived() ArchivedServiceServer {
+	return UnimplementedArchivedServiceServer{}
+}
 func (UnimplementedServer) Audit() AuditServiceServer   { return UnimplementedAuditServiceServer{} }
 func (UnimplementedServer) Outbox() OutboxServiceServer { return UnimplementedOutboxServiceServer{} }
 func (UnimplementedServer) WorkOrder() WorkOrderServiceServer {
@@ -261,6 +267,7 @@ type StaticServer struct {
 	UsageSnapshotServer   UsageSnapshotServiceServer
 	TenantContractServer  TenantContractServiceServer
 	LegalHoldServer       LegalHoldServiceServer
+	ArchivedServer        ArchivedServiceServer
 	AuditServer           AuditServiceServer
 	OutboxServer          OutboxServiceServer
 	WorkOrderServer       WorkOrderServiceServer
@@ -299,6 +306,7 @@ func (s StaticServer) Notification() NotificationServiceServer       { return s.
 func (s StaticServer) UsageSnapshot() UsageSnapshotServiceServer     { return s.UsageSnapshotServer }
 func (s StaticServer) TenantContract() TenantContractServiceServer   { return s.TenantContractServer }
 func (s StaticServer) LegalHold() LegalHoldServiceServer             { return s.LegalHoldServer }
+func (s StaticServer) Archived() ArchivedServiceServer               { return s.ArchivedServer }
 func (s StaticServer) Audit() AuditServiceServer                     { return s.AuditServer }
 func (s StaticServer) Outbox() OutboxServiceServer                   { return s.OutboxServer }
 func (s StaticServer) WorkOrder() WorkOrderServiceServer             { return s.WorkOrderServer }
@@ -337,6 +345,7 @@ type Client interface {
 	UsageSnapshot() UsageSnapshotServiceClient
 	TenantContract() TenantContractServiceClient
 	LegalHold() LegalHoldServiceClient
+	Archived() ArchivedServiceClient
 	Audit() AuditServiceClient
 	Outbox() OutboxServiceClient
 	WorkOrder() WorkOrderServiceClient
@@ -377,6 +386,7 @@ func NewClient(c *grpc.ClientConn) Client {
 		_UsageSnapshot:   NewUsageSnapshotServiceClient(c),
 		_TenantContract:  NewTenantContractServiceClient(c),
 		_LegalHold:       NewLegalHoldServiceClient(c),
+		_Archived:        NewArchivedServiceClient(c),
 		_Audit:           NewAuditServiceClient(c),
 		_Outbox:          NewOutboxServiceClient(c),
 		_WorkOrder:       NewWorkOrderServiceClient(c),
@@ -417,6 +427,7 @@ type client struct {
 	_UsageSnapshot   UsageSnapshotServiceClient
 	_TenantContract  TenantContractServiceClient
 	_LegalHold       LegalHoldServiceClient
+	_Archived        ArchivedServiceClient
 	_Audit           AuditServiceClient
 	_Outbox          OutboxServiceClient
 	_WorkOrder       WorkOrderServiceClient
@@ -455,6 +466,7 @@ func (c *client) Notification() NotificationServiceClient       { return c._Noti
 func (c *client) UsageSnapshot() UsageSnapshotServiceClient     { return c._UsageSnapshot }
 func (c *client) TenantContract() TenantContractServiceClient   { return c._TenantContract }
 func (c *client) LegalHold() LegalHoldServiceClient             { return c._LegalHold }
+func (c *client) Archived() ArchivedServiceClient               { return c._Archived }
 func (c *client) Audit() AuditServiceClient                     { return c._Audit }
 func (c *client) Outbox() OutboxServiceClient                   { return c._Outbox }
 func (c *client) WorkOrder() WorkOrderServiceClient             { return c._WorkOrder }

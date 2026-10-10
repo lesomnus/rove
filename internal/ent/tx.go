@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Allocation is the client for interacting with the Allocation builders.
 	Allocation *AllocationClient
+	// Archived is the client for interacting with the Archived builders.
+	Archived *ArchivedClient
 	// Asset is the client for interacting with the Asset builders.
 	Asset *AssetClient
 	// AssetType is the client for interacting with the AssetType builders.
@@ -216,6 +218,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Allocation = NewAllocationClient(tx.config)
+	tx.Archived = NewArchivedClient(tx.config)
 	tx.Asset = NewAssetClient(tx.config)
 	tx.AssetType = NewAssetTypeClient(tx.config)
 	tx.Attachment = NewAttachmentClient(tx.config)
