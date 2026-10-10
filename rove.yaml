@@ -67,8 +67,8 @@ app:
   # What a tenant's history is kept for (design 8). A tenant's own windows are
   # its contract's -- `rove contract set --tenant acme --view 365 --keep 730`
   # -- and these are what a tenant with no contract gets. `apply` is the
-  # deployment saying a window may destroy: off, the windows are read and
-  # nothing is removed.
+  # deployment saying a window may destroy: off, the view window still
+  # applies to what a tenant reads, and nothing is removed.
   #
   # retention:
   #   apply: false

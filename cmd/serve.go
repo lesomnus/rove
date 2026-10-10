@@ -121,7 +121,8 @@ type Server struct {
 // The two hooks are the whole of what payday puts in the write and read paths,
 // and both come out of what the schema declared: [pd.Minter] stamps a new row
 // with the domain of its entity and refuses one of another, [pd.Wall] narrows
-// every read to the tenants the caller may see.
+// every read to the tenants the caller may see -- and [domain.View] to the
+// part of their history their contract lets them look at.
 func Build(ctx context.Context, c Config) (*Server, error) {
 	db, dialect, err := c.Db.Open(ctx)
 	if err != nil {
@@ -183,7 +184,10 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		return nil, err
 	}
 
-	walled, err := pd.NewSink(client, append(opts, bare.WithScope(pd.Wall()))...)
+	// The wall, and inside it the tenant's view window over what a predicate
+	// can narrow to it (design 8.1).
+	scope := bare.Scopes{pd.Wall(), domain.View(client, deps)}
+	walled, err := pd.NewSink(client, append(opts, bare.WithScope(scope))...)
 	if err != nil {
 		db.Close()
 		return nil, err
@@ -426,6 +430,7 @@ func depsOf(c Config) (*domain.Deps, error) {
 		LabelPort:   port,
 		LookupTXT:   net.DefaultResolver.LookupTXT,
 		NoShowAfter: c.App.NoShowAfter,
+		Retention:   c.App.Retention.Defaults(),
 	}, nil
 }
 

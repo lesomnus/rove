@@ -84,9 +84,16 @@ var reads = []string{"Get", "List", "Watch"}
 
 func init() {
 	// The register and its history are everybody's to read.
+	//
+	// The time rows -- Placement, Link, Stewardship, Fact -- are read through
+	// the history reads, Timeline, QueryAt and Diff, and not one by one: those
+	// answer within the tenant's view window (design 8.1), and the rows cannot
+	// be narrowed to it where they are kept without hiding them from the
+	// domain layer that supersedes them. The events can, and are; see
+	// `domain.View`.
 	for _, s := range []string{
 		"Asset", "AssetType", "ItemModel", "Attachment", "Label", "TenantDomain",
-		"Placement", "Link", "Stewardship", "Fact", "Event",
+		"Event",
 		"Party", "Tenant",
 		"Bookable", "Reservation", "ReservationItem", "Allocation",
 		"Custody", "CustodyLine",

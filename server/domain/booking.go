@@ -948,7 +948,8 @@ func (t *Tx) mineOrManager(r *app.Reservation) error {
 	return nil
 }
 
-// Calendar answers the reservations touching a span.
+// Calendar answers the reservations touching a span, from where the tenant's
+// view window begins (design 8.1).
 func (s domainReservation) Calendar(ctx context.Context, req *app.ReservationCalendarRequest) (*app.ReservationCalendarResponse, error) {
 	t, err := s.read(ctx)
 	if err != nil {
@@ -960,6 +961,14 @@ func (s domainReservation) Calendar(ctx context.Context, req *app.ReservationCal
 	}
 	if req.HasTo() {
 		to = req.GetTo().AsTime()
+	}
+	since, err := t.since()
+	if err != nil {
+		return nil, err
+	}
+	if from.Before(since) {
+		// A week the window begins in shows the part of it the window has.
+		from = since
 	}
 	q := t.db.Reservation.Query().Where(
 		reservation.TenantId(t.tenant.Uuid()),
@@ -1033,6 +1042,13 @@ func (s domainBookable) Availability(ctx context.Context, req *app.BookableAvail
 	}
 	if to.Sub(from) > 92*24*time.Hour {
 		return nil, invalid("to", "한 번에 석 달까지 볼 수 있습니다")
+	}
+	since, err := t.since()
+	if err != nil {
+		return nil, err
+	}
+	if from.Before(since) {
+		from = since
 	}
 
 	busy := []*app.BusySpan{}

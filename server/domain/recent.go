@@ -9,6 +9,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/event"
 	"github.com/lesomnus/rove/internal/ent/predicate"
+	"github.com/lesomnus/rove/server/retention"
 )
 
 type domainEvent struct {
@@ -32,6 +33,13 @@ func (s domainEvent) Recent(ctx context.Context, req *app.EventRecentRequest) (*
 		return nil, err
 	}
 	ps := []predicate.Event{event.TenantId(t.tenant.Uuid())}
+	since, err := t.since()
+	if err != nil {
+		return nil, err
+	}
+	if !since.IsZero() {
+		ps = append(ps, retention.EventIn(since))
+	}
 	if k := req.GetKind(); k != "" {
 		ps = append(ps, event.KindHasPrefix(k))
 	}
@@ -57,7 +65,8 @@ type domainAudit struct {
 func (s Domain) Audit() app.AuditServiceServer { return domainAudit{s, s.Next().Audit()} }
 
 // Recent answers the newest trail rows a person in this tenant may read: what
-// happened to its rows, and what its people did.
+// happened to its rows, and what its people did -- the history's within the
+// tenant's view window, since the trail of a write holds what it wrote.
 func (s domainAudit) Recent(ctx context.Context, req *app.AuditRecentRequest) (*app.AuditRecentResponse, error) {
 	t, err := s.read(ctx)
 	if err != nil {
@@ -65,6 +74,13 @@ func (s domainAudit) Recent(ctx context.Context, req *app.AuditRecentRequest) (*
 	}
 	tn := t.tenant.Uuid()
 	ps := []predicate.Audit{audit.Or(audit.TenantId(tn), audit.ActorTenantId(tn))}
+	since, err := t.since()
+	if err != nil {
+		return nil, err
+	}
+	if !since.IsZero() {
+		ps = append(ps, audit.Or(audit.TenantIdNEQ(tn), retention.AuditIn(since)))
+	}
 	if req.HasBefore() {
 		ps = append(ps, audit.DateCreatedLT(req.GetBefore().AsTime()))
 	}

@@ -117,6 +117,8 @@ func TestTheRoleTable(t *testing.T) {
 	x.Equal(codes.PermissionDenied, code(err))
 	_, err = app.NewCredentialServiceClient(w.conn).Get(w.owner, app.CredentialGetRequest_builder{}.Build())
 	x.Equal(codes.PermissionDenied, code(err), "nobody reads a password hash")
+	_, err = app.NewPlacementServiceClient(w.conn).List(w.owner, app.PlacementListRequest_builder{}.Build())
+	x.Equal(codes.PermissionDenied, code(err), "the time rows are read through the history, which keeps to the view window")
 
 	_, err = app.NewAuditServiceClient(w.conn).Recent(auditor, app.AuditRecentRequest_builder{}.Build())
 	x.NoError(err, "the trail is what an auditor is for")

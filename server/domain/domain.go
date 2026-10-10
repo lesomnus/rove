@@ -35,6 +35,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/event"
 	"github.com/lesomnus/rove/internal/ent/treelock"
 	"github.com/lesomnus/rove/server/pd"
+	"github.com/lesomnus/rove/server/retention"
 	"github.com/lesomnus/rove/server/storage"
 )
 
@@ -66,6 +67,10 @@ type Deps struct {
 	// NoShowAfter is how long after a room reservation begins it is released
 	// when nobody checked in. Zero holds nobody to checking in.
 	NoShowAfter time.Duration
+
+	// Retention is the windows of a tenant with no contract (design 8). The
+	// zero value shows all of the history.
+	Retention retention.Defaults
 }
 
 func (d *Deps) now() time.Time {
@@ -137,6 +142,9 @@ type Tx struct {
 
 	// The event every row written by this operation points at.
 	ev pdid.Id
+
+	// win is the tenant's history windows, once something asked.
+	win *retention.Window
 }
 
 // errDone is an operation that already happened: its op was seen before.
@@ -317,13 +325,74 @@ func (t *Tx) lockTree() error {
 // invalid is a refusal about one field of a request: the sentence a person
 // reads, and the field beside it, in a BadRequest, for a form to point at.
 func invalid(field, format string, args ...any) error {
-	msg := fmt.Sprintf(format, args...)
-	st := status.New(codes.InvalidArgument, msg)
+	return refuse(codes.InvalidArgument, field, fmt.Sprintf(format, args...))
+}
+
+func refuse(c codes.Code, field, msg string) error {
+	st := status.New(c, msg)
 	v, err := st.WithDetails(&errdetails.BadRequest{FieldViolations: []*errdetails.BadRequest_FieldViolation{{Field: field, Description: msg}}})
 	if err != nil {
 		return st.Err()
 	}
 	return v.Err()
+}
+
+// window is the caller's tenant's history windows now (design 8.1), read
+// once per operation.
+func (t *Tx) window() (retention.Window, error) {
+	if t.win != nil {
+		return *t.win, nil
+	}
+
+	var d retention.Defaults
+	if t.deps != nil {
+		d = t.deps.Retention
+	}
+	w, err := retention.Of(t.ctx, t.db, t.tenant, t.now, d)
+	if err != nil {
+		return retention.Window{}, err
+	}
+
+	t.win = &w
+	return w, nil
+}
+
+// since is the oldest moment the caller's tenant may look at, and the zero
+// time when it may look at all of its history.
+func (t *Tx) since() (time.Time, error) {
+	w, err := t.window()
+	if err != nil {
+		return time.Time{}, err
+	}
+	return w.Since(t.now), nil
+}
+
+// inView refuses a moment before the view window: what a tenant may not look
+// at, it may not ask the state of either. OutOfRange rather than
+// InvalidArgument, because the same moment is a fine one under a longer
+// contract.
+func (t *Tx) inView(field string, at time.Time) error {
+	w, err := t.window()
+	if err != nil {
+		return err
+	}
+	since := w.Since(t.now)
+	if since.IsZero() || !at.Before(since) {
+		return nil
+	}
+
+	return refuse(codes.OutOfRange, field, fmt.Sprintf("이 조직은 최근 %d일(%s부터)의 이력만 볼 수 있습니다",
+		int(w.View/(24*time.Hour)), since.In(Zone).Format("2006년 1월 2일")))
+}
+
+// gone answers whether a time row is history a view window beginning at
+// `since` does not reach: it ended, or it was superseded, before the window
+// began. A row the window begins inside of is the state the window begins in.
+func gone(since time.Time, to, superseded *time.Time) bool {
+	if since.IsZero() {
+		return false
+	}
+	return (to != nil && !to.After(since)) || (superseded != nil && !superseded.After(since))
 }
 
 // when is a moment as a person here reads one, in a refusal.
