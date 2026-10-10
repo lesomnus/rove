@@ -9,6 +9,9 @@ import (
 // Allocation is the predicate function for allocation builders.
 type Allocation func(*sql.Selector)
 
+// Archived is the predicate function for archived builders.
+type Archived func(*sql.Selector)
+
 // Asset is the predicate function for asset builders.
 type Asset func(*sql.Selector)
 

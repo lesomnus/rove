@@ -10,6 +10,7 @@ import (
 	rove "github.com/lesomnus/rove"
 	ent "github.com/lesomnus/rove/internal/ent"
 	allocation "github.com/lesomnus/rove/internal/ent/allocation"
+	archived "github.com/lesomnus/rove/internal/ent/archived"
 	asset "github.com/lesomnus/rove/internal/ent/asset"
 	assettype "github.com/lesomnus/rove/internal/ent/assettype"
 	attachment "github.com/lesomnus/rove/internal/ent/attachment"
@@ -374,6 +375,7 @@ type Scope interface {
 	UsageSnapshotScope(ctx context.Context) (predicate.UsageSnapshot, error)
 	TenantContractScope(ctx context.Context) (predicate.TenantContract, error)
 	LegalHoldScope(ctx context.Context) (predicate.LegalHold, error)
+	ArchivedScope(ctx context.Context) (predicate.Archived, error)
 	AuditScope(ctx context.Context) (predicate.Audit, error)
 	OutboxScope(ctx context.Context) (predicate.Outbox, error)
 	WorkOrderScope(ctx context.Context) (predicate.WorkOrder, error)
@@ -484,6 +486,9 @@ func (Unscoped) TenantContractScope(_ context.Context) (predicate.TenantContract
 	return nil, nil
 }
 func (Unscoped) LegalHoldScope(_ context.Context) (predicate.LegalHold, error) {
+	return nil, nil
+}
+func (Unscoped) ArchivedScope(_ context.Context) (predicate.Archived, error) {
 	return nil, nil
 }
 func (Unscoped) AuditScope(_ context.Context) (predicate.Audit, error) {
@@ -1141,6 +1146,26 @@ func (ss Scopes) LegalHoldScope(ctx context.Context) (predicate.LegalHold, error
 	return legalhold.And(ps...), nil
 }
 
+func (ss Scopes) ArchivedScope(ctx context.Context) (predicate.Archived, error) {
+	ps := make([]predicate.Archived, 0, len(ss))
+	for _, s := range ss {
+		p, err := s.ArchivedScope(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if p == nil {
+			continue
+		}
+
+		ps = append(ps, p)
+	}
+	if len(ps) == 0 {
+		return nil, nil
+	}
+
+	return archived.And(ps...), nil
+}
+
 func (ss Scopes) AuditScope(ctx context.Context) (predicate.Audit, error) {
 	ps := make([]predicate.Audit, 0, len(ss))
 	for _, s := range ss {
@@ -1426,8 +1451,9 @@ func (s Server) TenantContract() rove.TenantContractServiceServer {
 func (s Server) LegalHold() rove.LegalHoldServiceServer {
 	return LegalHoldServiceServer{Store: s.Store}
 }
-func (s Server) Audit() rove.AuditServiceServer   { return AuditServiceServer{Store: s.Store} }
-func (s Server) Outbox() rove.OutboxServiceServer { return OutboxServiceServer{Store: s.Store} }
+func (s Server) Archived() rove.ArchivedServiceServer { return ArchivedServiceServer{Store: s.Store} }
+func (s Server) Audit() rove.AuditServiceServer       { return AuditServiceServer{Store: s.Store} }
+func (s Server) Outbox() rove.OutboxServiceServer     { return OutboxServiceServer{Store: s.Store} }
 func (s Server) WorkOrder() rove.WorkOrderServiceServer {
 	return WorkOrderServiceServer{Store: s.Store}
 }

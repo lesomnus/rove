@@ -61,6 +61,37 @@ var (
 			},
 		},
 	}
+	// ArchivedColumns holds the columns for the "archived" table.
+	ArchivedColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUuid, Unique: true},
+		{Name: "labels", Type: field.TypeJson, Nullable: true},
+		{Name: "namespace", Type: field.TypeString},
+		{Name: "digest", Type: field.TypeString},
+		{Name: "intent", Type: field.TypeString},
+		{Name: "state", Type: field.TypeString},
+		{Name: "since", Type: field.TypeUint32},
+		{Name: "date_updated", Type: field.TypeTime},
+		{Name: "date_created", Type: field.TypeTime, Nullable: true},
+		{Name: "gone", Type: field.TypeUint32},
+	}
+	// ArchivedTable holds the schema information for the "archived" table.
+	ArchivedTable = &schema.Table{
+		Name:       "archived",
+		Columns:    ArchivedColumns,
+		PrimaryKey: []*schema.Column{ArchivedColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "archived_namespace_digest",
+				Unique:  false,
+				Columns: []*schema.Column{ArchivedColumns[2], ArchivedColumns[3]},
+			},
+			{
+				Name:    "archived_state",
+				Unique:  false,
+				Columns: []*schema.Column{ArchivedColumns[5]},
+			},
+		},
+	}
 	// AssetColumns holds the columns for the "asset" table.
 	AssetColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUuid, Unique: true},
@@ -1672,6 +1703,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AllocationTable,
+		ArchivedTable,
 		AssetTable,
 		AssettypeTable,
 		AttachmentTable,
@@ -1715,6 +1747,9 @@ func init() {
 	AllocationTable.ForeignKeys[1].RefTable = AssetTable
 	AllocationTable.Annotation = &entsql.Annotation{
 		Table: "allocation",
+	}
+	ArchivedTable.Annotation = &entsql.Annotation{
+		Table: "archived",
 	}
 	AssetTable.ForeignKeys[0].RefTable = TenantTable
 	AssetTable.ForeignKeys[1].RefTable = AssettypeTable

@@ -101,9 +101,18 @@ app:
 # are not uniform: what was done to a person eventually has to stop existing,
 # and what a machine did is an operating record with the opposite requirement.
 #
+# With an archive, the database keeps an account of what it holds, and
+# `rove trail verify` checks the two. `checkpoints:` is where every pass leaves
+# what the archive held: on a disk that refuses deletion, and signed with a key
+# mounted as a secret -- or given as the PEM document itself, through
+# ROVE_AUDIT_CHECKPOINTS_KEY.
+#
 # audit:
 #   profile: pipa
 #   archive: /var/lib/rove/audit
+#   checkpoints:
+#     dir: /mnt/worm/rove/checkpoints
+#     key: /run/secrets/checkpoints.pem
 #   by:
 #     holder:
 #       profile: gdpr
