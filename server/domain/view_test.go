@@ -235,6 +235,9 @@ type documents struct {
 	back, still *app.Custody
 	done, open  *app.WorkOrder
 	paper       *app.Stock
+
+	// receipt is a file kept for the loan given back.
+	receipt *app.Attachment
 }
 
 // aYearOfDocuments makes, four hundred days ago, a meeting called off, two
@@ -268,6 +271,12 @@ func (e *env) aYearOfDocuments() documents {
 		return v
 	}
 	d.back, d.still = lend(laptop), lend(phone)
+	d.receipt, err = e.app().Attachment().Upload(e.owner, app.AttachmentUploadRequest_builder{
+		SubjectId: d.back.GetId(),
+		Name:      "인수증.pdf",
+		Data:      []byte("signed"),
+	}.Build())
+	x.NoError(err)
 
 	work := func(a *app.Asset) *app.WorkOrder {
 		v, err := e.app().WorkOrder().Add(e.owner, app.WorkOrderAddRequest_builder{Asset: assetRef(a), Name: "점검"}.Build())

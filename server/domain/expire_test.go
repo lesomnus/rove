@@ -55,7 +55,7 @@ func TestAKeepWindowTakesWhatItNoLongerReaches(t *testing.T) {
 	e := newEnv(t)
 	x := e.x
 	hq, _, b, laptop := e.aYearOfALaptop()
-	e.aYearOfDocuments()
+	docs := e.aYearOfDocuments()
 
 	x.Zero(e.expire(false).Total(), "a tenant with no contract is kept forever")
 
@@ -85,9 +85,14 @@ func TestAKeepWindowTakesWhatItNoLongerReaches(t *testing.T) {
 	x.Equal(1, after.custodies, "the loan never given back is the present")
 	x.Equal(1, after.lines)
 	x.Equal(1, after.works, "the work still open")
+	x.Equal(1, got.Attachments, "the file kept for the loan given back")
+	x.Empty(got.Lost)
+	_, err := e.s.Deps.Files.Open(context.Background(), docs.receipt.GetObjectKey())
+	x.Error(err, "the file of a loan that went is still stored")
+	var n int
 
 	// The value it had stopped having, and the event that set it, are gone.
-	n, err := e.s.Ent.Fact.Query().Where(fact.Key("status"), fact.Value("in_repair")).Count(context.Background())
+	n, err = e.s.Ent.Fact.Query().Where(fact.Key("status"), fact.Value("in_repair")).Count(context.Background())
 	x.NoError(err)
 	x.Zero(n)
 

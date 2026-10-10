@@ -35,6 +35,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/server/bare"
 	"github.com/lesomnus/rove/server/domain"
+	"github.com/lesomnus/rove/server/offboard"
 	"github.com/lesomnus/rove/server/pd"
 	"github.com/lesomnus/rove/server/policy"
 	"github.com/lesomnus/rove/server/retention"
@@ -81,6 +82,11 @@ type Server struct {
 	// Deps is what the domain layer of both stacks shares: the clock, the
 	// files, how labels are addressed.
 	Deps *domain.Deps
+
+	// Trail is the trail's policy with every tenant's windows and legal holds
+	// answered, whether or not `app.retention.apply` lets a pass destroy by
+	// them: what an erasure, an export and a purge go by.
+	Trail trail.Policy
 
 	// Sessions mints and reads the cookie a browser signs in with.
 	Sessions *authsession.Sessions
@@ -282,10 +288,10 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 	// archive both, when they are pseudonymized. Every tenant's legal holds
 	// are asked whether or not the windows may destroy: a hold outweighs an
 	// erasure either way.
-	fp := p
-	fp.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
+	s.Trail = p
+	s.Trail.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
 	deps.Forget = func(ctx context.Context, db *ent.Client, objects []pdid.Id) (int, error) {
-		v, err := fp.Forget(ctx, pd.TrailStore(db), objects)
+		v, err := s.Trail.Forget(ctx, pd.TrailStore(db), objects)
 		return v.Held.Rows + v.Held.Chunks, err
 	}
 
@@ -299,6 +305,18 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 }
 
 func (s *Server) Close() error { return s.Db.Close() }
+
+// Offboard is what a tenant's export and purge work on.
+func (s *Server) Offboard(c Config) offboard.Deployment {
+	return offboard.Deployment{
+		Ent:       s.Ent,
+		Drv:       s.Drv,
+		Files:     s.Deps.Files,
+		Trail:     s.Trail,
+		Retention: c.App.Retention.Defaults(),
+		Now:       s.Deps.Clock,
+	}
+}
 
 // Grpc builds the server every call arrives at.
 //

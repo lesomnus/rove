@@ -103,6 +103,9 @@ func expire(ctx context.Context, self *xli.Command, c *cmd.Config, dry bool) err
 		}
 		self.Printf("%s: what was over before %s\n", t.Alias, x.Before.UTC().Format(time.DateOnly))
 		self.Printf("  history %s %d: %s\n", verb, x.Total(), counts(x))
+		if len(x.Lost) > 0 {
+			self.Printf("  files that could not be removed: %s\n", strings.Join(x.Lost, ", "))
+		}
 
 		if !dry {
 			continue
@@ -139,9 +142,9 @@ func expire(ctx context.Context, self *xli.Command, c *cmd.Config, dry bool) err
 
 func counts(x domain.Expired) string {
 	return fmt.Sprintf("%d placements, %d links, %d stewardships, %d facts, %d events, "+
-		"%d reservations, %d loans, %d counts, %d work orders, %d stock movements",
+		"%d reservations, %d loans, %d counts, %d work orders, %d stock movements, %d attachments",
 		x.Placements, x.Links, x.Stewardships, x.Facts, x.Events,
-		x.Reservations, x.Custodies, x.Counts, x.WorkOrders, x.StockMovements)
+		x.Reservations, x.Custodies, x.Counts, x.WorkOrders, x.StockMovements, x.Attachments)
 }
 
 // tenantsNamed is the tenant `--tenant` names, or every tenant.

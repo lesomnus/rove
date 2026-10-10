@@ -17,6 +17,7 @@ import (
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/internal/ent"
 	"github.com/lesomnus/rove/internal/ent/allocation"
+	"github.com/lesomnus/rove/internal/ent/attachment"
 	"github.com/lesomnus/rove/internal/ent/countfinding"
 	"github.com/lesomnus/rove/internal/ent/custody"
 	"github.com/lesomnus/rove/internal/ent/custodyline"
@@ -53,12 +54,19 @@ type Expired struct {
 	// reservation's items and the time it held, a loan's lines, a count's
 	// findings, a work order's blocks. And the stock movements.
 	Reservations, Custodies, Counts, WorkOrders, StockMovements int
+
+	// Attachments is the files kept for the documents that went, which went
+	// with them, and Lost the stored files of those that could not be removed
+	// and are no row's any more.
+	Attachments int
+	Lost        []string
 }
 
 // Total is how many rows, documents counted once with their parts.
 func (x Expired) Total() int {
 	return x.Placements + x.Links + x.Stewardships + x.Facts + x.Events +
-		x.Reservations + x.Custodies + x.Counts + x.WorkOrders + x.StockMovements
+		x.Reservations + x.Custodies + x.Counts + x.WorkOrders + x.StockMovements +
+		x.Attachments
 }
 
 // Expire takes out of a tenant's history what its keep window no longer
@@ -82,6 +90,7 @@ func (x Expired) Total() int {
 // own work, and nobody's in the tenant.
 func (d *Deps) Expire(ctx context.Context, server app.Server, drv dialect.Driver, tenant pdid.Id, dry bool) (Expired, error) {
 	out := Expired{Tenant: tenant}
+	var files []string
 	fctx := frame.Into(ctx, frame.New(pdid.Nil, tenant, frame.Grant{}).WithScope(frame.Only(tenant)))
 	err := d.System(fctx, server, drv, tenant, func(t *Tx) error {
 		w, err := t.window()
@@ -98,7 +107,8 @@ func (d *Deps) Expire(ctx context.Context, server app.Server, drv dialect.Driver
 			return nil
 		}
 
-		if err := t.expire(out.Before, &out); err != nil {
+		files, err = t.expire(out.Before, &out)
+		if err != nil {
 			return err
 		}
 		if dry {
@@ -122,18 +132,31 @@ func (d *Deps) Expire(ctx context.Context, server app.Server, drv dialect.Driver
 				"counts":          fmt.Sprint(out.Counts),
 				"work_orders":     fmt.Sprint(out.WorkOrders),
 				"stock_movements": fmt.Sprint(out.StockMovements),
+				"attachments":     fmt.Sprint(out.Attachments),
 			})
 	})
 	if errors.Is(err, errDry) {
-		err = nil
+		return out, nil
+	}
+	if err != nil {
+		return out, err
 	}
 
-	return out, err
+	// The files, once nothing points at them; a file that stays is one
+	// nobody can reach, and is said so.
+	for _, k := range files {
+		if d.Files == nil || d.Files.Delete(ctx, k) != nil {
+			out.Lost = append(out.Lost, k)
+		}
+	}
+
+	return out, nil
 }
 
 // expire deletes, in an order no reference is left dangling by: the rows that
-// point at events before the events, a document's parts before it.
-func (t *Tx) expire(c time.Time, out *Expired) error {
+// point at events before the events, a document's parts before it. It answers
+// the keys of the files the attachments that went kept.
+func (t *Tx) expire(c time.Time, out *Expired) ([]string, error) {
 	tid := t.tenant.Uuid()
 	var err error
 	n := func(v int, e error) int {
@@ -143,17 +166,29 @@ func (t *Tx) expire(c time.Time, out *Expired) error {
 		return v
 	}
 
+	// The files kept for the documents that go, before the documents.
+	atts := attachment.And(attachment.TenantId(tid), attachment.Or(
+		predicate.Attachment(idIn(attachment.FieldSubjectId, attachment.FieldTenantId, custody.Table, custody.FieldId, custody.FieldTenantId, custodyOver(c))),
+		predicate.Attachment(idIn(attachment.FieldSubjectId, attachment.FieldTenantId, workorder.Table, workorder.FieldId, workorder.FieldTenantId, workOver(c))),
+		predicate.Attachment(idIn(attachment.FieldSubjectId, attachment.FieldTenantId, countfinding.Table, countfinding.FieldId, countfinding.FieldTenantId, countfinding.HasCountWith(countOver(c)))),
+	))
+	files, err := t.db.Attachment.Query().Where(atts).Select(attachment.FieldObjectKey).Strings(t.ctx)
+	if err != nil {
+		return nil, err
+	}
+	out.Attachments = n(t.db.Attachment.Delete().Where(atts).Exec(t.ctx))
+
 	out.Placements = n(t.db.Placement.Delete().Where(placement.TenantId(tid), placementExpired(c)).Exec(t.ctx))
 	out.Links = n(t.db.Link.Delete().Where(link.TenantId(tid), linkExpired(c)).Exec(t.ctx))
 	out.Stewardships = n(t.db.Stewardship.Delete().Where(stewardship.TenantId(tid), stewardshipExpired(c)).Exec(t.ctx))
 	out.Facts = n(t.db.Fact.Delete().Where(fact.TenantId(tid), factExpired(c)).Exec(t.ctx))
 	out.StockMovements = n(t.db.StockMovement.Delete().Where(stockmovement.TenantId(tid), stockmovement.OccurredAtLT(c)).Exec(t.ctx))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	n(t.db.ReservationItem.Delete().Where(reservationitem.TenantId(tid), reservationitem.HasReservationWith(reservationOver(c))).Exec(t.ctx))
-	n(t.db.Allocation.Delete().Where(allocation.TenantId(tid), allocationOf(reservation.Table, reservation.FieldId, reservation.FieldTenantId, reservationOver(c))).Exec(t.ctx))
+	n(t.db.Allocation.Delete().Where(allocation.TenantId(tid), predicate.Allocation(idIn(allocation.FieldRefId, allocation.FieldTenantId, reservation.Table, reservation.FieldId, reservation.FieldTenantId, reservationOver(c)))).Exec(t.ctx))
 	out.Reservations = n(t.db.Reservation.Delete().Where(reservation.TenantId(tid), reservationOver(c)).Exec(t.ctx))
 
 	n(t.db.CustodyLine.Delete().Where(custodyline.TenantId(tid), custodyline.HasCustodyWith(custodyOver(c))).Exec(t.ctx))
@@ -162,14 +197,14 @@ func (t *Tx) expire(c time.Time, out *Expired) error {
 	n(t.db.CountFinding.Delete().Where(countfinding.TenantId(tid), countfinding.HasCountWith(countOver(c))).Exec(t.ctx))
 	out.Counts = n(t.db.InventoryCount.Delete().Where(inventorycount.TenantId(tid), countOver(c)).Exec(t.ctx))
 
-	n(t.db.Allocation.Delete().Where(allocation.TenantId(tid), allocationOf(workorder.Table, workorder.FieldId, workorder.FieldTenantId, workOver(c))).Exec(t.ctx))
+	n(t.db.Allocation.Delete().Where(allocation.TenantId(tid), predicate.Allocation(idIn(allocation.FieldRefId, allocation.FieldTenantId, workorder.Table, workorder.FieldId, workorder.FieldTenantId, workOver(c)))).Exec(t.ctx))
 	out.WorkOrders = n(t.db.WorkOrder.Delete().Where(workorder.TenantId(tid), workOver(c)).Exec(t.ctx))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	out.Events = n(t.db.Event.Delete().Where(event.TenantId(tid), eventExpired(c)).Exec(t.ctx))
-	return err
+	return files, err
 }
 
 func placementExpired(c time.Time) predicate.Placement {
@@ -246,15 +281,16 @@ func eventExpired(c time.Time) predicate.Event {
 	)
 }
 
-// allocationOf is the time a document held: an allocation whose `ref_id` is
-// one of the rows of `table` that `over` matches, in the same tenant.
-func allocationOf[P ~func(*sql.Selector)](table, id, tenant string, over P) predicate.Allocation {
+// idIn is a row whose `column` -- a plain identifier, not an edge -- names
+// one of the rows of `table` that `over` matches, in the row's own tenant: the
+// time a reservation held, the file kept for a loan.
+func idIn[P ~func(*sql.Selector)](column, tenant, table, id, theirs string, over P) func(*sql.Selector) {
 	return func(s *sql.Selector) {
 		b := sql.Dialect(s.Dialect())
 		t := b.Table(table)
-		q := b.Select(t.C(id)).From(t).Where(sql.ColumnsEQ(t.C(tenant), s.C(allocation.FieldTenantId)))
+		q := b.Select(t.C(id)).From(t).Where(sql.ColumnsEQ(t.C(theirs), s.C(tenant)))
 		over(q)
-		s.Where(sql.In(s.C(allocation.FieldRefId), q))
+		s.Where(sql.In(s.C(column), q))
 	}
 }
 

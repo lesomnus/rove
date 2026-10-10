@@ -1,0 +1,124 @@
+package cli
+
+import (
+	"context"
+	"fmt"
+	"maps"
+	"os"
+	"slices"
+	"strings"
+	"time"
+
+	"github.com/lesomnus/payday/pdid"
+	"github.com/lesomnus/xli"
+	"github.com/lesomnus/xli/flg"
+
+	"github.com/lesomnus/rove/cmd"
+)
+
+// NewCmdTenant is `rove tenant`: what leaves with a tenant (design 8.2).
+//
+// The order is export, the grace an offboarding gives, then purge, and it is
+// the operator's to keep. Both are commands and not RPCs: no role in a tenant
+// may take everything out of it.
+func NewCmdTenant(c *cmd.Config) *xli.Command {
+	return &xli.Command{
+		Name:  "tenant",
+		Brief: "what leaves with a tenant: its export, and its purge",
+
+		Commands: xli.Commands{
+			{
+				Name:  "export",
+				Brief: "everything a tenant has, as one zip archive",
+				Flags: flg.Flags{
+					&flg.String{Name: "tenant", Brief: "the tenant, by alias"},
+					&flg.String{Name: "out", Brief: "where to write it; <alias>-<date>.zip by default"},
+				},
+				Handler: xli.OnRun(func(ctx context.Context, self *xli.Command, next xli.Next) error {
+					s, err := cmd.Build(ctx, *c)
+					if err != nil {
+						return err
+					}
+					defer s.Close()
+
+					t, err := tenantNamed(ctx, s.Ent, self)
+					if err != nil {
+						return err
+					}
+					out, _ := flg.Find[string](self, "out")
+					if strings.TrimSpace(out) == "" {
+						out = fmt.Sprintf("%s-%s.zip", t.Alias, time.Now().Format(time.DateOnly))
+					}
+
+					f, err := os.OpenFile(out, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+					if err != nil {
+						return err
+					}
+					m, err := s.Offboard(*c).Export(ctx, pdid.Id(t.Id), f)
+					if cerr := f.Close(); err == nil {
+						err = cerr
+					}
+					if err != nil {
+						os.Remove(out)
+						return err
+					}
+
+					rows := 0
+					for _, n := range m.Rows {
+						rows += n
+					}
+					self.Printf("%s: %d rows of %d kinds, %d files, the trail's %d rows and %d archived\n",
+						out, rows, len(m.Rows), m.Files, m.Trail.Database, m.Trail.Archive)
+					if len(m.Missing) > 0 {
+						self.Printf("  missing from the file store: %s\n", strings.Join(m.Missing, ", "))
+					}
+					return nil
+				}),
+			},
+			{
+				Name:  "purge",
+				Brief: "take everything of a tenant out of the deployment, the tenant last",
+				Flags: flg.Flags{
+					&flg.String{Name: "tenant", Brief: "the tenant, by alias"},
+					&flg.Switch{Name: "yes", Brief: "do it; without this it only says what it would take"},
+				},
+				Handler: xli.OnRun(func(ctx context.Context, self *xli.Command, next xli.Next) error {
+					yes, _ := flg.Find[bool](self, "yes")
+
+					s, err := cmd.Build(ctx, *c)
+					if err != nil {
+						return err
+					}
+					defer s.Close()
+
+					t, err := tenantNamed(ctx, s.Ent, self)
+					if err != nil {
+						return err
+					}
+					x, err := s.Offboard(*c).Purge(ctx, pdid.Id(t.Id), !yes)
+					if err != nil {
+						return fmt.Errorf("%s: %w", t.Alias, err)
+					}
+
+					verb := "took"
+					if !yes {
+						verb = "would take"
+					}
+					parts := []string{}
+					for _, k := range slices.Sorted(maps.Keys(x.Rows)) {
+						parts = append(parts, fmt.Sprintf("%s %d", k, x.Rows[k]))
+					}
+					self.Printf("%s: %s %d rows (%s), %d files\n", t.Alias, verb, x.Total(), strings.Join(parts, ", "), x.Files)
+					self.Printf("  trail: %d rows removed, %d blanked, %d archived chunks\n", x.Trail.Removed, x.Trail.Blanked, x.Trail.Chunks)
+					if len(x.Lost) > 0 {
+						self.Printf("  files that could not be removed: %s\n", strings.Join(x.Lost, ", "))
+					}
+					if !yes {
+						self.Printf("(nothing was taken: `--yes` takes it. Export first -- `rove tenant export --tenant %s`)\n", t.Alias)
+					}
+					return nil
+				}),
+			},
+		},
+	}
+}
