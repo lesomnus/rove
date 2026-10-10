@@ -229,13 +229,17 @@ func slicesAny[T any](vs []T, f func(T) bool) bool {
 	return false
 }
 
-// TestWhatWasOverBeforeTheViewWindowIsOutOfIt.
-//
-// A document that was over before the window began is the history, and one
-// still open is the present, however old it is: a loan never given back is
-// still on the list.
-func TestWhatWasOverBeforeTheViewWindowIsOutOfIt(t *testing.T) {
-	e := newEnv(t)
+// documents is a year of things begun and finished, and things begun and not.
+type documents struct {
+	meeting     *app.Reservation
+	back, still *app.Custody
+	done, open  *app.WorkOrder
+	paper       *app.Stock
+}
+
+// aYearOfDocuments makes, four hundred days ago, a meeting called off, two
+// loans and two work orders; ten days later one of each is over.
+func (e *env) aYearOfDocuments() documents {
 	x := e.x
 	start := e.now
 	e.now = start.Add(-400 * day)
@@ -243,14 +247,16 @@ func TestWhatWasOverBeforeTheViewWindowIsOutOfIt(t *testing.T) {
 	room := e.space("회의실", nil)
 	e.bookable(room, nil)
 	store := e.space("창고", nil)
-	laptop := e.item("노트북", "NB-1", store, 0)
-	phone := e.item("휴대폰", "PH-1", store, 0)
-	paper := e.stock(e.model("A4 용지"), store, 10, 0)
+	laptop := e.item("대여용 노트북", "LN-1", store, 0)
+	phone := e.item("대여용 휴대폰", "LP-1", store, 0)
 	_, kim := e.person("member")
 
-	meeting, err := e.reserve(e.owner, room, e.tomorrow(10, 0), e.tomorrow(11, 0), nil)
+	d := documents{paper: e.stock(e.model("A4 용지"), store, 10, 0)}
+
+	var err error
+	d.meeting, err = e.reserve(e.owner, room, e.tomorrow(10, 0), e.tomorrow(11, 0), nil)
 	x.NoError(err)
-	_, err = e.app().Reservation().Cancel(e.owner, app.ReservationDecideRequest_builder{Ref: ref[app.ReservationRef](meeting.GetId())}.Build())
+	_, err = e.app().Reservation().Cancel(e.owner, app.ReservationDecideRequest_builder{Ref: ref[app.ReservationRef](d.meeting.GetId())}.Build())
 	x.NoError(err)
 
 	lend := func(a *app.Asset) *app.Custody {
@@ -261,21 +267,36 @@ func TestWhatWasOverBeforeTheViewWindowIsOutOfIt(t *testing.T) {
 		x.NoError(err)
 		return v
 	}
-	back, still := lend(laptop), lend(phone)
+	d.back, d.still = lend(laptop), lend(phone)
 
 	work := func(a *app.Asset) *app.WorkOrder {
 		v, err := e.app().WorkOrder().Add(e.owner, app.WorkOrderAddRequest_builder{Asset: assetRef(a), Name: "점검"}.Build())
 		x.NoError(err)
 		return v
 	}
-	done, open := work(laptop), work(phone)
+	d.done, d.open = work(laptop), work(phone)
 
 	e.now = start.Add(-390 * day)
-	_, err = e.app().Custody().Return(e.owner, app.CustodyReturnRequest_builder{Ref: ref[app.CustodyRef](back.GetId())}.Build())
+	_, err = e.app().Custody().Return(e.owner, app.CustodyReturnRequest_builder{Ref: ref[app.CustodyRef](d.back.GetId())}.Build())
 	x.NoError(err)
-	_, err = e.app().WorkOrder().Complete(e.owner, app.WorkOrderCompleteRequest_builder{Ref: ref[app.WorkOrderRef](done.GetId())}.Build())
+	_, err = e.app().WorkOrder().Complete(e.owner, app.WorkOrderCompleteRequest_builder{Ref: ref[app.WorkOrderRef](d.done.GetId())}.Build())
 	x.NoError(err)
+
 	e.now = start
+	return d
+}
+
+// TestWhatWasOverBeforeTheViewWindowIsOutOfIt.
+//
+// A document that was over before the window began is the history, and one
+// still open is the present, however old it is: a loan never given back is
+// still on the list.
+func TestWhatWasOverBeforeTheViewWindowIsOutOfIt(t *testing.T) {
+	e := newEnv(t)
+	x := e.x
+	start := e.now
+	d := e.aYearOfDocuments()
+	still, open, paper := d.still, d.open, d.paper
 
 	reservations := func() []*app.Reservation {
 		v, err := e.app().Reservation().List(e.owner, app.ReservationListRequest_builder{}.Build())

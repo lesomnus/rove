@@ -236,6 +236,12 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		domain.Sweeper{Server: base, Drv: drv, Deps: deps, Every: c.App.Sweep},
 		spinEvery(time.Hour, store.Sweep),
 	)
+
+	// What the keep windows no longer reach, taken out of the history (design
+	// 8.2) -- only when the deployment has said a window may destroy.
+	if c.App.Retention.Apply {
+		s.Spin = append(s.Spin, domain.Expirer{Server: base, Drv: drv, Deps: deps, Every: c.App.Retention.Every})
+	}
 	if c.Watch.Outbox && b != nil {
 		// The loop that makes an event durable. It is not a layer and not a
 		// method on any server -- `spin.Run` finds it in whatever is handed

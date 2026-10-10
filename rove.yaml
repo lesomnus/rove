@@ -70,10 +70,13 @@ app:
   # deployment saying a window may destroy: off, the view window still
   # applies to what a tenant reads, and nothing is removed.
   #
+  # `rove retention plan` says what a pass would take, changing nothing.
+  #
   # retention:
   #   apply: false
   #   view: 8760h
   #   keep: 17520h
+  #   every: 1h
 
 # How long the trail keeps a row. Every write this app makes is recorded, and
 # **nothing else applies a window**: with no block here the table is kept whole,

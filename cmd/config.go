@@ -100,6 +100,10 @@ type RetentionConfig struct {
 	// a year. Empty is all of its history shown, and all of it kept.
 	View time.Duration `yaml:"view"`
 	Keep time.Duration `yaml:"keep"`
+
+	// Every is how often what the keep windows no longer reach is taken out of
+	// the history, when Apply lets it be. An hour by default.
+	Every time.Duration `yaml:"every"`
 }
 
 // Defaults is this as what `server/retention` reads.

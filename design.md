@@ -336,6 +336,8 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 
 삭제 작업은 멱등이고 재시도할 수 있어야 한다. 먼저 `dry-run`으로 영향받는 행 수·용량·복원 가능 범위를 보여 주는 기능을 구현한다.
 
+**구현**(`server/domain/expire.go`, `rove retention plan|run`): 조직마다 한 트랜잭션으로, 보존 창이 시작되기 전에 끝난 것을 지운다. 끝났거나 대체된 시간 행, 같은 키의 다음 값이 창 시작 전에(그리고 그때까지 기록되어) 시작된 Fact, 끝난 문서(마친·취소된 예약과 그 항목·할당, 다 돌려받은 Custody와 그 줄, 닫힌 실사와 그 발견, 끝난 작업과 그 할당), 재고 이동, 그리고 남은 행이 아무것도 가리키지 않는 Event 순서다. 폐기·불용·분실 상태 Fact와 등록(`asset.add`) Event는 취득·처분 기록이라 남는다. hold가 있거나 보존이 무기한이면 아무것도 지우지 않는다. dry run은 같은 삭제를 트랜잭션 안에서 하고 되돌리므로 실제 실행과 행 수까지 같다. 영수증은 `retention.expired` Event이고 종류별 건수와 기준 시각만 담는다. 파괴는 `app.retention.apply`가 켜졌을 때만 일어나며, `serve`가 `app.retention.every`마다 돌린다. trail의 이력 종류는 payday의 pass가 같은 보존 창으로 지운다.
+
 ## 9. 구현 아키텍처
 
 ### 9.1 구현 기반: payday

@@ -76,6 +76,7 @@ func Cmd(c *cmd.Config) *xli.Command {
 			NewCmdServe(c),
 			NewCmdContract(c),
 			NewCmdHold(c),
+			NewCmdRetention(c),
 		},
 
 		Handler: xli.Chain(cfg.Load(l, version), xli.RequireSubcommand()),
