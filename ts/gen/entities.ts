@@ -22,7 +22,7 @@ import { CredentialSchema, PartySchema, SessionSchema } from './rove/org_pb.js'
 import { CustodySchema, CustodyLineSchema } from './rove/custody_pb.js'
 import { EventSchema, FactSchema, LinkSchema, PlacementSchema, StewardshipSchema } from './rove/history_pb.js'
 import { HolderSchema } from './rove/payday/holder_pb.js'
-import { NotificationSchema, UsageSnapshotSchema } from './rove/ops_pb.js'
+import { LegalHoldSchema, NotificationSchema, TenantContractSchema, UsageSnapshotSchema } from './rove/ops_pb.js'
 import { OutboxSchema } from './rove/payday/outbox_pb.js'
 import { PurchaseSchema, PurchaseLineSchema, WorkOrderSchema } from './rove/work_pb.js'
 import { StockSchema, StockMovementSchema } from './rove/stock_pb.js'
@@ -36,7 +36,7 @@ import { CredentialService, PartyService, SessionService } from './rove/org_svc_
 import { CustodyService, CustodyLineService } from './rove/custody_svc_pb.js'
 import { EventService, FactService, LinkService, PlacementService, StewardshipService } from './rove/history_svc_pb.js'
 import { HolderService } from './rove/payday/holder_svc_pb.js'
-import { NotificationService, UsageSnapshotService } from './rove/ops_svc_pb.js'
+import { LegalHoldService, NotificationService, TenantContractService, UsageSnapshotService } from './rove/ops_svc_pb.js'
 import { OutboxService } from './rove/payday/outbox_svc_pb.js'
 import { PurchaseService, PurchaseLineService, WorkOrderService } from './rove/work_svc_pb.js'
 import { StockService, StockMovementService } from './rove/stock_svc_pb.js'
@@ -234,6 +234,17 @@ export const Label = {
 	service: LabelService,
 } as const satisfies EntityDesc
 
+/** rove.LegalHold, as the store holds it. */
+export const LegalHold = {
+	typeName: "rove.LegalHold",
+	schema: LegalHoldSchema,
+	domain: 40,
+	refs: [{ field: "tenant", to: "rove.Tenant" }],
+	key: "id",
+	ids: ["id"],
+	service: LegalHoldService,
+} as const satisfies EntityDesc
+
 /** rove.Link, as the store holds it. */
 export const Link = {
 	typeName: "rove.Link",
@@ -401,6 +412,17 @@ export const Tenant = {
 	service: TenantService,
 } as const satisfies EntityDesc
 
+/** rove.TenantContract, as the store holds it. */
+export const TenantContract = {
+	typeName: "rove.TenantContract",
+	schema: TenantContractSchema,
+	domain: 39,
+	refs: [{ field: "tenant", to: "rove.Tenant" }],
+	key: "id",
+	ids: ["id"],
+	service: TenantContractService,
+} as const satisfies EntityDesc
+
 /** rove.TenantDomain, as the store holds it. */
 export const TenantDomain = {
 	typeName: "rove.TenantDomain",
@@ -450,5 +472,5 @@ export const WorkOrder = {
 } as const satisfies EntityDesc
 
 /** Every entity of this app, which is what a store is opened over. */
-export const entities = [Allocation, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
+export const entities = [Allocation, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
 

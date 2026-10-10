@@ -53,6 +53,23 @@ ROVE_DB_DRIVER=pgx ROVE_DB_DSN='postgres://rove:rove@localhost:5432/rove?sslmode
 - 같은 PC에서 USB/블루투스 바코드 스캐너를 쓰면 스캔 화면의 입력칸에 그대로 입력됩니다 (QR 주소와 태그 모두 읽습니다).
 - 휴대폰에서 쓰려면 서버를 HTTPS로 열어야 합니다. 예를 들어 [Caddy](https://caddyserver.com)를 앞에 두고(`reverse_proxy localhost:8080`, 사내망이면 `tls internal`) `app.public_url` 과 `app.labels.suffix` 를 그 주소에 맞춥니다. 라벨 QR은 `https://<조직>.<suffix>/l/<코드>` 로 인쇄되므로, 휴대폰 기본 카메라로 찍어도 바로 그 자산이 열립니다.
 
+### 조직별 이력 보존 (운영자)
+
+조직마다 이력을 얼마나 뒤까지 보여 주고 얼마나 보관할지는 그 조직의 **계약**이 정합니다(design 8). 계약과 법적 보존(hold)은 운영자의 것이라 셸에서만 씁니다. 조직의 사람은 읽기만 합니다.
+
+```sh
+# 내년 1월부터: 1년치를 보여 주고 2년치를 보관
+go run ./cmd/rove contract set --tenant rove --name free --view 365 --keep 730 --effective 2027-01-01
+# 줄어드는 보관 기간은 유예(--grace, 일)가 지나야 적용됩니다. 보기 기간은 바로 줄어듭니다
+go run ./cmd/rove contract set --tenant rove --name trial --view 90 --keep 180 --grace 30
+go run ./cmd/rove contract show --tenant rove   # 계약들과 지금 적용되는 기간, 걸린 hold
+
+go run ./cmd/rove hold place --tenant rove --why "사건 2026-1"   # 이력을 아무것도 지우지 않음
+go run ./cmd/rove hold lift <hold-id>
+```
+
+**지우는 일은 기본으로 꺼져 있습니다.** 고지·내보내기·유예·백업 정책이 정해지기 전에는 파괴적인 동작을 켜지 않는다는 원칙(design 1장) 때문입니다. `app.retention.apply: true` 를 주어야 보관 기간이 지난 감사 기록(이력 종류)이 지워집니다. 계약이 없는 조직은 `app.retention.view`·`keep` 을 따르고, 그것도 없으면 전부 보여 주고 전부 보관합니다.
+
 ## 무엇이 있나
 
 | 화면 | 할 수 있는 일 |

@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/lesomnus/payday/config"
+
+	"github.com/lesomnus/rove/server/retention"
 )
 
 // Name is what this app is called, and it is the only place it is written.
@@ -74,6 +76,35 @@ type AppConfig struct {
 	NoShowAfter time.Duration `yaml:"no_show_after"`
 	// Sweep is the wait between passes of the background work.
 	Sweep time.Duration `yaml:"sweep"`
+
+	// Retention is the deployment's half of design 8: what a tenant with no
+	// contract keeps, and whether a window destroys anything at all.
+	Retention RetentionConfig `yaml:"retention"`
+}
+
+// RetentionConfig is the plan a tenant with no contract is on, and the switch
+// that lets a keep window destroy.
+//
+// A tenant's own windows are its contract's (`rove contract`). What is here is
+// the deployment's default and its consent.
+type RetentionConfig struct {
+	// Apply lets a keep window destroy what is past it: rove's own history,
+	// and the trail of the writes that made it. Off, which is the default, the
+	// windows are still read -- the view window applies, a dry run answers --
+	// and nothing is removed. Design 8 makes destruction wait until notice,
+	// export, grace and holds are settled, and this is the deployment saying
+	// they are.
+	Apply bool `yaml:"apply"`
+
+	// View and Keep are what a tenant with no contract gets, e.g. `8760h` for
+	// a year. Empty is all of its history shown, and all of it kept.
+	View time.Duration `yaml:"view"`
+	Keep time.Duration `yaml:"keep"`
+}
+
+// Defaults is this as what `server/retention` reads.
+func (c RetentionConfig) Defaults() retention.Defaults {
+	return retention.Defaults{View: c.View, Keep: c.Keep}
 }
 
 // LabelConfig is how printed labels are addressed (design 9.9).

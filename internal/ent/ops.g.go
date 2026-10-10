@@ -56,3 +56,43 @@ func (e *UsageSnapshot) Proto() *rove.UsageSnapshot {
 	x.SetDateCreated(timestamppb.New(e.DateCreated))
 	return x
 }
+func (e *TenantContract) Proto() *rove.TenantContract {
+	x := &rove.TenantContract{}
+	x.SetId(e.Id[:])
+	if v := e.Edges.Tenant; v != nil {
+		x.SetTenant(v.Proto())
+	} else if v := e.TenantId; v != *new(uuid.UUID) {
+		r := &rove.Tenant{}
+		r.SetId(v[:])
+		x.SetTenant(r)
+	}
+	x.SetName(e.Name)
+	x.SetDesc(e.Desc)
+	x.SetViewDays(e.ViewDays)
+	x.SetKeepDays(e.KeepDays)
+	x.SetGraceDays(e.GraceDays)
+	x.SetDateEffective(timestamppb.New(e.DateEffective))
+	if e.DateErased != nil {
+		x.SetDateErased(timestamppb.New(*e.DateErased))
+	}
+	x.SetDateCreated(timestamppb.New(e.DateCreated))
+	return x
+}
+func (e *LegalHold) Proto() *rove.LegalHold {
+	x := &rove.LegalHold{}
+	x.SetId(e.Id[:])
+	if v := e.Edges.Tenant; v != nil {
+		x.SetTenant(v.Proto())
+	} else if v := e.TenantId; v != *new(uuid.UUID) {
+		r := &rove.Tenant{}
+		r.SetId(v[:])
+		x.SetTenant(r)
+	}
+	x.SetName(e.Name)
+	x.SetDesc(e.Desc)
+	if e.DateLifted != nil {
+		x.SetDateLifted(timestamppb.New(*e.DateLifted))
+	}
+	x.SetDateCreated(timestamppb.New(e.DateCreated))
+	return x
+}

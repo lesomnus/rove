@@ -701,3 +701,611 @@ var UsageSnapshotService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "rove/ops_svc.g.proto",
 }
+
+const (
+	TenantContractService_Add_FullMethodName   = "/rove.TenantContractService/Add"
+	TenantContractService_Get_FullMethodName   = "/rove.TenantContractService/Get"
+	TenantContractService_Patch_FullMethodName = "/rove.TenantContractService/Patch"
+	TenantContractService_Apply_FullMethodName = "/rove.TenantContractService/Apply"
+	TenantContractService_Erase_FullMethodName = "/rove.TenantContractService/Erase"
+	TenantContractService_List_FullMethodName  = "/rove.TenantContractService/List"
+)
+
+// TenantContractServiceClient is the client API for TenantContractService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TenantContractServiceClient interface {
+	// Add creates a new TenantContract
+	Add(ctx context.Context, in *TenantContractAddRequest, opts ...grpc.CallOption) (*TenantContract, error)
+	// Get retrieves a TenantContract
+	Get(ctx context.Context, in *TenantContractGetRequest, opts ...grpc.CallOption) (*TenantContract, error)
+	// Patch updates an existing TenantContract
+	Patch(ctx context.Context, in *TenantContractPatchRequest, opts ...grpc.CallOption) (*TenantContract, error)
+	// Apply applies a patch document to an existing TenantContract
+	Apply(ctx context.Context, in *TenantContractApplyRequest, opts ...grpc.CallOption) (*TenantContract, error)
+	// Erase deletes a TenantContract
+	Erase(ctx context.Context, in *TenantContractRef, opts ...grpc.CallOption) (*TenantContractEraseResponse, error)
+	// List reads TenantContracts a page at a time.
+	List(ctx context.Context, in *TenantContractListRequest, opts ...grpc.CallOption) (*TenantContractListResponse, error)
+}
+
+type tenantContractServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTenantContractServiceClient(cc grpc.ClientConnInterface) TenantContractServiceClient {
+	return &tenantContractServiceClient{cc}
+}
+
+func (c *tenantContractServiceClient) Add(ctx context.Context, in *TenantContractAddRequest, opts ...grpc.CallOption) (*TenantContract, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContract)
+	err := c.cc.Invoke(ctx, TenantContractService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantContractServiceClient) Get(ctx context.Context, in *TenantContractGetRequest, opts ...grpc.CallOption) (*TenantContract, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContract)
+	err := c.cc.Invoke(ctx, TenantContractService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantContractServiceClient) Patch(ctx context.Context, in *TenantContractPatchRequest, opts ...grpc.CallOption) (*TenantContract, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContract)
+	err := c.cc.Invoke(ctx, TenantContractService_Patch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantContractServiceClient) Apply(ctx context.Context, in *TenantContractApplyRequest, opts ...grpc.CallOption) (*TenantContract, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContract)
+	err := c.cc.Invoke(ctx, TenantContractService_Apply_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantContractServiceClient) Erase(ctx context.Context, in *TenantContractRef, opts ...grpc.CallOption) (*TenantContractEraseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContractEraseResponse)
+	err := c.cc.Invoke(ctx, TenantContractService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tenantContractServiceClient) List(ctx context.Context, in *TenantContractListRequest, opts ...grpc.CallOption) (*TenantContractListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TenantContractListResponse)
+	err := c.cc.Invoke(ctx, TenantContractService_List_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TenantContractServiceServer is the server API for TenantContractService service.
+// All implementations must embed UnimplementedTenantContractServiceServer
+// for forward compatibility.
+type TenantContractServiceServer interface {
+	// Add creates a new TenantContract
+	Add(context.Context, *TenantContractAddRequest) (*TenantContract, error)
+	// Get retrieves a TenantContract
+	Get(context.Context, *TenantContractGetRequest) (*TenantContract, error)
+	// Patch updates an existing TenantContract
+	Patch(context.Context, *TenantContractPatchRequest) (*TenantContract, error)
+	// Apply applies a patch document to an existing TenantContract
+	Apply(context.Context, *TenantContractApplyRequest) (*TenantContract, error)
+	// Erase deletes a TenantContract
+	Erase(context.Context, *TenantContractRef) (*TenantContractEraseResponse, error)
+	// List reads TenantContracts a page at a time.
+	List(context.Context, *TenantContractListRequest) (*TenantContractListResponse, error)
+	mustEmbedUnimplementedTenantContractServiceServer()
+}
+
+// UnimplementedTenantContractServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedTenantContractServiceServer struct{}
+
+func (UnimplementedTenantContractServiceServer) Add(context.Context, *TenantContractAddRequest) (*TenantContract, error) {
+	return nil, status.Error(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedTenantContractServiceServer) Get(context.Context, *TenantContractGetRequest) (*TenantContract, error) {
+	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedTenantContractServiceServer) Patch(context.Context, *TenantContractPatchRequest) (*TenantContract, error) {
+	return nil, status.Error(codes.Unimplemented, "method Patch not implemented")
+}
+func (UnimplementedTenantContractServiceServer) Apply(context.Context, *TenantContractApplyRequest) (*TenantContract, error) {
+	return nil, status.Error(codes.Unimplemented, "method Apply not implemented")
+}
+func (UnimplementedTenantContractServiceServer) Erase(context.Context, *TenantContractRef) (*TenantContractEraseResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Erase not implemented")
+}
+func (UnimplementedTenantContractServiceServer) List(context.Context, *TenantContractListRequest) (*TenantContractListResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedTenantContractServiceServer) mustEmbedUnimplementedTenantContractServiceServer() {}
+func (UnimplementedTenantContractServiceServer) testEmbeddedByValue()                               {}
+
+// UnsafeTenantContractServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TenantContractServiceServer will
+// result in compilation errors.
+type UnsafeTenantContractServiceServer interface {
+	mustEmbedUnimplementedTenantContractServiceServer()
+}
+
+func RegisterTenantContractServiceServer(s grpc.ServiceRegistrar, srv TenantContractServiceServer) {
+	// If the following call panics, it indicates UnimplementedTenantContractServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&TenantContractService_ServiceDesc, srv)
+}
+
+func _TenantContractService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).Add(ctx, req.(*TenantContractAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantContractService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).Get(ctx, req.(*TenantContractGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantContractService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).Patch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_Patch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).Patch(ctx, req.(*TenantContractPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantContractService_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractApplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).Apply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_Apply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).Apply(ctx, req.(*TenantContractApplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantContractService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractRef)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).Erase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_Erase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).Erase(ctx, req.(*TenantContractRef))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TenantContractService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TenantContractListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TenantContractServiceServer).List(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TenantContractService_List_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TenantContractServiceServer).List(ctx, req.(*TenantContractListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// TenantContractService_ServiceDesc is the grpc.ServiceDesc for TenantContractService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var TenantContractService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "rove.TenantContractService",
+	HandlerType: (*TenantContractServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _TenantContractService_Add_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _TenantContractService_Get_Handler,
+		},
+		{
+			MethodName: "Patch",
+			Handler:    _TenantContractService_Patch_Handler,
+		},
+		{
+			MethodName: "Apply",
+			Handler:    _TenantContractService_Apply_Handler,
+		},
+		{
+			MethodName: "Erase",
+			Handler:    _TenantContractService_Erase_Handler,
+		},
+		{
+			MethodName: "List",
+			Handler:    _TenantContractService_List_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "rove/ops_svc.g.proto",
+}
+
+const (
+	LegalHoldService_Add_FullMethodName   = "/rove.LegalHoldService/Add"
+	LegalHoldService_Get_FullMethodName   = "/rove.LegalHoldService/Get"
+	LegalHoldService_Patch_FullMethodName = "/rove.LegalHoldService/Patch"
+	LegalHoldService_Apply_FullMethodName = "/rove.LegalHoldService/Apply"
+	LegalHoldService_Erase_FullMethodName = "/rove.LegalHoldService/Erase"
+	LegalHoldService_List_FullMethodName  = "/rove.LegalHoldService/List"
+)
+
+// LegalHoldServiceClient is the client API for LegalHoldService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type LegalHoldServiceClient interface {
+	// Add creates a new LegalHold
+	Add(ctx context.Context, in *LegalHoldAddRequest, opts ...grpc.CallOption) (*LegalHold, error)
+	// Get retrieves a LegalHold
+	Get(ctx context.Context, in *LegalHoldGetRequest, opts ...grpc.CallOption) (*LegalHold, error)
+	// Patch updates an existing LegalHold
+	Patch(ctx context.Context, in *LegalHoldPatchRequest, opts ...grpc.CallOption) (*LegalHold, error)
+	// Apply applies a patch document to an existing LegalHold
+	Apply(ctx context.Context, in *LegalHoldApplyRequest, opts ...grpc.CallOption) (*LegalHold, error)
+	// Erase deletes a LegalHold
+	Erase(ctx context.Context, in *LegalHoldRef, opts ...grpc.CallOption) (*LegalHoldEraseResponse, error)
+	// List reads LegalHolds a page at a time.
+	List(ctx context.Context, in *LegalHoldListRequest, opts ...grpc.CallOption) (*LegalHoldListResponse, error)
+}
+
+type legalHoldServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewLegalHoldServiceClient(cc grpc.ClientConnInterface) LegalHoldServiceClient {
+	return &legalHoldServiceClient{cc}
+}
+
+func (c *legalHoldServiceClient) Add(ctx context.Context, in *LegalHoldAddRequest, opts ...grpc.CallOption) (*LegalHold, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHold)
+	err := c.cc.Invoke(ctx, LegalHoldService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *legalHoldServiceClient) Get(ctx context.Context, in *LegalHoldGetRequest, opts ...grpc.CallOption) (*LegalHold, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHold)
+	err := c.cc.Invoke(ctx, LegalHoldService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *legalHoldServiceClient) Patch(ctx context.Context, in *LegalHoldPatchRequest, opts ...grpc.CallOption) (*LegalHold, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHold)
+	err := c.cc.Invoke(ctx, LegalHoldService_Patch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *legalHoldServiceClient) Apply(ctx context.Context, in *LegalHoldApplyRequest, opts ...grpc.CallOption) (*LegalHold, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHold)
+	err := c.cc.Invoke(ctx, LegalHoldService_Apply_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *legalHoldServiceClient) Erase(ctx context.Context, in *LegalHoldRef, opts ...grpc.CallOption) (*LegalHoldEraseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHoldEraseResponse)
+	err := c.cc.Invoke(ctx, LegalHoldService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *legalHoldServiceClient) List(ctx context.Context, in *LegalHoldListRequest, opts ...grpc.CallOption) (*LegalHoldListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LegalHoldListResponse)
+	err := c.cc.Invoke(ctx, LegalHoldService_List_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// LegalHoldServiceServer is the server API for LegalHoldService service.
+// All implementations must embed UnimplementedLegalHoldServiceServer
+// for forward compatibility.
+type LegalHoldServiceServer interface {
+	// Add creates a new LegalHold
+	Add(context.Context, *LegalHoldAddRequest) (*LegalHold, error)
+	// Get retrieves a LegalHold
+	Get(context.Context, *LegalHoldGetRequest) (*LegalHold, error)
+	// Patch updates an existing LegalHold
+	Patch(context.Context, *LegalHoldPatchRequest) (*LegalHold, error)
+	// Apply applies a patch document to an existing LegalHold
+	Apply(context.Context, *LegalHoldApplyRequest) (*LegalHold, error)
+	// Erase deletes a LegalHold
+	Erase(context.Context, *LegalHoldRef) (*LegalHoldEraseResponse, error)
+	// List reads LegalHolds a page at a time.
+	List(context.Context, *LegalHoldListRequest) (*LegalHoldListResponse, error)
+	mustEmbedUnimplementedLegalHoldServiceServer()
+}
+
+// UnimplementedLegalHoldServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedLegalHoldServiceServer struct{}
+
+func (UnimplementedLegalHoldServiceServer) Add(context.Context, *LegalHoldAddRequest) (*LegalHold, error) {
+	return nil, status.Error(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) Get(context.Context, *LegalHoldGetRequest) (*LegalHold, error) {
+	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) Patch(context.Context, *LegalHoldPatchRequest) (*LegalHold, error) {
+	return nil, status.Error(codes.Unimplemented, "method Patch not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) Apply(context.Context, *LegalHoldApplyRequest) (*LegalHold, error) {
+	return nil, status.Error(codes.Unimplemented, "method Apply not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) Erase(context.Context, *LegalHoldRef) (*LegalHoldEraseResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Erase not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) List(context.Context, *LegalHoldListRequest) (*LegalHoldListResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedLegalHoldServiceServer) mustEmbedUnimplementedLegalHoldServiceServer() {}
+func (UnimplementedLegalHoldServiceServer) testEmbeddedByValue()                          {}
+
+// UnsafeLegalHoldServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to LegalHoldServiceServer will
+// result in compilation errors.
+type UnsafeLegalHoldServiceServer interface {
+	mustEmbedUnimplementedLegalHoldServiceServer()
+}
+
+func RegisterLegalHoldServiceServer(s grpc.ServiceRegistrar, srv LegalHoldServiceServer) {
+	// If the following call panics, it indicates UnimplementedLegalHoldServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&LegalHoldService_ServiceDesc, srv)
+}
+
+func _LegalHoldService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).Add(ctx, req.(*LegalHoldAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LegalHoldService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).Get(ctx, req.(*LegalHoldGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LegalHoldService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).Patch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_Patch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).Patch(ctx, req.(*LegalHoldPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LegalHoldService_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldApplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).Apply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_Apply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).Apply(ctx, req.(*LegalHoldApplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LegalHoldService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldRef)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).Erase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_Erase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).Erase(ctx, req.(*LegalHoldRef))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LegalHoldService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LegalHoldListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LegalHoldServiceServer).List(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LegalHoldService_List_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LegalHoldServiceServer).List(ctx, req.(*LegalHoldListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// LegalHoldService_ServiceDesc is the grpc.ServiceDesc for LegalHoldService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var LegalHoldService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "rove.LegalHoldService",
+	HandlerType: (*LegalHoldServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _LegalHoldService_Add_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _LegalHoldService_Get_Handler,
+		},
+		{
+			MethodName: "Patch",
+			Handler:    _LegalHoldService_Patch_Handler,
+		},
+		{
+			MethodName: "Apply",
+			Handler:    _LegalHoldService_Apply_Handler,
+		},
+		{
+			MethodName: "Erase",
+			Handler:    _LegalHoldService_Erase_Handler,
+		},
+		{
+			MethodName: "List",
+			Handler:    _LegalHoldService_List_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "rove/ops_svc.g.proto",
+}

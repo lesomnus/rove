@@ -55,6 +55,8 @@ type Server interface {
 	Event() EventServiceServer
 	Notification() NotificationServiceServer
 	UsageSnapshot() UsageSnapshotServiceServer
+	TenantContract() TenantContractServiceServer
+	LegalHold() LegalHoldServiceServer
 	Audit() AuditServiceServer
 	Outbox() OutboxServiceServer
 	WorkOrder() WorkOrderServiceServer
@@ -96,6 +98,8 @@ func RegisterServer(g grpc.ServiceRegistrar, s Server) {
 	RegisterEventServiceServer(g, s.Event())
 	RegisterNotificationServiceServer(g, s.Notification())
 	RegisterUsageSnapshotServiceServer(g, s.UsageSnapshot())
+	RegisterTenantContractServiceServer(g, s.TenantContract())
+	RegisterLegalHoldServiceServer(g, s.LegalHold())
 	RegisterAuditServiceServer(g, s.Audit())
 	RegisterOutboxServiceServer(g, s.Outbox())
 	RegisterWorkOrderServiceServer(g, s.WorkOrder())
@@ -133,6 +137,8 @@ type UnimplementedServer struct {
 	EventServer           EventServiceServer
 	NotificationServer    NotificationServiceServer
 	UsageSnapshotServer   UsageSnapshotServiceServer
+	TenantContractServer  TenantContractServiceServer
+	LegalHoldServer       LegalHoldServiceServer
 	AuditServer           AuditServiceServer
 	OutboxServer          OutboxServiceServer
 	WorkOrderServer       WorkOrderServiceServer
@@ -205,6 +211,12 @@ func (UnimplementedServer) Notification() NotificationServiceServer {
 func (UnimplementedServer) UsageSnapshot() UsageSnapshotServiceServer {
 	return UnimplementedUsageSnapshotServiceServer{}
 }
+func (UnimplementedServer) TenantContract() TenantContractServiceServer {
+	return UnimplementedTenantContractServiceServer{}
+}
+func (UnimplementedServer) LegalHold() LegalHoldServiceServer {
+	return UnimplementedLegalHoldServiceServer{}
+}
 func (UnimplementedServer) Audit() AuditServiceServer   { return UnimplementedAuditServiceServer{} }
 func (UnimplementedServer) Outbox() OutboxServiceServer { return UnimplementedOutboxServiceServer{} }
 func (UnimplementedServer) WorkOrder() WorkOrderServiceServer {
@@ -247,6 +259,8 @@ type StaticServer struct {
 	EventServer           EventServiceServer
 	NotificationServer    NotificationServiceServer
 	UsageSnapshotServer   UsageSnapshotServiceServer
+	TenantContractServer  TenantContractServiceServer
+	LegalHoldServer       LegalHoldServiceServer
 	AuditServer           AuditServiceServer
 	OutboxServer          OutboxServiceServer
 	WorkOrderServer       WorkOrderServiceServer
@@ -283,6 +297,8 @@ func (s StaticServer) Fact() FactServiceServer                       { return s.
 func (s StaticServer) Event() EventServiceServer                     { return s.EventServer }
 func (s StaticServer) Notification() NotificationServiceServer       { return s.NotificationServer }
 func (s StaticServer) UsageSnapshot() UsageSnapshotServiceServer     { return s.UsageSnapshotServer }
+func (s StaticServer) TenantContract() TenantContractServiceServer   { return s.TenantContractServer }
+func (s StaticServer) LegalHold() LegalHoldServiceServer             { return s.LegalHoldServer }
 func (s StaticServer) Audit() AuditServiceServer                     { return s.AuditServer }
 func (s StaticServer) Outbox() OutboxServiceServer                   { return s.OutboxServer }
 func (s StaticServer) WorkOrder() WorkOrderServiceServer             { return s.WorkOrderServer }
@@ -319,6 +335,8 @@ type Client interface {
 	Event() EventServiceClient
 	Notification() NotificationServiceClient
 	UsageSnapshot() UsageSnapshotServiceClient
+	TenantContract() TenantContractServiceClient
+	LegalHold() LegalHoldServiceClient
 	Audit() AuditServiceClient
 	Outbox() OutboxServiceClient
 	WorkOrder() WorkOrderServiceClient
@@ -357,6 +375,8 @@ func NewClient(c *grpc.ClientConn) Client {
 		_Event:           NewEventServiceClient(c),
 		_Notification:    NewNotificationServiceClient(c),
 		_UsageSnapshot:   NewUsageSnapshotServiceClient(c),
+		_TenantContract:  NewTenantContractServiceClient(c),
+		_LegalHold:       NewLegalHoldServiceClient(c),
 		_Audit:           NewAuditServiceClient(c),
 		_Outbox:          NewOutboxServiceClient(c),
 		_WorkOrder:       NewWorkOrderServiceClient(c),
@@ -395,6 +415,8 @@ type client struct {
 	_Event           EventServiceClient
 	_Notification    NotificationServiceClient
 	_UsageSnapshot   UsageSnapshotServiceClient
+	_TenantContract  TenantContractServiceClient
+	_LegalHold       LegalHoldServiceClient
 	_Audit           AuditServiceClient
 	_Outbox          OutboxServiceClient
 	_WorkOrder       WorkOrderServiceClient
@@ -431,6 +453,8 @@ func (c *client) Fact() FactServiceClient                       { return c._Fact
 func (c *client) Event() EventServiceClient                     { return c._Event }
 func (c *client) Notification() NotificationServiceClient       { return c._Notification }
 func (c *client) UsageSnapshot() UsageSnapshotServiceClient     { return c._UsageSnapshot }
+func (c *client) TenantContract() TenantContractServiceClient   { return c._TenantContract }
+func (c *client) LegalHold() LegalHoldServiceClient             { return c._LegalHold }
 func (c *client) Audit() AuditServiceClient                     { return c._Audit }
 func (c *client) Outbox() OutboxServiceClient                   { return c._Outbox }
 func (c *client) WorkOrder() WorkOrderServiceClient             { return c._WorkOrder }

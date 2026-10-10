@@ -87,6 +87,9 @@ func ItemModelOrErr(p ItemModel, err error) ItemModel {
 // Label is the predicate function for label builders.
 type Label func(*sql.Selector)
 
+// LegalHold is the predicate function for legalhold builders.
+type LegalHold func(*sql.Selector)
+
 // Link is the predicate function for link builders.
 type Link func(*sql.Selector)
 
@@ -128,6 +131,9 @@ type StockMovement func(*sql.Selector)
 
 // Tenant is the predicate function for tenant builders.
 type Tenant func(*sql.Selector)
+
+// TenantContract is the predicate function for tenantcontract builders.
+type TenantContract func(*sql.Selector)
 
 // TenantDomain is the predicate function for tenantdomain builders.
 type TenantDomain func(*sql.Selector)

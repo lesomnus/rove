@@ -41,6 +41,36 @@ service UsageSnapshotService {
   rpc List(UsageSnapshotListRequest) returns (UsageSnapshotListResponse);
 }
 
+service TenantContractService {
+  // Add creates a new TenantContract
+  rpc Add(TenantContractAddRequest) returns (TenantContract);
+  // Get retrieves a TenantContract
+  rpc Get(TenantContractGetRequest) returns (TenantContract);
+  // Patch updates an existing TenantContract
+  rpc Patch(TenantContractPatchRequest) returns (TenantContract);
+  // Apply applies a patch document to an existing TenantContract
+  rpc Apply(TenantContractApplyRequest) returns (TenantContract);
+  // Erase deletes a TenantContract
+  rpc Erase(TenantContractRef) returns (TenantContractEraseResponse);
+  // List reads TenantContracts a page at a time.
+  rpc List(TenantContractListRequest) returns (TenantContractListResponse);
+}
+
+service LegalHoldService {
+  // Add creates a new LegalHold
+  rpc Add(LegalHoldAddRequest) returns (LegalHold);
+  // Get retrieves a LegalHold
+  rpc Get(LegalHoldGetRequest) returns (LegalHold);
+  // Patch updates an existing LegalHold
+  rpc Patch(LegalHoldPatchRequest) returns (LegalHold);
+  // Apply applies a patch document to an existing LegalHold
+  rpc Apply(LegalHoldApplyRequest) returns (LegalHold);
+  // Erase deletes a LegalHold
+  rpc Erase(LegalHoldRef) returns (LegalHoldEraseResponse);
+  // List reads LegalHolds a page at a time.
+  rpc List(LegalHoldListRequest) returns (LegalHoldListResponse);
+}
+
 message NotificationAddRequest {
   bytes id = 1;
   TenantRef tenant = 2;
@@ -283,4 +313,187 @@ message UsageSnapshotListResponse {
 message UsageSnapshotFilter {
   UsageSnapshotRef ref = 1;
   string day = 2;
+}
+
+message TenantContractAddRequest {
+  bytes id = 1;
+  TenantRef tenant = 2;
+  string name = 5 [features.field_presence = IMPLICIT];
+  string desc = 6 [features.field_presence = IMPLICIT];
+  uint32 view_days = 8 [features.field_presence = IMPLICIT];
+  uint32 keep_days = 9 [features.field_presence = IMPLICIT];
+  uint32 grace_days = 10 [features.field_presence = IMPLICIT];
+  google.protobuf.Timestamp date_effective = 11;
+  google.protobuf.Timestamp date_created = 15;
+}
+
+message TenantContractGetRequest {
+  TenantContractRef ref = 1;
+  TenantContractSelect select = 2;
+}
+
+message TenantContractRef {
+  oneof key {
+    bytes id = 1;
+  }
+}
+
+message TenantContractSelect {
+  bool all = 1;
+  TenantSelect tenant = 2;
+  bool name = 5;
+  bool desc = 6;
+  bool view_days = 8;
+  bool keep_days = 9;
+  bool grace_days = 10;
+  bool date_effective = 11;
+  bool date_erased = 14;
+  bool date_created = 15;
+}
+
+message TenantContractPatchRequest {
+  TenantContractRef ref = 1;
+  string name = 10;
+  string desc = 12;
+  uint32 view_days = 16;
+  uint32 keep_days = 18;
+  uint32 grace_days = 20;
+  google.protobuf.Timestamp date_effective = 22;
+}
+
+message TenantContractApplyRequest {
+  TenantContractRef ref = 1;
+  patch.Patch patch = 2;
+}
+
+message TenantContractEraseResponse {
+  // Erased is whether this call is the one that erased the row.
+  //
+  // False for a row that was already gone, was never there, or is out
+  // of this caller's reach -- which are one answer on purpose, and the
+  // reason the RPC does not fail instead.
+  bool erased = 1;
+}
+
+message TenantContractListRequest {
+  // Bounded because the work is: each filter is a predicate in the same query,
+  // so this is what says how much of the database one request may read.
+  repeated TenantContractFilter filters = 1;
+
+  // How many to answer with. Nothing said is what the schema declared, and more
+  // than the cap is the cap -- a caller asking for more than there is meant no
+  // harm, so it is not an error and it is not the whole table either.
+  int32 size = 2 [features.field_presence = IMPLICIT];
+
+  // Where to carry on from: the "next" of the answer before. It names the last
+  // row of that page rather than counting rows from the start, so a row added
+  // ahead of the page does not shift it and a caller reading through never sees
+  // one twice or misses one.
+  string after = 3 [features.field_presence = IMPLICIT];
+}
+
+message TenantContractListResponse {
+  repeated TenantContract items = 1;
+
+  // What to ask for next, and empty when this was the last of them.
+  //
+  // Empty means there is no more *for now*: a list is read as it is, and one
+  // that has grown since answers a fresh call. It is not empty merely because
+  // the page came back short -- a page is short when the last row of it was the
+  // last row there was, which is a thing the server can only know by having
+  // looked.
+  string next = 2 [features.field_presence = IMPLICIT];
+}
+
+message TenantContractFilter {
+  TenantContractRef ref = 1;
+}
+
+message LegalHoldAddRequest {
+  bytes id = 1;
+  TenantRef tenant = 2;
+  string name = 5 [features.field_presence = IMPLICIT];
+  string desc = 6 [features.field_presence = IMPLICIT];
+  google.protobuf.Timestamp date_lifted = 8;
+  google.protobuf.Timestamp date_created = 15;
+}
+
+message LegalHoldGetRequest {
+  LegalHoldRef ref = 1;
+  LegalHoldSelect select = 2;
+}
+
+message LegalHoldRef {
+  oneof key {
+    bytes id = 1;
+  }
+}
+
+message LegalHoldSelect {
+  bool all = 1;
+  TenantSelect tenant = 2;
+  bool name = 5;
+  bool desc = 6;
+  bool date_lifted = 8;
+  bool date_created = 15;
+}
+
+message LegalHoldPatchRequest {
+  LegalHoldRef ref = 1;
+  string name = 10;
+  string desc = 12;
+  google.protobuf.Timestamp date_lifted = 16;
+  // Clear date_lifted instead of writing it.
+  // It takes a field of its own because an unset value already means
+  // "leave it alone", so no value could have meant NULL. It wins
+  // outright: setting both this and date_lifted clears.
+  bool date_lifted_null = 17;
+}
+
+message LegalHoldApplyRequest {
+  LegalHoldRef ref = 1;
+  patch.Patch patch = 2;
+}
+
+message LegalHoldEraseResponse {
+  // Erased is whether this call is the one that erased the row.
+  //
+  // False for a row that was already gone, was never there, or is out
+  // of this caller's reach -- which are one answer on purpose, and the
+  // reason the RPC does not fail instead.
+  bool erased = 1;
+}
+
+message LegalHoldListRequest {
+  // Bounded because the work is: each filter is a predicate in the same query,
+  // so this is what says how much of the database one request may read.
+  repeated LegalHoldFilter filters = 1;
+
+  // How many to answer with. Nothing said is what the schema declared, and more
+  // than the cap is the cap -- a caller asking for more than there is meant no
+  // harm, so it is not an error and it is not the whole table either.
+  int32 size = 2 [features.field_presence = IMPLICIT];
+
+  // Where to carry on from: the "next" of the answer before. It names the last
+  // row of that page rather than counting rows from the start, so a row added
+  // ahead of the page does not shift it and a caller reading through never sees
+  // one twice or misses one.
+  string after = 3 [features.field_presence = IMPLICIT];
+}
+
+message LegalHoldListResponse {
+  repeated LegalHold items = 1;
+
+  // What to ask for next, and empty when this was the last of them.
+  //
+  // Empty means there is no more *for now*: a list is read as it is, and one
+  // that has grown since answers a fresh call. It is not empty merely because
+  // the page came back short -- a page is short when the last row of it was the
+  // last row there was, which is a thing the server can only know by having
+  // looked.
+  string next = 2 [features.field_presence = IMPLICIT];
+}
+
+message LegalHoldFilter {
+  LegalHoldRef ref = 1;
 }

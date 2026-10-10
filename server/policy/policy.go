@@ -156,6 +156,13 @@ func init() {
 
 	allow(Read, "NotificationService", "Inbox", "MarkRead")
 
+	// A tenant's contract and the legal holds on it are the operator's: `rove
+	// contract` and `rove hold` write them, from a shell, and no role here
+	// may. The contract is everybody's to read, since it is what decides how
+	// far back their history goes; a hold is for the people who run the tenant.
+	allow(Read, "TenantContractService", "Get", "List")
+	oversee("LegalHoldService", "Get", "List")
+
 	// A batch is checked per operation, by the same table.
 	Table["/payday.BatchService/Do"] = rule{min: Read}
 }

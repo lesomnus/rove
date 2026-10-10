@@ -8,7 +8,7 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Patch } from "../patch/patch_pb.js";
 import { file_patch_patch } from "../patch/patch_pb.js";
-import type { Notification, NotificationSchema, UsageSnapshot, UsageSnapshotSchema } from "./ops_pb.js";
+import type { LegalHold, LegalHoldSchema, Notification, NotificationSchema, TenantContract, TenantContractSchema, UsageSnapshot, UsageSnapshotSchema } from "./ops_pb.js";
 import { file_rove_ops } from "./ops_pb.js";
 import type { HolderRef, HolderSelect } from "./payday/holder_svc_pb.js";
 import { file_rove_payday_holder_svc_g } from "./payday/holder_svc_pb.js";
@@ -20,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rove/ops_svc.g.proto.
  */
 export const file_rove_ops_svc_g: GenFile = /*@__PURE__*/
-  fileDesc("ChRyb3ZlL29wc19zdmMuZy5wcm90bxIEcm92ZSKtAgoWTm90aWZpY2F0aW9uQWRkUmVxdWVzdBIKCgJpZBgBIAEoDBIfCgZ0ZW5hbnQYAiABKAsyDy5yb3ZlLlRlbmFudFJlZhITCgRuYW1lGAUgASgJQgWqAQIIAhITCgRkZXNjGAYgASgJQgWqAQIIAhIfCgZob2xkZXIYCCABKAsyDy5yb3ZlLkhvbGRlclJlZhITCgRraW5kGAkgASgJQgWqAQIIAhISCgpzdWJqZWN0X2lkGAogASgMEisKB3JlYWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhMKBGxpbmsYDCABKAlCBaoBAggCEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiZgoWTm90aWZpY2F0aW9uR2V0UmVxdWVzdBIiCgNyZWYYASABKAsyFS5yb3ZlLk5vdGlmaWNhdGlvblJlZhIoCgZzZWxlY3QYAiABKAsyGC5yb3ZlLk5vdGlmaWNhdGlvblNlbGVjdCImCg9Ob3RpZmljYXRpb25SZWYSDAoCaWQYASABKAxIAEIFCgNrZXki8gEKEk5vdGlmaWNhdGlvblNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSDAoEbmFtZRgFIAEoCBIMCgRkZXNjGAYgASgIEiIKBmhvbGRlchgIIAEoCzISLnJvdmUuSG9sZGVyU2VsZWN0EgwKBGtpbmQYCSABKAgSEgoKc3ViamVjdF9pZBgKIAEoCBIPCgdyZWFkX2F0GAsgASgIEgwKBGxpbmsYDCABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCK0AgoYTm90aWZpY2F0aW9uUGF0Y2hSZXF1ZXN0EiIKA3JlZhgBIAEoCzIVLnJvdmUuTm90aWZpY2F0aW9uUmVmEgwKBG5hbWUYCiABKAkSDAoEZGVzYxgMIAEoCRIMCgRraW5kGBIgASgJEhIKCnN1YmplY3RfaWQYFCABKAwSFwoPc3ViamVjdF9pZF9udWxsGBUgASgIEisKB3JlYWRfYXQYFiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHJlYWRfYXRfbnVsbBgXIAEoCBIMCgRsaW5rGBggASgJEjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIIlsKGE5vdGlmaWNhdGlvbkFwcGx5UmVxdWVzdBIiCgNyZWYYASABKAsyFS5yb3ZlLk5vdGlmaWNhdGlvblJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIisKGU5vdGlmaWNhdGlvbkVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIIm8KF05vdGlmaWNhdGlvbkxpc3RSZXF1ZXN0EikKB2ZpbHRlcnMYASADKAsyGC5yb3ZlLk5vdGlmaWNhdGlvbkZpbHRlchITCgRzaXplGAIgASgFQgWqAQIIAhIUCgVhZnRlchgDIAEoCUIFqgECCAIiUgoYTm90aWZpY2F0aW9uTGlzdFJlc3BvbnNlEiEKBWl0ZW1zGAEgAygLMhIucm92ZS5Ob3RpZmljYXRpb24SEwoEbmV4dBgCIAEoCUIFqgECCAIiZwoSTm90aWZpY2F0aW9uRmlsdGVyEiIKA3JlZhgBIAEoCzIVLnJvdmUuTm90aWZpY2F0aW9uUmVmEh8KBmhvbGRlchgCIAEoCzIPLnJvdmUuSG9sZGVyUmVmEgwKBGtpbmQYAyABKAkiRgoYTm90aWZpY2F0aW9uSW5ib3hSZXF1ZXN0EhUKBnVucmVhZBgBIAEoCEIFqgECCAISEwoEc2l6ZRgCIAEoDUIFqgECCAIiVQoZTm90aWZpY2F0aW9uSW5ib3hSZXNwb25zZRIhCgVpdGVtcxgBIAMoCzISLnJvdmUuTm90aWZpY2F0aW9uEhUKBnVucmVhZBgCIAEoDUIFqgECCAIiKgobTm90aWZpY2F0aW9uTWFya1JlYWRSZXF1ZXN0EgsKA2lkcxgBIAMoDCI1ChxOb3RpZmljYXRpb25NYXJrUmVhZFJlc3BvbnNlEhUKBm1hcmtlZBgBIAEoDUIFqgECCAIi+QEKF1VzYWdlU25hcHNob3RBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEhIKA2RheRgIIAEoCUIFqgECCAISOwoHbWV0cmljcxgJIAMoCzIqLnJvdmUuVXNhZ2VTbmFwc2hvdEFkZFJlcXVlc3QuTWV0cmljc0VudHJ5EjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAaLgoMTWV0cmljc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiaQoXVXNhZ2VTbmFwc2hvdEdldFJlcXVlc3QSIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEikKBnNlbGVjdBgCIAEoCzIZLnJvdmUuVXNhZ2VTbmFwc2hvdFNlbGVjdCJTChBVc2FnZVNuYXBzaG90UmVmEgwKAmlkGAEgASgMSAASKgoDZGF5GAIgASgLMhsucm92ZS5Vc2FnZVNuYXBzaG90UmVmQnlEYXlIAEIFCgNrZXkiRQoVVXNhZ2VTbmFwc2hvdFJlZkJ5RGF5Eh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEgsKA2RheRgIIAEoCSKQAQoTVXNhZ2VTbmFwc2hvdFNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSCwoDZGF5GAggASgIEg8KB21ldHJpY3MYCSABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCKKAgoZVXNhZ2VTbmFwc2hvdFBhdGNoUmVxdWVzdBIjCgNyZWYYASABKAsyFi5yb3ZlLlVzYWdlU25hcHNob3RSZWYSCwoDZGF5GBAgASgJEj0KB21ldHJpY3MYEiADKAsyLC5yb3ZlLlVzYWdlU25hcHNob3RQYXRjaFJlcXVlc3QuTWV0cmljc0VudHJ5EjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIGi4KDE1ldHJpY3NFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIl0KGVVzYWdlU25hcHNob3RBcHBseVJlcXVlc3QSIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEhsKBXBhdGNoGAIgASgLMgwucGF0Y2guUGF0Y2giLAoaVXNhZ2VTbmFwc2hvdEVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIInEKGFVzYWdlU25hcHNob3RMaXN0UmVxdWVzdBIqCgdmaWx0ZXJzGAEgAygLMhkucm92ZS5Vc2FnZVNuYXBzaG90RmlsdGVyEhMKBHNpemUYAiABKAVCBaoBAggCEhQKBWFmdGVyGAMgASgJQgWqAQIIAiJUChlVc2FnZVNuYXBzaG90TGlzdFJlc3BvbnNlEiIKBWl0ZW1zGAEgAygLMhMucm92ZS5Vc2FnZVNuYXBzaG90EhMKBG5leHQYAiABKAlCBaoBAggCIkcKE1VzYWdlU25hcHNob3RGaWx0ZXISIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEgsKA2RheRgCIAEoCTKmBAoTTm90aWZpY2F0aW9uU2VydmljZRI3CgNBZGQSHC5yb3ZlLk5vdGlmaWNhdGlvbkFkZFJlcXVlc3QaEi5yb3ZlLk5vdGlmaWNhdGlvbhI3CgNHZXQSHC5yb3ZlLk5vdGlmaWNhdGlvbkdldFJlcXVlc3QaEi5yb3ZlLk5vdGlmaWNhdGlvbhI7CgVQYXRjaBIeLnJvdmUuTm90aWZpY2F0aW9uUGF0Y2hSZXF1ZXN0GhIucm92ZS5Ob3RpZmljYXRpb24SOwoFQXBwbHkSHi5yb3ZlLk5vdGlmaWNhdGlvbkFwcGx5UmVxdWVzdBoSLnJvdmUuTm90aWZpY2F0aW9uEj8KBUVyYXNlEhUucm92ZS5Ob3RpZmljYXRpb25SZWYaHy5yb3ZlLk5vdGlmaWNhdGlvbkVyYXNlUmVzcG9uc2USRQoETGlzdBIdLnJvdmUuTm90aWZpY2F0aW9uTGlzdFJlcXVlc3QaHi5yb3ZlLk5vdGlmaWNhdGlvbkxpc3RSZXNwb25zZRJICgVJbmJveBIeLnJvdmUuTm90aWZpY2F0aW9uSW5ib3hSZXF1ZXN0Gh8ucm92ZS5Ob3RpZmljYXRpb25JbmJveFJlc3BvbnNlElEKCE1hcmtSZWFkEiEucm92ZS5Ob3RpZmljYXRpb25NYXJrUmVhZFJlcXVlc3QaIi5yb3ZlLk5vdGlmaWNhdGlvbk1hcmtSZWFkUmVzcG9uc2UylgMKFFVzYWdlU25hcHNob3RTZXJ2aWNlEjkKA0FkZBIdLnJvdmUuVXNhZ2VTbmFwc2hvdEFkZFJlcXVlc3QaEy5yb3ZlLlVzYWdlU25hcHNob3QSOQoDR2V0Eh0ucm92ZS5Vc2FnZVNuYXBzaG90R2V0UmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBI9CgVQYXRjaBIfLnJvdmUuVXNhZ2VTbmFwc2hvdFBhdGNoUmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBI9CgVBcHBseRIfLnJvdmUuVXNhZ2VTbmFwc2hvdEFwcGx5UmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBJBCgVFcmFzZRIWLnJvdmUuVXNhZ2VTbmFwc2hvdFJlZhogLnJvdmUuVXNhZ2VTbmFwc2hvdEVyYXNlUmVzcG9uc2USRwoETGlzdBIeLnJvdmUuVXNhZ2VTbmFwc2hvdExpc3RSZXF1ZXN0Gh8ucm92ZS5Vc2FnZVNuYXBzaG90TGlzdFJlc3BvbnNlQhpaGGdpdGh1Yi5jb20vbGVzb21udXMvcm92ZWIIZWRpdGlvbnNw6Ac", [file_google_protobuf_timestamp, file_patch_patch, file_rove_ops, file_rove_payday_holder_svc_g, file_rove_payday_tenant_svc_g]);
+  fileDesc("ChRyb3ZlL29wc19zdmMuZy5wcm90bxIEcm92ZSKtAgoWTm90aWZpY2F0aW9uQWRkUmVxdWVzdBIKCgJpZBgBIAEoDBIfCgZ0ZW5hbnQYAiABKAsyDy5yb3ZlLlRlbmFudFJlZhITCgRuYW1lGAUgASgJQgWqAQIIAhITCgRkZXNjGAYgASgJQgWqAQIIAhIfCgZob2xkZXIYCCABKAsyDy5yb3ZlLkhvbGRlclJlZhITCgRraW5kGAkgASgJQgWqAQIIAhISCgpzdWJqZWN0X2lkGAogASgMEisKB3JlYWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhMKBGxpbmsYDCABKAlCBaoBAggCEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiZgoWTm90aWZpY2F0aW9uR2V0UmVxdWVzdBIiCgNyZWYYASABKAsyFS5yb3ZlLk5vdGlmaWNhdGlvblJlZhIoCgZzZWxlY3QYAiABKAsyGC5yb3ZlLk5vdGlmaWNhdGlvblNlbGVjdCImCg9Ob3RpZmljYXRpb25SZWYSDAoCaWQYASABKAxIAEIFCgNrZXki8gEKEk5vdGlmaWNhdGlvblNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSDAoEbmFtZRgFIAEoCBIMCgRkZXNjGAYgASgIEiIKBmhvbGRlchgIIAEoCzISLnJvdmUuSG9sZGVyU2VsZWN0EgwKBGtpbmQYCSABKAgSEgoKc3ViamVjdF9pZBgKIAEoCBIPCgdyZWFkX2F0GAsgASgIEgwKBGxpbmsYDCABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCK0AgoYTm90aWZpY2F0aW9uUGF0Y2hSZXF1ZXN0EiIKA3JlZhgBIAEoCzIVLnJvdmUuTm90aWZpY2F0aW9uUmVmEgwKBG5hbWUYCiABKAkSDAoEZGVzYxgMIAEoCRIMCgRraW5kGBIgASgJEhIKCnN1YmplY3RfaWQYFCABKAwSFwoPc3ViamVjdF9pZF9udWxsGBUgASgIEisKB3JlYWRfYXQYFiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHJlYWRfYXRfbnVsbBgXIAEoCBIMCgRsaW5rGBggASgJEjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIIlsKGE5vdGlmaWNhdGlvbkFwcGx5UmVxdWVzdBIiCgNyZWYYASABKAsyFS5yb3ZlLk5vdGlmaWNhdGlvblJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIisKGU5vdGlmaWNhdGlvbkVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIIm8KF05vdGlmaWNhdGlvbkxpc3RSZXF1ZXN0EikKB2ZpbHRlcnMYASADKAsyGC5yb3ZlLk5vdGlmaWNhdGlvbkZpbHRlchITCgRzaXplGAIgASgFQgWqAQIIAhIUCgVhZnRlchgDIAEoCUIFqgECCAIiUgoYTm90aWZpY2F0aW9uTGlzdFJlc3BvbnNlEiEKBWl0ZW1zGAEgAygLMhIucm92ZS5Ob3RpZmljYXRpb24SEwoEbmV4dBgCIAEoCUIFqgECCAIiZwoSTm90aWZpY2F0aW9uRmlsdGVyEiIKA3JlZhgBIAEoCzIVLnJvdmUuTm90aWZpY2F0aW9uUmVmEh8KBmhvbGRlchgCIAEoCzIPLnJvdmUuSG9sZGVyUmVmEgwKBGtpbmQYAyABKAkiRgoYTm90aWZpY2F0aW9uSW5ib3hSZXF1ZXN0EhUKBnVucmVhZBgBIAEoCEIFqgECCAISEwoEc2l6ZRgCIAEoDUIFqgECCAIiVQoZTm90aWZpY2F0aW9uSW5ib3hSZXNwb25zZRIhCgVpdGVtcxgBIAMoCzISLnJvdmUuTm90aWZpY2F0aW9uEhUKBnVucmVhZBgCIAEoDUIFqgECCAIiKgobTm90aWZpY2F0aW9uTWFya1JlYWRSZXF1ZXN0EgsKA2lkcxgBIAMoDCI1ChxOb3RpZmljYXRpb25NYXJrUmVhZFJlc3BvbnNlEhUKBm1hcmtlZBgBIAEoDUIFqgECCAIi+QEKF1VzYWdlU25hcHNob3RBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEhIKA2RheRgIIAEoCUIFqgECCAISOwoHbWV0cmljcxgJIAMoCzIqLnJvdmUuVXNhZ2VTbmFwc2hvdEFkZFJlcXVlc3QuTWV0cmljc0VudHJ5EjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAaLgoMTWV0cmljc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiaQoXVXNhZ2VTbmFwc2hvdEdldFJlcXVlc3QSIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEikKBnNlbGVjdBgCIAEoCzIZLnJvdmUuVXNhZ2VTbmFwc2hvdFNlbGVjdCJTChBVc2FnZVNuYXBzaG90UmVmEgwKAmlkGAEgASgMSAASKgoDZGF5GAIgASgLMhsucm92ZS5Vc2FnZVNuYXBzaG90UmVmQnlEYXlIAEIFCgNrZXkiRQoVVXNhZ2VTbmFwc2hvdFJlZkJ5RGF5Eh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEgsKA2RheRgIIAEoCSKQAQoTVXNhZ2VTbmFwc2hvdFNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSCwoDZGF5GAggASgIEg8KB21ldHJpY3MYCSABKAgSFAoMZGF0ZV91cGRhdGVkGA0gASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCKKAgoZVXNhZ2VTbmFwc2hvdFBhdGNoUmVxdWVzdBIjCgNyZWYYASABKAsyFi5yb3ZlLlVzYWdlU25hcHNob3RSZWYSCwoDZGF5GBAgASgJEj0KB21ldHJpY3MYEiADKAsyLC5yb3ZlLlVzYWdlU25hcHNob3RQYXRjaFJlcXVlc3QuTWV0cmljc0VudHJ5EjAKDGRhdGVfdXBkYXRlZBgaIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGgoSZGF0ZV91cGRhdGVkX2ZvcmNlGBsgASgIGi4KDE1ldHJpY3NFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIl0KGVVzYWdlU25hcHNob3RBcHBseVJlcXVlc3QSIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEhsKBXBhdGNoGAIgASgLMgwucGF0Y2guUGF0Y2giLAoaVXNhZ2VTbmFwc2hvdEVyYXNlUmVzcG9uc2USDgoGZXJhc2VkGAEgASgIInEKGFVzYWdlU25hcHNob3RMaXN0UmVxdWVzdBIqCgdmaWx0ZXJzGAEgAygLMhkucm92ZS5Vc2FnZVNuYXBzaG90RmlsdGVyEhMKBHNpemUYAiABKAVCBaoBAggCEhQKBWFmdGVyGAMgASgJQgWqAQIIAiJUChlVc2FnZVNuYXBzaG90TGlzdFJlc3BvbnNlEiIKBWl0ZW1zGAEgAygLMhMucm92ZS5Vc2FnZVNuYXBzaG90EhMKBG5leHQYAiABKAlCBaoBAggCIkcKE1VzYWdlU25hcHNob3RGaWx0ZXISIwoDcmVmGAEgASgLMhYucm92ZS5Vc2FnZVNuYXBzaG90UmVmEgsKA2RheRgCIAEoCSKmAgoYVGVuYW50Q29udHJhY3RBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEh8KBnRlbmFudBgCIAEoCzIPLnJvdmUuVGVuYW50UmVmEhMKBG5hbWUYBSABKAlCBaoBAggCEhMKBGRlc2MYBiABKAlCBaoBAggCEhgKCXZpZXdfZGF5cxgIIAEoDUIFqgECCAISGAoJa2VlcF9kYXlzGAkgASgNQgWqAQIIAhIZCgpncmFjZV9kYXlzGAogASgNQgWqAQIIAhIyCg5kYXRlX2VmZmVjdGl2ZRgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJsChhUZW5hbnRDb250cmFjdEdldFJlcXVlc3QSJAoDcmVmGAEgASgLMhcucm92ZS5UZW5hbnRDb250cmFjdFJlZhIqCgZzZWxlY3QYAiABKAsyGi5yb3ZlLlRlbmFudENvbnRyYWN0U2VsZWN0IigKEVRlbmFudENvbnRyYWN0UmVmEgwKAmlkGAEgASgMSABCBQoDa2V5IuABChRUZW5hbnRDb250cmFjdFNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSDAoEbmFtZRgFIAEoCBIMCgRkZXNjGAYgASgIEhEKCXZpZXdfZGF5cxgIIAEoCBIRCglrZWVwX2RheXMYCSABKAgSEgoKZ3JhY2VfZGF5cxgKIAEoCBIWCg5kYXRlX2VmZmVjdGl2ZRgLIAEoCBITCgtkYXRlX2VyYXNlZBgOIAEoCBIUCgxkYXRlX2NyZWF0ZWQYDyABKAgizAEKGlRlbmFudENvbnRyYWN0UGF0Y2hSZXF1ZXN0EiQKA3JlZhgBIAEoCzIXLnJvdmUuVGVuYW50Q29udHJhY3RSZWYSDAoEbmFtZRgKIAEoCRIMCgRkZXNjGAwgASgJEhEKCXZpZXdfZGF5cxgQIAEoDRIRCglrZWVwX2RheXMYEiABKA0SEgoKZ3JhY2VfZGF5cxgUIAEoDRIyCg5kYXRlX2VmZmVjdGl2ZRgWIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiXwoaVGVuYW50Q29udHJhY3RBcHBseVJlcXVlc3QSJAoDcmVmGAEgASgLMhcucm92ZS5UZW5hbnRDb250cmFjdFJlZhIbCgVwYXRjaBgCIAEoCzIMLnBhdGNoLlBhdGNoIi0KG1RlbmFudENvbnRyYWN0RXJhc2VSZXNwb25zZRIOCgZlcmFzZWQYASABKAgicwoZVGVuYW50Q29udHJhY3RMaXN0UmVxdWVzdBIrCgdmaWx0ZXJzGAEgAygLMhoucm92ZS5UZW5hbnRDb250cmFjdEZpbHRlchITCgRzaXplGAIgASgFQgWqAQIIAhIUCgVhZnRlchgDIAEoCUIFqgECCAIiVgoaVGVuYW50Q29udHJhY3RMaXN0UmVzcG9uc2USIwoFaXRlbXMYASADKAsyFC5yb3ZlLlRlbmFudENvbnRyYWN0EhMKBG5leHQYAiABKAlCBaoBAggCIjwKFFRlbmFudENvbnRyYWN0RmlsdGVyEiQKA3JlZhgBIAEoCzIXLnJvdmUuVGVuYW50Q29udHJhY3RSZWYizwEKE0xlZ2FsSG9sZEFkZFJlcXVlc3QSCgoCaWQYASABKAwSHwoGdGVuYW50GAIgASgLMg8ucm92ZS5UZW5hbnRSZWYSEwoEbmFtZRgFIAEoCUIFqgECCAISEwoEZGVzYxgGIAEoCUIFqgECCAISLwoLZGF0ZV9saWZ0ZWQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiXQoTTGVnYWxIb2xkR2V0UmVxdWVzdBIfCgNyZWYYASABKAsyEi5yb3ZlLkxlZ2FsSG9sZFJlZhIlCgZzZWxlY3QYAiABKAsyFS5yb3ZlLkxlZ2FsSG9sZFNlbGVjdCIjCgxMZWdhbEhvbGRSZWYSDAoCaWQYASABKAxIAEIFCgNrZXkiiQEKD0xlZ2FsSG9sZFNlbGVjdBILCgNhbGwYASABKAgSIgoGdGVuYW50GAIgASgLMhIucm92ZS5UZW5hbnRTZWxlY3QSDAoEbmFtZRgFIAEoCBIMCgRkZXNjGAYgASgIEhMKC2RhdGVfbGlmdGVkGAggASgIEhQKDGRhdGVfY3JlYXRlZBgPIAEoCCKfAQoVTGVnYWxIb2xkUGF0Y2hSZXF1ZXN0Eh8KA3JlZhgBIAEoCzISLnJvdmUuTGVnYWxIb2xkUmVmEgwKBG5hbWUYCiABKAkSDAoEZGVzYxgMIAEoCRIvCgtkYXRlX2xpZnRlZBgQIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGAoQZGF0ZV9saWZ0ZWRfbnVsbBgRIAEoCCJVChVMZWdhbEhvbGRBcHBseVJlcXVlc3QSHwoDcmVmGAEgASgLMhIucm92ZS5MZWdhbEhvbGRSZWYSGwoFcGF0Y2gYAiABKAsyDC5wYXRjaC5QYXRjaCIoChZMZWdhbEhvbGRFcmFzZVJlc3BvbnNlEg4KBmVyYXNlZBgBIAEoCCJpChRMZWdhbEhvbGRMaXN0UmVxdWVzdBImCgdmaWx0ZXJzGAEgAygLMhUucm92ZS5MZWdhbEhvbGRGaWx0ZXISEwoEc2l6ZRgCIAEoBUIFqgECCAISFAoFYWZ0ZXIYAyABKAlCBaoBAggCIkwKFUxlZ2FsSG9sZExpc3RSZXNwb25zZRIeCgVpdGVtcxgBIAMoCzIPLnJvdmUuTGVnYWxIb2xkEhMKBG5leHQYAiABKAlCBaoBAggCIjIKD0xlZ2FsSG9sZEZpbHRlchIfCgNyZWYYASABKAsyEi5yb3ZlLkxlZ2FsSG9sZFJlZjKmBAoTTm90aWZpY2F0aW9uU2VydmljZRI3CgNBZGQSHC5yb3ZlLk5vdGlmaWNhdGlvbkFkZFJlcXVlc3QaEi5yb3ZlLk5vdGlmaWNhdGlvbhI3CgNHZXQSHC5yb3ZlLk5vdGlmaWNhdGlvbkdldFJlcXVlc3QaEi5yb3ZlLk5vdGlmaWNhdGlvbhI7CgVQYXRjaBIeLnJvdmUuTm90aWZpY2F0aW9uUGF0Y2hSZXF1ZXN0GhIucm92ZS5Ob3RpZmljYXRpb24SOwoFQXBwbHkSHi5yb3ZlLk5vdGlmaWNhdGlvbkFwcGx5UmVxdWVzdBoSLnJvdmUuTm90aWZpY2F0aW9uEj8KBUVyYXNlEhUucm92ZS5Ob3RpZmljYXRpb25SZWYaHy5yb3ZlLk5vdGlmaWNhdGlvbkVyYXNlUmVzcG9uc2USRQoETGlzdBIdLnJvdmUuTm90aWZpY2F0aW9uTGlzdFJlcXVlc3QaHi5yb3ZlLk5vdGlmaWNhdGlvbkxpc3RSZXNwb25zZRJICgVJbmJveBIeLnJvdmUuTm90aWZpY2F0aW9uSW5ib3hSZXF1ZXN0Gh8ucm92ZS5Ob3RpZmljYXRpb25JbmJveFJlc3BvbnNlElEKCE1hcmtSZWFkEiEucm92ZS5Ob3RpZmljYXRpb25NYXJrUmVhZFJlcXVlc3QaIi5yb3ZlLk5vdGlmaWNhdGlvbk1hcmtSZWFkUmVzcG9uc2UylgMKFFVzYWdlU25hcHNob3RTZXJ2aWNlEjkKA0FkZBIdLnJvdmUuVXNhZ2VTbmFwc2hvdEFkZFJlcXVlc3QaEy5yb3ZlLlVzYWdlU25hcHNob3QSOQoDR2V0Eh0ucm92ZS5Vc2FnZVNuYXBzaG90R2V0UmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBI9CgVQYXRjaBIfLnJvdmUuVXNhZ2VTbmFwc2hvdFBhdGNoUmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBI9CgVBcHBseRIfLnJvdmUuVXNhZ2VTbmFwc2hvdEFwcGx5UmVxdWVzdBoTLnJvdmUuVXNhZ2VTbmFwc2hvdBJBCgVFcmFzZRIWLnJvdmUuVXNhZ2VTbmFwc2hvdFJlZhogLnJvdmUuVXNhZ2VTbmFwc2hvdEVyYXNlUmVzcG9uc2USRwoETGlzdBIeLnJvdmUuVXNhZ2VTbmFwc2hvdExpc3RSZXF1ZXN0Gh8ucm92ZS5Vc2FnZVNuYXBzaG90TGlzdFJlc3BvbnNlMqMDChVUZW5hbnRDb250cmFjdFNlcnZpY2USOwoDQWRkEh4ucm92ZS5UZW5hbnRDb250cmFjdEFkZFJlcXVlc3QaFC5yb3ZlLlRlbmFudENvbnRyYWN0EjsKA0dldBIeLnJvdmUuVGVuYW50Q29udHJhY3RHZXRSZXF1ZXN0GhQucm92ZS5UZW5hbnRDb250cmFjdBI/CgVQYXRjaBIgLnJvdmUuVGVuYW50Q29udHJhY3RQYXRjaFJlcXVlc3QaFC5yb3ZlLlRlbmFudENvbnRyYWN0Ej8KBUFwcGx5EiAucm92ZS5UZW5hbnRDb250cmFjdEFwcGx5UmVxdWVzdBoULnJvdmUuVGVuYW50Q29udHJhY3QSQwoFRXJhc2USFy5yb3ZlLlRlbmFudENvbnRyYWN0UmVmGiEucm92ZS5UZW5hbnRDb250cmFjdEVyYXNlUmVzcG9uc2USSQoETGlzdBIfLnJvdmUuVGVuYW50Q29udHJhY3RMaXN0UmVxdWVzdBogLnJvdmUuVGVuYW50Q29udHJhY3RMaXN0UmVzcG9uc2Uy4gIKEExlZ2FsSG9sZFNlcnZpY2USMQoDQWRkEhkucm92ZS5MZWdhbEhvbGRBZGRSZXF1ZXN0Gg8ucm92ZS5MZWdhbEhvbGQSMQoDR2V0Ehkucm92ZS5MZWdhbEhvbGRHZXRSZXF1ZXN0Gg8ucm92ZS5MZWdhbEhvbGQSNQoFUGF0Y2gSGy5yb3ZlLkxlZ2FsSG9sZFBhdGNoUmVxdWVzdBoPLnJvdmUuTGVnYWxIb2xkEjUKBUFwcGx5Ehsucm92ZS5MZWdhbEhvbGRBcHBseVJlcXVlc3QaDy5yb3ZlLkxlZ2FsSG9sZBI5CgVFcmFzZRISLnJvdmUuTGVnYWxIb2xkUmVmGhwucm92ZS5MZWdhbEhvbGRFcmFzZVJlc3BvbnNlEj8KBExpc3QSGi5yb3ZlLkxlZ2FsSG9sZExpc3RSZXF1ZXN0Ghsucm92ZS5MZWdhbEhvbGRMaXN0UmVzcG9uc2VCGloYZ2l0aHViLmNvbS9sZXNvbW51cy9yb3ZlYghlZGl0aW9uc3DoBw", [file_google_protobuf_timestamp, file_patch_patch, file_rove_ops, file_rove_payday_holder_svc_g, file_rove_payday_tenant_svc_g]);
 
 /**
  * @generated from message rove.NotificationAddRequest
@@ -848,6 +848,650 @@ export const UsageSnapshotFilterSchema: GenMessage<UsageSnapshotFilter> = /*@__P
   messageDesc(file_rove_ops_svc_g, 24);
 
 /**
+ * @generated from message rove.TenantContractAddRequest
+ */
+export type TenantContractAddRequest = Message<"rove.TenantContractAddRequest"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: rove.TenantRef tenant = 2;
+   */
+  tenant?: TenantRef | undefined;
+
+  /**
+   * @generated from field: string name = 5 [features.field_presence = IMPLICIT];
+   */
+  name: string;
+
+  /**
+   * @generated from field: string desc = 6 [features.field_presence = IMPLICIT];
+   */
+  desc: string;
+
+  /**
+   * @generated from field: uint32 view_days = 8 [features.field_presence = IMPLICIT];
+   */
+  viewDays: number;
+
+  /**
+   * @generated from field: uint32 keep_days = 9 [features.field_presence = IMPLICIT];
+   */
+  keepDays: number;
+
+  /**
+   * @generated from field: uint32 grace_days = 10 [features.field_presence = IMPLICIT];
+   */
+  graceDays: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_effective = 11;
+   */
+  dateEffective?: Timestamp | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_created = 15;
+   */
+  dateCreated?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message rove.TenantContractAddRequest.
+ * Use `create(TenantContractAddRequestSchema)` to create a new message.
+ */
+export const TenantContractAddRequestSchema: GenMessage<TenantContractAddRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 25);
+
+/**
+ * @generated from message rove.TenantContractGetRequest
+ */
+export type TenantContractGetRequest = Message<"rove.TenantContractGetRequest"> & {
+  /**
+   * @generated from field: rove.TenantContractRef ref = 1;
+   */
+  ref?: TenantContractRef | undefined;
+
+  /**
+   * @generated from field: rove.TenantContractSelect select = 2;
+   */
+  select?: TenantContractSelect | undefined;
+};
+
+/**
+ * Describes the message rove.TenantContractGetRequest.
+ * Use `create(TenantContractGetRequestSchema)` to create a new message.
+ */
+export const TenantContractGetRequestSchema: GenMessage<TenantContractGetRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 26);
+
+/**
+ * @generated from message rove.TenantContractRef
+ */
+export type TenantContractRef = Message<"rove.TenantContractRef"> & {
+  /**
+   * @generated from oneof rove.TenantContractRef.key
+   */
+  key: {
+    /**
+     * @generated from field: bytes id = 1;
+     */
+    value: Uint8Array;
+    case: "id";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message rove.TenantContractRef.
+ * Use `create(TenantContractRefSchema)` to create a new message.
+ */
+export const TenantContractRefSchema: GenMessage<TenantContractRef> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 27);
+
+/**
+ * @generated from message rove.TenantContractSelect
+ */
+export type TenantContractSelect = Message<"rove.TenantContractSelect"> & {
+  /**
+   * @generated from field: bool all = 1;
+   */
+  all: boolean;
+
+  /**
+   * @generated from field: rove.TenantSelect tenant = 2;
+   */
+  tenant?: TenantSelect | undefined;
+
+  /**
+   * @generated from field: bool name = 5;
+   */
+  name: boolean;
+
+  /**
+   * @generated from field: bool desc = 6;
+   */
+  desc: boolean;
+
+  /**
+   * @generated from field: bool view_days = 8;
+   */
+  viewDays: boolean;
+
+  /**
+   * @generated from field: bool keep_days = 9;
+   */
+  keepDays: boolean;
+
+  /**
+   * @generated from field: bool grace_days = 10;
+   */
+  graceDays: boolean;
+
+  /**
+   * @generated from field: bool date_effective = 11;
+   */
+  dateEffective: boolean;
+
+  /**
+   * @generated from field: bool date_erased = 14;
+   */
+  dateErased: boolean;
+
+  /**
+   * @generated from field: bool date_created = 15;
+   */
+  dateCreated: boolean;
+};
+
+/**
+ * Describes the message rove.TenantContractSelect.
+ * Use `create(TenantContractSelectSchema)` to create a new message.
+ */
+export const TenantContractSelectSchema: GenMessage<TenantContractSelect> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 28);
+
+/**
+ * @generated from message rove.TenantContractPatchRequest
+ */
+export type TenantContractPatchRequest = Message<"rove.TenantContractPatchRequest"> & {
+  /**
+   * @generated from field: rove.TenantContractRef ref = 1;
+   */
+  ref?: TenantContractRef | undefined;
+
+  /**
+   * @generated from field: string name = 10;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string desc = 12;
+   */
+  desc: string;
+
+  /**
+   * @generated from field: uint32 view_days = 16;
+   */
+  viewDays: number;
+
+  /**
+   * @generated from field: uint32 keep_days = 18;
+   */
+  keepDays: number;
+
+  /**
+   * @generated from field: uint32 grace_days = 20;
+   */
+  graceDays: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_effective = 22;
+   */
+  dateEffective?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message rove.TenantContractPatchRequest.
+ * Use `create(TenantContractPatchRequestSchema)` to create a new message.
+ */
+export const TenantContractPatchRequestSchema: GenMessage<TenantContractPatchRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 29);
+
+/**
+ * @generated from message rove.TenantContractApplyRequest
+ */
+export type TenantContractApplyRequest = Message<"rove.TenantContractApplyRequest"> & {
+  /**
+   * @generated from field: rove.TenantContractRef ref = 1;
+   */
+  ref?: TenantContractRef | undefined;
+
+  /**
+   * @generated from field: patch.Patch patch = 2;
+   */
+  patch?: Patch | undefined;
+};
+
+/**
+ * Describes the message rove.TenantContractApplyRequest.
+ * Use `create(TenantContractApplyRequestSchema)` to create a new message.
+ */
+export const TenantContractApplyRequestSchema: GenMessage<TenantContractApplyRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 30);
+
+/**
+ * @generated from message rove.TenantContractEraseResponse
+ */
+export type TenantContractEraseResponse = Message<"rove.TenantContractEraseResponse"> & {
+  /**
+   * Erased is whether this call is the one that erased the row.
+   *
+   * False for a row that was already gone, was never there, or is out
+   * of this caller's reach -- which are one answer on purpose, and the
+   * reason the RPC does not fail instead.
+   *
+   * @generated from field: bool erased = 1;
+   */
+  erased: boolean;
+};
+
+/**
+ * Describes the message rove.TenantContractEraseResponse.
+ * Use `create(TenantContractEraseResponseSchema)` to create a new message.
+ */
+export const TenantContractEraseResponseSchema: GenMessage<TenantContractEraseResponse> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 31);
+
+/**
+ * @generated from message rove.TenantContractListRequest
+ */
+export type TenantContractListRequest = Message<"rove.TenantContractListRequest"> & {
+  /**
+   * Bounded because the work is: each filter is a predicate in the same query,
+   * so this is what says how much of the database one request may read.
+   *
+   * @generated from field: repeated rove.TenantContractFilter filters = 1;
+   */
+  filters: TenantContractFilter[];
+
+  /**
+   * How many to answer with. Nothing said is what the schema declared, and more
+   * than the cap is the cap -- a caller asking for more than there is meant no
+   * harm, so it is not an error and it is not the whole table either.
+   *
+   * @generated from field: int32 size = 2 [features.field_presence = IMPLICIT];
+   */
+  size: number;
+
+  /**
+   * Where to carry on from: the "next" of the answer before. It names the last
+   * row of that page rather than counting rows from the start, so a row added
+   * ahead of the page does not shift it and a caller reading through never sees
+   * one twice or misses one.
+   *
+   * @generated from field: string after = 3 [features.field_presence = IMPLICIT];
+   */
+  after: string;
+};
+
+/**
+ * Describes the message rove.TenantContractListRequest.
+ * Use `create(TenantContractListRequestSchema)` to create a new message.
+ */
+export const TenantContractListRequestSchema: GenMessage<TenantContractListRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 32);
+
+/**
+ * @generated from message rove.TenantContractListResponse
+ */
+export type TenantContractListResponse = Message<"rove.TenantContractListResponse"> & {
+  /**
+   * @generated from field: repeated rove.TenantContract items = 1;
+   */
+  items: TenantContract[];
+
+  /**
+   * What to ask for next, and empty when this was the last of them.
+   *
+   * Empty means there is no more *for now*: a list is read as it is, and one
+   * that has grown since answers a fresh call. It is not empty merely because
+   * the page came back short -- a page is short when the last row of it was the
+   * last row there was, which is a thing the server can only know by having
+   * looked.
+   *
+   * @generated from field: string next = 2 [features.field_presence = IMPLICIT];
+   */
+  next: string;
+};
+
+/**
+ * Describes the message rove.TenantContractListResponse.
+ * Use `create(TenantContractListResponseSchema)` to create a new message.
+ */
+export const TenantContractListResponseSchema: GenMessage<TenantContractListResponse> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 33);
+
+/**
+ * @generated from message rove.TenantContractFilter
+ */
+export type TenantContractFilter = Message<"rove.TenantContractFilter"> & {
+  /**
+   * @generated from field: rove.TenantContractRef ref = 1;
+   */
+  ref?: TenantContractRef | undefined;
+};
+
+/**
+ * Describes the message rove.TenantContractFilter.
+ * Use `create(TenantContractFilterSchema)` to create a new message.
+ */
+export const TenantContractFilterSchema: GenMessage<TenantContractFilter> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 34);
+
+/**
+ * @generated from message rove.LegalHoldAddRequest
+ */
+export type LegalHoldAddRequest = Message<"rove.LegalHoldAddRequest"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: rove.TenantRef tenant = 2;
+   */
+  tenant?: TenantRef | undefined;
+
+  /**
+   * @generated from field: string name = 5 [features.field_presence = IMPLICIT];
+   */
+  name: string;
+
+  /**
+   * @generated from field: string desc = 6 [features.field_presence = IMPLICIT];
+   */
+  desc: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_lifted = 8;
+   */
+  dateLifted?: Timestamp | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_created = 15;
+   */
+  dateCreated?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message rove.LegalHoldAddRequest.
+ * Use `create(LegalHoldAddRequestSchema)` to create a new message.
+ */
+export const LegalHoldAddRequestSchema: GenMessage<LegalHoldAddRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 35);
+
+/**
+ * @generated from message rove.LegalHoldGetRequest
+ */
+export type LegalHoldGetRequest = Message<"rove.LegalHoldGetRequest"> & {
+  /**
+   * @generated from field: rove.LegalHoldRef ref = 1;
+   */
+  ref?: LegalHoldRef | undefined;
+
+  /**
+   * @generated from field: rove.LegalHoldSelect select = 2;
+   */
+  select?: LegalHoldSelect | undefined;
+};
+
+/**
+ * Describes the message rove.LegalHoldGetRequest.
+ * Use `create(LegalHoldGetRequestSchema)` to create a new message.
+ */
+export const LegalHoldGetRequestSchema: GenMessage<LegalHoldGetRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 36);
+
+/**
+ * @generated from message rove.LegalHoldRef
+ */
+export type LegalHoldRef = Message<"rove.LegalHoldRef"> & {
+  /**
+   * @generated from oneof rove.LegalHoldRef.key
+   */
+  key: {
+    /**
+     * @generated from field: bytes id = 1;
+     */
+    value: Uint8Array;
+    case: "id";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message rove.LegalHoldRef.
+ * Use `create(LegalHoldRefSchema)` to create a new message.
+ */
+export const LegalHoldRefSchema: GenMessage<LegalHoldRef> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 37);
+
+/**
+ * @generated from message rove.LegalHoldSelect
+ */
+export type LegalHoldSelect = Message<"rove.LegalHoldSelect"> & {
+  /**
+   * @generated from field: bool all = 1;
+   */
+  all: boolean;
+
+  /**
+   * @generated from field: rove.TenantSelect tenant = 2;
+   */
+  tenant?: TenantSelect | undefined;
+
+  /**
+   * @generated from field: bool name = 5;
+   */
+  name: boolean;
+
+  /**
+   * @generated from field: bool desc = 6;
+   */
+  desc: boolean;
+
+  /**
+   * @generated from field: bool date_lifted = 8;
+   */
+  dateLifted: boolean;
+
+  /**
+   * @generated from field: bool date_created = 15;
+   */
+  dateCreated: boolean;
+};
+
+/**
+ * Describes the message rove.LegalHoldSelect.
+ * Use `create(LegalHoldSelectSchema)` to create a new message.
+ */
+export const LegalHoldSelectSchema: GenMessage<LegalHoldSelect> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 38);
+
+/**
+ * @generated from message rove.LegalHoldPatchRequest
+ */
+export type LegalHoldPatchRequest = Message<"rove.LegalHoldPatchRequest"> & {
+  /**
+   * @generated from field: rove.LegalHoldRef ref = 1;
+   */
+  ref?: LegalHoldRef | undefined;
+
+  /**
+   * @generated from field: string name = 10;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string desc = 12;
+   */
+  desc: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp date_lifted = 16;
+   */
+  dateLifted?: Timestamp | undefined;
+
+  /**
+   * Clear date_lifted instead of writing it.
+   * It takes a field of its own because an unset value already means
+   * "leave it alone", so no value could have meant NULL. It wins
+   * outright: setting both this and date_lifted clears.
+   *
+   * @generated from field: bool date_lifted_null = 17;
+   */
+  dateLiftedNull: boolean;
+};
+
+/**
+ * Describes the message rove.LegalHoldPatchRequest.
+ * Use `create(LegalHoldPatchRequestSchema)` to create a new message.
+ */
+export const LegalHoldPatchRequestSchema: GenMessage<LegalHoldPatchRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 39);
+
+/**
+ * @generated from message rove.LegalHoldApplyRequest
+ */
+export type LegalHoldApplyRequest = Message<"rove.LegalHoldApplyRequest"> & {
+  /**
+   * @generated from field: rove.LegalHoldRef ref = 1;
+   */
+  ref?: LegalHoldRef | undefined;
+
+  /**
+   * @generated from field: patch.Patch patch = 2;
+   */
+  patch?: Patch | undefined;
+};
+
+/**
+ * Describes the message rove.LegalHoldApplyRequest.
+ * Use `create(LegalHoldApplyRequestSchema)` to create a new message.
+ */
+export const LegalHoldApplyRequestSchema: GenMessage<LegalHoldApplyRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 40);
+
+/**
+ * @generated from message rove.LegalHoldEraseResponse
+ */
+export type LegalHoldEraseResponse = Message<"rove.LegalHoldEraseResponse"> & {
+  /**
+   * Erased is whether this call is the one that erased the row.
+   *
+   * False for a row that was already gone, was never there, or is out
+   * of this caller's reach -- which are one answer on purpose, and the
+   * reason the RPC does not fail instead.
+   *
+   * @generated from field: bool erased = 1;
+   */
+  erased: boolean;
+};
+
+/**
+ * Describes the message rove.LegalHoldEraseResponse.
+ * Use `create(LegalHoldEraseResponseSchema)` to create a new message.
+ */
+export const LegalHoldEraseResponseSchema: GenMessage<LegalHoldEraseResponse> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 41);
+
+/**
+ * @generated from message rove.LegalHoldListRequest
+ */
+export type LegalHoldListRequest = Message<"rove.LegalHoldListRequest"> & {
+  /**
+   * Bounded because the work is: each filter is a predicate in the same query,
+   * so this is what says how much of the database one request may read.
+   *
+   * @generated from field: repeated rove.LegalHoldFilter filters = 1;
+   */
+  filters: LegalHoldFilter[];
+
+  /**
+   * How many to answer with. Nothing said is what the schema declared, and more
+   * than the cap is the cap -- a caller asking for more than there is meant no
+   * harm, so it is not an error and it is not the whole table either.
+   *
+   * @generated from field: int32 size = 2 [features.field_presence = IMPLICIT];
+   */
+  size: number;
+
+  /**
+   * Where to carry on from: the "next" of the answer before. It names the last
+   * row of that page rather than counting rows from the start, so a row added
+   * ahead of the page does not shift it and a caller reading through never sees
+   * one twice or misses one.
+   *
+   * @generated from field: string after = 3 [features.field_presence = IMPLICIT];
+   */
+  after: string;
+};
+
+/**
+ * Describes the message rove.LegalHoldListRequest.
+ * Use `create(LegalHoldListRequestSchema)` to create a new message.
+ */
+export const LegalHoldListRequestSchema: GenMessage<LegalHoldListRequest> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 42);
+
+/**
+ * @generated from message rove.LegalHoldListResponse
+ */
+export type LegalHoldListResponse = Message<"rove.LegalHoldListResponse"> & {
+  /**
+   * @generated from field: repeated rove.LegalHold items = 1;
+   */
+  items: LegalHold[];
+
+  /**
+   * What to ask for next, and empty when this was the last of them.
+   *
+   * Empty means there is no more *for now*: a list is read as it is, and one
+   * that has grown since answers a fresh call. It is not empty merely because
+   * the page came back short -- a page is short when the last row of it was the
+   * last row there was, which is a thing the server can only know by having
+   * looked.
+   *
+   * @generated from field: string next = 2 [features.field_presence = IMPLICIT];
+   */
+  next: string;
+};
+
+/**
+ * Describes the message rove.LegalHoldListResponse.
+ * Use `create(LegalHoldListResponseSchema)` to create a new message.
+ */
+export const LegalHoldListResponseSchema: GenMessage<LegalHoldListResponse> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 43);
+
+/**
+ * @generated from message rove.LegalHoldFilter
+ */
+export type LegalHoldFilter = Message<"rove.LegalHoldFilter"> & {
+  /**
+   * @generated from field: rove.LegalHoldRef ref = 1;
+   */
+  ref?: LegalHoldRef | undefined;
+};
+
+/**
+ * Describes the message rove.LegalHoldFilter.
+ * Use `create(LegalHoldFilterSchema)` to create a new message.
+ */
+export const LegalHoldFilterSchema: GenMessage<LegalHoldFilter> = /*@__PURE__*/
+  messageDesc(file_rove_ops_svc_g, 44);
+
+/**
  * @generated from service rove.NotificationService
  */
 export const NotificationService: GenService<{
@@ -996,4 +1640,138 @@ export const UsageSnapshotService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_rove_ops_svc_g, 1);
+
+/**
+ * @generated from service rove.TenantContractService
+ */
+export const TenantContractService: GenService<{
+  /**
+   * Add creates a new TenantContract
+   *
+   * @generated from rpc rove.TenantContractService.Add
+   */
+  add: {
+    methodKind: "unary";
+    input: typeof TenantContractAddRequestSchema;
+    output: typeof TenantContractSchema;
+  },
+  /**
+   * Get retrieves a TenantContract
+   *
+   * @generated from rpc rove.TenantContractService.Get
+   */
+  get: {
+    methodKind: "unary";
+    input: typeof TenantContractGetRequestSchema;
+    output: typeof TenantContractSchema;
+  },
+  /**
+   * Patch updates an existing TenantContract
+   *
+   * @generated from rpc rove.TenantContractService.Patch
+   */
+  patch: {
+    methodKind: "unary";
+    input: typeof TenantContractPatchRequestSchema;
+    output: typeof TenantContractSchema;
+  },
+  /**
+   * Apply applies a patch document to an existing TenantContract
+   *
+   * @generated from rpc rove.TenantContractService.Apply
+   */
+  apply: {
+    methodKind: "unary";
+    input: typeof TenantContractApplyRequestSchema;
+    output: typeof TenantContractSchema;
+  },
+  /**
+   * Erase deletes a TenantContract
+   *
+   * @generated from rpc rove.TenantContractService.Erase
+   */
+  erase: {
+    methodKind: "unary";
+    input: typeof TenantContractRefSchema;
+    output: typeof TenantContractEraseResponseSchema;
+  },
+  /**
+   * List reads TenantContracts a page at a time.
+   *
+   * @generated from rpc rove.TenantContractService.List
+   */
+  list: {
+    methodKind: "unary";
+    input: typeof TenantContractListRequestSchema;
+    output: typeof TenantContractListResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_rove_ops_svc_g, 2);
+
+/**
+ * @generated from service rove.LegalHoldService
+ */
+export const LegalHoldService: GenService<{
+  /**
+   * Add creates a new LegalHold
+   *
+   * @generated from rpc rove.LegalHoldService.Add
+   */
+  add: {
+    methodKind: "unary";
+    input: typeof LegalHoldAddRequestSchema;
+    output: typeof LegalHoldSchema;
+  },
+  /**
+   * Get retrieves a LegalHold
+   *
+   * @generated from rpc rove.LegalHoldService.Get
+   */
+  get: {
+    methodKind: "unary";
+    input: typeof LegalHoldGetRequestSchema;
+    output: typeof LegalHoldSchema;
+  },
+  /**
+   * Patch updates an existing LegalHold
+   *
+   * @generated from rpc rove.LegalHoldService.Patch
+   */
+  patch: {
+    methodKind: "unary";
+    input: typeof LegalHoldPatchRequestSchema;
+    output: typeof LegalHoldSchema;
+  },
+  /**
+   * Apply applies a patch document to an existing LegalHold
+   *
+   * @generated from rpc rove.LegalHoldService.Apply
+   */
+  apply: {
+    methodKind: "unary";
+    input: typeof LegalHoldApplyRequestSchema;
+    output: typeof LegalHoldSchema;
+  },
+  /**
+   * Erase deletes a LegalHold
+   *
+   * @generated from rpc rove.LegalHoldService.Erase
+   */
+  erase: {
+    methodKind: "unary";
+    input: typeof LegalHoldRefSchema;
+    output: typeof LegalHoldEraseResponseSchema;
+  },
+  /**
+   * List reads LegalHolds a page at a time.
+   *
+   * @generated from rpc rove.LegalHoldService.List
+   */
+  list: {
+    methodKind: "unary";
+    input: typeof LegalHoldListRequestSchema;
+    output: typeof LegalHoldListResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_rove_ops_svc_g, 3);
 

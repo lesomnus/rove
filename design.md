@@ -303,9 +303,9 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 
 - **시간 행 자체가 체크포인트다.** 보존 기준일 전에 끝난 기간 행과, 기준일 전에 대체된 행을 지운다. 기준일에 걸친 행은 남는다. Fact는 (자산, 키)마다 기준일 이전의 마지막 값을 남긴다. 상태를 이벤트 재생으로 만들지 않으므로 "관계 시작 이벤트만 지워져 해석이 꼬이는" 문제가 생기지 않는다. Event는 기준일 전 것을 지우되, 남는 시간 행이 가리키는 Event는 함께 남긴다.
 - **보존 TTL의 대상이 아닌 것**: 현재 상태 엔터티(Asset, Party, 현재 유효한 시간 행), 진행 중인 Custody·예약, 끝나지 않은 실사·분쟁 기록, 취득·처분 기록(Purchase와 처분 Fact), 법적 보존 대상.
-- **payday trail과 맞추기**: payday trail은 모든 쓰기의 값 스냅샷을 담고, 보존 정책은 배포 전체에 도메인(엔터티 종류)별로만 정할 수 있다. 그래서 다음처럼 나눈다.
+- **payday trail과 맞추기**: payday trail은 모든 쓰기의 값 스냅샷을 담는다. payday가 테넌트별 보존을 지원하므로(payday#35) 다음처럼 나눈다.
   1. 제품 이력은 Rove의 시간 행과 Event가 테넌트별 정책으로 보존한다.
-  2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 DB에 90일, 아카이브 파기는 제품의 가장 짧은 보존 기간 이하로 둔다. 그러지 않으면 제품에서 지운 이력이 trail에 값으로 남는다.
+  2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 **그 조직의 계약이 정하는 보존 기간**을 따른다. payday가 조직마다 묻고, Rove가 `TenantContract`와 `LegalHold`로 답한다(`server/retention`). 그래서 제품에서 지운 이력이 trail에 값으로 남지 않고, 법적 보존은 둘을 함께 붙든다.
   3. 계정·권한 도메인(Holder, Identity)의 trail과 접근 기록 로그(9.7절)는 payday `pipa` 프로필(최소 1년) 이상으로 보존한다.
   4. trail 용량이 문제가 되면, 그 자체로 기록 시각을 가진 불변 기록인 시간 행·Event의 쓰기를 recorder에서 빼는 것을 검토한다(payday의 "Changing what the trail records").
 - **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party를 대상으로 한 trail 행의 `value`·`patch`를 비우고(DB에 있는 trail은 Rove가 직접 처리), 아카이브는 payday `trail.Forget`으로 지운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.

@@ -25,6 +25,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/inventorycount"
 	"github.com/lesomnus/rove/internal/ent/itemmodel"
 	"github.com/lesomnus/rove/internal/ent/label"
+	"github.com/lesomnus/rove/internal/ent/legalhold"
 	"github.com/lesomnus/rove/internal/ent/link"
 	"github.com/lesomnus/rove/internal/ent/notification"
 	"github.com/lesomnus/rove/internal/ent/outbox"
@@ -39,6 +40,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/stock"
 	"github.com/lesomnus/rove/internal/ent/stockmovement"
 	"github.com/lesomnus/rove/internal/ent/tenant"
+	"github.com/lesomnus/rove/internal/ent/tenantcontract"
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/internal/ent/treelock"
 	"github.com/lesomnus/rove/internal/ent/usagesnapshot"
@@ -122,6 +124,7 @@ func checkColumn(t, c string) error {
 			inventorycount.Table:  inventorycount.ValidColumn,
 			itemmodel.Table:       itemmodel.ValidColumn,
 			label.Table:           label.ValidColumn,
+			legalhold.Table:       legalhold.ValidColumn,
 			link.Table:            link.ValidColumn,
 			notification.Table:    notification.ValidColumn,
 			outbox.Table:          outbox.ValidColumn,
@@ -136,6 +139,7 @@ func checkColumn(t, c string) error {
 			stock.Table:           stock.ValidColumn,
 			stockmovement.Table:   stockmovement.ValidColumn,
 			tenant.Table:          tenant.ValidColumn,
+			tenantcontract.Table:  tenantcontract.ValidColumn,
 			tenantdomain.Table:    tenantdomain.ValidColumn,
 			treelock.Table:        treelock.ValidColumn,
 			usagesnapshot.Table:   usagesnapshot.ValidColumn,

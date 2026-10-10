@@ -26,6 +26,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/inventorycount"
 	"github.com/lesomnus/rove/internal/ent/itemmodel"
 	"github.com/lesomnus/rove/internal/ent/label"
+	"github.com/lesomnus/rove/internal/ent/legalhold"
 	"github.com/lesomnus/rove/internal/ent/link"
 	"github.com/lesomnus/rove/internal/ent/notification"
 	"github.com/lesomnus/rove/internal/ent/outbox"
@@ -40,6 +41,7 @@ import (
 	"github.com/lesomnus/rove/internal/ent/stock"
 	"github.com/lesomnus/rove/internal/ent/stockmovement"
 	"github.com/lesomnus/rove/internal/ent/tenant"
+	"github.com/lesomnus/rove/internal/ent/tenantcontract"
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/internal/ent/treelock"
 	"github.com/lesomnus/rove/internal/ent/usagesnapshot"
@@ -85,6 +87,8 @@ type Client struct {
 	ItemModel *ItemModelClient
 	// Label is the client for interacting with the Label builders.
 	Label *LabelClient
+	// LegalHold is the client for interacting with the LegalHold builders.
+	LegalHold *LegalHoldClient
 	// Link is the client for interacting with the Link builders.
 	Link *LinkClient
 	// Notification is the client for interacting with the Notification builders.
@@ -113,6 +117,8 @@ type Client struct {
 	StockMovement *StockMovementClient
 	// Tenant is the client for interacting with the Tenant builders.
 	Tenant *TenantClient
+	// TenantContract is the client for interacting with the TenantContract builders.
+	TenantContract *TenantContractClient
 	// TenantDomain is the client for interacting with the TenantDomain builders.
 	TenantDomain *TenantDomainClient
 	// TreeLock is the client for interacting with the TreeLock builders.
@@ -147,6 +153,7 @@ func (c *Client) init() {
 	c.InventoryCount = NewInventoryCountClient(c.config)
 	c.ItemModel = NewItemModelClient(c.config)
 	c.Label = NewLabelClient(c.config)
+	c.LegalHold = NewLegalHoldClient(c.config)
 	c.Link = NewLinkClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Outbox = NewOutboxClient(c.config)
@@ -161,6 +168,7 @@ func (c *Client) init() {
 	c.Stock = NewStockClient(c.config)
 	c.StockMovement = NewStockMovementClient(c.config)
 	c.Tenant = NewTenantClient(c.config)
+	c.TenantContract = NewTenantContractClient(c.config)
 	c.TenantDomain = NewTenantDomainClient(c.config)
 	c.TreeLock = NewTreeLockClient(c.config)
 	c.UsageSnapshot = NewUsageSnapshotClient(c.config)
@@ -273,6 +281,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		InventoryCount:  NewInventoryCountClient(cfg),
 		ItemModel:       NewItemModelClient(cfg),
 		Label:           NewLabelClient(cfg),
+		LegalHold:       NewLegalHoldClient(cfg),
 		Link:            NewLinkClient(cfg),
 		Notification:    NewNotificationClient(cfg),
 		Outbox:          NewOutboxClient(cfg),
@@ -287,6 +296,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Stock:           NewStockClient(cfg),
 		StockMovement:   NewStockMovementClient(cfg),
 		Tenant:          NewTenantClient(cfg),
+		TenantContract:  NewTenantContractClient(cfg),
 		TenantDomain:    NewTenantDomainClient(cfg),
 		TreeLock:        NewTreeLockClient(cfg),
 		UsageSnapshot:   NewUsageSnapshotClient(cfg),
@@ -326,6 +336,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		InventoryCount:  NewInventoryCountClient(cfg),
 		ItemModel:       NewItemModelClient(cfg),
 		Label:           NewLabelClient(cfg),
+		LegalHold:       NewLegalHoldClient(cfg),
 		Link:            NewLinkClient(cfg),
 		Notification:    NewNotificationClient(cfg),
 		Outbox:          NewOutboxClient(cfg),
@@ -340,6 +351,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Stock:           NewStockClient(cfg),
 		StockMovement:   NewStockMovementClient(cfg),
 		Tenant:          NewTenantClient(cfg),
+		TenantContract:  NewTenantContractClient(cfg),
 		TenantDomain:    NewTenantDomainClient(cfg),
 		TreeLock:        NewTreeLockClient(cfg),
 		UsageSnapshot:   NewUsageSnapshotClient(cfg),
@@ -421,10 +433,11 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Allocation, c.Asset, c.AssetType, c.Attachment, c.Audit, c.Bookable,
 		c.CountFinding, c.Credential, c.Custody, c.CustodyLine, c.Event, c.Fact,
-		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.Link, c.Notification,
-		c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine, c.Reservation,
-		c.ReservationItem, c.Session, c.Stewardship, c.Stock, c.StockMovement,
-		c.Tenant, c.TenantDomain, c.TreeLock, c.UsageSnapshot, c.WorkOrder,
+		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
+		c.Notification, c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine,
+		c.Reservation, c.ReservationItem, c.Session, c.Stewardship, c.Stock,
+		c.StockMovement, c.Tenant, c.TenantContract, c.TenantDomain, c.TreeLock,
+		c.UsageSnapshot, c.WorkOrder,
 	} {
 		n.Use(hooks...)
 	}
@@ -436,10 +449,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Allocation, c.Asset, c.AssetType, c.Attachment, c.Audit, c.Bookable,
 		c.CountFinding, c.Credential, c.Custody, c.CustodyLine, c.Event, c.Fact,
-		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.Link, c.Notification,
-		c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine, c.Reservation,
-		c.ReservationItem, c.Session, c.Stewardship, c.Stock, c.StockMovement,
-		c.Tenant, c.TenantDomain, c.TreeLock, c.UsageSnapshot, c.WorkOrder,
+		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
+		c.Notification, c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine,
+		c.Reservation, c.ReservationItem, c.Session, c.Stewardship, c.Stock,
+		c.StockMovement, c.Tenant, c.TenantContract, c.TenantDomain, c.TreeLock,
+		c.UsageSnapshot, c.WorkOrder,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -480,6 +494,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ItemModel.mutate(ctx, m)
 	case *LabelMutation:
 		return c.Label.mutate(ctx, m)
+	case *LegalHoldMutation:
+		return c.LegalHold.mutate(ctx, m)
 	case *LinkMutation:
 		return c.Link.mutate(ctx, m)
 	case *NotificationMutation:
@@ -508,6 +524,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.StockMovement.mutate(ctx, m)
 	case *TenantMutation:
 		return c.Tenant.mutate(ctx, m)
+	case *TenantContractMutation:
+		return c.TenantContract.mutate(ctx, m)
 	case *TenantDomainMutation:
 		return c.TenantDomain.mutate(ctx, m)
 	case *TreeLockMutation:
@@ -3145,6 +3163,155 @@ func (c *LabelClient) mutate(ctx context.Context, m *LabelMutation) (Value, erro
 	}
 }
 
+// LegalHoldClient is a client for the LegalHold schema.
+type LegalHoldClient struct {
+	config
+}
+
+// NewLegalHoldClient returns a client for the LegalHold from the given config.
+func NewLegalHoldClient(c config) *LegalHoldClient {
+	return &LegalHoldClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `legalhold.Hooks(f(g(h())))`.
+func (c *LegalHoldClient) Use(hooks ...Hook) {
+	c.hooks.LegalHold = append(c.hooks.LegalHold, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `legalhold.Intercept(f(g(h())))`.
+func (c *LegalHoldClient) Intercept(interceptors ...Interceptor) {
+	c.inters.LegalHold = append(c.inters.LegalHold, interceptors...)
+}
+
+// Create returns a builder for creating a LegalHold entity.
+func (c *LegalHoldClient) Create() *LegalHoldCreate {
+	mutation := newLegalHoldMutation(c.config, OpCreate)
+	return &LegalHoldCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of LegalHold entities.
+func (c *LegalHoldClient) CreateBulk(builders ...*LegalHoldCreate) *LegalHoldCreateBulk {
+	return &LegalHoldCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *LegalHoldClient) MapCreateBulk(slice any, setFunc func(*LegalHoldCreate, int)) *LegalHoldCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &LegalHoldCreateBulk{err: fmt.Errorf("calling to LegalHoldClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*LegalHoldCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &LegalHoldCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for LegalHold.
+func (c *LegalHoldClient) Update() *LegalHoldUpdate {
+	mutation := newLegalHoldMutation(c.config, OpUpdate)
+	return &LegalHoldUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LegalHoldClient) UpdateOne(_m *LegalHold) *LegalHoldUpdateOne {
+	mutation := newLegalHoldMutation(c.config, OpUpdateOne, withLegalHold(_m))
+	return &LegalHoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneId returns an update builder for the given id.
+func (c *LegalHoldClient) UpdateOneId(id uuid.UUID) *LegalHoldUpdateOne {
+	mutation := newLegalHoldMutation(c.config, OpUpdateOne, withLegalHoldId(id))
+	return &LegalHoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for LegalHold.
+func (c *LegalHoldClient) Delete() *LegalHoldDelete {
+	mutation := newLegalHoldMutation(c.config, OpDelete)
+	return &LegalHoldDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *LegalHoldClient) DeleteOne(_m *LegalHold) *LegalHoldDeleteOne {
+	return c.DeleteOneId(_m.Id)
+}
+
+// DeleteOneId returns a builder for deleting the given entity by its id.
+func (c *LegalHoldClient) DeleteOneId(id uuid.UUID) *LegalHoldDeleteOne {
+	builder := c.Delete().Where(legalhold.Id(id))
+	builder.mutation.id = &id
+	builder.mutation.SetOp(OpDeleteOne)
+	return &LegalHoldDeleteOne{builder}
+}
+
+// Query returns a query builder for LegalHold.
+func (c *LegalHoldClient) Query() *LegalHoldQuery {
+	return &LegalHoldQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeLegalHold},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a LegalHold entity by its id.
+func (c *LegalHoldClient) Get(ctx context.Context, id uuid.UUID) (*LegalHold, error) {
+	return c.Query().Where(legalhold.Id(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LegalHoldClient) GetX(ctx context.Context, id uuid.UUID) *LegalHold {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTenant queries the tenant edge of a LegalHold.
+func (c *LegalHoldClient) QueryTenant(_m *LegalHold) *TenantQuery {
+	query := (&TenantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.Id
+		step := sqlgraph.NewStep(
+			sqlgraph.From(legalhold.Table, legalhold.FieldId, id),
+			sqlgraph.To(tenant.Table, tenant.FieldId),
+			sqlgraph.Edge(sqlgraph.M2O, false, legalhold.TenantTable, legalhold.TenantColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *LegalHoldClient) Hooks() []Hook {
+	return c.hooks.LegalHold
+}
+
+// Interceptors returns the client interceptors.
+func (c *LegalHoldClient) Interceptors() []Interceptor {
+	return c.inters.LegalHold
+}
+
+func (c *LegalHoldClient) mutate(ctx context.Context, m *LegalHoldMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&LegalHoldCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&LegalHoldUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&LegalHoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&LegalHoldDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown LegalHold mutation op: %q", m.Op())
+	}
+}
+
 // LinkClient is a client for the Link schema.
 type LinkClient struct {
 	config
@@ -5487,6 +5654,155 @@ func (c *TenantClient) mutate(ctx context.Context, m *TenantMutation) (Value, er
 	}
 }
 
+// TenantContractClient is a client for the TenantContract schema.
+type TenantContractClient struct {
+	config
+}
+
+// NewTenantContractClient returns a client for the TenantContract from the given config.
+func NewTenantContractClient(c config) *TenantContractClient {
+	return &TenantContractClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tenantcontract.Hooks(f(g(h())))`.
+func (c *TenantContractClient) Use(hooks ...Hook) {
+	c.hooks.TenantContract = append(c.hooks.TenantContract, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tenantcontract.Intercept(f(g(h())))`.
+func (c *TenantContractClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TenantContract = append(c.inters.TenantContract, interceptors...)
+}
+
+// Create returns a builder for creating a TenantContract entity.
+func (c *TenantContractClient) Create() *TenantContractCreate {
+	mutation := newTenantContractMutation(c.config, OpCreate)
+	return &TenantContractCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TenantContract entities.
+func (c *TenantContractClient) CreateBulk(builders ...*TenantContractCreate) *TenantContractCreateBulk {
+	return &TenantContractCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TenantContractClient) MapCreateBulk(slice any, setFunc func(*TenantContractCreate, int)) *TenantContractCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TenantContractCreateBulk{err: fmt.Errorf("calling to TenantContractClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TenantContractCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TenantContractCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TenantContract.
+func (c *TenantContractClient) Update() *TenantContractUpdate {
+	mutation := newTenantContractMutation(c.config, OpUpdate)
+	return &TenantContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TenantContractClient) UpdateOne(_m *TenantContract) *TenantContractUpdateOne {
+	mutation := newTenantContractMutation(c.config, OpUpdateOne, withTenantContract(_m))
+	return &TenantContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneId returns an update builder for the given id.
+func (c *TenantContractClient) UpdateOneId(id uuid.UUID) *TenantContractUpdateOne {
+	mutation := newTenantContractMutation(c.config, OpUpdateOne, withTenantContractId(id))
+	return &TenantContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TenantContract.
+func (c *TenantContractClient) Delete() *TenantContractDelete {
+	mutation := newTenantContractMutation(c.config, OpDelete)
+	return &TenantContractDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TenantContractClient) DeleteOne(_m *TenantContract) *TenantContractDeleteOne {
+	return c.DeleteOneId(_m.Id)
+}
+
+// DeleteOneId returns a builder for deleting the given entity by its id.
+func (c *TenantContractClient) DeleteOneId(id uuid.UUID) *TenantContractDeleteOne {
+	builder := c.Delete().Where(tenantcontract.Id(id))
+	builder.mutation.id = &id
+	builder.mutation.SetOp(OpDeleteOne)
+	return &TenantContractDeleteOne{builder}
+}
+
+// Query returns a query builder for TenantContract.
+func (c *TenantContractClient) Query() *TenantContractQuery {
+	return &TenantContractQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTenantContract},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TenantContract entity by its id.
+func (c *TenantContractClient) Get(ctx context.Context, id uuid.UUID) (*TenantContract, error) {
+	return c.Query().Where(tenantcontract.Id(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TenantContractClient) GetX(ctx context.Context, id uuid.UUID) *TenantContract {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTenant queries the tenant edge of a TenantContract.
+func (c *TenantContractClient) QueryTenant(_m *TenantContract) *TenantQuery {
+	query := (&TenantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.Id
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tenantcontract.Table, tenantcontract.FieldId, id),
+			sqlgraph.To(tenant.Table, tenant.FieldId),
+			sqlgraph.Edge(sqlgraph.M2O, false, tenantcontract.TenantTable, tenantcontract.TenantColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TenantContractClient) Hooks() []Hook {
+	return c.hooks.TenantContract
+}
+
+// Interceptors returns the client interceptors.
+func (c *TenantContractClient) Interceptors() []Interceptor {
+	return c.inters.TenantContract
+}
+
+func (c *TenantContractClient) mutate(ctx context.Context, m *TenantContractMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TenantContractCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TenantContractUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TenantContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TenantContractDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TenantContract mutation op: %q", m.Op())
+	}
+}
+
 // TenantDomainClient is a client for the TenantDomain schema.
 type TenantDomainClient struct {
 	config
@@ -6120,17 +6436,17 @@ type (
 	hooks struct {
 		Allocation, Asset, AssetType, Attachment, Audit, Bookable, CountFinding,
 		Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount,
-		ItemModel, Label, Link, Notification, Outbox, Party, Placement, Purchase,
-		PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock,
-		StockMovement, Tenant, TenantDomain, TreeLock, UsageSnapshot,
-		WorkOrder []ent.Hook
+		ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement,
+		Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship,
+		Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock,
+		UsageSnapshot, WorkOrder []ent.Hook
 	}
 	inters struct {
 		Allocation, Asset, AssetType, Attachment, Audit, Bookable, CountFinding,
 		Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount,
-		ItemModel, Label, Link, Notification, Outbox, Party, Placement, Purchase,
-		PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock,
-		StockMovement, Tenant, TenantDomain, TreeLock, UsageSnapshot,
-		WorkOrder []ent.Interceptor
+		ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement,
+		Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship,
+		Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock,
+		UsageSnapshot, WorkOrder []ent.Interceptor
 	}
 )

@@ -36,6 +36,7 @@ import (
 	"github.com/lesomnus/rove/server/domain"
 	"github.com/lesomnus/rove/server/pd"
 	"github.com/lesomnus/rove/server/policy"
+	"github.com/lesomnus/rove/server/retention"
 	"github.com/lesomnus/rove/server/session"
 	"github.com/lesomnus/rove/server/storage"
 )
@@ -256,6 +257,14 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		db.Close()
 
 		return nil, err
+	}
+
+	// And per tenant, from its contract, for the kinds that are history: their
+	// trail lasts as long as the history does, and a legal hold holds both.
+	// Only when the deployment has said a window may destroy, since this is
+	// what turns the sweep on for a deployment that configured no `audit:`.
+	if c.App.Retention.Apply {
+		p.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
 	}
 	if p.On() {
 		log.From(ctx).InfoContext(ctx, "trail: retention", "policy", p.String())

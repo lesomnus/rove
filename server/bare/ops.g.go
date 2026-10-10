@@ -10,8 +10,10 @@ import (
 	rove "github.com/lesomnus/rove"
 	ent "github.com/lesomnus/rove/internal/ent"
 	holder "github.com/lesomnus/rove/internal/ent/holder"
+	legalhold "github.com/lesomnus/rove/internal/ent/legalhold"
 	notification "github.com/lesomnus/rove/internal/ent/notification"
 	predicate "github.com/lesomnus/rove/internal/ent/predicate"
+	tenantcontract "github.com/lesomnus/rove/internal/ent/tenantcontract"
 	usagesnapshot "github.com/lesomnus/rove/internal/ent/usagesnapshot"
 	ent1 "github.com/protobuf-orm/ent"
 	sqlgraph "github.com/protobuf-orm/ent/dialect/sql/sqlgraph"
@@ -935,6 +937,911 @@ func UsageSnapshotPick(req *rove.UsageSnapshotRef) (predicate.UsageSnapshot, err
 		return usagesnapshot.And(ps...), nil
 	case rove.UsageSnapshotRef_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not set: UsageSnapshot")
+	default:
+		return nil, status.Errorf(codes.Unimplemented, "unknown type of key: %s", req.WhichKey())
+	}
+}
+
+type TenantContractServiceServer struct {
+	Store
+
+	rove.UnimplementedTenantContractServiceServer
+}
+
+// NewTenantContractServiceServer answers with a server that runs its queries with `db`.
+//
+// It takes the options of [Server] so that what is built here can be told
+// where to report its writes and what it may see. Built without them, it
+// reports nowhere and sees everything.
+func NewTenantContractServiceServer(db *ent.Client, opts ...Option) rove.TenantContractServiceServer {
+	s := Server{Store: Store{Db: db}}
+	for _, opt := range opts {
+		opt(&s)
+	}
+	return TenantContractServiceServer{Store: s.Store}
+}
+
+// TenantContractNarrow answers with `p` and everything else that narrows a
+// read of a TenantContract: the rows that have not been erased, and whatever
+// `scope` says of those.
+//
+// Every read this package makes goes through it, and a read written by
+// hand should too -- a List is the one read nothing generates, and so the
+// one that would otherwise answer with rows nobody should be given.
+func TenantContractNarrow(ctx context.Context, scope Scope, p predicate.TenantContract) (predicate.TenantContract, error) {
+	ps := make([]predicate.TenantContract, 0, 3)
+
+	// A row that was erased is not a row a read answers with.
+	ps = append(ps, tenantcontract.DateErasedIsNil())
+	if p != nil {
+		ps = append(ps, p)
+	}
+	if scope != nil {
+		q, err := scope.TenantContractScope(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if q != nil {
+			ps = append(ps, q)
+		}
+	}
+
+	switch len(ps) {
+	case 0:
+		return nil, nil
+	case 1:
+		return ps[0], nil
+	default:
+		return tenantcontract.And(ps...), nil
+	}
+}
+
+// narrow is [TenantContractNarrow] with this server's own scope.
+func (s TenantContractServiceServer) narrow(ctx context.Context, p predicate.TenantContract) (predicate.TenantContract, error) {
+	return TenantContractNarrow(ctx, s.Scope, p)
+}
+
+func (s TenantContractServiceServer) Add(ctx context.Context, req *rove.TenantContractAddRequest) (*rove.TenantContract, error) {
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, s.Rec != nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	ds := make([]func(v *rove.TenantContract), 0, 1)
+	q := st.Db.TenantContract.Create()
+	var k uuid.UUID
+	if req.HasId() {
+		if v, err := entuuid.FromBytes(req.GetId()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			k = v
+		}
+	}
+	if v, err := mint(ctx, s.Mint, "rove.TenantContract", k, req.HasId()); err != nil {
+		return nil, err
+	} else {
+		q.SetId(v)
+	}
+	if k, err := TenantGetKey(ctx, st.Db, req.GetTenant()); err != nil {
+		return nil, err
+	} else {
+		q.SetTenantId(k)
+		ds = append(ds, func(v *rove.TenantContract) {
+			v.SetTenant(rove.Tenant_builder{Id: k[:]}.Build())
+		})
+	}
+	q.SetName(req.GetName())
+	q.SetDesc(req.GetDesc())
+	q.SetViewDays(req.GetViewDays())
+	q.SetKeepDays(req.GetKeepDays())
+	q.SetGraceDays(req.GetGraceDays())
+	if req.HasDateEffective() {
+		q.SetDateEffective(req.GetDateEffective().AsTime())
+	} else {
+		q.SetDateEffective(st.now())
+	}
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
+	} else {
+		q.SetDateCreated(st.now())
+	}
+
+	u, err := q.Save(ctx)
+	if err != nil {
+		if err, ok := err.(*ent.ConstraintError); ok {
+			if sqlgraph.IsUniqueConstraintError(err) {
+				return nil, status.Error(codes.AlreadyExists, "TenantContract already exists")
+			}
+			if sqlgraph.IsForeignKeyConstraintError(err) {
+				return nil, status.Error(codes.NotFound, "TenantContract: referenced entity not found")
+			}
+		}
+		return nil, err
+	}
+
+	if err := record(ctx, s.Rec, st.Db, Change{
+		By:  rove.TenantContractService_Add_FullMethodName,
+		Key: u.Id,
+	}); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	v := u.Proto()
+	for _, d := range ds {
+		d(v)
+	}
+	return v, nil
+}
+
+func (s TenantContractServiceServer) Get(ctx context.Context, req *rove.TenantContractGetRequest) (*rove.TenantContract, error) {
+	p, err := TenantContractPick(req.GetRef())
+	if err != nil {
+		return nil, err
+	}
+	p, err = s.narrow(ctx, p)
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.Db.TenantContract.Query().Where(p)
+	TenantContractSelectInit(q, req.GetSelect())
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, status.Error(codes.NotFound, "TenantContract not found")
+		}
+		return nil, err
+	}
+	return v.Proto(), nil
+}
+
+func selectTenantContractKey(q *ent.TenantContractQuery) {
+	q.Select(tenantcontract.FieldId)
+}
+
+func TenantContractSelectedFields(m *rove.TenantContractSelect) []string {
+	if m.GetAll() {
+		return tenantcontract.Columns
+	}
+
+	vs := make([]string, 0, len(tenantcontract.Columns))
+	{
+		vs = append(vs, tenantcontract.FieldId)
+	}
+	if m.GetName() {
+		vs = append(vs, tenantcontract.FieldName)
+	}
+	if m.GetDesc() {
+		vs = append(vs, tenantcontract.FieldDesc)
+	}
+	if m.GetViewDays() {
+		vs = append(vs, tenantcontract.FieldViewDays)
+	}
+	if m.GetKeepDays() {
+		vs = append(vs, tenantcontract.FieldKeepDays)
+	}
+	if m.GetGraceDays() {
+		vs = append(vs, tenantcontract.FieldGraceDays)
+	}
+	if m.GetDateEffective() {
+		vs = append(vs, tenantcontract.FieldDateEffective)
+	}
+	if m.GetDateErased() {
+		vs = append(vs, tenantcontract.FieldDateErased)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, tenantcontract.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func TenantContractSelect(q *ent.TenantContractQuery, m *rove.TenantContractSelect) {
+	if !m.GetAll() {
+		fields := TenantContractSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasTenant() {
+		q.WithTenant(func(q *ent.TenantQuery) {
+			TenantSelect(q, m.GetTenant())
+		})
+	}
+}
+
+func TenantContractSelectInit(q *ent.TenantContractQuery, m *rove.TenantContractSelect) {
+	if m != nil {
+		TenantContractSelect(q, m)
+	} else {
+		q.WithTenant(selectTenantKey)
+	}
+}
+
+func (s TenantContractServiceServer) Patch(ctx context.Context, req *rove.TenantContractPatchRequest) (*rove.TenantContract, error) {
+	doc, err := ormpatch.FromPatchRequest(tenantContractOrmEntity, req.ProtoReflect(), nil)
+	if err != nil {
+		if _, ok := status.FromError(err); ok {
+			return nil, err
+		}
+		if errors.Is(err, ormpatch.ErrRequestLayout) {
+			return nil, status.Errorf(codes.Internal, "%s", err)
+		}
+		if errors.Is(err, ormpatch.ErrUnsupported) {
+			return nil, status.Errorf(codes.Unimplemented, "%s", err)
+		}
+		return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+	}
+
+	return s.apply(ctx, req.GetRef(), doc, rove.TenantContractService_Patch_FullMethodName)
+}
+
+func TenantContractGetKey(ctx context.Context, db *ent.Client, ref *rove.TenantContractRef) (uuid.UUID, error) {
+	var z uuid.UUID
+	if ref.HasId() {
+		if v, err := entuuid.FromBytes(ref.GetId()); err != nil {
+			return z, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			return v, nil
+		}
+	}
+
+	p, err := TenantContractPick(ref)
+	if err != nil {
+		return z, err
+	}
+
+	v, err := db.TenantContract.Query().Where(p).OnlyId(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return z, status.Error(codes.NotFound, "TenantContract not found")
+		}
+		return z, err
+	}
+
+	return v, nil
+}
+
+var tenantContractOrmEntity = ormpatch.MustEntityOf(rove.File_rove_ops_proto, "TenantContract")
+
+var tenantContractPatchColumns = entpatch.Columns{
+	1: tenantcontract.FieldId, 2: tenantcontract.TenantColumn, 5: tenantcontract.FieldName, 6: tenantcontract.FieldDesc, 8: tenantcontract.FieldViewDays, 9: tenantcontract.FieldKeepDays, 10: tenantcontract.FieldGraceDays, 11: tenantcontract.FieldDateEffective, 14: tenantcontract.FieldDateErased, 15: tenantcontract.FieldDateCreated}
+
+func (s TenantContractServiceServer) Apply(ctx context.Context, req *rove.TenantContractApplyRequest) (*rove.TenantContract, error) {
+	if !req.HasPatch() {
+		return nil, status.Errorf(codes.InvalidArgument, "%s", ormpatch.ErrNoPatch)
+	}
+	return s.apply(ctx, req.GetRef(), req.GetPatch(), rove.TenantContractService_Apply_FullMethodName)
+}
+
+func (s TenantContractServiceServer) apply(ctx context.Context, ref *rove.TenantContractRef, doc *patchpb.Patch, by string) (*rove.TenantContract, error) {
+	plan := &ormpatch.Plan{Entity: tenantContractOrmEntity}
+	if doc != nil {
+		v, err := ormpatch.Compile(tenantContractOrmEntity, doc)
+		if err != nil {
+			if errors.Is(err, ormpatch.ErrUnsupported) {
+				return nil, status.Errorf(codes.Unimplemented, "%s", err)
+			}
+			return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+		}
+		plan = v
+	}
+
+	pred, mod, err := entpatch.Build(plan, tenantContractPatchColumns, s.Db.Dialect())
+	if err != nil {
+		if errors.Is(err, entpatch.ErrValue) {
+			return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+		}
+		return nil, status.Errorf(codes.Internal, "%s", err)
+	}
+
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, true)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	k, err := TenantContractGetKey(ctx, st.Db, ref)
+	if err != nil {
+		return nil, err
+	}
+	at := &rove.TenantContractRef{}
+	at.SetId(k[:])
+	p, err := s.narrow(ctx, tenantcontract.IdEQ(k))
+	if err != nil {
+		return nil, err
+	}
+
+	if mod == nil {
+		q := st.Db.TenantContract.Query().Where(p)
+		if pred != nil {
+			q.Where(predicate.TenantContract(pred))
+		}
+		if ok, err := q.Exist(ctx); err != nil {
+			return nil, err
+		} else if !ok {
+			return nil, func() error {
+				if ok, err := st.Db.TenantContract.Query().Where(p).Exist(ctx); err != nil {
+					return err
+				} else if !ok {
+					return status.Error(codes.NotFound, "TenantContract not found")
+				}
+				return status.Error(codes.FailedPrecondition, "a test in the patch did not hold")
+			}()
+		}
+	} else {
+		q := st.Db.TenantContract.Update().Where(p)
+		if pred != nil {
+			q.Where(predicate.TenantContract(pred))
+		}
+		q.Modify(mod)
+		if n, err := q.Save(ctx); err != nil {
+			if err, ok := err.(*ent.ConstraintError); ok {
+				if sqlgraph.IsUniqueConstraintError(err) {
+					return nil, status.Error(codes.AlreadyExists, "TenantContract already exists")
+				}
+				if sqlgraph.IsForeignKeyConstraintError(err) {
+					return nil, status.Error(codes.NotFound, "TenantContract: referenced entity not found")
+				}
+			}
+			return nil, err
+		} else if n == 0 {
+			return nil, func() error {
+				if ok, err := st.Db.TenantContract.Query().Where(p).Exist(ctx); err != nil {
+					return err
+				} else if !ok {
+					return status.Error(codes.NotFound, "TenantContract not found")
+				}
+				return status.Error(codes.FailedPrecondition, "a test in the patch did not hold")
+			}()
+		}
+	}
+
+	if mod != nil {
+		if err := record(ctx, s.Rec, st.Db, Change{
+			By:    by,
+			Key:   k,
+			Patch: doc,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	out, err := st.Get(ctx, at.Pick())
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (s TenantContractServiceServer) Erase(ctx context.Context, req *rove.TenantContractRef) (*rove.TenantContractEraseResponse, error) {
+	p, err := TenantContractPick(req)
+	if err != nil {
+		return nil, err
+	}
+	p, err = s.narrow(ctx, p)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, s.Rec != nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	var k any
+	if s.Rec != nil {
+		v, err := st.Db.TenantContract.Query().Where(p).OnlyId(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return &rove.TenantContractEraseResponse{}, nil
+			}
+			return nil, err
+		}
+
+		k = v
+		p = tenantcontract.And(p, tenantcontract.IdEQ(v))
+	}
+
+	u := st.Db.TenantContract.Update().Where(p)
+	u.SetDateErased(st.now())
+	n, err := u.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if n > 0 {
+		if err := record(ctx, s.Rec, st.Db, Change{
+			By:  rove.TenantContractService_Erase_FullMethodName,
+			Key: k,
+		}); err != nil {
+			return nil, err
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	res := &rove.TenantContractEraseResponse{}
+	res.SetErased(n > 0)
+
+	return res, nil
+}
+
+// TenantContractPick answers with the predicate this reference selects on,
+// among the rows that are still here.
+//
+// Erasure is part of the reference and not only part of a read's scope,
+// because a reference to a TenantContract is composed into the reference of
+// whatever names one: an index over an edge asks this for a predicate and
+// puts it inside `HasTenantContractWith`, where no narrowing of a TenantContract
+// is ever applied. A child of an erased row would otherwise be readable by
+// naming its parent.
+func TenantContractPick(req *rove.TenantContractRef) (predicate.TenantContract, error) {
+	p, err := pickTenantContract(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return tenantcontract.And(tenantcontract.DateErasedIsNil(), p), nil
+}
+
+func pickTenantContract(req *rove.TenantContractRef) (predicate.TenantContract, error) {
+	switch req.WhichKey() {
+	case rove.TenantContractRef_Id_case:
+		if v, err := entuuid.FromBytes(req.GetId()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			return tenantcontract.IdEQ(v), nil
+		}
+	case rove.TenantContractRef_Key_not_set_case:
+		return nil, status.Errorf(codes.InvalidArgument, "key not set: TenantContract")
+	default:
+		return nil, status.Errorf(codes.Unimplemented, "unknown type of key: %s", req.WhichKey())
+	}
+}
+
+type LegalHoldServiceServer struct {
+	Store
+
+	rove.UnimplementedLegalHoldServiceServer
+}
+
+// NewLegalHoldServiceServer answers with a server that runs its queries with `db`.
+//
+// It takes the options of [Server] so that what is built here can be told
+// where to report its writes and what it may see. Built without them, it
+// reports nowhere and sees everything.
+func NewLegalHoldServiceServer(db *ent.Client, opts ...Option) rove.LegalHoldServiceServer {
+	s := Server{Store: Store{Db: db}}
+	for _, opt := range opts {
+		opt(&s)
+	}
+	return LegalHoldServiceServer{Store: s.Store}
+}
+
+// LegalHoldNarrow answers with `p` and everything else that narrows a
+// read of a LegalHold, which is whatever `scope` says.
+//
+// Every read this package makes goes through it, and a read written by
+// hand should too -- a List is the one read nothing generates, and so the
+// one that would otherwise answer with rows nobody should be given.
+func LegalHoldNarrow(ctx context.Context, scope Scope, p predicate.LegalHold) (predicate.LegalHold, error) {
+	ps := make([]predicate.LegalHold, 0, 2)
+	if p != nil {
+		ps = append(ps, p)
+	}
+	if scope != nil {
+		q, err := scope.LegalHoldScope(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if q != nil {
+			ps = append(ps, q)
+		}
+	}
+
+	switch len(ps) {
+	case 0:
+		return nil, nil
+	case 1:
+		return ps[0], nil
+	default:
+		return legalhold.And(ps...), nil
+	}
+}
+
+// narrow is [LegalHoldNarrow] with this server's own scope.
+func (s LegalHoldServiceServer) narrow(ctx context.Context, p predicate.LegalHold) (predicate.LegalHold, error) {
+	return LegalHoldNarrow(ctx, s.Scope, p)
+}
+
+func (s LegalHoldServiceServer) Add(ctx context.Context, req *rove.LegalHoldAddRequest) (*rove.LegalHold, error) {
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, s.Rec != nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	ds := make([]func(v *rove.LegalHold), 0, 1)
+	q := st.Db.LegalHold.Create()
+	var k uuid.UUID
+	if req.HasId() {
+		if v, err := entuuid.FromBytes(req.GetId()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			k = v
+		}
+	}
+	if v, err := mint(ctx, s.Mint, "rove.LegalHold", k, req.HasId()); err != nil {
+		return nil, err
+	} else {
+		q.SetId(v)
+	}
+	if k, err := TenantGetKey(ctx, st.Db, req.GetTenant()); err != nil {
+		return nil, err
+	} else {
+		q.SetTenantId(k)
+		ds = append(ds, func(v *rove.LegalHold) {
+			v.SetTenant(rove.Tenant_builder{Id: k[:]}.Build())
+		})
+	}
+	q.SetName(req.GetName())
+	q.SetDesc(req.GetDesc())
+	if req.HasDateLifted() {
+		q.SetDateLifted(req.GetDateLifted().AsTime())
+	}
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
+	} else {
+		q.SetDateCreated(st.now())
+	}
+
+	u, err := q.Save(ctx)
+	if err != nil {
+		if err, ok := err.(*ent.ConstraintError); ok {
+			if sqlgraph.IsUniqueConstraintError(err) {
+				return nil, status.Error(codes.AlreadyExists, "LegalHold already exists")
+			}
+			if sqlgraph.IsForeignKeyConstraintError(err) {
+				return nil, status.Error(codes.NotFound, "LegalHold: referenced entity not found")
+			}
+		}
+		return nil, err
+	}
+
+	if err := record(ctx, s.Rec, st.Db, Change{
+		By:  rove.LegalHoldService_Add_FullMethodName,
+		Key: u.Id,
+	}); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	v := u.Proto()
+	for _, d := range ds {
+		d(v)
+	}
+	return v, nil
+}
+
+func (s LegalHoldServiceServer) Get(ctx context.Context, req *rove.LegalHoldGetRequest) (*rove.LegalHold, error) {
+	p, err := LegalHoldPick(req.GetRef())
+	if err != nil {
+		return nil, err
+	}
+	p, err = s.narrow(ctx, p)
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.Db.LegalHold.Query().Where(p)
+	LegalHoldSelectInit(q, req.GetSelect())
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, status.Error(codes.NotFound, "LegalHold not found")
+		}
+		return nil, err
+	}
+	return v.Proto(), nil
+}
+
+func selectLegalHoldKey(q *ent.LegalHoldQuery) {
+	q.Select(legalhold.FieldId)
+}
+
+func LegalHoldSelectedFields(m *rove.LegalHoldSelect) []string {
+	if m.GetAll() {
+		return legalhold.Columns
+	}
+
+	vs := make([]string, 0, len(legalhold.Columns))
+	{
+		vs = append(vs, legalhold.FieldId)
+	}
+	if m.GetName() {
+		vs = append(vs, legalhold.FieldName)
+	}
+	if m.GetDesc() {
+		vs = append(vs, legalhold.FieldDesc)
+	}
+	if m.GetDateLifted() {
+		vs = append(vs, legalhold.FieldDateLifted)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, legalhold.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func LegalHoldSelect(q *ent.LegalHoldQuery, m *rove.LegalHoldSelect) {
+	if !m.GetAll() {
+		fields := LegalHoldSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasTenant() {
+		q.WithTenant(func(q *ent.TenantQuery) {
+			TenantSelect(q, m.GetTenant())
+		})
+	}
+}
+
+func LegalHoldSelectInit(q *ent.LegalHoldQuery, m *rove.LegalHoldSelect) {
+	if m != nil {
+		LegalHoldSelect(q, m)
+	} else {
+		q.WithTenant(selectTenantKey)
+	}
+}
+
+func (s LegalHoldServiceServer) Patch(ctx context.Context, req *rove.LegalHoldPatchRequest) (*rove.LegalHold, error) {
+	doc, err := ormpatch.FromPatchRequest(legalHoldOrmEntity, req.ProtoReflect(), nil)
+	if err != nil {
+		if _, ok := status.FromError(err); ok {
+			return nil, err
+		}
+		if errors.Is(err, ormpatch.ErrRequestLayout) {
+			return nil, status.Errorf(codes.Internal, "%s", err)
+		}
+		if errors.Is(err, ormpatch.ErrUnsupported) {
+			return nil, status.Errorf(codes.Unimplemented, "%s", err)
+		}
+		return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+	}
+
+	return s.apply(ctx, req.GetRef(), doc, rove.LegalHoldService_Patch_FullMethodName)
+}
+
+func LegalHoldGetKey(ctx context.Context, db *ent.Client, ref *rove.LegalHoldRef) (uuid.UUID, error) {
+	var z uuid.UUID
+	if ref.HasId() {
+		if v, err := entuuid.FromBytes(ref.GetId()); err != nil {
+			return z, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			return v, nil
+		}
+	}
+
+	p, err := LegalHoldPick(ref)
+	if err != nil {
+		return z, err
+	}
+
+	v, err := db.LegalHold.Query().Where(p).OnlyId(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return z, status.Error(codes.NotFound, "LegalHold not found")
+		}
+		return z, err
+	}
+
+	return v, nil
+}
+
+var legalHoldOrmEntity = ormpatch.MustEntityOf(rove.File_rove_ops_proto, "LegalHold")
+
+var legalHoldPatchColumns = entpatch.Columns{
+	1: legalhold.FieldId, 2: legalhold.TenantColumn, 5: legalhold.FieldName, 6: legalhold.FieldDesc, 8: legalhold.FieldDateLifted, 15: legalhold.FieldDateCreated}
+
+func (s LegalHoldServiceServer) Apply(ctx context.Context, req *rove.LegalHoldApplyRequest) (*rove.LegalHold, error) {
+	if !req.HasPatch() {
+		return nil, status.Errorf(codes.InvalidArgument, "%s", ormpatch.ErrNoPatch)
+	}
+	return s.apply(ctx, req.GetRef(), req.GetPatch(), rove.LegalHoldService_Apply_FullMethodName)
+}
+
+func (s LegalHoldServiceServer) apply(ctx context.Context, ref *rove.LegalHoldRef, doc *patchpb.Patch, by string) (*rove.LegalHold, error) {
+	plan := &ormpatch.Plan{Entity: legalHoldOrmEntity}
+	if doc != nil {
+		v, err := ormpatch.Compile(legalHoldOrmEntity, doc)
+		if err != nil {
+			if errors.Is(err, ormpatch.ErrUnsupported) {
+				return nil, status.Errorf(codes.Unimplemented, "%s", err)
+			}
+			return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+		}
+		plan = v
+	}
+
+	pred, mod, err := entpatch.Build(plan, legalHoldPatchColumns, s.Db.Dialect())
+	if err != nil {
+		if errors.Is(err, entpatch.ErrValue) {
+			return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+		}
+		return nil, status.Errorf(codes.Internal, "%s", err)
+	}
+
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, true)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	k, err := LegalHoldGetKey(ctx, st.Db, ref)
+	if err != nil {
+		return nil, err
+	}
+	at := &rove.LegalHoldRef{}
+	at.SetId(k[:])
+	p, err := s.narrow(ctx, legalhold.IdEQ(k))
+	if err != nil {
+		return nil, err
+	}
+
+	if mod == nil {
+		q := st.Db.LegalHold.Query().Where(p)
+		if pred != nil {
+			q.Where(predicate.LegalHold(pred))
+		}
+		if ok, err := q.Exist(ctx); err != nil {
+			return nil, err
+		} else if !ok {
+			return nil, func() error {
+				if ok, err := st.Db.LegalHold.Query().Where(p).Exist(ctx); err != nil {
+					return err
+				} else if !ok {
+					return status.Error(codes.NotFound, "LegalHold not found")
+				}
+				return status.Error(codes.FailedPrecondition, "a test in the patch did not hold")
+			}()
+		}
+	} else {
+		q := st.Db.LegalHold.Update().Where(p)
+		if pred != nil {
+			q.Where(predicate.LegalHold(pred))
+		}
+		q.Modify(mod)
+		if n, err := q.Save(ctx); err != nil {
+			if err, ok := err.(*ent.ConstraintError); ok {
+				if sqlgraph.IsUniqueConstraintError(err) {
+					return nil, status.Error(codes.AlreadyExists, "LegalHold already exists")
+				}
+				if sqlgraph.IsForeignKeyConstraintError(err) {
+					return nil, status.Error(codes.NotFound, "LegalHold: referenced entity not found")
+				}
+			}
+			return nil, err
+		} else if n == 0 {
+			return nil, func() error {
+				if ok, err := st.Db.LegalHold.Query().Where(p).Exist(ctx); err != nil {
+					return err
+				} else if !ok {
+					return status.Error(codes.NotFound, "LegalHold not found")
+				}
+				return status.Error(codes.FailedPrecondition, "a test in the patch did not hold")
+			}()
+		}
+	}
+
+	if mod != nil {
+		if err := record(ctx, s.Rec, st.Db, Change{
+			By:    by,
+			Key:   k,
+			Patch: doc,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	out, err := st.Get(ctx, at.Pick())
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (s LegalHoldServiceServer) Erase(ctx context.Context, req *rove.LegalHoldRef) (*rove.LegalHoldEraseResponse, error) {
+	p, err := LegalHoldPick(req)
+	if err != nil {
+		return nil, err
+	}
+	p, err = s.narrow(ctx, p)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := ent1.JoinTx[*ent.Client, *ent.Tx](ctx, s.Db, s.Rec != nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Close()
+
+	st := s
+	st.Db = tx.Db
+
+	var k any
+	if s.Rec != nil {
+		v, err := st.Db.LegalHold.Query().Where(p).OnlyId(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return &rove.LegalHoldEraseResponse{}, nil
+			}
+			return nil, err
+		}
+
+		k = v
+		p = legalhold.And(p, legalhold.IdEQ(v))
+	}
+
+	n, err := st.Db.LegalHold.Delete().Where(p).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if n > 0 {
+		if err := record(ctx, s.Rec, st.Db, Change{
+			By:  rove.LegalHoldService_Erase_FullMethodName,
+			Key: k,
+		}); err != nil {
+			return nil, err
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	res := &rove.LegalHoldEraseResponse{}
+	res.SetErased(n > 0)
+
+	return res, nil
+}
+
+func LegalHoldPick(req *rove.LegalHoldRef) (predicate.LegalHold, error) {
+	switch req.WhichKey() {
+	case rove.LegalHoldRef_Id_case:
+		if v, err := entuuid.FromBytes(req.GetId()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			return legalhold.IdEQ(v), nil
+		}
+	case rove.LegalHoldRef_Key_not_set_case:
+		return nil, status.Errorf(codes.InvalidArgument, "key not set: LegalHold")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key: %s", req.WhichKey())
 	}
