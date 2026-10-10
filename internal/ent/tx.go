@@ -44,6 +44,8 @@ type Tx struct {
 	ItemModel *ItemModelClient
 	// Label is the client for interacting with the Label builders.
 	Label *LabelClient
+	// LegalHold is the client for interacting with the LegalHold builders.
+	LegalHold *LegalHoldClient
 	// Link is the client for interacting with the Link builders.
 	Link *LinkClient
 	// Notification is the client for interacting with the Notification builders.
@@ -72,6 +74,8 @@ type Tx struct {
 	StockMovement *StockMovementClient
 	// Tenant is the client for interacting with the Tenant builders.
 	Tenant *TenantClient
+	// TenantContract is the client for interacting with the TenantContract builders.
+	TenantContract *TenantContractClient
 	// TenantDomain is the client for interacting with the TenantDomain builders.
 	TenantDomain *TenantDomainClient
 	// TreeLock is the client for interacting with the TreeLock builders.
@@ -227,6 +231,7 @@ func (tx *Tx) init() {
 	tx.InventoryCount = NewInventoryCountClient(tx.config)
 	tx.ItemModel = NewItemModelClient(tx.config)
 	tx.Label = NewLabelClient(tx.config)
+	tx.LegalHold = NewLegalHoldClient(tx.config)
 	tx.Link = NewLinkClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
 	tx.Outbox = NewOutboxClient(tx.config)
@@ -241,6 +246,7 @@ func (tx *Tx) init() {
 	tx.Stock = NewStockClient(tx.config)
 	tx.StockMovement = NewStockMovementClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
+	tx.TenantContract = NewTenantContractClient(tx.config)
 	tx.TenantDomain = NewTenantDomainClient(tx.config)
 	tx.TreeLock = NewTreeLockClient(tx.config)
 	tx.UsageSnapshot = NewUsageSnapshotClient(tx.config)

@@ -53,6 +53,45 @@ ROVE_DB_DRIVER=pgx ROVE_DB_DSN='postgres://rove:rove@localhost:5432/rove?sslmode
 - 같은 PC에서 USB/블루투스 바코드 스캐너를 쓰면 스캔 화면의 입력칸에 그대로 입력됩니다 (QR 주소와 태그 모두 읽습니다).
 - 휴대폰에서 쓰려면 서버를 HTTPS로 열어야 합니다. 예를 들어 [Caddy](https://caddyserver.com)를 앞에 두고(`reverse_proxy localhost:8080`, 사내망이면 `tls internal`) `app.public_url` 과 `app.labels.suffix` 를 그 주소에 맞춥니다. 라벨 QR은 `https://<조직>.<suffix>/l/<코드>` 로 인쇄되므로, 휴대폰 기본 카메라로 찍어도 바로 그 자산이 열립니다.
 
+### 조직별 이력 보존 (운영자)
+
+조직마다 이력을 얼마나 뒤까지 보여 주고 얼마나 보관할지는 그 조직의 **계약**이 정합니다(design 8). 계약과 법적 보존(hold)은 운영자의 것이라 셸에서만 씁니다. 조직의 사람은 읽기만 합니다.
+
+```sh
+# 내년 1월부터: 1년치를 보여 주고 2년치를 보관
+go run ./cmd/rove contract set --tenant rove --name free --view 365 --keep 730 --effective 2027-01-01
+# 줄어드는 보관 기간은 유예(--grace, 일)가 지나야 적용됩니다. 보기 기간은 바로 줄어듭니다
+go run ./cmd/rove contract set --tenant rove --name trial --view 90 --keep 180 --grace 30
+go run ./cmd/rove contract show --tenant rove   # 계약들과 지금 적용되는 기간, 걸린 hold
+
+go run ./cmd/rove hold place --tenant rove --why "사건 2026-1"   # 이력을 아무것도 지우지 않음
+go run ./cmd/rove hold lift <hold-id>
+```
+
+보기 기간은 바로 적용됩니다: 자산 이력, 시점 조회·비교, 작업 기록, 감사 기록, 끝난 예약·지급·작업·실사·재고 내역이 그 기간 안의 것만 답합니다. 아직 끝나지 않은 것(돌려받지 않은 대여 등)은 아무리 오래되어도 보입니다.
+
+**지우는 일은 기본으로 꺼져 있습니다.** 고지·내보내기·유예·백업 정책이 정해지기 전에는 파괴적인 동작을 켜지 않는다는 원칙(design 1장) 때문입니다. 계약이 없는 조직은 `app.retention.view`·`keep` 을 따르고, 그것도 없으면 전부 보여 주고 전부 보관합니다.
+
+```sh
+go run ./cmd/rove retention plan                 # 지금 지우면 무엇이 몇 건 사라지는지 (아무것도 바꾸지 않음)
+go run ./cmd/rove retention plan --tenant rove   # 한 조직만
+go run ./cmd/rove retention run                  # 실제로 지움 — app.retention.apply 가 켜져 있을 때만
+```
+
+`plan` 은 삭제를 트랜잭션 안에서 실제로 해 보고 되돌리므로, 말하는 숫자가 `run` 이 지우는 숫자와 같습니다. `app.retention.apply: true` 이면 `serve` 가 `app.retention.every`(기본 1시간)마다 같은 일을 하고, 감사 기록의 이력 종류도 같은 기간으로 지웁니다. 지운 뒤에는 무엇을 몇 건, 어느 날짜 이전 것을 지웠는지만 적은 기록(`retention.expired` 작업 기록)이 남습니다. 지워지는 것은 보관 기간이 시작되기 전에 **끝난** 이력입니다: 끝났거나 정정된 위치·담당·관계 기록, 그 뒤에 바뀐 속성 값, 아무 기록도 가리키지 않는 작업 기록, 끝난 예약·다 돌려받은 지급·닫힌 실사·끝난 작업, 재고 이동. 기간이 시작될 때의 상태, 아직 끝나지 않은 것, 등록(취득) 기록과 폐기·불용·분실 상태는 남습니다. hold가 걸린 조직은 아무것도 지우지 않습니다.
+
+### 조직 탈퇴 (운영자)
+
+설계 8.2의 순서대로 **내보내기 → 유예 → 전체 삭제**입니다. 순서는 운영자가 지킵니다.
+
+```sh
+go run ./cmd/rove tenant export --tenant rove --out rove.zip   # 모든 행(종류마다 JSON 줄), 감사 기록, 첨부 파일
+go run ./cmd/rove tenant purge --tenant rove                   # 무엇이 몇 건 사라지는지만 (아무것도 바꾸지 않음)
+go run ./cmd/rove tenant purge --tenant rove --yes             # 실제로 지움: 모든 행, 파일, 감사 기록(DB와 보관소), 마지막으로 조직
+```
+
+내보내기에는 비밀번호 해시·세션·운영자의 hold는 들어가지 않고, 무엇을 왜 뺐는지가 `manifest.json`에 적힙니다. hold가 걸린 조직은 지우지 않습니다. 사람 한 명의 개인정보 삭제는 사람 화면의 '개인정보 삭제'(가명화)이며, 감사 기록의 사본도 DB와 보관소에서 함께 비웁니다(hold가 걸린 것은 남김).
+
 ## 무엇이 있나
 
 | 화면 | 할 수 있는 일 |

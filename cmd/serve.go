@@ -23,6 +23,7 @@ import (
 	"github.com/lesomnus/payday/auth/authsession"
 	"github.com/lesomnus/payday/gate"
 	"github.com/lesomnus/payday/grpcx"
+	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/payday/pdpb"
 	"github.com/lesomnus/payday/spin"
 	"github.com/lesomnus/payday/trail"
@@ -34,8 +35,10 @@ import (
 	"github.com/lesomnus/rove/internal/ent/tenantdomain"
 	"github.com/lesomnus/rove/server/bare"
 	"github.com/lesomnus/rove/server/domain"
+	"github.com/lesomnus/rove/server/offboard"
 	"github.com/lesomnus/rove/server/pd"
 	"github.com/lesomnus/rove/server/policy"
+	"github.com/lesomnus/rove/server/retention"
 	"github.com/lesomnus/rove/server/session"
 	"github.com/lesomnus/rove/server/storage"
 )
@@ -80,6 +83,11 @@ type Server struct {
 	// files, how labels are addressed.
 	Deps *domain.Deps
 
+	// Trail is the trail's policy with every tenant's windows and legal holds
+	// answered, whether or not `app.retention.apply` lets a pass destroy by
+	// them: what an erasure, an export and a purge go by.
+	Trail trail.Policy
+
 	// Sessions mints and reads the cookie a browser signs in with.
 	Sessions *authsession.Sessions
 
@@ -120,7 +128,8 @@ type Server struct {
 // The two hooks are the whole of what payday puts in the write and read paths,
 // and both come out of what the schema declared: [pd.Minter] stamps a new row
 // with the domain of its entity and refuses one of another, [pd.Wall] narrows
-// every read to the tenants the caller may see.
+// every read to the tenants the caller may see -- and [domain.View] to the
+// part of their history their contract lets them look at.
 func Build(ctx context.Context, c Config) (*Server, error) {
 	db, dialect, err := c.Db.Open(ctx)
 	if err != nil {
@@ -182,7 +191,10 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		return nil, err
 	}
 
-	walled, err := pd.NewSink(client, append(opts, bare.WithScope(pd.Wall()))...)
+	// The wall, and inside it the tenant's view window over what a predicate
+	// can narrow to it (design 8.1).
+	scope := bare.Scopes{pd.Wall(), domain.View(client, deps)}
+	walled, err := pd.NewSink(client, append(opts, bare.WithScope(scope))...)
 	if err != nil {
 		db.Close()
 		return nil, err
@@ -231,6 +243,12 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 		domain.Sweeper{Server: base, Drv: drv, Deps: deps, Every: c.App.Sweep},
 		spinEvery(time.Hour, store.Sweep),
 	)
+
+	// What the keep windows no longer reach, taken out of the history (design
+	// 8.2) -- only when the deployment has said a window may destroy.
+	if c.App.Retention.Apply {
+		s.Spin = append(s.Spin, domain.Expirer{Server: base, Drv: drv, Deps: deps, Every: c.App.Retention.Every})
+	}
 	if c.Watch.Outbox && b != nil {
 		// The loop that makes an event durable. It is not a layer and not a
 		// method on any server -- `spin.Run` finds it in whatever is handed
@@ -257,6 +275,26 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 
 		return nil, err
 	}
+
+	// And per tenant, from its contract, for the kinds that are history: their
+	// trail lasts as long as the history does, and a legal hold holds both.
+	// Only when the deployment has said a window may destroy, since this is
+	// what turns the sweep on for a deployment that configured no `audit:`.
+	if c.App.Retention.Apply {
+		p.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
+	}
+
+	// What the trail kept of a person, forgotten in the database and in the
+	// archive both, when they are pseudonymized. Every tenant's legal holds
+	// are asked whether or not the windows may destroy: a hold outweighs an
+	// erasure either way.
+	s.Trail = p
+	s.Trail.Tenants = retention.Trail(client, p, c.App.Retention.Defaults())
+	deps.Forget = func(ctx context.Context, db *ent.Client, objects []pdid.Id) (int, error) {
+		v, err := s.Trail.Forget(ctx, pd.TrailStore(db), objects)
+		return v.Held.Rows + v.Held.Chunks, err
+	}
+
 	if p.On() {
 		log.From(ctx).InfoContext(ctx, "trail: retention", "policy", p.String())
 
@@ -267,6 +305,18 @@ func Build(ctx context.Context, c Config) (*Server, error) {
 }
 
 func (s *Server) Close() error { return s.Db.Close() }
+
+// Offboard is what a tenant's export and purge work on.
+func (s *Server) Offboard(c Config) offboard.Deployment {
+	return offboard.Deployment{
+		Ent:       s.Ent,
+		Drv:       s.Drv,
+		Files:     s.Deps.Files,
+		Trail:     s.Trail,
+		Retention: c.App.Retention.Defaults(),
+		Now:       s.Deps.Clock,
+	}
+}
 
 // Grpc builds the server every call arrives at.
 //
@@ -417,6 +467,7 @@ func depsOf(c Config) (*domain.Deps, error) {
 		LabelPort:   port,
 		LookupTXT:   net.DefaultResolver.LookupTXT,
 		NoShowAfter: c.App.NoShowAfter,
+		Retention:   c.App.Retention.Defaults(),
 	}, nil
 }
 

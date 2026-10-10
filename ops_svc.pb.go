@@ -3382,6 +3382,2688 @@ func (b0 UsageSnapshotFilter_builder) Build() *UsageSnapshotFilter {
 	return m0
 }
 
+type TenantContractAddRequest struct {
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id            []byte                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Tenant        *TenantRef             `protobuf:"bytes,2,opt,name=tenant"`
+	xxx_hidden_Name          string                 `protobuf:"bytes,5,opt,name=name"`
+	xxx_hidden_Desc          string                 `protobuf:"bytes,6,opt,name=desc"`
+	xxx_hidden_ViewDays      uint32                 `protobuf:"varint,8,opt,name=view_days,json=viewDays"`
+	xxx_hidden_KeepDays      uint32                 `protobuf:"varint,9,opt,name=keep_days,json=keepDays"`
+	xxx_hidden_GraceDays     uint32                 `protobuf:"varint,10,opt,name=grace_days,json=graceDays"`
+	xxx_hidden_DateEffective *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=date_effective,json=dateEffective"`
+	xxx_hidden_DateCreated   *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *TenantContractAddRequest) Reset() {
+	*x = TenantContractAddRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractAddRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractAddRequest) ProtoMessage() {}
+
+func (x *TenantContractAddRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractAddRequest) GetId() []byte {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return nil
+}
+
+func (x *TenantContractAddRequest) GetTenant() *TenantRef {
+	if x != nil {
+		return x.xxx_hidden_Tenant
+	}
+	return nil
+}
+
+func (x *TenantContractAddRequest) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *TenantContractAddRequest) GetDesc() string {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return ""
+}
+
+func (x *TenantContractAddRequest) GetViewDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_ViewDays
+	}
+	return 0
+}
+
+func (x *TenantContractAddRequest) GetKeepDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_KeepDays
+	}
+	return 0
+}
+
+func (x *TenantContractAddRequest) GetGraceDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_GraceDays
+	}
+	return 0
+}
+
+func (x *TenantContractAddRequest) GetDateEffective() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateEffective
+	}
+	return nil
+}
+
+func (x *TenantContractAddRequest) GetDateCreated() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateCreated
+	}
+	return nil
+}
+
+func (x *TenantContractAddRequest) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Id = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+}
+
+func (x *TenantContractAddRequest) SetTenant(v *TenantRef) {
+	x.xxx_hidden_Tenant = v
+}
+
+func (x *TenantContractAddRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *TenantContractAddRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = v
+}
+
+func (x *TenantContractAddRequest) SetViewDays(v uint32) {
+	x.xxx_hidden_ViewDays = v
+}
+
+func (x *TenantContractAddRequest) SetKeepDays(v uint32) {
+	x.xxx_hidden_KeepDays = v
+}
+
+func (x *TenantContractAddRequest) SetGraceDays(v uint32) {
+	x.xxx_hidden_GraceDays = v
+}
+
+func (x *TenantContractAddRequest) SetDateEffective(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateEffective = v
+}
+
+func (x *TenantContractAddRequest) SetDateCreated(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateCreated = v
+}
+
+func (x *TenantContractAddRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TenantContractAddRequest) HasTenant() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Tenant != nil
+}
+
+func (x *TenantContractAddRequest) HasDateEffective() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateEffective != nil
+}
+
+func (x *TenantContractAddRequest) HasDateCreated() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateCreated != nil
+}
+
+func (x *TenantContractAddRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *TenantContractAddRequest) ClearTenant() {
+	x.xxx_hidden_Tenant = nil
+}
+
+func (x *TenantContractAddRequest) ClearDateEffective() {
+	x.xxx_hidden_DateEffective = nil
+}
+
+func (x *TenantContractAddRequest) ClearDateCreated() {
+	x.xxx_hidden_DateCreated = nil
+}
+
+type TenantContractAddRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id            []byte
+	Tenant        *TenantRef
+	Name          string
+	Desc          string
+	ViewDays      uint32
+	KeepDays      uint32
+	GraceDays     uint32
+	DateEffective *timestamppb.Timestamp
+	DateCreated   *timestamppb.Timestamp
+}
+
+func (b0 TenantContractAddRequest_builder) Build() *TenantContractAddRequest {
+	m0 := &TenantContractAddRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Tenant = b.Tenant
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Desc = b.Desc
+	x.xxx_hidden_ViewDays = b.ViewDays
+	x.xxx_hidden_KeepDays = b.KeepDays
+	x.xxx_hidden_GraceDays = b.GraceDays
+	x.xxx_hidden_DateEffective = b.DateEffective
+	x.xxx_hidden_DateCreated = b.DateCreated
+	return m0
+}
+
+type TenantContractGetRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *TenantContractRef     `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Select *TenantContractSelect  `protobuf:"bytes,2,opt,name=select"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TenantContractGetRequest) Reset() {
+	*x = TenantContractGetRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractGetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractGetRequest) ProtoMessage() {}
+
+func (x *TenantContractGetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractGetRequest) GetRef() *TenantContractRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantContractGetRequest) GetSelect() *TenantContractSelect {
+	if x != nil {
+		return x.xxx_hidden_Select
+	}
+	return nil
+}
+
+func (x *TenantContractGetRequest) SetRef(v *TenantContractRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantContractGetRequest) SetSelect(v *TenantContractSelect) {
+	x.xxx_hidden_Select = v
+}
+
+func (x *TenantContractGetRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantContractGetRequest) HasSelect() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Select != nil
+}
+
+func (x *TenantContractGetRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *TenantContractGetRequest) ClearSelect() {
+	x.xxx_hidden_Select = nil
+}
+
+type TenantContractGetRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref    *TenantContractRef
+	Select *TenantContractSelect
+}
+
+func (b0 TenantContractGetRequest_builder) Build() *TenantContractGetRequest {
+	m0 := &TenantContractGetRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Select = b.Select
+	return m0
+}
+
+type TenantContractRef struct {
+	state          protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Key isTenantContractRef_Key `protobuf_oneof:"key"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TenantContractRef) Reset() {
+	*x = TenantContractRef{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractRef) ProtoMessage() {}
+
+func (x *TenantContractRef) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractRef) GetId() []byte {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Key.(*tenantContractRef_Id); ok {
+			return x.Id
+		}
+	}
+	return nil
+}
+
+func (x *TenantContractRef) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Key = &tenantContractRef_Id{v}
+}
+
+func (x *TenantContractRef) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Key != nil
+}
+
+func (x *TenantContractRef) HasId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Key.(*tenantContractRef_Id)
+	return ok
+}
+
+func (x *TenantContractRef) ClearKey() {
+	x.xxx_hidden_Key = nil
+}
+
+func (x *TenantContractRef) ClearId() {
+	if _, ok := x.xxx_hidden_Key.(*tenantContractRef_Id); ok {
+		x.xxx_hidden_Key = nil
+	}
+}
+
+const TenantContractRef_Key_not_set_case case_TenantContractRef_Key = 0
+const TenantContractRef_Id_case case_TenantContractRef_Key = 1
+
+func (x *TenantContractRef) WhichKey() case_TenantContractRef_Key {
+	if x == nil {
+		return TenantContractRef_Key_not_set_case
+	}
+	switch x.xxx_hidden_Key.(type) {
+	case *tenantContractRef_Id:
+		return TenantContractRef_Id_case
+	default:
+		return TenantContractRef_Key_not_set_case
+	}
+}
+
+type TenantContractRef_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_Key:
+	Id []byte
+	// -- end of xxx_hidden_Key
+}
+
+func (b0 TenantContractRef_builder) Build() *TenantContractRef {
+	m0 := &TenantContractRef{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		x.xxx_hidden_Key = &tenantContractRef_Id{b.Id}
+	}
+	return m0
+}
+
+type case_TenantContractRef_Key protoreflect.FieldNumber
+
+func (x case_TenantContractRef_Key) String() string {
+	md := file_rove_ops_svc_g_proto_msgTypes[27].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isTenantContractRef_Key interface {
+	isTenantContractRef_Key()
+}
+
+type tenantContractRef_Id struct {
+	Id []byte `protobuf:"bytes,1,opt,name=id,oneof"`
+}
+
+func (*tenantContractRef_Id) isTenantContractRef_Key() {}
+
+type TenantContractSelect struct {
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_All           bool                   `protobuf:"varint,1,opt,name=all"`
+	xxx_hidden_Tenant        *TenantSelect          `protobuf:"bytes,2,opt,name=tenant"`
+	xxx_hidden_Name          bool                   `protobuf:"varint,5,opt,name=name"`
+	xxx_hidden_Desc          bool                   `protobuf:"varint,6,opt,name=desc"`
+	xxx_hidden_ViewDays      bool                   `protobuf:"varint,8,opt,name=view_days,json=viewDays"`
+	xxx_hidden_KeepDays      bool                   `protobuf:"varint,9,opt,name=keep_days,json=keepDays"`
+	xxx_hidden_GraceDays     bool                   `protobuf:"varint,10,opt,name=grace_days,json=graceDays"`
+	xxx_hidden_DateEffective bool                   `protobuf:"varint,11,opt,name=date_effective,json=dateEffective"`
+	xxx_hidden_DateErased    bool                   `protobuf:"varint,14,opt,name=date_erased,json=dateErased"`
+	xxx_hidden_DateCreated   bool                   `protobuf:"varint,15,opt,name=date_created,json=dateCreated"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *TenantContractSelect) Reset() {
+	*x = TenantContractSelect{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractSelect) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractSelect) ProtoMessage() {}
+
+func (x *TenantContractSelect) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractSelect) GetAll() bool {
+	if x != nil {
+		return x.xxx_hidden_All
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetTenant() *TenantSelect {
+	if x != nil {
+		return x.xxx_hidden_Tenant
+	}
+	return nil
+}
+
+func (x *TenantContractSelect) GetName() bool {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetDesc() bool {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetViewDays() bool {
+	if x != nil {
+		return x.xxx_hidden_ViewDays
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetKeepDays() bool {
+	if x != nil {
+		return x.xxx_hidden_KeepDays
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetGraceDays() bool {
+	if x != nil {
+		return x.xxx_hidden_GraceDays
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetDateEffective() bool {
+	if x != nil {
+		return x.xxx_hidden_DateEffective
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetDateErased() bool {
+	if x != nil {
+		return x.xxx_hidden_DateErased
+	}
+	return false
+}
+
+func (x *TenantContractSelect) GetDateCreated() bool {
+	if x != nil {
+		return x.xxx_hidden_DateCreated
+	}
+	return false
+}
+
+func (x *TenantContractSelect) SetAll(v bool) {
+	x.xxx_hidden_All = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+}
+
+func (x *TenantContractSelect) SetTenant(v *TenantSelect) {
+	x.xxx_hidden_Tenant = v
+}
+
+func (x *TenantContractSelect) SetName(v bool) {
+	x.xxx_hidden_Name = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 10)
+}
+
+func (x *TenantContractSelect) SetDesc(v bool) {
+	x.xxx_hidden_Desc = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 10)
+}
+
+func (x *TenantContractSelect) SetViewDays(v bool) {
+	x.xxx_hidden_ViewDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 10)
+}
+
+func (x *TenantContractSelect) SetKeepDays(v bool) {
+	x.xxx_hidden_KeepDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 10)
+}
+
+func (x *TenantContractSelect) SetGraceDays(v bool) {
+	x.xxx_hidden_GraceDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 10)
+}
+
+func (x *TenantContractSelect) SetDateEffective(v bool) {
+	x.xxx_hidden_DateEffective = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 10)
+}
+
+func (x *TenantContractSelect) SetDateErased(v bool) {
+	x.xxx_hidden_DateErased = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 10)
+}
+
+func (x *TenantContractSelect) SetDateCreated(v bool) {
+	x.xxx_hidden_DateCreated = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 10)
+}
+
+func (x *TenantContractSelect) HasAll() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TenantContractSelect) HasTenant() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Tenant != nil
+}
+
+func (x *TenantContractSelect) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *TenantContractSelect) HasDesc() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *TenantContractSelect) HasViewDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *TenantContractSelect) HasKeepDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *TenantContractSelect) HasGraceDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *TenantContractSelect) HasDateEffective() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *TenantContractSelect) HasDateErased() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *TenantContractSelect) HasDateCreated() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *TenantContractSelect) ClearAll() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_All = false
+}
+
+func (x *TenantContractSelect) ClearTenant() {
+	x.xxx_hidden_Tenant = nil
+}
+
+func (x *TenantContractSelect) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Name = false
+}
+
+func (x *TenantContractSelect) ClearDesc() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Desc = false
+}
+
+func (x *TenantContractSelect) ClearViewDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_ViewDays = false
+}
+
+func (x *TenantContractSelect) ClearKeepDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_KeepDays = false
+}
+
+func (x *TenantContractSelect) ClearGraceDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_GraceDays = false
+}
+
+func (x *TenantContractSelect) ClearDateEffective() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_DateEffective = false
+}
+
+func (x *TenantContractSelect) ClearDateErased() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_DateErased = false
+}
+
+func (x *TenantContractSelect) ClearDateCreated() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_DateCreated = false
+}
+
+type TenantContractSelect_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	All           *bool
+	Tenant        *TenantSelect
+	Name          *bool
+	Desc          *bool
+	ViewDays      *bool
+	KeepDays      *bool
+	GraceDays     *bool
+	DateEffective *bool
+	DateErased    *bool
+	DateCreated   *bool
+}
+
+func (b0 TenantContractSelect_builder) Build() *TenantContractSelect {
+	m0 := &TenantContractSelect{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.All != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
+		x.xxx_hidden_All = *b.All
+	}
+	x.xxx_hidden_Tenant = b.Tenant
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 10)
+		x.xxx_hidden_Name = *b.Name
+	}
+	if b.Desc != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 10)
+		x.xxx_hidden_Desc = *b.Desc
+	}
+	if b.ViewDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 10)
+		x.xxx_hidden_ViewDays = *b.ViewDays
+	}
+	if b.KeepDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 10)
+		x.xxx_hidden_KeepDays = *b.KeepDays
+	}
+	if b.GraceDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 10)
+		x.xxx_hidden_GraceDays = *b.GraceDays
+	}
+	if b.DateEffective != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 10)
+		x.xxx_hidden_DateEffective = *b.DateEffective
+	}
+	if b.DateErased != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 10)
+		x.xxx_hidden_DateErased = *b.DateErased
+	}
+	if b.DateCreated != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 10)
+		x.xxx_hidden_DateCreated = *b.DateCreated
+	}
+	return m0
+}
+
+type TenantContractPatchRequest struct {
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref           *TenantContractRef     `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Name          *string                `protobuf:"bytes,10,opt,name=name"`
+	xxx_hidden_Desc          *string                `protobuf:"bytes,12,opt,name=desc"`
+	xxx_hidden_ViewDays      uint32                 `protobuf:"varint,16,opt,name=view_days,json=viewDays"`
+	xxx_hidden_KeepDays      uint32                 `protobuf:"varint,18,opt,name=keep_days,json=keepDays"`
+	xxx_hidden_GraceDays     uint32                 `protobuf:"varint,20,opt,name=grace_days,json=graceDays"`
+	xxx_hidden_DateEffective *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=date_effective,json=dateEffective"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *TenantContractPatchRequest) Reset() {
+	*x = TenantContractPatchRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractPatchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractPatchRequest) ProtoMessage() {}
+
+func (x *TenantContractPatchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractPatchRequest) GetRef() *TenantContractRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantContractPatchRequest) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TenantContractPatchRequest) GetDesc() string {
+	if x != nil {
+		if x.xxx_hidden_Desc != nil {
+			return *x.xxx_hidden_Desc
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TenantContractPatchRequest) GetViewDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_ViewDays
+	}
+	return 0
+}
+
+func (x *TenantContractPatchRequest) GetKeepDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_KeepDays
+	}
+	return 0
+}
+
+func (x *TenantContractPatchRequest) GetGraceDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_GraceDays
+	}
+	return 0
+}
+
+func (x *TenantContractPatchRequest) GetDateEffective() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateEffective
+	}
+	return nil
+}
+
+func (x *TenantContractPatchRequest) SetRef(v *TenantContractRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantContractPatchRequest) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+}
+
+func (x *TenantContractPatchRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+}
+
+func (x *TenantContractPatchRequest) SetViewDays(v uint32) {
+	x.xxx_hidden_ViewDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+}
+
+func (x *TenantContractPatchRequest) SetKeepDays(v uint32) {
+	x.xxx_hidden_KeepDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+}
+
+func (x *TenantContractPatchRequest) SetGraceDays(v uint32) {
+	x.xxx_hidden_GraceDays = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
+}
+
+func (x *TenantContractPatchRequest) SetDateEffective(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateEffective = v
+}
+
+func (x *TenantContractPatchRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantContractPatchRequest) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TenantContractPatchRequest) HasDesc() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *TenantContractPatchRequest) HasViewDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *TenantContractPatchRequest) HasKeepDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *TenantContractPatchRequest) HasGraceDays() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *TenantContractPatchRequest) HasDateEffective() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateEffective != nil
+}
+
+func (x *TenantContractPatchRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *TenantContractPatchRequest) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *TenantContractPatchRequest) ClearDesc() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Desc = nil
+}
+
+func (x *TenantContractPatchRequest) ClearViewDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_ViewDays = 0
+}
+
+func (x *TenantContractPatchRequest) ClearKeepDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_KeepDays = 0
+}
+
+func (x *TenantContractPatchRequest) ClearGraceDays() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_GraceDays = 0
+}
+
+func (x *TenantContractPatchRequest) ClearDateEffective() {
+	x.xxx_hidden_DateEffective = nil
+}
+
+type TenantContractPatchRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref           *TenantContractRef
+	Name          *string
+	Desc          *string
+	ViewDays      *uint32
+	KeepDays      *uint32
+	GraceDays     *uint32
+	DateEffective *timestamppb.Timestamp
+}
+
+func (b0 TenantContractPatchRequest_builder) Build() *TenantContractPatchRequest {
+	m0 := &TenantContractPatchRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Desc != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Desc = b.Desc
+	}
+	if b.ViewDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_ViewDays = *b.ViewDays
+	}
+	if b.KeepDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_KeepDays = *b.KeepDays
+	}
+	if b.GraceDays != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
+		x.xxx_hidden_GraceDays = *b.GraceDays
+	}
+	x.xxx_hidden_DateEffective = b.DateEffective
+	return m0
+}
+
+type TenantContractApplyRequest struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref   *TenantContractRef     `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Patch *patchpb.Patch         `protobuf:"bytes,2,opt,name=patch"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *TenantContractApplyRequest) Reset() {
+	*x = TenantContractApplyRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractApplyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractApplyRequest) ProtoMessage() {}
+
+func (x *TenantContractApplyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractApplyRequest) GetRef() *TenantContractRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantContractApplyRequest) GetPatch() *patchpb.Patch {
+	if x != nil {
+		return x.xxx_hidden_Patch
+	}
+	return nil
+}
+
+func (x *TenantContractApplyRequest) SetRef(v *TenantContractRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantContractApplyRequest) SetPatch(v *patchpb.Patch) {
+	x.xxx_hidden_Patch = v
+}
+
+func (x *TenantContractApplyRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantContractApplyRequest) HasPatch() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Patch != nil
+}
+
+func (x *TenantContractApplyRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *TenantContractApplyRequest) ClearPatch() {
+	x.xxx_hidden_Patch = nil
+}
+
+type TenantContractApplyRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref   *TenantContractRef
+	Patch *patchpb.Patch
+}
+
+func (b0 TenantContractApplyRequest_builder) Build() *TenantContractApplyRequest {
+	m0 := &TenantContractApplyRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Patch = b.Patch
+	return m0
+}
+
+type TenantContractEraseResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Erased      bool                   `protobuf:"varint,1,opt,name=erased"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *TenantContractEraseResponse) Reset() {
+	*x = TenantContractEraseResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractEraseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractEraseResponse) ProtoMessage() {}
+
+func (x *TenantContractEraseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractEraseResponse) GetErased() bool {
+	if x != nil {
+		return x.xxx_hidden_Erased
+	}
+	return false
+}
+
+func (x *TenantContractEraseResponse) SetErased(v bool) {
+	x.xxx_hidden_Erased = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *TenantContractEraseResponse) HasErased() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TenantContractEraseResponse) ClearErased() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Erased = false
+}
+
+type TenantContractEraseResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Erased is whether this call is the one that erased the row.
+	//
+	// False for a row that was already gone, was never there, or is out
+	// of this caller's reach -- which are one answer on purpose, and the
+	// reason the RPC does not fail instead.
+	Erased *bool
+}
+
+func (b0 TenantContractEraseResponse_builder) Build() *TenantContractEraseResponse {
+	m0 := &TenantContractEraseResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Erased != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Erased = *b.Erased
+	}
+	return m0
+}
+
+type TenantContractListRequest struct {
+	state              protoimpl.MessageState   `protogen:"opaque.v1"`
+	xxx_hidden_Filters *[]*TenantContractFilter `protobuf:"bytes,1,rep,name=filters"`
+	xxx_hidden_Size    int32                    `protobuf:"varint,2,opt,name=size"`
+	xxx_hidden_After   string                   `protobuf:"bytes,3,opt,name=after"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *TenantContractListRequest) Reset() {
+	*x = TenantContractListRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractListRequest) ProtoMessage() {}
+
+func (x *TenantContractListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractListRequest) GetFilters() []*TenantContractFilter {
+	if x != nil {
+		if x.xxx_hidden_Filters != nil {
+			return *x.xxx_hidden_Filters
+		}
+	}
+	return nil
+}
+
+func (x *TenantContractListRequest) GetSize() int32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *TenantContractListRequest) GetAfter() string {
+	if x != nil {
+		return x.xxx_hidden_After
+	}
+	return ""
+}
+
+func (x *TenantContractListRequest) SetFilters(v []*TenantContractFilter) {
+	x.xxx_hidden_Filters = &v
+}
+
+func (x *TenantContractListRequest) SetSize(v int32) {
+	x.xxx_hidden_Size = v
+}
+
+func (x *TenantContractListRequest) SetAfter(v string) {
+	x.xxx_hidden_After = v
+}
+
+type TenantContractListRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Bounded because the work is: each filter is a predicate in the same query,
+	// so this is what says how much of the database one request may read.
+	Filters []*TenantContractFilter
+	// How many to answer with. Nothing said is what the schema declared, and more
+	// than the cap is the cap -- a caller asking for more than there is meant no
+	// harm, so it is not an error and it is not the whole table either.
+	Size int32
+	// Where to carry on from: the "next" of the answer before. It names the last
+	// row of that page rather than counting rows from the start, so a row added
+	// ahead of the page does not shift it and a caller reading through never sees
+	// one twice or misses one.
+	After string
+}
+
+func (b0 TenantContractListRequest_builder) Build() *TenantContractListRequest {
+	m0 := &TenantContractListRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Filters = &b.Filters
+	x.xxx_hidden_Size = b.Size
+	x.xxx_hidden_After = b.After
+	return m0
+}
+
+type TenantContractListResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*TenantContract     `protobuf:"bytes,1,rep,name=items"`
+	xxx_hidden_Next  string                 `protobuf:"bytes,2,opt,name=next"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *TenantContractListResponse) Reset() {
+	*x = TenantContractListResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractListResponse) ProtoMessage() {}
+
+func (x *TenantContractListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractListResponse) GetItems() []*TenantContract {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *TenantContractListResponse) GetNext() string {
+	if x != nil {
+		return x.xxx_hidden_Next
+	}
+	return ""
+}
+
+func (x *TenantContractListResponse) SetItems(v []*TenantContract) {
+	x.xxx_hidden_Items = &v
+}
+
+func (x *TenantContractListResponse) SetNext(v string) {
+	x.xxx_hidden_Next = v
+}
+
+type TenantContractListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*TenantContract
+	// What to ask for next, and empty when this was the last of them.
+	//
+	// Empty means there is no more *for now*: a list is read as it is, and one
+	// that has grown since answers a fresh call. It is not empty merely because
+	// the page came back short -- a page is short when the last row of it was the
+	// last row there was, which is a thing the server can only know by having
+	// looked.
+	Next string
+}
+
+func (b0 TenantContractListResponse_builder) Build() *TenantContractListResponse {
+	m0 := &TenantContractListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	x.xxx_hidden_Next = b.Next
+	return m0
+}
+
+type TenantContractFilter struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref *TenantContractRef     `protobuf:"bytes,1,opt,name=ref"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TenantContractFilter) Reset() {
+	*x = TenantContractFilter{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantContractFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantContractFilter) ProtoMessage() {}
+
+func (x *TenantContractFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TenantContractFilter) GetRef() *TenantContractRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *TenantContractFilter) SetRef(v *TenantContractRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *TenantContractFilter) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *TenantContractFilter) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type TenantContractFilter_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *TenantContractRef
+}
+
+func (b0 TenantContractFilter_builder) Build() *TenantContractFilter {
+	m0 := &TenantContractFilter{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	return m0
+}
+
+type LegalHoldAddRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Tenant      *TenantRef             `protobuf:"bytes,2,opt,name=tenant"`
+	xxx_hidden_Name        string                 `protobuf:"bytes,5,opt,name=name"`
+	xxx_hidden_Desc        string                 `protobuf:"bytes,6,opt,name=desc"`
+	xxx_hidden_DateLifted  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=date_lifted,json=dateLifted"`
+	xxx_hidden_DateCreated *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *LegalHoldAddRequest) Reset() {
+	*x = LegalHoldAddRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldAddRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldAddRequest) ProtoMessage() {}
+
+func (x *LegalHoldAddRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldAddRequest) GetId() []byte {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return nil
+}
+
+func (x *LegalHoldAddRequest) GetTenant() *TenantRef {
+	if x != nil {
+		return x.xxx_hidden_Tenant
+	}
+	return nil
+}
+
+func (x *LegalHoldAddRequest) GetName() string {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return ""
+}
+
+func (x *LegalHoldAddRequest) GetDesc() string {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return ""
+}
+
+func (x *LegalHoldAddRequest) GetDateLifted() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateLifted
+	}
+	return nil
+}
+
+func (x *LegalHoldAddRequest) GetDateCreated() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateCreated
+	}
+	return nil
+}
+
+func (x *LegalHoldAddRequest) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Id = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+}
+
+func (x *LegalHoldAddRequest) SetTenant(v *TenantRef) {
+	x.xxx_hidden_Tenant = v
+}
+
+func (x *LegalHoldAddRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *LegalHoldAddRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = v
+}
+
+func (x *LegalHoldAddRequest) SetDateLifted(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateLifted = v
+}
+
+func (x *LegalHoldAddRequest) SetDateCreated(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateCreated = v
+}
+
+func (x *LegalHoldAddRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *LegalHoldAddRequest) HasTenant() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Tenant != nil
+}
+
+func (x *LegalHoldAddRequest) HasDateLifted() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateLifted != nil
+}
+
+func (x *LegalHoldAddRequest) HasDateCreated() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateCreated != nil
+}
+
+func (x *LegalHoldAddRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *LegalHoldAddRequest) ClearTenant() {
+	x.xxx_hidden_Tenant = nil
+}
+
+func (x *LegalHoldAddRequest) ClearDateLifted() {
+	x.xxx_hidden_DateLifted = nil
+}
+
+func (x *LegalHoldAddRequest) ClearDateCreated() {
+	x.xxx_hidden_DateCreated = nil
+}
+
+type LegalHoldAddRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id          []byte
+	Tenant      *TenantRef
+	Name        string
+	Desc        string
+	DateLifted  *timestamppb.Timestamp
+	DateCreated *timestamppb.Timestamp
+}
+
+func (b0 LegalHoldAddRequest_builder) Build() *LegalHoldAddRequest {
+	m0 := &LegalHoldAddRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Tenant = b.Tenant
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Desc = b.Desc
+	x.xxx_hidden_DateLifted = b.DateLifted
+	x.xxx_hidden_DateCreated = b.DateCreated
+	return m0
+}
+
+type LegalHoldGetRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref    *LegalHoldRef          `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Select *LegalHoldSelect       `protobuf:"bytes,2,opt,name=select"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *LegalHoldGetRequest) Reset() {
+	*x = LegalHoldGetRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldGetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldGetRequest) ProtoMessage() {}
+
+func (x *LegalHoldGetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldGetRequest) GetRef() *LegalHoldRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LegalHoldGetRequest) GetSelect() *LegalHoldSelect {
+	if x != nil {
+		return x.xxx_hidden_Select
+	}
+	return nil
+}
+
+func (x *LegalHoldGetRequest) SetRef(v *LegalHoldRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LegalHoldGetRequest) SetSelect(v *LegalHoldSelect) {
+	x.xxx_hidden_Select = v
+}
+
+func (x *LegalHoldGetRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LegalHoldGetRequest) HasSelect() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Select != nil
+}
+
+func (x *LegalHoldGetRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *LegalHoldGetRequest) ClearSelect() {
+	x.xxx_hidden_Select = nil
+}
+
+type LegalHoldGetRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref    *LegalHoldRef
+	Select *LegalHoldSelect
+}
+
+func (b0 LegalHoldGetRequest_builder) Build() *LegalHoldGetRequest {
+	m0 := &LegalHoldGetRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Select = b.Select
+	return m0
+}
+
+type LegalHoldRef struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Key isLegalHoldRef_Key     `protobuf_oneof:"key"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LegalHoldRef) Reset() {
+	*x = LegalHoldRef{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldRef) ProtoMessage() {}
+
+func (x *LegalHoldRef) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldRef) GetId() []byte {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Key.(*legalHoldRef_Id); ok {
+			return x.Id
+		}
+	}
+	return nil
+}
+
+func (x *LegalHoldRef) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Key = &legalHoldRef_Id{v}
+}
+
+func (x *LegalHoldRef) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Key != nil
+}
+
+func (x *LegalHoldRef) HasId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Key.(*legalHoldRef_Id)
+	return ok
+}
+
+func (x *LegalHoldRef) ClearKey() {
+	x.xxx_hidden_Key = nil
+}
+
+func (x *LegalHoldRef) ClearId() {
+	if _, ok := x.xxx_hidden_Key.(*legalHoldRef_Id); ok {
+		x.xxx_hidden_Key = nil
+	}
+}
+
+const LegalHoldRef_Key_not_set_case case_LegalHoldRef_Key = 0
+const LegalHoldRef_Id_case case_LegalHoldRef_Key = 1
+
+func (x *LegalHoldRef) WhichKey() case_LegalHoldRef_Key {
+	if x == nil {
+		return LegalHoldRef_Key_not_set_case
+	}
+	switch x.xxx_hidden_Key.(type) {
+	case *legalHoldRef_Id:
+		return LegalHoldRef_Id_case
+	default:
+		return LegalHoldRef_Key_not_set_case
+	}
+}
+
+type LegalHoldRef_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_Key:
+	Id []byte
+	// -- end of xxx_hidden_Key
+}
+
+func (b0 LegalHoldRef_builder) Build() *LegalHoldRef {
+	m0 := &LegalHoldRef{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		x.xxx_hidden_Key = &legalHoldRef_Id{b.Id}
+	}
+	return m0
+}
+
+type case_LegalHoldRef_Key protoreflect.FieldNumber
+
+func (x case_LegalHoldRef_Key) String() string {
+	md := file_rove_ops_svc_g_proto_msgTypes[37].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isLegalHoldRef_Key interface {
+	isLegalHoldRef_Key()
+}
+
+type legalHoldRef_Id struct {
+	Id []byte `protobuf:"bytes,1,opt,name=id,oneof"`
+}
+
+func (*legalHoldRef_Id) isLegalHoldRef_Key() {}
+
+type LegalHoldSelect struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_All         bool                   `protobuf:"varint,1,opt,name=all"`
+	xxx_hidden_Tenant      *TenantSelect          `protobuf:"bytes,2,opt,name=tenant"`
+	xxx_hidden_Name        bool                   `protobuf:"varint,5,opt,name=name"`
+	xxx_hidden_Desc        bool                   `protobuf:"varint,6,opt,name=desc"`
+	xxx_hidden_DateLifted  bool                   `protobuf:"varint,8,opt,name=date_lifted,json=dateLifted"`
+	xxx_hidden_DateCreated bool                   `protobuf:"varint,15,opt,name=date_created,json=dateCreated"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *LegalHoldSelect) Reset() {
+	*x = LegalHoldSelect{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldSelect) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldSelect) ProtoMessage() {}
+
+func (x *LegalHoldSelect) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldSelect) GetAll() bool {
+	if x != nil {
+		return x.xxx_hidden_All
+	}
+	return false
+}
+
+func (x *LegalHoldSelect) GetTenant() *TenantSelect {
+	if x != nil {
+		return x.xxx_hidden_Tenant
+	}
+	return nil
+}
+
+func (x *LegalHoldSelect) GetName() bool {
+	if x != nil {
+		return x.xxx_hidden_Name
+	}
+	return false
+}
+
+func (x *LegalHoldSelect) GetDesc() bool {
+	if x != nil {
+		return x.xxx_hidden_Desc
+	}
+	return false
+}
+
+func (x *LegalHoldSelect) GetDateLifted() bool {
+	if x != nil {
+		return x.xxx_hidden_DateLifted
+	}
+	return false
+}
+
+func (x *LegalHoldSelect) GetDateCreated() bool {
+	if x != nil {
+		return x.xxx_hidden_DateCreated
+	}
+	return false
+}
+
+func (x *LegalHoldSelect) SetAll(v bool) {
+	x.xxx_hidden_All = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+}
+
+func (x *LegalHoldSelect) SetTenant(v *TenantSelect) {
+	x.xxx_hidden_Tenant = v
+}
+
+func (x *LegalHoldSelect) SetName(v bool) {
+	x.xxx_hidden_Name = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+}
+
+func (x *LegalHoldSelect) SetDesc(v bool) {
+	x.xxx_hidden_Desc = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+}
+
+func (x *LegalHoldSelect) SetDateLifted(v bool) {
+	x.xxx_hidden_DateLifted = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *LegalHoldSelect) SetDateCreated(v bool) {
+	x.xxx_hidden_DateCreated = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+}
+
+func (x *LegalHoldSelect) HasAll() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *LegalHoldSelect) HasTenant() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Tenant != nil
+}
+
+func (x *LegalHoldSelect) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *LegalHoldSelect) HasDesc() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *LegalHoldSelect) HasDateLifted() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *LegalHoldSelect) HasDateCreated() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *LegalHoldSelect) ClearAll() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_All = false
+}
+
+func (x *LegalHoldSelect) ClearTenant() {
+	x.xxx_hidden_Tenant = nil
+}
+
+func (x *LegalHoldSelect) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Name = false
+}
+
+func (x *LegalHoldSelect) ClearDesc() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Desc = false
+}
+
+func (x *LegalHoldSelect) ClearDateLifted() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_DateLifted = false
+}
+
+func (x *LegalHoldSelect) ClearDateCreated() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_DateCreated = false
+}
+
+type LegalHoldSelect_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	All         *bool
+	Tenant      *TenantSelect
+	Name        *bool
+	Desc        *bool
+	DateLifted  *bool
+	DateCreated *bool
+}
+
+func (b0 LegalHoldSelect_builder) Build() *LegalHoldSelect {
+	m0 := &LegalHoldSelect{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.All != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_All = *b.All
+	}
+	x.xxx_hidden_Tenant = b.Tenant
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_Name = *b.Name
+	}
+	if b.Desc != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_Desc = *b.Desc
+	}
+	if b.DateLifted != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_DateLifted = *b.DateLifted
+	}
+	if b.DateCreated != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_DateCreated = *b.DateCreated
+	}
+	return m0
+}
+
+type LegalHoldPatchRequest struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref            *LegalHoldRef          `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Name           *string                `protobuf:"bytes,10,opt,name=name"`
+	xxx_hidden_Desc           *string                `protobuf:"bytes,12,opt,name=desc"`
+	xxx_hidden_DateLifted     *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=date_lifted,json=dateLifted"`
+	xxx_hidden_DateLiftedNull bool                   `protobuf:"varint,17,opt,name=date_lifted_null,json=dateLiftedNull"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *LegalHoldPatchRequest) Reset() {
+	*x = LegalHoldPatchRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldPatchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldPatchRequest) ProtoMessage() {}
+
+func (x *LegalHoldPatchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldPatchRequest) GetRef() *LegalHoldRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LegalHoldPatchRequest) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *LegalHoldPatchRequest) GetDesc() string {
+	if x != nil {
+		if x.xxx_hidden_Desc != nil {
+			return *x.xxx_hidden_Desc
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *LegalHoldPatchRequest) GetDateLifted() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateLifted
+	}
+	return nil
+}
+
+func (x *LegalHoldPatchRequest) GetDateLiftedNull() bool {
+	if x != nil {
+		return x.xxx_hidden_DateLiftedNull
+	}
+	return false
+}
+
+func (x *LegalHoldPatchRequest) SetRef(v *LegalHoldRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LegalHoldPatchRequest) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *LegalHoldPatchRequest) SetDesc(v string) {
+	x.xxx_hidden_Desc = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *LegalHoldPatchRequest) SetDateLifted(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateLifted = v
+}
+
+func (x *LegalHoldPatchRequest) SetDateLiftedNull(v bool) {
+	x.xxx_hidden_DateLiftedNull = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *LegalHoldPatchRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LegalHoldPatchRequest) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *LegalHoldPatchRequest) HasDesc() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *LegalHoldPatchRequest) HasDateLifted() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateLifted != nil
+}
+
+func (x *LegalHoldPatchRequest) HasDateLiftedNull() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *LegalHoldPatchRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *LegalHoldPatchRequest) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *LegalHoldPatchRequest) ClearDesc() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Desc = nil
+}
+
+func (x *LegalHoldPatchRequest) ClearDateLifted() {
+	x.xxx_hidden_DateLifted = nil
+}
+
+func (x *LegalHoldPatchRequest) ClearDateLiftedNull() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_DateLiftedNull = false
+}
+
+type LegalHoldPatchRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref        *LegalHoldRef
+	Name       *string
+	Desc       *string
+	DateLifted *timestamppb.Timestamp
+	// Clear date_lifted instead of writing it.
+	// It takes a field of its own because an unset value already means
+	// "leave it alone", so no value could have meant NULL. It wins
+	// outright: setting both this and date_lifted clears.
+	DateLiftedNull *bool
+}
+
+func (b0 LegalHoldPatchRequest_builder) Build() *LegalHoldPatchRequest {
+	m0 := &LegalHoldPatchRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Desc != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Desc = b.Desc
+	}
+	x.xxx_hidden_DateLifted = b.DateLifted
+	if b.DateLiftedNull != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_DateLiftedNull = *b.DateLiftedNull
+	}
+	return m0
+}
+
+type LegalHoldApplyRequest struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref   *LegalHoldRef          `protobuf:"bytes,1,opt,name=ref"`
+	xxx_hidden_Patch *patchpb.Patch         `protobuf:"bytes,2,opt,name=patch"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LegalHoldApplyRequest) Reset() {
+	*x = LegalHoldApplyRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldApplyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldApplyRequest) ProtoMessage() {}
+
+func (x *LegalHoldApplyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldApplyRequest) GetRef() *LegalHoldRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LegalHoldApplyRequest) GetPatch() *patchpb.Patch {
+	if x != nil {
+		return x.xxx_hidden_Patch
+	}
+	return nil
+}
+
+func (x *LegalHoldApplyRequest) SetRef(v *LegalHoldRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LegalHoldApplyRequest) SetPatch(v *patchpb.Patch) {
+	x.xxx_hidden_Patch = v
+}
+
+func (x *LegalHoldApplyRequest) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LegalHoldApplyRequest) HasPatch() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Patch != nil
+}
+
+func (x *LegalHoldApplyRequest) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+func (x *LegalHoldApplyRequest) ClearPatch() {
+	x.xxx_hidden_Patch = nil
+}
+
+type LegalHoldApplyRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref   *LegalHoldRef
+	Patch *patchpb.Patch
+}
+
+func (b0 LegalHoldApplyRequest_builder) Build() *LegalHoldApplyRequest {
+	m0 := &LegalHoldApplyRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	x.xxx_hidden_Patch = b.Patch
+	return m0
+}
+
+type LegalHoldEraseResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Erased      bool                   `protobuf:"varint,1,opt,name=erased"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *LegalHoldEraseResponse) Reset() {
+	*x = LegalHoldEraseResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldEraseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldEraseResponse) ProtoMessage() {}
+
+func (x *LegalHoldEraseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldEraseResponse) GetErased() bool {
+	if x != nil {
+		return x.xxx_hidden_Erased
+	}
+	return false
+}
+
+func (x *LegalHoldEraseResponse) SetErased(v bool) {
+	x.xxx_hidden_Erased = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *LegalHoldEraseResponse) HasErased() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *LegalHoldEraseResponse) ClearErased() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Erased = false
+}
+
+type LegalHoldEraseResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Erased is whether this call is the one that erased the row.
+	//
+	// False for a row that was already gone, was never there, or is out
+	// of this caller's reach -- which are one answer on purpose, and the
+	// reason the RPC does not fail instead.
+	Erased *bool
+}
+
+func (b0 LegalHoldEraseResponse_builder) Build() *LegalHoldEraseResponse {
+	m0 := &LegalHoldEraseResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Erased != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Erased = *b.Erased
+	}
+	return m0
+}
+
+type LegalHoldListRequest struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Filters *[]*LegalHoldFilter    `protobuf:"bytes,1,rep,name=filters"`
+	xxx_hidden_Size    int32                  `protobuf:"varint,2,opt,name=size"`
+	xxx_hidden_After   string                 `protobuf:"bytes,3,opt,name=after"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *LegalHoldListRequest) Reset() {
+	*x = LegalHoldListRequest{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldListRequest) ProtoMessage() {}
+
+func (x *LegalHoldListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldListRequest) GetFilters() []*LegalHoldFilter {
+	if x != nil {
+		if x.xxx_hidden_Filters != nil {
+			return *x.xxx_hidden_Filters
+		}
+	}
+	return nil
+}
+
+func (x *LegalHoldListRequest) GetSize() int32 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *LegalHoldListRequest) GetAfter() string {
+	if x != nil {
+		return x.xxx_hidden_After
+	}
+	return ""
+}
+
+func (x *LegalHoldListRequest) SetFilters(v []*LegalHoldFilter) {
+	x.xxx_hidden_Filters = &v
+}
+
+func (x *LegalHoldListRequest) SetSize(v int32) {
+	x.xxx_hidden_Size = v
+}
+
+func (x *LegalHoldListRequest) SetAfter(v string) {
+	x.xxx_hidden_After = v
+}
+
+type LegalHoldListRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Bounded because the work is: each filter is a predicate in the same query,
+	// so this is what says how much of the database one request may read.
+	Filters []*LegalHoldFilter
+	// How many to answer with. Nothing said is what the schema declared, and more
+	// than the cap is the cap -- a caller asking for more than there is meant no
+	// harm, so it is not an error and it is not the whole table either.
+	Size int32
+	// Where to carry on from: the "next" of the answer before. It names the last
+	// row of that page rather than counting rows from the start, so a row added
+	// ahead of the page does not shift it and a caller reading through never sees
+	// one twice or misses one.
+	After string
+}
+
+func (b0 LegalHoldListRequest_builder) Build() *LegalHoldListRequest {
+	m0 := &LegalHoldListRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Filters = &b.Filters
+	x.xxx_hidden_Size = b.Size
+	x.xxx_hidden_After = b.After
+	return m0
+}
+
+type LegalHoldListResponse struct {
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Items *[]*LegalHold          `protobuf:"bytes,1,rep,name=items"`
+	xxx_hidden_Next  string                 `protobuf:"bytes,2,opt,name=next"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LegalHoldListResponse) Reset() {
+	*x = LegalHoldListResponse{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldListResponse) ProtoMessage() {}
+
+func (x *LegalHoldListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldListResponse) GetItems() []*LegalHold {
+	if x != nil {
+		if x.xxx_hidden_Items != nil {
+			return *x.xxx_hidden_Items
+		}
+	}
+	return nil
+}
+
+func (x *LegalHoldListResponse) GetNext() string {
+	if x != nil {
+		return x.xxx_hidden_Next
+	}
+	return ""
+}
+
+func (x *LegalHoldListResponse) SetItems(v []*LegalHold) {
+	x.xxx_hidden_Items = &v
+}
+
+func (x *LegalHoldListResponse) SetNext(v string) {
+	x.xxx_hidden_Next = v
+}
+
+type LegalHoldListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Items []*LegalHold
+	// What to ask for next, and empty when this was the last of them.
+	//
+	// Empty means there is no more *for now*: a list is read as it is, and one
+	// that has grown since answers a fresh call. It is not empty merely because
+	// the page came back short -- a page is short when the last row of it was the
+	// last row there was, which is a thing the server can only know by having
+	// looked.
+	Next string
+}
+
+func (b0 LegalHoldListResponse_builder) Build() *LegalHoldListResponse {
+	m0 := &LegalHoldListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Items = &b.Items
+	x.xxx_hidden_Next = b.Next
+	return m0
+}
+
+type LegalHoldFilter struct {
+	state          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ref *LegalHoldRef          `protobuf:"bytes,1,opt,name=ref"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LegalHoldFilter) Reset() {
+	*x = LegalHoldFilter{}
+	mi := &file_rove_ops_svc_g_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LegalHoldFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LegalHoldFilter) ProtoMessage() {}
+
+func (x *LegalHoldFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_rove_ops_svc_g_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *LegalHoldFilter) GetRef() *LegalHoldRef {
+	if x != nil {
+		return x.xxx_hidden_Ref
+	}
+	return nil
+}
+
+func (x *LegalHoldFilter) SetRef(v *LegalHoldRef) {
+	x.xxx_hidden_Ref = v
+}
+
+func (x *LegalHoldFilter) HasRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Ref != nil
+}
+
+func (x *LegalHoldFilter) ClearRef() {
+	x.xxx_hidden_Ref = nil
+}
+
+type LegalHoldFilter_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Ref *LegalHoldRef
+}
+
+func (b0 LegalHoldFilter_builder) Build() *LegalHoldFilter {
+	m0 := &LegalHoldFilter{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ref = b.Ref
+	return m0
+}
+
 var File_rove_ops_svc_g_proto protoreflect.FileDescriptor
 
 const file_rove_ops_svc_g_proto_rawDesc = "" +
@@ -3510,7 +6192,107 @@ const file_rove_ops_svc_g_proto_rawDesc = "" +
 	"\x04next\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04next\"Q\n" +
 	"\x13UsageSnapshotFilter\x12(\n" +
 	"\x03ref\x18\x01 \x01(\v2\x16.rove.UsageSnapshotRefR\x03ref\x12\x10\n" +
-	"\x03day\x18\x02 \x01(\tR\x03day2\xa6\x04\n" +
+	"\x03day\x18\x02 \x01(\tR\x03day\"\xf9\x02\n" +
+	"\x18TenantContractAddRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
+	"\x04name\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
+	"\x04desc\x18\x06 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04desc\x12\"\n" +
+	"\tview_days\x18\b \x01(\rB\x05\xaa\x01\x02\b\x02R\bviewDays\x12\"\n" +
+	"\tkeep_days\x18\t \x01(\rB\x05\xaa\x01\x02\b\x02R\bkeepDays\x12$\n" +
+	"\n" +
+	"grace_days\x18\n" +
+	" \x01(\rB\x05\xaa\x01\x02\b\x02R\tgraceDays\x12A\n" +
+	"\x0edate_effective\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\rdateEffective\x12=\n" +
+	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\"y\n" +
+	"\x18TenantContractGetRequest\x12)\n" +
+	"\x03ref\x18\x01 \x01(\v2\x17.rove.TenantContractRefR\x03ref\x122\n" +
+	"\x06select\x18\x02 \x01(\v2\x1a.rove.TenantContractSelectR\x06select\",\n" +
+	"\x11TenantContractRef\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\fH\x00R\x02idB\x05\n" +
+	"\x03key\"\xc0\x02\n" +
+	"\x14TenantContractSelect\x12\x10\n" +
+	"\x03all\x18\x01 \x01(\bR\x03all\x12*\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x12.rove.TenantSelectR\x06tenant\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\bR\x04name\x12\x12\n" +
+	"\x04desc\x18\x06 \x01(\bR\x04desc\x12\x1b\n" +
+	"\tview_days\x18\b \x01(\bR\bviewDays\x12\x1b\n" +
+	"\tkeep_days\x18\t \x01(\bR\bkeepDays\x12\x1d\n" +
+	"\n" +
+	"grace_days\x18\n" +
+	" \x01(\bR\tgraceDays\x12%\n" +
+	"\x0edate_effective\x18\v \x01(\bR\rdateEffective\x12\x1f\n" +
+	"\vdate_erased\x18\x0e \x01(\bR\n" +
+	"dateErased\x12!\n" +
+	"\fdate_created\x18\x0f \x01(\bR\vdateCreated\"\x8b\x02\n" +
+	"\x1aTenantContractPatchRequest\x12)\n" +
+	"\x03ref\x18\x01 \x01(\v2\x17.rove.TenantContractRefR\x03ref\x12\x12\n" +
+	"\x04name\x18\n" +
+	" \x01(\tR\x04name\x12\x12\n" +
+	"\x04desc\x18\f \x01(\tR\x04desc\x12\x1b\n" +
+	"\tview_days\x18\x10 \x01(\rR\bviewDays\x12\x1b\n" +
+	"\tkeep_days\x18\x12 \x01(\rR\bkeepDays\x12\x1d\n" +
+	"\n" +
+	"grace_days\x18\x14 \x01(\rR\tgraceDays\x12A\n" +
+	"\x0edate_effective\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampR\rdateEffective\"k\n" +
+	"\x1aTenantContractApplyRequest\x12)\n" +
+	"\x03ref\x18\x01 \x01(\v2\x17.rove.TenantContractRefR\x03ref\x12\"\n" +
+	"\x05patch\x18\x02 \x01(\v2\f.patch.PatchR\x05patch\"5\n" +
+	"\x1bTenantContractEraseResponse\x12\x16\n" +
+	"\x06erased\x18\x01 \x01(\bR\x06erased\"\x89\x01\n" +
+	"\x19TenantContractListRequest\x124\n" +
+	"\afilters\x18\x01 \x03(\v2\x1a.rove.TenantContractFilterR\afilters\x12\x19\n" +
+	"\x04size\x18\x02 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x04size\x12\x1b\n" +
+	"\x05after\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05after\"c\n" +
+	"\x1aTenantContractListResponse\x12*\n" +
+	"\x05items\x18\x01 \x03(\v2\x14.rove.TenantContractR\x05items\x12\x19\n" +
+	"\x04next\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04next\"A\n" +
+	"\x14TenantContractFilter\x12)\n" +
+	"\x03ref\x18\x01 \x01(\v2\x17.rove.TenantContractRefR\x03ref\"\x80\x02\n" +
+	"\x13LegalHoldAddRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\fR\x02id\x12'\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x0f.rove.TenantRefR\x06tenant\x12\x19\n" +
+	"\x04name\x18\x05 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
+	"\x04desc\x18\x06 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04desc\x12;\n" +
+	"\vdate_lifted\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"dateLifted\x12=\n" +
+	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\vdateCreated\"j\n" +
+	"\x13LegalHoldGetRequest\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.LegalHoldRefR\x03ref\x12-\n" +
+	"\x06select\x18\x02 \x01(\v2\x15.rove.LegalHoldSelectR\x06select\"'\n" +
+	"\fLegalHoldRef\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\fH\x00R\x02idB\x05\n" +
+	"\x03key\"\xbb\x01\n" +
+	"\x0fLegalHoldSelect\x12\x10\n" +
+	"\x03all\x18\x01 \x01(\bR\x03all\x12*\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x12.rove.TenantSelectR\x06tenant\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\bR\x04name\x12\x12\n" +
+	"\x04desc\x18\x06 \x01(\bR\x04desc\x12\x1f\n" +
+	"\vdate_lifted\x18\b \x01(\bR\n" +
+	"dateLifted\x12!\n" +
+	"\fdate_created\x18\x0f \x01(\bR\vdateCreated\"\xcc\x01\n" +
+	"\x15LegalHoldPatchRequest\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.LegalHoldRefR\x03ref\x12\x12\n" +
+	"\x04name\x18\n" +
+	" \x01(\tR\x04name\x12\x12\n" +
+	"\x04desc\x18\f \x01(\tR\x04desc\x12;\n" +
+	"\vdate_lifted\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"dateLifted\x12(\n" +
+	"\x10date_lifted_null\x18\x11 \x01(\bR\x0edateLiftedNull\"a\n" +
+	"\x15LegalHoldApplyRequest\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.LegalHoldRefR\x03ref\x12\"\n" +
+	"\x05patch\x18\x02 \x01(\v2\f.patch.PatchR\x05patch\"0\n" +
+	"\x16LegalHoldEraseResponse\x12\x16\n" +
+	"\x06erased\x18\x01 \x01(\bR\x06erased\"\x7f\n" +
+	"\x14LegalHoldListRequest\x12/\n" +
+	"\afilters\x18\x01 \x03(\v2\x15.rove.LegalHoldFilterR\afilters\x12\x19\n" +
+	"\x04size\x18\x02 \x01(\x05B\x05\xaa\x01\x02\b\x02R\x04size\x12\x1b\n" +
+	"\x05after\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x05after\"Y\n" +
+	"\x15LegalHoldListResponse\x12%\n" +
+	"\x05items\x18\x01 \x03(\v2\x0f.rove.LegalHoldR\x05items\x12\x19\n" +
+	"\x04next\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04next\"7\n" +
+	"\x0fLegalHoldFilter\x12$\n" +
+	"\x03ref\x18\x01 \x01(\v2\x12.rove.LegalHoldRefR\x03ref2\xa6\x04\n" +
 	"\x13NotificationService\x127\n" +
 	"\x03Add\x12\x1c.rove.NotificationAddRequest\x1a\x12.rove.Notification\x127\n" +
 	"\x03Get\x12\x1c.rove.NotificationGetRequest\x1a\x12.rove.Notification\x12;\n" +
@@ -3526,9 +6308,23 @@ const file_rove_ops_svc_g_proto_rawDesc = "" +
 	"\x05Patch\x12\x1f.rove.UsageSnapshotPatchRequest\x1a\x13.rove.UsageSnapshot\x12=\n" +
 	"\x05Apply\x12\x1f.rove.UsageSnapshotApplyRequest\x1a\x13.rove.UsageSnapshot\x12A\n" +
 	"\x05Erase\x12\x16.rove.UsageSnapshotRef\x1a .rove.UsageSnapshotEraseResponse\x12G\n" +
-	"\x04List\x12\x1e.rove.UsageSnapshotListRequest\x1a\x1f.rove.UsageSnapshotListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
+	"\x04List\x12\x1e.rove.UsageSnapshotListRequest\x1a\x1f.rove.UsageSnapshotListResponse2\xa3\x03\n" +
+	"\x15TenantContractService\x12;\n" +
+	"\x03Add\x12\x1e.rove.TenantContractAddRequest\x1a\x14.rove.TenantContract\x12;\n" +
+	"\x03Get\x12\x1e.rove.TenantContractGetRequest\x1a\x14.rove.TenantContract\x12?\n" +
+	"\x05Patch\x12 .rove.TenantContractPatchRequest\x1a\x14.rove.TenantContract\x12?\n" +
+	"\x05Apply\x12 .rove.TenantContractApplyRequest\x1a\x14.rove.TenantContract\x12C\n" +
+	"\x05Erase\x12\x17.rove.TenantContractRef\x1a!.rove.TenantContractEraseResponse\x12I\n" +
+	"\x04List\x12\x1f.rove.TenantContractListRequest\x1a .rove.TenantContractListResponse2\xe2\x02\n" +
+	"\x10LegalHoldService\x121\n" +
+	"\x03Add\x12\x19.rove.LegalHoldAddRequest\x1a\x0f.rove.LegalHold\x121\n" +
+	"\x03Get\x12\x19.rove.LegalHoldGetRequest\x1a\x0f.rove.LegalHold\x125\n" +
+	"\x05Patch\x12\x1b.rove.LegalHoldPatchRequest\x1a\x0f.rove.LegalHold\x125\n" +
+	"\x05Apply\x12\x1b.rove.LegalHoldApplyRequest\x1a\x0f.rove.LegalHold\x129\n" +
+	"\x05Erase\x12\x12.rove.LegalHoldRef\x1a\x1c.rove.LegalHoldEraseResponse\x12?\n" +
+	"\x04List\x12\x1a.rove.LegalHoldListRequest\x1a\x1b.rove.LegalHoldListResponseB\x1aZ\x18github.com/lesomnus/roveb\beditionsp\xe8\a"
 
-var file_rove_ops_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_rove_ops_svc_g_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
 var file_rove_ops_svc_g_proto_goTypes = []any{
 	(*NotificationAddRequest)(nil),       // 0: rove.NotificationAddRequest
 	(*NotificationGetRequest)(nil),       // 1: rove.NotificationGetRequest
@@ -3555,85 +6351,157 @@ var file_rove_ops_svc_g_proto_goTypes = []any{
 	(*UsageSnapshotListRequest)(nil),     // 22: rove.UsageSnapshotListRequest
 	(*UsageSnapshotListResponse)(nil),    // 23: rove.UsageSnapshotListResponse
 	(*UsageSnapshotFilter)(nil),          // 24: rove.UsageSnapshotFilter
-	nil,                                  // 25: rove.UsageSnapshotAddRequest.MetricsEntry
-	nil,                                  // 26: rove.UsageSnapshotPatchRequest.MetricsEntry
-	(*TenantRef)(nil),                    // 27: rove.TenantRef
-	(*HolderRef)(nil),                    // 28: rove.HolderRef
-	(*timestamppb.Timestamp)(nil),        // 29: google.protobuf.Timestamp
-	(*TenantSelect)(nil),                 // 30: rove.TenantSelect
-	(*HolderSelect)(nil),                 // 31: rove.HolderSelect
-	(*patchpb.Patch)(nil),                // 32: patch.Patch
-	(*Notification)(nil),                 // 33: rove.Notification
-	(*UsageSnapshot)(nil),                // 34: rove.UsageSnapshot
+	(*TenantContractAddRequest)(nil),     // 25: rove.TenantContractAddRequest
+	(*TenantContractGetRequest)(nil),     // 26: rove.TenantContractGetRequest
+	(*TenantContractRef)(nil),            // 27: rove.TenantContractRef
+	(*TenantContractSelect)(nil),         // 28: rove.TenantContractSelect
+	(*TenantContractPatchRequest)(nil),   // 29: rove.TenantContractPatchRequest
+	(*TenantContractApplyRequest)(nil),   // 30: rove.TenantContractApplyRequest
+	(*TenantContractEraseResponse)(nil),  // 31: rove.TenantContractEraseResponse
+	(*TenantContractListRequest)(nil),    // 32: rove.TenantContractListRequest
+	(*TenantContractListResponse)(nil),   // 33: rove.TenantContractListResponse
+	(*TenantContractFilter)(nil),         // 34: rove.TenantContractFilter
+	(*LegalHoldAddRequest)(nil),          // 35: rove.LegalHoldAddRequest
+	(*LegalHoldGetRequest)(nil),          // 36: rove.LegalHoldGetRequest
+	(*LegalHoldRef)(nil),                 // 37: rove.LegalHoldRef
+	(*LegalHoldSelect)(nil),              // 38: rove.LegalHoldSelect
+	(*LegalHoldPatchRequest)(nil),        // 39: rove.LegalHoldPatchRequest
+	(*LegalHoldApplyRequest)(nil),        // 40: rove.LegalHoldApplyRequest
+	(*LegalHoldEraseResponse)(nil),       // 41: rove.LegalHoldEraseResponse
+	(*LegalHoldListRequest)(nil),         // 42: rove.LegalHoldListRequest
+	(*LegalHoldListResponse)(nil),        // 43: rove.LegalHoldListResponse
+	(*LegalHoldFilter)(nil),              // 44: rove.LegalHoldFilter
+	nil,                                  // 45: rove.UsageSnapshotAddRequest.MetricsEntry
+	nil,                                  // 46: rove.UsageSnapshotPatchRequest.MetricsEntry
+	(*TenantRef)(nil),                    // 47: rove.TenantRef
+	(*HolderRef)(nil),                    // 48: rove.HolderRef
+	(*timestamppb.Timestamp)(nil),        // 49: google.protobuf.Timestamp
+	(*TenantSelect)(nil),                 // 50: rove.TenantSelect
+	(*HolderSelect)(nil),                 // 51: rove.HolderSelect
+	(*patchpb.Patch)(nil),                // 52: patch.Patch
+	(*Notification)(nil),                 // 53: rove.Notification
+	(*UsageSnapshot)(nil),                // 54: rove.UsageSnapshot
+	(*TenantContract)(nil),               // 55: rove.TenantContract
+	(*LegalHold)(nil),                    // 56: rove.LegalHold
 }
 var file_rove_ops_svc_g_proto_depIdxs = []int32{
-	27, // 0: rove.NotificationAddRequest.tenant:type_name -> rove.TenantRef
-	28, // 1: rove.NotificationAddRequest.holder:type_name -> rove.HolderRef
-	29, // 2: rove.NotificationAddRequest.read_at:type_name -> google.protobuf.Timestamp
-	29, // 3: rove.NotificationAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	47, // 0: rove.NotificationAddRequest.tenant:type_name -> rove.TenantRef
+	48, // 1: rove.NotificationAddRequest.holder:type_name -> rove.HolderRef
+	49, // 2: rove.NotificationAddRequest.read_at:type_name -> google.protobuf.Timestamp
+	49, // 3: rove.NotificationAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	2,  // 4: rove.NotificationGetRequest.ref:type_name -> rove.NotificationRef
 	3,  // 5: rove.NotificationGetRequest.select:type_name -> rove.NotificationSelect
-	30, // 6: rove.NotificationSelect.tenant:type_name -> rove.TenantSelect
-	31, // 7: rove.NotificationSelect.holder:type_name -> rove.HolderSelect
+	50, // 6: rove.NotificationSelect.tenant:type_name -> rove.TenantSelect
+	51, // 7: rove.NotificationSelect.holder:type_name -> rove.HolderSelect
 	2,  // 8: rove.NotificationPatchRequest.ref:type_name -> rove.NotificationRef
-	29, // 9: rove.NotificationPatchRequest.read_at:type_name -> google.protobuf.Timestamp
-	29, // 10: rove.NotificationPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	49, // 9: rove.NotificationPatchRequest.read_at:type_name -> google.protobuf.Timestamp
+	49, // 10: rove.NotificationPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 11: rove.NotificationApplyRequest.ref:type_name -> rove.NotificationRef
-	32, // 12: rove.NotificationApplyRequest.patch:type_name -> patch.Patch
+	52, // 12: rove.NotificationApplyRequest.patch:type_name -> patch.Patch
 	9,  // 13: rove.NotificationListRequest.filters:type_name -> rove.NotificationFilter
-	33, // 14: rove.NotificationListResponse.items:type_name -> rove.Notification
+	53, // 14: rove.NotificationListResponse.items:type_name -> rove.Notification
 	2,  // 15: rove.NotificationFilter.ref:type_name -> rove.NotificationRef
-	28, // 16: rove.NotificationFilter.holder:type_name -> rove.HolderRef
-	33, // 17: rove.NotificationInboxResponse.items:type_name -> rove.Notification
-	27, // 18: rove.UsageSnapshotAddRequest.tenant:type_name -> rove.TenantRef
-	25, // 19: rove.UsageSnapshotAddRequest.metrics:type_name -> rove.UsageSnapshotAddRequest.MetricsEntry
-	29, // 20: rove.UsageSnapshotAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	48, // 16: rove.NotificationFilter.holder:type_name -> rove.HolderRef
+	53, // 17: rove.NotificationInboxResponse.items:type_name -> rove.Notification
+	47, // 18: rove.UsageSnapshotAddRequest.tenant:type_name -> rove.TenantRef
+	45, // 19: rove.UsageSnapshotAddRequest.metrics:type_name -> rove.UsageSnapshotAddRequest.MetricsEntry
+	49, // 20: rove.UsageSnapshotAddRequest.date_created:type_name -> google.protobuf.Timestamp
 	16, // 21: rove.UsageSnapshotGetRequest.ref:type_name -> rove.UsageSnapshotRef
 	18, // 22: rove.UsageSnapshotGetRequest.select:type_name -> rove.UsageSnapshotSelect
 	17, // 23: rove.UsageSnapshotRef.day:type_name -> rove.UsageSnapshotRefByDay
-	27, // 24: rove.UsageSnapshotRefByDay.tenant:type_name -> rove.TenantRef
-	30, // 25: rove.UsageSnapshotSelect.tenant:type_name -> rove.TenantSelect
+	47, // 24: rove.UsageSnapshotRefByDay.tenant:type_name -> rove.TenantRef
+	50, // 25: rove.UsageSnapshotSelect.tenant:type_name -> rove.TenantSelect
 	16, // 26: rove.UsageSnapshotPatchRequest.ref:type_name -> rove.UsageSnapshotRef
-	26, // 27: rove.UsageSnapshotPatchRequest.metrics:type_name -> rove.UsageSnapshotPatchRequest.MetricsEntry
-	29, // 28: rove.UsageSnapshotPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	46, // 27: rove.UsageSnapshotPatchRequest.metrics:type_name -> rove.UsageSnapshotPatchRequest.MetricsEntry
+	49, // 28: rove.UsageSnapshotPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
 	16, // 29: rove.UsageSnapshotApplyRequest.ref:type_name -> rove.UsageSnapshotRef
-	32, // 30: rove.UsageSnapshotApplyRequest.patch:type_name -> patch.Patch
+	52, // 30: rove.UsageSnapshotApplyRequest.patch:type_name -> patch.Patch
 	24, // 31: rove.UsageSnapshotListRequest.filters:type_name -> rove.UsageSnapshotFilter
-	34, // 32: rove.UsageSnapshotListResponse.items:type_name -> rove.UsageSnapshot
+	54, // 32: rove.UsageSnapshotListResponse.items:type_name -> rove.UsageSnapshot
 	16, // 33: rove.UsageSnapshotFilter.ref:type_name -> rove.UsageSnapshotRef
-	0,  // 34: rove.NotificationService.Add:input_type -> rove.NotificationAddRequest
-	1,  // 35: rove.NotificationService.Get:input_type -> rove.NotificationGetRequest
-	4,  // 36: rove.NotificationService.Patch:input_type -> rove.NotificationPatchRequest
-	5,  // 37: rove.NotificationService.Apply:input_type -> rove.NotificationApplyRequest
-	2,  // 38: rove.NotificationService.Erase:input_type -> rove.NotificationRef
-	7,  // 39: rove.NotificationService.List:input_type -> rove.NotificationListRequest
-	10, // 40: rove.NotificationService.Inbox:input_type -> rove.NotificationInboxRequest
-	12, // 41: rove.NotificationService.MarkRead:input_type -> rove.NotificationMarkReadRequest
-	14, // 42: rove.UsageSnapshotService.Add:input_type -> rove.UsageSnapshotAddRequest
-	15, // 43: rove.UsageSnapshotService.Get:input_type -> rove.UsageSnapshotGetRequest
-	19, // 44: rove.UsageSnapshotService.Patch:input_type -> rove.UsageSnapshotPatchRequest
-	20, // 45: rove.UsageSnapshotService.Apply:input_type -> rove.UsageSnapshotApplyRequest
-	16, // 46: rove.UsageSnapshotService.Erase:input_type -> rove.UsageSnapshotRef
-	22, // 47: rove.UsageSnapshotService.List:input_type -> rove.UsageSnapshotListRequest
-	33, // 48: rove.NotificationService.Add:output_type -> rove.Notification
-	33, // 49: rove.NotificationService.Get:output_type -> rove.Notification
-	33, // 50: rove.NotificationService.Patch:output_type -> rove.Notification
-	33, // 51: rove.NotificationService.Apply:output_type -> rove.Notification
-	6,  // 52: rove.NotificationService.Erase:output_type -> rove.NotificationEraseResponse
-	8,  // 53: rove.NotificationService.List:output_type -> rove.NotificationListResponse
-	11, // 54: rove.NotificationService.Inbox:output_type -> rove.NotificationInboxResponse
-	13, // 55: rove.NotificationService.MarkRead:output_type -> rove.NotificationMarkReadResponse
-	34, // 56: rove.UsageSnapshotService.Add:output_type -> rove.UsageSnapshot
-	34, // 57: rove.UsageSnapshotService.Get:output_type -> rove.UsageSnapshot
-	34, // 58: rove.UsageSnapshotService.Patch:output_type -> rove.UsageSnapshot
-	34, // 59: rove.UsageSnapshotService.Apply:output_type -> rove.UsageSnapshot
-	21, // 60: rove.UsageSnapshotService.Erase:output_type -> rove.UsageSnapshotEraseResponse
-	23, // 61: rove.UsageSnapshotService.List:output_type -> rove.UsageSnapshotListResponse
-	48, // [48:62] is the sub-list for method output_type
-	34, // [34:48] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	47, // 34: rove.TenantContractAddRequest.tenant:type_name -> rove.TenantRef
+	49, // 35: rove.TenantContractAddRequest.date_effective:type_name -> google.protobuf.Timestamp
+	49, // 36: rove.TenantContractAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	27, // 37: rove.TenantContractGetRequest.ref:type_name -> rove.TenantContractRef
+	28, // 38: rove.TenantContractGetRequest.select:type_name -> rove.TenantContractSelect
+	50, // 39: rove.TenantContractSelect.tenant:type_name -> rove.TenantSelect
+	27, // 40: rove.TenantContractPatchRequest.ref:type_name -> rove.TenantContractRef
+	49, // 41: rove.TenantContractPatchRequest.date_effective:type_name -> google.protobuf.Timestamp
+	27, // 42: rove.TenantContractApplyRequest.ref:type_name -> rove.TenantContractRef
+	52, // 43: rove.TenantContractApplyRequest.patch:type_name -> patch.Patch
+	34, // 44: rove.TenantContractListRequest.filters:type_name -> rove.TenantContractFilter
+	55, // 45: rove.TenantContractListResponse.items:type_name -> rove.TenantContract
+	27, // 46: rove.TenantContractFilter.ref:type_name -> rove.TenantContractRef
+	47, // 47: rove.LegalHoldAddRequest.tenant:type_name -> rove.TenantRef
+	49, // 48: rove.LegalHoldAddRequest.date_lifted:type_name -> google.protobuf.Timestamp
+	49, // 49: rove.LegalHoldAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	37, // 50: rove.LegalHoldGetRequest.ref:type_name -> rove.LegalHoldRef
+	38, // 51: rove.LegalHoldGetRequest.select:type_name -> rove.LegalHoldSelect
+	50, // 52: rove.LegalHoldSelect.tenant:type_name -> rove.TenantSelect
+	37, // 53: rove.LegalHoldPatchRequest.ref:type_name -> rove.LegalHoldRef
+	49, // 54: rove.LegalHoldPatchRequest.date_lifted:type_name -> google.protobuf.Timestamp
+	37, // 55: rove.LegalHoldApplyRequest.ref:type_name -> rove.LegalHoldRef
+	52, // 56: rove.LegalHoldApplyRequest.patch:type_name -> patch.Patch
+	44, // 57: rove.LegalHoldListRequest.filters:type_name -> rove.LegalHoldFilter
+	56, // 58: rove.LegalHoldListResponse.items:type_name -> rove.LegalHold
+	37, // 59: rove.LegalHoldFilter.ref:type_name -> rove.LegalHoldRef
+	0,  // 60: rove.NotificationService.Add:input_type -> rove.NotificationAddRequest
+	1,  // 61: rove.NotificationService.Get:input_type -> rove.NotificationGetRequest
+	4,  // 62: rove.NotificationService.Patch:input_type -> rove.NotificationPatchRequest
+	5,  // 63: rove.NotificationService.Apply:input_type -> rove.NotificationApplyRequest
+	2,  // 64: rove.NotificationService.Erase:input_type -> rove.NotificationRef
+	7,  // 65: rove.NotificationService.List:input_type -> rove.NotificationListRequest
+	10, // 66: rove.NotificationService.Inbox:input_type -> rove.NotificationInboxRequest
+	12, // 67: rove.NotificationService.MarkRead:input_type -> rove.NotificationMarkReadRequest
+	14, // 68: rove.UsageSnapshotService.Add:input_type -> rove.UsageSnapshotAddRequest
+	15, // 69: rove.UsageSnapshotService.Get:input_type -> rove.UsageSnapshotGetRequest
+	19, // 70: rove.UsageSnapshotService.Patch:input_type -> rove.UsageSnapshotPatchRequest
+	20, // 71: rove.UsageSnapshotService.Apply:input_type -> rove.UsageSnapshotApplyRequest
+	16, // 72: rove.UsageSnapshotService.Erase:input_type -> rove.UsageSnapshotRef
+	22, // 73: rove.UsageSnapshotService.List:input_type -> rove.UsageSnapshotListRequest
+	25, // 74: rove.TenantContractService.Add:input_type -> rove.TenantContractAddRequest
+	26, // 75: rove.TenantContractService.Get:input_type -> rove.TenantContractGetRequest
+	29, // 76: rove.TenantContractService.Patch:input_type -> rove.TenantContractPatchRequest
+	30, // 77: rove.TenantContractService.Apply:input_type -> rove.TenantContractApplyRequest
+	27, // 78: rove.TenantContractService.Erase:input_type -> rove.TenantContractRef
+	32, // 79: rove.TenantContractService.List:input_type -> rove.TenantContractListRequest
+	35, // 80: rove.LegalHoldService.Add:input_type -> rove.LegalHoldAddRequest
+	36, // 81: rove.LegalHoldService.Get:input_type -> rove.LegalHoldGetRequest
+	39, // 82: rove.LegalHoldService.Patch:input_type -> rove.LegalHoldPatchRequest
+	40, // 83: rove.LegalHoldService.Apply:input_type -> rove.LegalHoldApplyRequest
+	37, // 84: rove.LegalHoldService.Erase:input_type -> rove.LegalHoldRef
+	42, // 85: rove.LegalHoldService.List:input_type -> rove.LegalHoldListRequest
+	53, // 86: rove.NotificationService.Add:output_type -> rove.Notification
+	53, // 87: rove.NotificationService.Get:output_type -> rove.Notification
+	53, // 88: rove.NotificationService.Patch:output_type -> rove.Notification
+	53, // 89: rove.NotificationService.Apply:output_type -> rove.Notification
+	6,  // 90: rove.NotificationService.Erase:output_type -> rove.NotificationEraseResponse
+	8,  // 91: rove.NotificationService.List:output_type -> rove.NotificationListResponse
+	11, // 92: rove.NotificationService.Inbox:output_type -> rove.NotificationInboxResponse
+	13, // 93: rove.NotificationService.MarkRead:output_type -> rove.NotificationMarkReadResponse
+	54, // 94: rove.UsageSnapshotService.Add:output_type -> rove.UsageSnapshot
+	54, // 95: rove.UsageSnapshotService.Get:output_type -> rove.UsageSnapshot
+	54, // 96: rove.UsageSnapshotService.Patch:output_type -> rove.UsageSnapshot
+	54, // 97: rove.UsageSnapshotService.Apply:output_type -> rove.UsageSnapshot
+	21, // 98: rove.UsageSnapshotService.Erase:output_type -> rove.UsageSnapshotEraseResponse
+	23, // 99: rove.UsageSnapshotService.List:output_type -> rove.UsageSnapshotListResponse
+	55, // 100: rove.TenantContractService.Add:output_type -> rove.TenantContract
+	55, // 101: rove.TenantContractService.Get:output_type -> rove.TenantContract
+	55, // 102: rove.TenantContractService.Patch:output_type -> rove.TenantContract
+	55, // 103: rove.TenantContractService.Apply:output_type -> rove.TenantContract
+	31, // 104: rove.TenantContractService.Erase:output_type -> rove.TenantContractEraseResponse
+	33, // 105: rove.TenantContractService.List:output_type -> rove.TenantContractListResponse
+	56, // 106: rove.LegalHoldService.Add:output_type -> rove.LegalHold
+	56, // 107: rove.LegalHoldService.Get:output_type -> rove.LegalHold
+	56, // 108: rove.LegalHoldService.Patch:output_type -> rove.LegalHold
+	56, // 109: rove.LegalHoldService.Apply:output_type -> rove.LegalHold
+	41, // 110: rove.LegalHoldService.Erase:output_type -> rove.LegalHoldEraseResponse
+	43, // 111: rove.LegalHoldService.List:output_type -> rove.LegalHoldListResponse
+	86, // [86:112] is the sub-list for method output_type
+	60, // [60:86] is the sub-list for method input_type
+	60, // [60:60] is the sub-list for extension type_name
+	60, // [60:60] is the sub-list for extension extendee
+	0,  // [0:60] is the sub-list for field type_name
 }
 
 func init() { file_rove_ops_svc_g_proto_init() }
@@ -3651,15 +6519,21 @@ func file_rove_ops_svc_g_proto_init() {
 		(*usageSnapshotRef_Id)(nil),
 		(*usageSnapshotRef_Day)(nil),
 	}
+	file_rove_ops_svc_g_proto_msgTypes[27].OneofWrappers = []any{
+		(*tenantContractRef_Id)(nil),
+	}
+	file_rove_ops_svc_g_proto_msgTypes[37].OneofWrappers = []any{
+		(*legalHoldRef_Id)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_ops_svc_g_proto_rawDesc), len(file_rove_ops_svc_g_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   47,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   4,
 		},
 		GoTypes:           file_rove_ops_svc_g_proto_goTypes,
 		DependencyIndexes: file_rove_ops_svc_g_proto_depIdxs,

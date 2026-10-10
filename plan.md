@@ -157,7 +157,7 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 ### M5 — MVP 마감과 파일럿 (약 2주)
 
 - `UsageSnapshot` spin 루프.
-- trail 보존 설정: Holder·Identity는 `pipa` 이상, 이력 도메인은 제품의 가장 짧은 보존 기간 이하(design 8.2절).
+- trail 보존 설정: Holder·Identity는 `pipa` 이상(`audit.min` 또는 `audit.by`), 이력 도메인은 조직의 계약이 정하는 보존 기간(design 8.2절, `server/retention`).
 - self-host 운영 환경(`deploy/compose`):
   - 서버 준비, 리버스 프록시(ACME, 테넌트 도메인용 on-demand TLS), 공개·운영자 진입점, PostgreSQL.
   - 운영자 진입점은 VPN에서만 닿게 한다.
@@ -265,7 +265,7 @@ Rove에서 우회하고 있지만 payday에서 고치면 우회가 필요 없어
 | [#32](https://github.com/lesomnus/payday/issues/32) | Gate의 엣지 확인에 관한 문서 네 곳이 코드와 다르다 | 코드 기준으로 설계(6장) |
 | [#33](https://github.com/lesomnus/payday/issues/33) | `entschema.Check`가 ent 밖 FK를 거부하고, Plan이 같은 디렉터리의 ent 밖 객체를 지우려 한다 | pg-extra 디렉터리, 복합 FK 대신 트리거 |
 | [#34](https://github.com/lesomnus/payday/issues/34) | 앱 레이어는 부를 수 있고 호출자는 못 부르는 생성 동사를 선언할 방법이 없다 | `seal` 레이어 |
-| [#35](https://github.com/lesomnus/payday/issues/35) | trail 보존에 테넌트 차원이 없고, DB의 trail에서 특정인 정보를 지울 수 없다 | trail 파기를 제품 최단 보존 이하로, 특정인 삭제는 직접 |
+| [#35](https://github.com/lesomnus/payday/issues/35) | trail 보존에 테넌트 차원이 없고, DB의 trail에서 특정인 정보를 지울 수 없다 | 해결됨: payday가 테넌트별로 묻고(`trail.Policy.Tenants`), Rove는 계약과 법적 보존으로 답한다(`server/retention`) |
 | [#36](https://github.com/lesomnus/payday/issues/36) | overlay로 payday 엔터티에 인덱스를 더할 수 없고, 거부 없이 버려진다 | `Identity` 엔터티 |
 | [#37](https://github.com/lesomnus/payday/issues/37) | 클라이언트 store에 오프라인 쓰기 큐가 없다 | Phase 2에 직접 구현 |
 

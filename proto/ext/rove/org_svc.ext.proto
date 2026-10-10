@@ -34,6 +34,12 @@ message PartyMeResponse {
   Party party = 2;
   Tenant tenant = 3;
   string role = 4 [features.field_presence = IMPLICIT];
+
+  // Where the tenant's view window begins (design 8.1): the oldest moment
+  // its history answers about. Absent is all of it.
+  google.protobuf.Timestamp history_since = 5;
+  // How many days back that is, for a person to read. Zero is all of it.
+  uint32 history_days = 6 [features.field_presence = IMPLICIT];
 }
 
 message PartyUpdateRequest {

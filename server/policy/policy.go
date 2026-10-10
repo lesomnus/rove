@@ -84,9 +84,16 @@ var reads = []string{"Get", "List", "Watch"}
 
 func init() {
 	// The register and its history are everybody's to read.
+	//
+	// The time rows -- Placement, Link, Stewardship, Fact -- are read through
+	// the history reads, Timeline, QueryAt and Diff, and not one by one: those
+	// answer within the tenant's view window (design 8.1), and the rows cannot
+	// be narrowed to it where they are kept without hiding them from the
+	// domain layer that supersedes them. The events can, and are; see
+	// `domain.View`.
 	for _, s := range []string{
 		"Asset", "AssetType", "ItemModel", "Attachment", "Label", "TenantDomain",
-		"Placement", "Link", "Stewardship", "Fact", "Event",
+		"Event",
 		"Party", "Tenant",
 		"Bookable", "Reservation", "ReservationItem", "Allocation",
 		"Custody", "CustodyLine",
@@ -155,6 +162,13 @@ func init() {
 	allow(Manager, "PurchaseService", "Add", "Receive")
 
 	allow(Read, "NotificationService", "Inbox", "MarkRead")
+
+	// A tenant's contract and the legal holds on it are the operator's: `rove
+	// contract` and `rove hold` write them, from a shell, and no role here
+	// may. The contract is everybody's to read, since it is what decides how
+	// far back their history goes; a hold is for the people who run the tenant.
+	allow(Read, "TenantContractService", "Get", "List")
+	oversee("LegalHoldService", "Get", "List")
 
 	// A batch is checked per operation, by the same table.
 	Table["/payday.BatchService/Do"] = rule{min: Read}

@@ -116,3 +116,91 @@ func (UsageSnapshot) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "usagesnapshot"},
 	}
 }
+
+type TenantContract struct {
+	ent.Schema
+}
+
+func (TenantContract) Fields() []ent.Field {
+	return []ent.Field{
+		field.Uuid("id").
+			Unique().
+			Immutable(),
+		field.String("name"),
+		field.String("desc"),
+		field.Uint32("view_days"),
+		field.Uint32("keep_days"),
+		field.Uint32("grace_days"),
+		field.Time("date_effective").
+			Optional(),
+		field.Time("date_erased").
+			Nillable().
+			Optional(),
+		field.Time("date_created").
+			Immutable().
+			Optional(),
+		field.Uuid("tenant_id").
+			Immutable(),
+	}
+}
+
+func (TenantContract) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("tenant", Tenant.Type).
+			Unique().
+			Field("tenant_id").
+			Required().
+			Immutable(),
+	}
+}
+
+func (TenantContract) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("date_effective").
+			Edges("tenant"),
+	}
+}
+
+func (TenantContract) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Annotation{Table: "tenantcontract"},
+	}
+}
+
+type LegalHold struct {
+	ent.Schema
+}
+
+func (LegalHold) Fields() []ent.Field {
+	return []ent.Field{
+		field.Uuid("id").
+			Unique().
+			Immutable(),
+		field.String("name"),
+		field.String("desc"),
+		field.Time("date_lifted").
+			Nillable().
+			Optional(),
+		field.Time("date_created").
+			Immutable().
+			Optional(),
+		field.Uuid("tenant_id").
+			Immutable(),
+	}
+}
+
+func (LegalHold) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("tenant", Tenant.Type).
+			Unique().
+			Field("tenant_id").
+			Required().
+			Immutable(),
+	}
+}
+
+func (LegalHold) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Annotation{Table: "legalhold"},
+	}
+}

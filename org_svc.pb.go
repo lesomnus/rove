@@ -2414,13 +2414,15 @@ func (b0 PartyMeRequest_builder) Build() *PartyMeRequest {
 }
 
 type PartyMeResponse struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Holder *Holder                `protobuf:"bytes,1,opt,name=holder"`
-	xxx_hidden_Party  *Party                 `protobuf:"bytes,2,opt,name=party"`
-	xxx_hidden_Tenant *Tenant                `protobuf:"bytes,3,opt,name=tenant"`
-	xxx_hidden_Role   string                 `protobuf:"bytes,4,opt,name=role"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Holder       *Holder                `protobuf:"bytes,1,opt,name=holder"`
+	xxx_hidden_Party        *Party                 `protobuf:"bytes,2,opt,name=party"`
+	xxx_hidden_Tenant       *Tenant                `protobuf:"bytes,3,opt,name=tenant"`
+	xxx_hidden_Role         string                 `protobuf:"bytes,4,opt,name=role"`
+	xxx_hidden_HistorySince *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=history_since,json=historySince"`
+	xxx_hidden_HistoryDays  uint32                 `protobuf:"varint,6,opt,name=history_days,json=historyDays"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *PartyMeResponse) Reset() {
@@ -2476,6 +2478,20 @@ func (x *PartyMeResponse) GetRole() string {
 	return ""
 }
 
+func (x *PartyMeResponse) GetHistorySince() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_HistorySince
+	}
+	return nil
+}
+
+func (x *PartyMeResponse) GetHistoryDays() uint32 {
+	if x != nil {
+		return x.xxx_hidden_HistoryDays
+	}
+	return 0
+}
+
 func (x *PartyMeResponse) SetHolder(v *Holder) {
 	x.xxx_hidden_Holder = v
 }
@@ -2490,6 +2506,14 @@ func (x *PartyMeResponse) SetTenant(v *Tenant) {
 
 func (x *PartyMeResponse) SetRole(v string) {
 	x.xxx_hidden_Role = v
+}
+
+func (x *PartyMeResponse) SetHistorySince(v *timestamppb.Timestamp) {
+	x.xxx_hidden_HistorySince = v
+}
+
+func (x *PartyMeResponse) SetHistoryDays(v uint32) {
+	x.xxx_hidden_HistoryDays = v
 }
 
 func (x *PartyMeResponse) HasHolder() bool {
@@ -2513,6 +2537,13 @@ func (x *PartyMeResponse) HasTenant() bool {
 	return x.xxx_hidden_Tenant != nil
 }
 
+func (x *PartyMeResponse) HasHistorySince() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_HistorySince != nil
+}
+
 func (x *PartyMeResponse) ClearHolder() {
 	x.xxx_hidden_Holder = nil
 }
@@ -2525,6 +2556,10 @@ func (x *PartyMeResponse) ClearTenant() {
 	x.xxx_hidden_Tenant = nil
 }
 
+func (x *PartyMeResponse) ClearHistorySince() {
+	x.xxx_hidden_HistorySince = nil
+}
+
 type PartyMeResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2532,6 +2567,11 @@ type PartyMeResponse_builder struct {
 	Party  *Party
 	Tenant *Tenant
 	Role   string
+	// Where the tenant's view window begins (design 8.1): the oldest moment
+	// its history answers about. Absent is all of it.
+	HistorySince *timestamppb.Timestamp
+	// How many days back that is, for a person to read. Zero is all of it.
+	HistoryDays uint32
 }
 
 func (b0 PartyMeResponse_builder) Build() *PartyMeResponse {
@@ -2542,6 +2582,8 @@ func (b0 PartyMeResponse_builder) Build() *PartyMeResponse {
 	x.xxx_hidden_Party = b.Party
 	x.xxx_hidden_Tenant = b.Tenant
 	x.xxx_hidden_Role = b.Role
+	x.xxx_hidden_HistorySince = b.HistorySince
+	x.xxx_hidden_HistoryDays = b.HistoryDays
 	return m0
 }
 
@@ -5812,12 +5854,14 @@ const file_rove_org_svc_g_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12!\n" +
 	"\x05value\x18\x02 \x01(\v2\v.rove.PartyR\x05value\x12\x1d\n" +
 	"\x06action\x18\x03 \x01(\tB\x05\xaa\x01\x02\b\x02R\x06action\"\x10\n" +
-	"\x0ePartyMeRequest\"\x9b\x01\n" +
+	"\x0ePartyMeRequest\"\x86\x02\n" +
 	"\x0fPartyMeResponse\x12$\n" +
 	"\x06holder\x18\x01 \x01(\v2\f.rove.HolderR\x06holder\x12!\n" +
 	"\x05party\x18\x02 \x01(\v2\v.rove.PartyR\x05party\x12$\n" +
 	"\x06tenant\x18\x03 \x01(\v2\f.rove.TenantR\x06tenant\x12\x19\n" +
-	"\x04role\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04role\"\xa1\x03\n" +
+	"\x04role\x18\x04 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04role\x12?\n" +
+	"\rhistory_since\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\fhistorySince\x12(\n" +
+	"\fhistory_days\x18\x06 \x01(\rB\x05\xaa\x01\x02\b\x02R\vhistoryDays\"\xa1\x03\n" +
 	"\x12PartyUpdateRequest\x12 \n" +
 	"\x03ref\x18\x01 \x01(\v2\x0e.rove.PartyRefR\x03ref\x12\x19\n" +
 	"\x04name\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x02R\x04name\x12\x19\n" +
@@ -6046,96 +6090,97 @@ var file_rove_org_svc_g_proto_depIdxs = []int32{
 	50, // 24: rove.PartyMeResponse.holder:type_name -> rove.Holder
 	49, // 25: rove.PartyMeResponse.party:type_name -> rove.Party
 	51, // 26: rove.PartyMeResponse.tenant:type_name -> rove.Tenant
-	2,  // 27: rove.PartyUpdateRequest.ref:type_name -> rove.PartyRef
-	42, // 28: rove.PartyUpdateRequest.labels:type_name -> rove.PartyUpdateRequest.LabelsEntry
-	2,  // 29: rove.PartyInviteRequest.ref:type_name -> rove.PartyRef
-	49, // 30: rove.PartyInviteResponse.party:type_name -> rove.Party
-	50, // 31: rove.PartyInviteResponse.holder:type_name -> rove.Holder
-	2,  // 32: rove.PartySetRoleRequest.ref:type_name -> rove.PartyRef
-	2,  // 33: rove.PartySetPasswordRequest.ref:type_name -> rove.PartyRef
-	2,  // 34: rove.PartyDeactivateRequest.ref:type_name -> rove.PartyRef
-	2,  // 35: rove.PartyPseudonymizeRequest.ref:type_name -> rove.PartyRef
-	43, // 36: rove.CredentialAddRequest.tenant:type_name -> rove.TenantRef
-	44, // 37: rove.CredentialAddRequest.holder:type_name -> rove.HolderRef
-	45, // 38: rove.CredentialAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	26, // 39: rove.CredentialGetRequest.ref:type_name -> rove.CredentialRef
-	28, // 40: rove.CredentialGetRequest.select:type_name -> rove.CredentialSelect
-	27, // 41: rove.CredentialRef.holder:type_name -> rove.CredentialRefByHolder
-	44, // 42: rove.CredentialRefByHolder.holder:type_name -> rove.HolderRef
-	46, // 43: rove.CredentialSelect.tenant:type_name -> rove.TenantSelect
-	47, // 44: rove.CredentialSelect.holder:type_name -> rove.HolderSelect
-	26, // 45: rove.CredentialPatchRequest.ref:type_name -> rove.CredentialRef
-	45, // 46: rove.CredentialPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	26, // 47: rove.CredentialApplyRequest.ref:type_name -> rove.CredentialRef
-	48, // 48: rove.CredentialApplyRequest.patch:type_name -> patch.Patch
-	43, // 49: rove.SessionAddRequest.tenant:type_name -> rove.TenantRef
-	44, // 50: rove.SessionAddRequest.holder:type_name -> rove.HolderRef
-	45, // 51: rove.SessionAddRequest.date_expires:type_name -> google.protobuf.Timestamp
-	45, // 52: rove.SessionAddRequest.date_idle:type_name -> google.protobuf.Timestamp
-	45, // 53: rove.SessionAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	34, // 54: rove.SessionGetRequest.ref:type_name -> rove.SessionRef
-	35, // 55: rove.SessionGetRequest.select:type_name -> rove.SessionSelect
-	46, // 56: rove.SessionSelect.tenant:type_name -> rove.TenantSelect
-	47, // 57: rove.SessionSelect.holder:type_name -> rove.HolderSelect
-	34, // 58: rove.SessionPatchRequest.ref:type_name -> rove.SessionRef
-	45, // 59: rove.SessionPatchRequest.date_expires:type_name -> google.protobuf.Timestamp
-	45, // 60: rove.SessionPatchRequest.date_idle:type_name -> google.protobuf.Timestamp
-	45, // 61: rove.SessionPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
-	34, // 62: rove.SessionApplyRequest.ref:type_name -> rove.SessionRef
-	48, // 63: rove.SessionApplyRequest.patch:type_name -> patch.Patch
-	0,  // 64: rove.PartyService.Add:input_type -> rove.PartyAddRequest
-	1,  // 65: rove.PartyService.Get:input_type -> rove.PartyGetRequest
-	5,  // 66: rove.PartyService.Patch:input_type -> rove.PartyPatchRequest
-	6,  // 67: rove.PartyService.Apply:input_type -> rove.PartyApplyRequest
-	2,  // 68: rove.PartyService.Erase:input_type -> rove.PartyRef
-	8,  // 69: rove.PartyService.List:input_type -> rove.PartyListRequest
-	11, // 70: rove.PartyService.Watch:input_type -> rove.PartyWatchRequest
-	14, // 71: rove.PartyService.Me:input_type -> rove.PartyMeRequest
-	16, // 72: rove.PartyService.Update:input_type -> rove.PartyUpdateRequest
-	17, // 73: rove.PartyService.Invite:input_type -> rove.PartyInviteRequest
-	19, // 74: rove.PartyService.SetRole:input_type -> rove.PartySetRoleRequest
-	20, // 75: rove.PartyService.SetPassword:input_type -> rove.PartySetPasswordRequest
-	22, // 76: rove.PartyService.Deactivate:input_type -> rove.PartyDeactivateRequest
-	23, // 77: rove.PartyService.Pseudonymize:input_type -> rove.PartyPseudonymizeRequest
-	24, // 78: rove.CredentialService.Add:input_type -> rove.CredentialAddRequest
-	25, // 79: rove.CredentialService.Get:input_type -> rove.CredentialGetRequest
-	29, // 80: rove.CredentialService.Patch:input_type -> rove.CredentialPatchRequest
-	30, // 81: rove.CredentialService.Apply:input_type -> rove.CredentialApplyRequest
-	26, // 82: rove.CredentialService.Erase:input_type -> rove.CredentialRef
-	32, // 83: rove.SessionService.Add:input_type -> rove.SessionAddRequest
-	33, // 84: rove.SessionService.Get:input_type -> rove.SessionGetRequest
-	36, // 85: rove.SessionService.Patch:input_type -> rove.SessionPatchRequest
-	37, // 86: rove.SessionService.Apply:input_type -> rove.SessionApplyRequest
-	34, // 87: rove.SessionService.Erase:input_type -> rove.SessionRef
-	49, // 88: rove.PartyService.Add:output_type -> rove.Party
-	49, // 89: rove.PartyService.Get:output_type -> rove.Party
-	49, // 90: rove.PartyService.Patch:output_type -> rove.Party
-	49, // 91: rove.PartyService.Apply:output_type -> rove.Party
-	7,  // 92: rove.PartyService.Erase:output_type -> rove.PartyEraseResponse
-	9,  // 93: rove.PartyService.List:output_type -> rove.PartyListResponse
-	12, // 94: rove.PartyService.Watch:output_type -> rove.PartyWatchResponse
-	15, // 95: rove.PartyService.Me:output_type -> rove.PartyMeResponse
-	49, // 96: rove.PartyService.Update:output_type -> rove.Party
-	18, // 97: rove.PartyService.Invite:output_type -> rove.PartyInviteResponse
-	49, // 98: rove.PartyService.SetRole:output_type -> rove.Party
-	21, // 99: rove.PartyService.SetPassword:output_type -> rove.PartySetPasswordResponse
-	49, // 100: rove.PartyService.Deactivate:output_type -> rove.Party
-	49, // 101: rove.PartyService.Pseudonymize:output_type -> rove.Party
-	52, // 102: rove.CredentialService.Add:output_type -> rove.Credential
-	52, // 103: rove.CredentialService.Get:output_type -> rove.Credential
-	52, // 104: rove.CredentialService.Patch:output_type -> rove.Credential
-	52, // 105: rove.CredentialService.Apply:output_type -> rove.Credential
-	31, // 106: rove.CredentialService.Erase:output_type -> rove.CredentialEraseResponse
-	53, // 107: rove.SessionService.Add:output_type -> rove.Session
-	53, // 108: rove.SessionService.Get:output_type -> rove.Session
-	53, // 109: rove.SessionService.Patch:output_type -> rove.Session
-	53, // 110: rove.SessionService.Apply:output_type -> rove.Session
-	38, // 111: rove.SessionService.Erase:output_type -> rove.SessionEraseResponse
-	88, // [88:112] is the sub-list for method output_type
-	64, // [64:88] is the sub-list for method input_type
-	64, // [64:64] is the sub-list for extension type_name
-	64, // [64:64] is the sub-list for extension extendee
-	0,  // [0:64] is the sub-list for field type_name
+	45, // 27: rove.PartyMeResponse.history_since:type_name -> google.protobuf.Timestamp
+	2,  // 28: rove.PartyUpdateRequest.ref:type_name -> rove.PartyRef
+	42, // 29: rove.PartyUpdateRequest.labels:type_name -> rove.PartyUpdateRequest.LabelsEntry
+	2,  // 30: rove.PartyInviteRequest.ref:type_name -> rove.PartyRef
+	49, // 31: rove.PartyInviteResponse.party:type_name -> rove.Party
+	50, // 32: rove.PartyInviteResponse.holder:type_name -> rove.Holder
+	2,  // 33: rove.PartySetRoleRequest.ref:type_name -> rove.PartyRef
+	2,  // 34: rove.PartySetPasswordRequest.ref:type_name -> rove.PartyRef
+	2,  // 35: rove.PartyDeactivateRequest.ref:type_name -> rove.PartyRef
+	2,  // 36: rove.PartyPseudonymizeRequest.ref:type_name -> rove.PartyRef
+	43, // 37: rove.CredentialAddRequest.tenant:type_name -> rove.TenantRef
+	44, // 38: rove.CredentialAddRequest.holder:type_name -> rove.HolderRef
+	45, // 39: rove.CredentialAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	26, // 40: rove.CredentialGetRequest.ref:type_name -> rove.CredentialRef
+	28, // 41: rove.CredentialGetRequest.select:type_name -> rove.CredentialSelect
+	27, // 42: rove.CredentialRef.holder:type_name -> rove.CredentialRefByHolder
+	44, // 43: rove.CredentialRefByHolder.holder:type_name -> rove.HolderRef
+	46, // 44: rove.CredentialSelect.tenant:type_name -> rove.TenantSelect
+	47, // 45: rove.CredentialSelect.holder:type_name -> rove.HolderSelect
+	26, // 46: rove.CredentialPatchRequest.ref:type_name -> rove.CredentialRef
+	45, // 47: rove.CredentialPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	26, // 48: rove.CredentialApplyRequest.ref:type_name -> rove.CredentialRef
+	48, // 49: rove.CredentialApplyRequest.patch:type_name -> patch.Patch
+	43, // 50: rove.SessionAddRequest.tenant:type_name -> rove.TenantRef
+	44, // 51: rove.SessionAddRequest.holder:type_name -> rove.HolderRef
+	45, // 52: rove.SessionAddRequest.date_expires:type_name -> google.protobuf.Timestamp
+	45, // 53: rove.SessionAddRequest.date_idle:type_name -> google.protobuf.Timestamp
+	45, // 54: rove.SessionAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	34, // 55: rove.SessionGetRequest.ref:type_name -> rove.SessionRef
+	35, // 56: rove.SessionGetRequest.select:type_name -> rove.SessionSelect
+	46, // 57: rove.SessionSelect.tenant:type_name -> rove.TenantSelect
+	47, // 58: rove.SessionSelect.holder:type_name -> rove.HolderSelect
+	34, // 59: rove.SessionPatchRequest.ref:type_name -> rove.SessionRef
+	45, // 60: rove.SessionPatchRequest.date_expires:type_name -> google.protobuf.Timestamp
+	45, // 61: rove.SessionPatchRequest.date_idle:type_name -> google.protobuf.Timestamp
+	45, // 62: rove.SessionPatchRequest.date_updated:type_name -> google.protobuf.Timestamp
+	34, // 63: rove.SessionApplyRequest.ref:type_name -> rove.SessionRef
+	48, // 64: rove.SessionApplyRequest.patch:type_name -> patch.Patch
+	0,  // 65: rove.PartyService.Add:input_type -> rove.PartyAddRequest
+	1,  // 66: rove.PartyService.Get:input_type -> rove.PartyGetRequest
+	5,  // 67: rove.PartyService.Patch:input_type -> rove.PartyPatchRequest
+	6,  // 68: rove.PartyService.Apply:input_type -> rove.PartyApplyRequest
+	2,  // 69: rove.PartyService.Erase:input_type -> rove.PartyRef
+	8,  // 70: rove.PartyService.List:input_type -> rove.PartyListRequest
+	11, // 71: rove.PartyService.Watch:input_type -> rove.PartyWatchRequest
+	14, // 72: rove.PartyService.Me:input_type -> rove.PartyMeRequest
+	16, // 73: rove.PartyService.Update:input_type -> rove.PartyUpdateRequest
+	17, // 74: rove.PartyService.Invite:input_type -> rove.PartyInviteRequest
+	19, // 75: rove.PartyService.SetRole:input_type -> rove.PartySetRoleRequest
+	20, // 76: rove.PartyService.SetPassword:input_type -> rove.PartySetPasswordRequest
+	22, // 77: rove.PartyService.Deactivate:input_type -> rove.PartyDeactivateRequest
+	23, // 78: rove.PartyService.Pseudonymize:input_type -> rove.PartyPseudonymizeRequest
+	24, // 79: rove.CredentialService.Add:input_type -> rove.CredentialAddRequest
+	25, // 80: rove.CredentialService.Get:input_type -> rove.CredentialGetRequest
+	29, // 81: rove.CredentialService.Patch:input_type -> rove.CredentialPatchRequest
+	30, // 82: rove.CredentialService.Apply:input_type -> rove.CredentialApplyRequest
+	26, // 83: rove.CredentialService.Erase:input_type -> rove.CredentialRef
+	32, // 84: rove.SessionService.Add:input_type -> rove.SessionAddRequest
+	33, // 85: rove.SessionService.Get:input_type -> rove.SessionGetRequest
+	36, // 86: rove.SessionService.Patch:input_type -> rove.SessionPatchRequest
+	37, // 87: rove.SessionService.Apply:input_type -> rove.SessionApplyRequest
+	34, // 88: rove.SessionService.Erase:input_type -> rove.SessionRef
+	49, // 89: rove.PartyService.Add:output_type -> rove.Party
+	49, // 90: rove.PartyService.Get:output_type -> rove.Party
+	49, // 91: rove.PartyService.Patch:output_type -> rove.Party
+	49, // 92: rove.PartyService.Apply:output_type -> rove.Party
+	7,  // 93: rove.PartyService.Erase:output_type -> rove.PartyEraseResponse
+	9,  // 94: rove.PartyService.List:output_type -> rove.PartyListResponse
+	12, // 95: rove.PartyService.Watch:output_type -> rove.PartyWatchResponse
+	15, // 96: rove.PartyService.Me:output_type -> rove.PartyMeResponse
+	49, // 97: rove.PartyService.Update:output_type -> rove.Party
+	18, // 98: rove.PartyService.Invite:output_type -> rove.PartyInviteResponse
+	49, // 99: rove.PartyService.SetRole:output_type -> rove.Party
+	21, // 100: rove.PartyService.SetPassword:output_type -> rove.PartySetPasswordResponse
+	49, // 101: rove.PartyService.Deactivate:output_type -> rove.Party
+	49, // 102: rove.PartyService.Pseudonymize:output_type -> rove.Party
+	52, // 103: rove.CredentialService.Add:output_type -> rove.Credential
+	52, // 104: rove.CredentialService.Get:output_type -> rove.Credential
+	52, // 105: rove.CredentialService.Patch:output_type -> rove.Credential
+	52, // 106: rove.CredentialService.Apply:output_type -> rove.Credential
+	31, // 107: rove.CredentialService.Erase:output_type -> rove.CredentialEraseResponse
+	53, // 108: rove.SessionService.Add:output_type -> rove.Session
+	53, // 109: rove.SessionService.Get:output_type -> rove.Session
+	53, // 110: rove.SessionService.Patch:output_type -> rove.Session
+	53, // 111: rove.SessionService.Apply:output_type -> rove.Session
+	38, // 112: rove.SessionService.Erase:output_type -> rove.SessionEraseResponse
+	89, // [89:113] is the sub-list for method output_type
+	65, // [65:89] is the sub-list for method input_type
+	65, // [65:65] is the sub-list for extension type_name
+	65, // [65:65] is the sub-list for extension extendee
+	0,  // [0:65] is the sub-list for field type_name
 }
 
 func init() { file_rove_org_svc_g_proto_init() }

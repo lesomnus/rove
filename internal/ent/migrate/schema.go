@@ -262,6 +262,11 @@ var (
 				Columns: []*schema.Column{AuditColumns[11], AuditColumns[7]},
 			},
 			{
+				Name:    "audit_tenant_id_domain_date_created",
+				Unique:  false,
+				Columns: []*schema.Column{AuditColumns[1], AuditColumns[11], AuditColumns[7]},
+			},
+			{
 				Name:    "audit_actor_id_date_created",
 				Unique:  false,
 				Columns: []*schema.Column{AuditColumns[2], AuditColumns[7]},
@@ -785,6 +790,29 @@ var (
 				Name:    "label_subject_id",
 				Unique:  false,
 				Columns: []*schema.Column{LabelColumns[1]},
+			},
+		},
+	}
+	// LegalholdColumns holds the columns for the "legalhold" table.
+	LegalholdColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUuid, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "desc", Type: field.TypeString},
+		{Name: "date_lifted", Type: field.TypeTime, Nullable: true},
+		{Name: "date_created", Type: field.TypeTime, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeUuid},
+	}
+	// LegalholdTable holds the schema information for the "legalhold" table.
+	LegalholdTable = &schema.Table{
+		Name:       "legalhold",
+		Columns:    LegalholdColumns,
+		PrimaryKey: []*schema.Column{LegalholdColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "legalhold_tenant_tenant",
+				Columns:    []*schema.Column{LegalholdColumns[5]},
+				RefColumns: []*schema.Column{TenantColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -1441,6 +1469,40 @@ var (
 		Columns:    TenantColumns,
 		PrimaryKey: []*schema.Column{TenantColumns[0]},
 	}
+	// TenantcontractColumns holds the columns for the "tenantcontract" table.
+	TenantcontractColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUuid, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "desc", Type: field.TypeString},
+		{Name: "view_days", Type: field.TypeUint32},
+		{Name: "keep_days", Type: field.TypeUint32},
+		{Name: "grace_days", Type: field.TypeUint32},
+		{Name: "date_effective", Type: field.TypeTime, Nullable: true},
+		{Name: "date_erased", Type: field.TypeTime, Nullable: true},
+		{Name: "date_created", Type: field.TypeTime, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeUuid},
+	}
+	// TenantcontractTable holds the schema information for the "tenantcontract" table.
+	TenantcontractTable = &schema.Table{
+		Name:       "tenantcontract",
+		Columns:    TenantcontractColumns,
+		PrimaryKey: []*schema.Column{TenantcontractColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tenantcontract_tenant_tenant",
+				Columns:    []*schema.Column{TenantcontractColumns[9]},
+				RefColumns: []*schema.Column{TenantColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tenantcontract_date_effective_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{TenantcontractColumns[6], TenantcontractColumns[9]},
+			},
+		},
+	}
 	// TenantdomainColumns holds the columns for the "tenantdomain" table.
 	TenantdomainColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUuid, Unique: true},
@@ -1625,6 +1687,7 @@ var (
 		InventorycountTable,
 		ItemmodelTable,
 		LabelTable,
+		LegalholdTable,
 		LinkTable,
 		NotificationTable,
 		OutboxTable,
@@ -1639,6 +1702,7 @@ var (
 		StockTable,
 		StockmovementTable,
 		TenantTable,
+		TenantcontractTable,
 		TenantdomainTable,
 		TreelockTable,
 		UsagesnapshotTable,
@@ -1726,6 +1790,10 @@ func init() {
 	LabelTable.Annotation = &entsql.Annotation{
 		Table: "label",
 	}
+	LegalholdTable.ForeignKeys[0].RefTable = TenantTable
+	LegalholdTable.Annotation = &entsql.Annotation{
+		Table: "legalhold",
+	}
 	LinkTable.ForeignKeys[0].RefTable = TenantTable
 	LinkTable.ForeignKeys[1].RefTable = AssetTable
 	LinkTable.ForeignKeys[2].RefTable = AssetTable
@@ -1797,6 +1865,10 @@ func init() {
 	}
 	TenantTable.Annotation = &entsql.Annotation{
 		Table: "tenant",
+	}
+	TenantcontractTable.ForeignKeys[0].RefTable = TenantTable
+	TenantcontractTable.Annotation = &entsql.Annotation{
+		Table: "tenantcontract",
 	}
 	TenantdomainTable.ForeignKeys[0].RefTable = TenantTable
 	TenantdomainTable.Annotation = &entsql.Annotation{

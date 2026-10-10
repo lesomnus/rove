@@ -60,6 +60,9 @@ export const ItemModelDomain = 9
 /** The domain identifiers of rove.Label carry. */
 export const LabelDomain = 18
 
+/** The domain identifiers of rove.LegalHold carry. */
+export const LegalHoldDomain = 40
+
 /** The domain identifiers of rove.Link carry. */
 export const LinkDomain = 14
 
@@ -102,6 +105,9 @@ export const StockMovementDomain = 30
 /** The domain identifiers of rove.Tenant carry. */
 export const TenantDomain = 1
 
+/** The domain identifiers of rove.TenantContract carry. */
+export const TenantContractDomain = 39
+
 /** The domain identifiers of rove.TenantDomain carry. */
 export const TenantDomainDomain = 24
 
@@ -132,6 +138,7 @@ pdid.register("rove.Holder", HolderDomain, "holder")
 pdid.register("rove.InventoryCount", InventoryCountDomain, "inventory-count")
 pdid.register("rove.ItemModel", ItemModelDomain, "item-model")
 pdid.register("rove.Label", LabelDomain, "label")
+pdid.register("rove.LegalHold", LegalHoldDomain, "legal-hold")
 pdid.register("rove.Link", LinkDomain, "link")
 pdid.register("rove.Notification", NotificationDomain, "notification")
 pdid.register("rove.Outbox", OutboxDomain, "outbox")
@@ -146,6 +153,7 @@ pdid.register("rove.Stewardship", StewardshipDomain, "stewardship")
 pdid.register("rove.Stock", StockDomain, "stock")
 pdid.register("rove.StockMovement", StockMovementDomain, "stock-movement")
 pdid.register("rove.Tenant", TenantDomain, "tenant")
+pdid.register("rove.TenantContract", TenantContractDomain, "tenant-contract")
 pdid.register("rove.TenantDomain", TenantDomainDomain, "tenant-domain")
 pdid.register("rove.TreeLock", TreeLockDomain, "tree-lock")
 pdid.register("rove.UsageSnapshot", UsageSnapshotDomain, "usage-snapshot")

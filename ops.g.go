@@ -113,3 +113,89 @@ func UsageSnapshotByDay(tenant *TenantRef, day string) *UsageSnapshotRef {
 func UsageSnapshotGetByDay(tenant *TenantRef, day string) *UsageSnapshotGetRequest {
 	return UsageSnapshotGetRequest_builder{Ref: UsageSnapshotByDay(tenant, day)}.Build()
 }
+
+func (x *TenantContractRef) Pick() *TenantContractGetRequest {
+	return TenantContractGetRequest_builder{Ref: x}.Build()
+}
+
+func (x *TenantContract) Ref() *TenantContractRef {
+	if v := x.GetId(); len(v) > 0 {
+		return TenantContractById(v)
+	}
+
+	return nil
+}
+
+func (x *TenantContract) Pick() *TenantContractGetRequest {
+	return x.Ref().Pick()
+}
+
+func (x *TenantContractRef) Picks(v *TenantContract) bool {
+	switch x.WhichKey() {
+	case TenantContractRef_Id_case:
+		return bytes.Equal(x.GetId(), v.GetId())
+	default:
+		return false
+	}
+}
+
+func (x *TenantContractGetRequest) WithSelect(f func(s *TenantContractSelect)) *TenantContractGetRequest {
+	if !x.HasSelect() {
+		x.SetSelect(&TenantContractSelect{})
+	}
+	f(x.GetSelect())
+	return x
+}
+
+func TenantContractById(v []byte) *TenantContractRef {
+	x := &TenantContractRef{}
+	x.SetId(v)
+	return x
+}
+
+func TenantContractGetById(v []byte) *TenantContractGetRequest {
+	return TenantContractGetRequest_builder{Ref: TenantContractById(v)}.Build()
+}
+
+func (x *LegalHoldRef) Pick() *LegalHoldGetRequest {
+	return LegalHoldGetRequest_builder{Ref: x}.Build()
+}
+
+func (x *LegalHold) Ref() *LegalHoldRef {
+	if v := x.GetId(); len(v) > 0 {
+		return LegalHoldById(v)
+	}
+
+	return nil
+}
+
+func (x *LegalHold) Pick() *LegalHoldGetRequest {
+	return x.Ref().Pick()
+}
+
+func (x *LegalHoldRef) Picks(v *LegalHold) bool {
+	switch x.WhichKey() {
+	case LegalHoldRef_Id_case:
+		return bytes.Equal(x.GetId(), v.GetId())
+	default:
+		return false
+	}
+}
+
+func (x *LegalHoldGetRequest) WithSelect(f func(s *LegalHoldSelect)) *LegalHoldGetRequest {
+	if !x.HasSelect() {
+		x.SetSelect(&LegalHoldSelect{})
+	}
+	f(x.GetSelect())
+	return x
+}
+
+func LegalHoldById(v []byte) *LegalHoldRef {
+	x := &LegalHoldRef{}
+	x.SetId(v)
+	return x
+}
+
+func LegalHoldGetById(v []byte) *LegalHoldGetRequest {
+	return LegalHoldGetRequest_builder{Ref: LegalHoldById(v)}.Build()
+}

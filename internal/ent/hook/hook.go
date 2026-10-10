@@ -201,6 +201,18 @@ func (f LabelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LabelMutation", m)
 }
 
+// The LegalHoldFunc type is an adapter to allow the use of ordinary
+// function as LegalHold mutator.
+type LegalHoldFunc func(context.Context, *ent.LegalHoldMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f LegalHoldFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.LegalHoldMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LegalHoldMutation", m)
+}
+
 // The LinkFunc type is an adapter to allow the use of ordinary
 // function as Link mutator.
 type LinkFunc func(context.Context, *ent.LinkMutation) (ent.Value, error)
@@ -367,6 +379,18 @@ func (f TenantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TenantMutation", m)
+}
+
+// The TenantContractFunc type is an adapter to allow the use of ordinary
+// function as TenantContract mutator.
+type TenantContractFunc func(context.Context, *ent.TenantContractMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TenantContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TenantContractMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TenantContractMutation", m)
 }
 
 // The TenantDomainFunc type is an adapter to allow the use of ordinary

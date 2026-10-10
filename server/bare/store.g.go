@@ -25,6 +25,7 @@ import (
 	inventorycount "github.com/lesomnus/rove/internal/ent/inventorycount"
 	itemmodel "github.com/lesomnus/rove/internal/ent/itemmodel"
 	label "github.com/lesomnus/rove/internal/ent/label"
+	legalhold "github.com/lesomnus/rove/internal/ent/legalhold"
 	link "github.com/lesomnus/rove/internal/ent/link"
 	notification "github.com/lesomnus/rove/internal/ent/notification"
 	outbox "github.com/lesomnus/rove/internal/ent/outbox"
@@ -40,6 +41,7 @@ import (
 	stock "github.com/lesomnus/rove/internal/ent/stock"
 	stockmovement "github.com/lesomnus/rove/internal/ent/stockmovement"
 	tenant "github.com/lesomnus/rove/internal/ent/tenant"
+	tenantcontract "github.com/lesomnus/rove/internal/ent/tenantcontract"
 	tenantdomain "github.com/lesomnus/rove/internal/ent/tenantdomain"
 	treelock "github.com/lesomnus/rove/internal/ent/treelock"
 	usagesnapshot "github.com/lesomnus/rove/internal/ent/usagesnapshot"
@@ -370,6 +372,8 @@ type Scope interface {
 	EventScope(ctx context.Context) (predicate.Event, error)
 	NotificationScope(ctx context.Context) (predicate.Notification, error)
 	UsageSnapshotScope(ctx context.Context) (predicate.UsageSnapshot, error)
+	TenantContractScope(ctx context.Context) (predicate.TenantContract, error)
+	LegalHoldScope(ctx context.Context) (predicate.LegalHold, error)
 	AuditScope(ctx context.Context) (predicate.Audit, error)
 	OutboxScope(ctx context.Context) (predicate.Outbox, error)
 	WorkOrderScope(ctx context.Context) (predicate.WorkOrder, error)
@@ -474,6 +478,12 @@ func (Unscoped) NotificationScope(_ context.Context) (predicate.Notification, er
 	return nil, nil
 }
 func (Unscoped) UsageSnapshotScope(_ context.Context) (predicate.UsageSnapshot, error) {
+	return nil, nil
+}
+func (Unscoped) TenantContractScope(_ context.Context) (predicate.TenantContract, error) {
+	return nil, nil
+}
+func (Unscoped) LegalHoldScope(_ context.Context) (predicate.LegalHold, error) {
 	return nil, nil
 }
 func (Unscoped) AuditScope(_ context.Context) (predicate.Audit, error) {
@@ -1091,6 +1101,46 @@ func (ss Scopes) UsageSnapshotScope(ctx context.Context) (predicate.UsageSnapsho
 	return usagesnapshot.And(ps...), nil
 }
 
+func (ss Scopes) TenantContractScope(ctx context.Context) (predicate.TenantContract, error) {
+	ps := make([]predicate.TenantContract, 0, len(ss))
+	for _, s := range ss {
+		p, err := s.TenantContractScope(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if p == nil {
+			continue
+		}
+
+		ps = append(ps, p)
+	}
+	if len(ps) == 0 {
+		return nil, nil
+	}
+
+	return tenantcontract.And(ps...), nil
+}
+
+func (ss Scopes) LegalHoldScope(ctx context.Context) (predicate.LegalHold, error) {
+	ps := make([]predicate.LegalHold, 0, len(ss))
+	for _, s := range ss {
+		p, err := s.LegalHoldScope(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if p == nil {
+			continue
+		}
+
+		ps = append(ps, p)
+	}
+	if len(ps) == 0 {
+		return nil, nil
+	}
+
+	return legalhold.And(ps...), nil
+}
+
 func (ss Scopes) AuditScope(ctx context.Context) (predicate.Audit, error) {
 	ps := make([]predicate.Audit, 0, len(ss))
 	for _, s := range ss {
@@ -1271,7 +1321,7 @@ func (s Store) now() time.Time {
 // is rendered for that dialect, not just what this server writes.
 //
 // That set is also what a soft erasure needs, so this is the whole
-// check. Asset, AssetType, Attachment, Bookable, Custody, Holder, InventoryCount, ItemModel, Label, Party, Purchase, Reservation, Session, Stock, TenantDomain and WorkOrder free the names they held when a row
+// check. Asset, AssetType, Attachment, Bookable, Custody, Holder, InventoryCount, ItemModel, Label, Party, Purchase, Reservation, Session, Stock, TenantContract, TenantDomain and WorkOrder free the names they held when a row
 // is erased, which is a unique index covering only the rows that are
 // still there -- a partial index, and the dialects above are the ones
 // that have one. MySQL does not, and ent writes the annotation out for
@@ -1369,6 +1419,12 @@ func (s Server) Notification() rove.NotificationServiceServer {
 }
 func (s Server) UsageSnapshot() rove.UsageSnapshotServiceServer {
 	return UsageSnapshotServiceServer{Store: s.Store}
+}
+func (s Server) TenantContract() rove.TenantContractServiceServer {
+	return TenantContractServiceServer{Store: s.Store}
+}
+func (s Server) LegalHold() rove.LegalHoldServiceServer {
+	return LegalHoldServiceServer{Store: s.Store}
 }
 func (s Server) Audit() rove.AuditServiceServer   { return AuditServiceServer{Store: s.Store} }
 func (s Server) Outbox() rove.OutboxServiceServer { return OutboxServiceServer{Store: s.Store} }
