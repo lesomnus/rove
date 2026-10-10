@@ -1,0 +1,350 @@
+package identity
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"slices"
+
+	"github.com/lesomnus/z"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
+
+	"github.com/lesomnus/payday/config"
+	"github.com/lesomnus/payday/pdid"
+	"github.com/lesomnus/payday/spin"
+	rostercli "github.com/lesomnus/roster/cli"
+	rostercmd "github.com/lesomnus/roster/cmd"
+	"github.com/lesomnus/roster/rstr"
+)
+
+// embedded is roster in this process: its server on an in-process listener
+// nothing outside can dial, which is why it may believe what a caller says it
+// is (payday's Plain), and the deployment's own door to it -- the server the
+// wall was never installed on -- for the rows a deployment writes about itself
+// and its people.
+type embedded struct {
+	rs  *rostercmd.Server
+	cfg rostercmd.Config
+	g   *grpc.Server
+	lis *bufconn.Listener
+	log *slog.Logger
+}
+
+// DbFile is the embedded roster's database, beside Rove's own.
+const DbFile = "roster.db"
+
+// unframed is a context for the deployment's own door at the embedded roster.
+// Both apps read payday's one frame type, so a request's frame here would be a
+// frame there, and roster would take Rove's actor for one of its own: an
+// administrator issuing somebody a password would be refused as asking for
+// their own. What the deployment does through that door is nobody's request,
+// so the frame stays behind; the deadline comes along.
+func unframed(ctx context.Context) (context.Context, context.CancelFunc) {
+	if d, ok := ctx.Deadline(); ok {
+		return context.WithDeadline(context.Background(), d)
+	}
+
+	return context.WithCancel(context.Background())
+}
+
+func openEmbedded(ctx context.Context, cfg Config, stateDir string, log *slog.Logger) (*embedded, error) {
+	rc := rostercmd.Config{Db: cfg.Db}
+	if rc.Db.Driver == "" {
+		if stateDir == "" {
+			return nil, errors.New("auth.roster.db: the roster in this process needs a database, and there is no directory to put one in")
+		}
+		if err := os.MkdirAll(stateDir, 0o700); err != nil {
+			return nil, err
+		}
+		rc.Db.Driver = "sqlite3"
+		rc.Db.Dsn = "file:" + filepath.Join(stateDir, DbFile) + "?_pragma=foreign_keys(1)&_pragma=journal_mode(wal)&_pragma=busy_timeout(10000)"
+	}
+	// Nothing watches roster's rows from here, and a broker would be the wrong
+	// one for a second app on the same database anyway.
+	rc.Watch.Broker = config.BrokerNone
+	rs, err := rostercmd.Build(ctx, rc)
+	if err != nil {
+		return nil, fmt.Errorf("embedded roster: %w", err)
+	}
+	if err := rostercli.Migrate(ctx, rs); err != nil {
+		rs.Close()
+		return nil, fmt.Errorf("embedded roster: %w", err)
+	}
+	g, err := rs.Grpc(ctx, rc)
+	if err != nil {
+		rs.Close()
+		return nil, fmt.Errorf("embedded roster: %w", err)
+	}
+	log.Info("identity: roster in this process, on its own database; reachable from this process only", "db", rc.Db.Driver)
+	e := &embedded{rs: rs, cfg: rc, g: g, lis: bufconn.Listen(1 << 20), log: log}
+	// Served from here on, so that whoever opened the store can call it --
+	// `rove init` does, before anything runs. What Run adds is roster's own
+	// housekeeping.
+	go func() {
+		if err := g.Serve(e.lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			log.Error("identity: the embedded roster stopped", "err", err.Error())
+		}
+	}()
+
+	return e, nil
+}
+
+func (e *embedded) run(ctx context.Context) error {
+	err := spin.Run(ctx, slices.Values(e.rs.Spin))
+	e.g.Stop()
+
+	return err
+}
+
+func (e *embedded) Close() error {
+	e.g.Stop()
+
+	return e.rs.Close()
+}
+
+// agent writes the `rove` holder, the role it holds and the binding into a
+// tenant, through the deployment's own door. It refuses a tenant that is not
+// there rather than making one, since a tenant is a customer.
+func (e *embedded) agent(ctx context.Context, tenant string) error {
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	own := e.rs.Ungated
+	t, err := own.Tenant().Get(ctx, rstr.TenantGetRequest_builder{Ref: rstr.TenantRef_builder{Alias: z.Ptr(tenant)}.Build()}.Build())
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return fmt.Errorf("%w: %s", ErrNoTenant, tenant)
+		}
+
+		return err
+	}
+	tref := rstr.TenantRef_builder{Id: t.GetId()}.Build()
+	h, err := own.Holder().Get(ctx, rstr.HolderGetRequest_builder{
+		Ref: rstr.HolderRef_builder{Slug: rstr.HolderRefBySlug_builder{Alias: z.Ptr(Agent), Tenant: tref}.Build()}.Build(),
+	}.Build())
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			return err
+		}
+		h, err = own.Holder().Add(ctx, rstr.HolderAddRequest_builder{Tenant: tref, Alias: Agent, Name: "Rove"}.Build())
+		if err != nil {
+			return fmt.Errorf("holder %s: %w", Agent, err)
+		}
+	}
+	r, err := own.Role().Get(ctx, rstr.RoleGetRequest_builder{
+		Ref: rstr.RoleRef_builder{Slug: rstr.RoleRefBySlug_builder{Alias: z.Ptr(Agent), Tenant: tref}.Build()}.Build(),
+	}.Build())
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			return err
+		}
+		r, err = own.Role().Add(ctx, rstr.RoleAddRequest_builder{
+			Tenant: tref, Alias: Agent, Name: "what Rove asks roster", Methods: AgentMethods,
+		}.Build())
+		if err != nil {
+			return fmt.Errorf("role %s: %w", Agent, err)
+		}
+	} else if missing := slices.DeleteFunc(slices.Clone(AgentMethods), func(m string) bool { return slices.Contains(r.GetMethods(), m) }); len(missing) > 0 {
+		// A role written by an older Rove: what this one asks is added.
+		if _, err := own.Role().Patch(ctx, rstr.RolePatchRequest_builder{
+			Ref:              rstr.RoleRef_builder{Id: r.GetId()}.Build(),
+			Methods:          append(slices.Clone(r.GetMethods()), missing...),
+			DateUpdatedForce: z.Ptr(true),
+		}.Build()); err != nil {
+			return fmt.Errorf("role %s: %w", Agent, err)
+		}
+	}
+	vs, err := own.Binding().List(ctx, rstr.BindingListRequest_builder{
+		Filters: []*rstr.BindingFilter{rstr.BindingFilter_builder{
+			Role:   rstr.RoleRef_builder{Id: r.GetId()}.Build(),
+			Holder: rstr.HolderRef_builder{Id: h.GetId()}.Build(),
+		}.Build()},
+	}.Build())
+	if err != nil {
+		return err
+	}
+	if len(vs.GetItems()) == 0 {
+		if _, err := own.Binding().Add(ctx, rstr.BindingAddRequest_builder{
+			Role: rstr.RoleRef_builder{Id: r.GetId()}.Build(), Holder: rstr.HolderRef_builder{Id: h.GetId()}.Build(),
+		}.Build()); err != nil && status.Code(err) != codes.AlreadyExists {
+			return fmt.Errorf("binding: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (e *embedded) tenants(ctx context.Context) ([]string, error) {
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	var vs []string
+	after := ""
+	for {
+		res, err := e.rs.Ungated.Tenant().List(ctx, rstr.TenantListRequest_builder{Size: 100, After: after}.Build())
+		if err != nil {
+			return nil, err
+		}
+		for _, t := range res.GetItems() {
+			vs = append(vs, t.GetAlias())
+		}
+		if res.GetNext() == "" || len(res.GetItems()) == 0 {
+			slices.Sort(vs)
+			return vs, nil
+		}
+		after = res.GetNext()
+	}
+}
+
+// Seed makes a tenant and its first person at the embedded roster, bound to
+// the role that administers the tenant there, with a password shown once:
+// what `rove init` does. `id` is the identifier the tenant is given, and the
+// nil one mints a fresh one. An external roster refuses: its operator does
+// this.
+func (s *Store) Seed(ctx context.Context, tenant, holder string, id pdid.Id) (Person, string, error) {
+	if s.em == nil {
+		return Person{}, "", ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	seeded, err := rostercmd.Seed(ctx, s.em.rs, rostercmd.Seeding{Tenant: tenant, Holder: holder, TenantId: id})
+	if err != nil {
+		return Person{}, "", err
+	}
+	secret, err := s.issue(ctx, seeded.Holder)
+	if err != nil {
+		return Person{}, "", err
+	}
+	p, err := s.lookupOwn(ctx, seeded.Holder)
+	if err != nil {
+		return Person{}, "", err
+	}
+
+	return p, secret, nil
+}
+
+// AddPerson makes a person in a tenant of the embedded roster, with no way to
+// sign in yet: IssuePassword or SetPassword gives them one. `id` is the
+// identifier they are given, and the nil one mints a fresh one.
+func (s *Store) AddPerson(ctx context.Context, tenant pdid.Id, alias, name string, id pdid.Id) (Person, error) {
+	if s.em == nil {
+		return Person{}, ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	req := rstr.HolderAddRequest_builder{
+		Tenant: rstr.TenantRef_builder{Id: tenant.Bytes()}.Build(),
+		Alias:  alias,
+		Name:   name,
+	}
+	if id != pdid.Nil {
+		req.Id = id.Bytes()
+	}
+	v, err := s.em.rs.Ungated.Holder().Add(ctx, req.Build())
+	if err != nil {
+		return Person{}, err
+	}
+	made, err := pdid.From(v.GetId())
+	if err != nil {
+		return Person{}, err
+	}
+
+	return s.lookupOwn(ctx, made)
+}
+
+// IssuePassword gives a person of the embedded roster a fresh password, shown
+// once, replacing whatever they had -- and so ending whatever they were signed
+// in to. At an external one the tenant's administrator does it there.
+func (s *Store) IssuePassword(ctx context.Context, holder pdid.Id) (string, error) {
+	if s.em == nil {
+		return "", ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+
+	return s.issue(ctx, holder)
+}
+
+func (s *Store) issue(ctx context.Context, holder pdid.Id) (string, error) {
+	res, err := s.em.rs.Ungated.Credential().Issue(ctx, rstr.CredentialIssueRequest_builder{
+		Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build(), Kind: "password",
+	}.Build())
+	if err != nil {
+		return "", err
+	}
+
+	return res.GetSecret(), nil
+}
+
+// SetPassword writes a person's password to the one given, at the embedded
+// roster, as the deployment: for a person changing their own, once Rove has
+// checked the one they have, and for the tests.
+func (s *Store) SetPassword(ctx context.Context, holder pdid.Id, password string) error {
+	if s.em == nil {
+		return ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	_, err := s.em.rs.Ungated.Credential().Set(ctx, rstr.CredentialSetRequest_builder{
+		Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build(), Kind: "password", Secret: []byte(password),
+	}.Build())
+
+	return err
+}
+
+// Disable stops a person of the embedded roster signing in, and leaves them
+// there; Enable is the other way.
+func (s *Store) Disable(ctx context.Context, holder pdid.Id) error {
+	if s.em == nil {
+		return ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	_, err := s.em.rs.Ungated.Holder().Disable(ctx, rstr.HolderDisableRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+
+	return err
+}
+
+func (s *Store) Enable(ctx context.Context, holder pdid.Id) error {
+	if s.em == nil {
+		return ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	_, err := s.em.rs.Ungated.Holder().Enable(ctx, rstr.HolderEnableRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+
+	return err
+}
+
+// Invalidate voids everything a person of the embedded roster was issued
+// before now: signing them out everywhere.
+func (s *Store) Invalidate(ctx context.Context, holder pdid.Id) error {
+	if s.em == nil {
+		return ErrExternal
+	}
+	ctx, cancel := unframed(ctx)
+	defer cancel()
+	_, err := s.em.rs.Ungated.Holder().Invalidate(ctx, rstr.HolderInvalidateRequest_builder{Ref: rstr.HolderRef_builder{Id: holder.Bytes()}.Build()}.Build())
+
+	return err
+}
+
+func (s *Store) lookupOwn(ctx context.Context, holder pdid.Id) (Person, error) {
+	v, err := s.em.rs.Ungated.Holder().Get(ctx, rstr.HolderGetRequest_builder{
+		Ref:    rstr.HolderRef_builder{Id: holder.Bytes()}.Build(),
+		Select: rstr.HolderSelect_builder{All: z.Ptr(true), Tenant: rstr.TenantSelect_builder{All: z.Ptr(true)}.Build()}.Build(),
+	}.Build())
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return Person{}, ErrNoPerson
+		}
+
+		return Person{}, err
+	}
+
+	return personOf(v)
+}
