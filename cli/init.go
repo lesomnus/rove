@@ -15,6 +15,7 @@ import (
 
 	app "github.com/lesomnus/rove"
 	"github.com/lesomnus/rove/cmd"
+	enttenant "github.com/lesomnus/rove/internal/ent/tenant"
 	"github.com/lesomnus/rove/server/tenancy"
 )
 
@@ -80,6 +81,14 @@ func NewCmdInit(c *cmd.Config) *xli.Command {
 			// The schema, so that a fresh database is one this can run against.
 			if err := Migrate(ctx, s); err != nil {
 				return err
+			}
+
+			// Here first, since a tenant already here is the error, and roster
+			// would otherwise keep the one made for it.
+			if here, err := s.Ent.Tenant.Query().Where(enttenant.Alias(alias)).Exist(ctx); err != nil {
+				return err
+			} else if here {
+				return fmt.Errorf("tenant %q is here already", alias)
 			}
 
 			// At roster, which is where they sign in.

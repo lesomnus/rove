@@ -31,7 +31,10 @@ import (
 	"github.com/lesomnus/payday/pdid"
 
 	"github.com/lesomnus/rove/internal/ent"
+	"github.com/lesomnus/rove/internal/ent/holder"
+	"github.com/lesomnus/rove/internal/ent/party"
 	"github.com/lesomnus/rove/internal/ent/session"
+	enttenant "github.com/lesomnus/rove/internal/ent/tenant"
 	"github.com/lesomnus/rove/internal/identity"
 	"github.com/lesomnus/rove/server/pd"
 	"github.com/lesomnus/rove/server/tenancy"
@@ -166,8 +169,10 @@ func nonzero(t time.Time) *time.Time {
 //
 //	{"tenant": "acme", "login": "kim", "password": "..."}
 //
-// `login` is a person's alias, or the address they are reached at. `tenant`
-// may be left out where this deployment serves one tenant only.
+// `login` is a person's alias, or the address they are reached at: the one on
+// their person record here when roster is in this process, and one roster
+// verified when it is of its own. `tenant` may be left out where this
+// deployment serves one tenant only.
 type Login struct {
 	Tenant   string `json:"tenant"`
 	Login    string `json:"login"`
@@ -178,6 +183,7 @@ type Login struct {
 type People interface {
 	Verify(ctx context.Context, tenant, login, password string) (identity.Person, error)
 	Only(ctx context.Context) (string, bool, error)
+	Embedded() bool
 }
 
 // SignIn is `POST /session` and `DELETE /session`: a password roster checked,
@@ -265,7 +271,22 @@ func verify(ctx context.Context, people People, anchor tenancy.Anchor, in Login)
 		tenant = only
 	}
 
-	p, err := people.Verify(ctx, tenant, in.Login, in.Password)
+	login := in.Login
+	if strings.Contains(login, "@") && people.Embedded() {
+		// The roster in this process keeps no addresses: the one a person is
+		// reached at is on their person record here, as it was before roster
+		// held them. An address nobody here has goes to roster as it is,
+		// which refuses it the way it refuses anybody.
+		alias, err := aliasAt(ctx, ent.NewClient(ent.Driver(anchor.Drv)), tenant, login)
+		if err != nil {
+			return authsession.Session{}, err
+		}
+		if alias != "" {
+			login = alias
+		}
+	}
+
+	p, err := people.Verify(ctx, tenant, login, in.Password)
 	switch {
 	case errors.Is(err, identity.ErrRefused), errors.Is(err, identity.ErrSecondFactor),
 		errors.Is(err, identity.ErrNoTenant), errors.Is(err, identity.ErrNoPerson):
@@ -287,6 +308,24 @@ func verify(ctx context.Context, people People, anchor tenancy.Anchor, in Login)
 		TenantId: pdid.Id(h.TenantId).String(),
 		Grant:    frame.Whole(),
 	}, nil
+}
+
+// aliasAt is the login of the one person of a tenant whose person record has
+// this address, and empty for nobody or for more than one.
+func aliasAt(ctx context.Context, db *ent.Client, tenant, address string) (string, error) {
+	vs, err := db.Party.Query().
+		Where(
+			party.EmailEqualFold(address),
+			party.DateErasedIsNil(),
+			party.HasHolderWith(holder.DateErasedIsNil(), holder.HasTenantWith(enttenant.Alias(tenant))),
+		).
+		WithHolder().
+		All(ctx)
+	if err != nil || len(vs) != 1 {
+		return "", err
+	}
+
+	return vs[0].Edges.Holder.Alias, nil
 }
 
 func addr(r *http.Request) string {

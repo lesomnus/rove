@@ -208,6 +208,23 @@ func TestSignIn(t *testing.T) {
 	x.NoError(err)
 	x.Equal("park", me.GetHolder().GetAlias())
 
+	t.Run("by the address on their person record, on the roster in this process", func(t *testing.T) {
+		x := require.New(t)
+
+		p, err := w.s.Ent.Party.Query().Where(party.HolderId(park.Id.Uuid())).Only(ctx)
+		x.NoError(err)
+		_, err = w.s.Base.Party().Patch(ctx, app.PartyPatchRequest_builder{
+			Ref:              app.PartyRef_builder{Id: pdid.Id(p.Id).Bytes()}.Build(),
+			Email:            z.Ptr("park@example.com"),
+			DateUpdatedForce: z.Ptr(true),
+		}.Build())
+		x.NoError(err)
+
+		x.Equal(http.StatusNoContent, post(`{"login":"Park@Example.com","password":"correct horse"}`).Code)
+		x.Equal(http.StatusUnauthorized, post(`{"login":"park@example.com","password":"wrong one"}`).Code)
+		x.Equal(http.StatusUnauthorized, post(`{"login":"nobody@example.com","password":"correct horse"}`).Code)
+	})
+
 	t.Run("roster signing them out everywhere ends the session open here", func(t *testing.T) {
 		x := require.New(t)
 
