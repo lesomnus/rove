@@ -78,6 +78,7 @@ func Cmd(c *cmd.Config) *xli.Command {
 			NewCmdHold(c),
 			NewCmdRetention(c),
 			NewCmdTenant(c),
+			NewCmdHolder(c),
 			NewCmdTrail(c),
 		},
 

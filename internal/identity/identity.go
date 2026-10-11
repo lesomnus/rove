@@ -89,7 +89,8 @@ const Agent = "rove"
 // the `--role` an external roster installs Rove with:
 //
 //	roster app install --tenant acme --role /roster.VouchService/Verify \
-//	  --role /roster.HolderService/Get --role /roster.TenantService/Get rove
+//	  --role /roster.HolderService/Get --role /roster.TenantService/Get \
+//	  --role /roster.MeService/Get rove
 //
 // People are made, given passwords and suspended at roster, by whoever
 // administers the tenant there; on the embedded roster Rove does those through
@@ -146,6 +147,9 @@ var (
 	// ErrExternal is an operation only the embedded roster takes: on an
 	// external one it is the tenant administrator's, at roster.
 	ErrExternal = errors.New("people and tenants are made at roster, which is not this process")
+	// ErrUnreachable is a roster that could not be asked. A session is not
+	// served while it lasts: what roster would have said is not known.
+	ErrUnreachable = errors.New("roster cannot be asked just now")
 )
 
 // Locked is a refusal that says when the account opens again.
@@ -167,6 +171,10 @@ type Store struct {
 
 	mu     sync.Mutex
 	agents map[string]bool
+
+	// What roster said of each person a session names, and when.
+	hmu  sync.Mutex
+	held map[pdid.Id]held
 
 	// now is the clock, for the tests.
 	now func() time.Time
@@ -190,7 +198,7 @@ func Open(ctx context.Context, cfg Config, stateDir string, log *slog.Logger) (*
 	if log == nil {
 		log = slog.Default()
 	}
-	s := &Store{cfg: cfg, log: log, agents: map[string]bool{}, aliases: map[pdid.Id]string{}, now: time.Now}
+	s := &Store{cfg: cfg, log: log, agents: map[string]bool{}, held: map[pdid.Id]held{}, aliases: map[pdid.Id]string{}, now: time.Now}
 	if cfg.Embedded() {
 		if cfg.Key != "" || cfg.CaFile != "" || cfg.Insecure {
 			return nil, errors.New("auth.roster: key, ca_file and insecure are an external roster's, and addr names none")
@@ -745,4 +753,73 @@ func (s *Store) StandingOf(ctx context.Context, tenant, holder pdid.Id) (Standin
 	}
 
 	return st, nil
+}
+
+// HeldTtl is how long what roster says of a person is believed before it is
+// asked again: how late a suspension, an erasure or signing out everywhere
+// reaches a session already open.
+const HeldTtl = 30 * time.Second
+
+// heldRetry is how long a roster that could not be asked is not asked again,
+// so that one that is down is not asked once per call.
+const heldRetry = 5 * time.Second
+
+type held struct {
+	st  Standing
+	err error
+	at  time.Time
+}
+
+// Held says whether a session that began at `began` is still good, by what
+// roster says of the person it names: ErrRefused when they were suspended,
+// erased or signed out everywhere since -- or are not there at all -- and
+// ErrUnreachable when roster could not be asked, which is a refusal too.
+func (s *Store) Held(ctx context.Context, tenant, holder pdid.Id, began time.Time) error {
+	now := s.now()
+	s.hmu.Lock()
+	v, ok := s.held[holder]
+	s.hmu.Unlock()
+	// Somebody roster does not have is an answer, and kept as long as one.
+	known := v.err == nil || errors.Is(v.err, ErrNoPerson)
+	fresh := ok && (known && now.Sub(v.at) < HeldTtl || !known && now.Sub(v.at) < heldRetry)
+	if !fresh {
+		st, err := s.StandingOf(ctx, tenant, holder)
+		v = held{st: st, err: err, at: now}
+		s.hmu.Lock()
+		s.held[holder] = v
+		s.hmu.Unlock()
+	}
+
+	switch {
+	case errors.Is(v.err, ErrNoPerson):
+		return fmt.Errorf("%w: roster has no such person", ErrRefused)
+	case v.err != nil:
+		return fmt.Errorf("%w: %w", ErrUnreachable, v.err)
+	case !v.st.Good(began):
+		return fmt.Errorf("%w: suspended, erased or signed out everywhere since", ErrRefused)
+	}
+
+	return nil
+}
+
+// Recheck drops what is known of a person, for a change made here to be seen
+// on the next call rather than after [HeldTtl].
+func (s *Store) Recheck(holder pdid.Id) {
+	s.hmu.Lock()
+	delete(s.held, holder)
+	s.hmu.Unlock()
+}
+
+// Only is the one tenant this deployment serves, for a sign-in that names
+// none, and false when it serves more than one or none.
+func (s *Store) Only(ctx context.Context) (string, bool, error) {
+	ts, err := s.Tenants(ctx)
+	if err != nil {
+		return "", false, err
+	}
+	if len(ts) != 1 {
+		return "", false, nil
+	}
+
+	return ts[0], true, nil
 }

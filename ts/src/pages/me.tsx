@@ -18,7 +18,7 @@ export function Me(): ReactNode {
 
 	return (
 		<>
-			<PageHead title="내 정보" actions={<button onClick={() => setPw(true)}>비밀번호 변경</button>} />
+			<PageHead title="내 정보" actions={c.me.accountsHere ? <button onClick={() => setPw(true)}>비밀번호 변경</button> : <span className="mute small">비밀번호는 roster에서 바꿉니다</span>} />
 			<div className="grid2">
 				<Card title="계정">
 					<Kv

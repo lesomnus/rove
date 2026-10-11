@@ -49,6 +49,7 @@ func newEnv(t *testing.T, opts ...func(*cmd.Config)) *env {
 	c.Db.Dsn = dsn
 	c.Watch.Broker = "memory"
 	c.App.Files = t.TempDir()
+	c.Auth.Roster.Db.Driver, c.Auth.Roster.Db.Dsn = pdtest.DB(t)
 	for _, opt := range opts {
 		opt(&c)
 	}

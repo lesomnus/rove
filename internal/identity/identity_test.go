@@ -158,6 +158,47 @@ func TestTheRosterInThisProcessIsRovesOwn(t *testing.T) {
 		_, err = s.StandingOf(ctx, kim.Tenant, pdid.New(pdid.Domain(1)))
 		x.ErrorIs(err, ErrNoPerson)
 	})
+
+	t.Run("a person forgotten is nobody there, and their login is free", func(t *testing.T) {
+		x := require.New(t)
+
+		park, err := s.AddPerson(ctx, kim.Tenant, "park", "Park", pdid.Nil)
+		x.NoError(err)
+		x.NoError(s.SetPassword(ctx, park.Id, pw))
+		// Erased the way roster erases -- softly, keeping who they were --
+		// which is what a deployment from before forgetting has.
+		choi, err := s.AddPerson(ctx, kim.Tenant, "choi", "Choi", pdid.Nil)
+		x.NoError(err)
+		_, err = s.em.rs.Ungated.Holder().Erase(ctx, rstr.HolderRef_builder{Id: choi.Id.Bytes()}.Build())
+		x.NoError(err)
+
+		vs, err := s.PeopleOf(ctx, kim.Tenant)
+		x.NoError(err)
+		x.Contains(vs, park.Id)
+		x.Contains(vs, choi.Id, "somebody erased and not forgotten is still somebody there")
+
+		x.NoError(s.ForgetPerson(ctx, park.Id))
+		_, err = s.Verify(ctx, "acme", "park", pw)
+		x.ErrorIs(err, ErrRefused)
+		_, err = s.Lookup(ctx, "acme", "park")
+		x.ErrorIs(err, ErrNoPerson)
+		vs, err = s.PeopleOf(ctx, kim.Tenant)
+		x.NoError(err)
+		x.NotContains(vs, park.Id)
+
+		x.NoError(s.ForgetPerson(ctx, choi.Id))
+		vs, err = s.PeopleOf(ctx, kim.Tenant)
+		x.NoError(err)
+		x.NotContains(vs, choi.Id, "somebody erased is out of reach of a forgetting")
+		_, err = s.AddPerson(ctx, kim.Tenant, "choi", "Choi again", pdid.Nil)
+		x.NoError(err)
+
+		x.NoError(s.ForgetPerson(ctx, park.Id), "forgetting twice")
+		x.NoError(s.ForgetPerson(ctx, pdid.New(pdid.Domain(1))), "forgetting nobody")
+
+		_, err = s.AddPerson(ctx, kim.Tenant, "park", "Park again", pdid.Nil)
+		x.NoError(err, "the login of somebody forgotten is not free")
+	})
 }
 
 // external is a roster deployment of its own -- data plane, control plane and

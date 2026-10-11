@@ -76,43 +76,9 @@ message Party {
   };
 }
 
-// Credential is the password a holder signs in with, as an argon2id hash.
-message Credential {
-  bytes id = 1 [(orm.field) = {
-    type: TYPE_UUID
-    key: true
-    default: ""
-  }];
-  Tenant tenant = 2 [(orm.edge) = {immutable: true}];
-
-  Holder holder = 8 [(orm.edge) = {immutable: true}];
-  bytes secret = 9 [
-    (orm.field) = {default: ""},
-    (payday.field) = {secret: true}
-  ];
-
-  google.protobuf.Timestamp date_updated = 13 [(orm.field) = {version: {}}];
-  google.protobuf.Timestamp date_created = 15 [(orm.field) = {
-    immutable: true
-    default: ""
-  }];
-
-  option (orm.message) = {
-    rpc: {crud: true}
-    indexes: [
-      {
-        name: "holder"
-        refs: [{name: "holder", number: 8}]
-        unique: true
-      }
-    ]
-  };
-  option (payday.entity) = {
-    domain: 37
-    erase: {hard: {}}
-    tenanted: {via: "tenant", agrees: ["holder.tenant"]}
-  };
-}
+// Domain 37 was `Credential`, a holder's password, until roster held them
+// (design 9.10). It is not for another entity: an identifier in the trail of a
+// deployment from before says what it named.
 
 // Session is a signed-in browser. The key itself is never stored: `secret` is
 // its SHA-256, which is what a cookie is looked up by.

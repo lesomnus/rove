@@ -17,7 +17,6 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/bookable"
 	"github.com/lesomnus/rove/internal/ent/countfinding"
-	"github.com/lesomnus/rove/internal/ent/credential"
 	"github.com/lesomnus/rove/internal/ent/custody"
 	"github.com/lesomnus/rove/internal/ent/custodyline"
 	"github.com/lesomnus/rove/internal/ent/event"
@@ -117,7 +116,6 @@ func checkColumn(t, c string) error {
 			audit.Table:           audit.ValidColumn,
 			bookable.Table:        bookable.ValidColumn,
 			countfinding.Table:    countfinding.ValidColumn,
-			credential.Table:      credential.ValidColumn,
 			custody.Table:         custody.ValidColumn,
 			custodyline.Table:     custodyline.ValidColumn,
 			event.Table:           event.ValidColumn,

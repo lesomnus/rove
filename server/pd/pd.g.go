@@ -37,7 +37,6 @@ import (
 	audit "github.com/lesomnus/rove/internal/ent/audit"
 	bookable "github.com/lesomnus/rove/internal/ent/bookable"
 	countfinding "github.com/lesomnus/rove/internal/ent/countfinding"
-	credential "github.com/lesomnus/rove/internal/ent/credential"
 	custody "github.com/lesomnus/rove/internal/ent/custody"
 	custodyline "github.com/lesomnus/rove/internal/ent/custodyline"
 	event "github.com/lesomnus/rove/internal/ent/event"
@@ -119,7 +118,6 @@ const (
 	AuditDomain           pdid.Domain = 3  // "audit"
 	BookableDomain        pdid.Domain = 25 // "bookable"
 	CountFindingDomain    pdid.Domain = 32 // "count-finding"
-	CredentialDomain      pdid.Domain = 37 // "credential"
 	CustodyDomain         pdid.Domain = 21 // "custody"
 	CustodyLineDomain     pdid.Domain = 22 // "custody-line"
 	EventDomain           pdid.Domain = 17 // "event"
@@ -159,7 +157,6 @@ func init() {
 	pdid.Register("rove.Audit", AuditDomain, "audit")
 	pdid.Register("rove.Bookable", BookableDomain, "bookable")
 	pdid.Register("rove.CountFinding", CountFindingDomain, "count-finding")
-	pdid.Register("rove.Credential", CredentialDomain, "credential")
 	pdid.Register("rove.Custody", CustodyDomain, "custody")
 	pdid.Register("rove.CustodyLine", CustodyLineDomain, "custody-line")
 	pdid.Register("rove.Event", EventDomain, "event")
@@ -203,7 +200,6 @@ var Domains = map[string]pdid.Domain{
 	"rove.Audit":           AuditDomain,
 	"rove.Bookable":        BookableDomain,
 	"rove.CountFinding":    CountFindingDomain,
-	"rove.Credential":      CredentialDomain,
 	"rove.Custody":         CustodyDomain,
 	"rove.CustodyLine":     CustodyLineDomain,
 	"rove.Event":           EventDomain,
@@ -349,16 +345,6 @@ func (wall) CountFindingScope(ctx context.Context) (predicate.CountFinding, erro
 	}
 
 	return countfinding.TenantIdIn(vs...), nil
-}
-
-// CredentialScope: a row belongs to the tenant its "tenant" reaches.
-func (wall) CredentialScope(ctx context.Context) (predicate.Credential, error) {
-	vs, all, err := frame.Narrow(ctx)
-	if all || err != nil {
-		return nil, err
-	}
-
-	return credential.TenantIdIn(vs...), nil
 }
 
 // CustodyScope: a row belongs to the tenant its "tenant" reaches.
@@ -3230,104 +3216,6 @@ func (s sinkCountFinding) watchCountFindingKeys(
 	}
 
 	return ks, nil
-}
-
-type sinkCredential struct {
-	rove.CredentialServiceServer
-	store  bare.Store
-	w      *watch.Watch
-	namer  slug.Namer
-	joined bool
-}
-
-func (s Sink) Credential() rove.CredentialServiceServer {
-	return sinkCredential{s.Server.Credential(), s.Server.Store, s.w, s.namer, s.joined}
-}
-
-// tenantAtTenant is the tenant "tenant" arrives at.
-func (s sinkCredential) tenantAtTenant(ctx context.Context, ref *rove.TenantRef) ([]byte, error) {
-	if ref == nil {
-		return nil, pderr.Invalidf("tenant", "required: it is what says which tenant this belongs to")
-	}
-
-	// The row the edge names, picked the way every other reference is.
-	pick, err := bare.TenantPick(ref)
-	if err != nil {
-		return nil, pderr.At("tenant", err)
-	}
-
-	k, err := s.store.Db.Tenant.Query().Where(pick).OnlyId(ctx)
-	if err != nil {
-		// Not there, or more than one -- both are the reference being wrong,
-		// and both are the caller's to fix.
-		return nil, pderr.Invalidf("tenant", "it does not name one row")
-	}
-
-	return k[:], nil
-}
-
-// tenantAtHolderTenant is the tenant "holder.tenant" arrives at.
-func (s sinkCredential) tenantAtHolderTenant(ctx context.Context, ref *rove.HolderRef) ([]byte, error) {
-	if ref == nil {
-		return nil, pderr.Invalidf("holder", "required: it is what says which tenant this belongs to")
-	}
-
-	// The row the edge names, picked the way every other reference is.
-	pick, err := bare.HolderPick(ref)
-	if err != nil {
-		return nil, pderr.At("holder", err)
-	}
-
-	k, err := s.store.Db.Holder.Query().Where(pick).QueryTenant().OnlyId(ctx)
-	if err != nil {
-		// Not there, or more than one -- both are the reference being wrong,
-		// and both are the caller's to fix.
-		return nil, pderr.Invalidf("holder", "it does not name one row")
-	}
-
-	return k[:], nil
-}
-
-// tenancy fills what the schema says this row's tenant is, and refuses a
-// row whose other paths do not agree with it.
-//
-// The request is already this server's copy by the time it arrives, so it
-// is written to rather than cloned again.
-func (s sinkCredential) tenancy(ctx context.Context, req *rove.CredentialAddRequest) error {
-	want, err := s.tenantAtTenant(ctx, req.GetTenant())
-	if err != nil {
-		return err
-	}
-
-	if req.HasHolder() {
-		got, err := s.tenantAtHolderTenant(ctx, req.GetHolder())
-		if err != nil {
-			return err
-		}
-		if string(got) != string(want) {
-			// Both exist and both are visible to whoever is writing --
-			// the gate already saw to that. What it cannot see is that
-			// they are in different tenants, because it asks "may I read
-			// this" and a caller who holds several tenants may read both.
-			return pderr.Invalidf("holder",
-				"it is in another tenant than tenant")
-		}
-	}
-
-	return nil
-}
-
-// Add stamps this row's tenant before writing it.
-func (s sinkCredential) Add(ctx context.Context, req *rove.CredentialAddRequest) (*rove.Credential, error) {
-	// Copied rather than written to: the request belongs to whoever called,
-	// and for a call made in this process that is a message they may still
-	// be holding.
-	r := proto.CloneOf(req)
-	if err := s.tenancy(ctx, r); err != nil {
-		return nil, err
-	}
-
-	return s.CredentialServiceServer.Add(ctx, r)
 }
 
 type sinkCustody struct {
@@ -11884,54 +11772,6 @@ func (s gateCountFinding) Add(ctx context.Context, req *rove.CountFindingAddRequ
 	return s.CountFindingServiceServer.Add(ctx, req)
 }
 
-type gateCredential struct {
-	Gate
-	rove.CredentialServiceServer
-}
-
-func (s Gate) Credential() rove.CredentialServiceServer {
-	return gateCredential{s, s.Next().Credential()}
-}
-
-// Add refuses a Credential put into a Tenant this caller cannot see.
-//
-// The wall is a predicate and an Add has no query, so without this the
-// identifier in `tenant` becomes a foreign key with nothing consulted.
-// The row is then invisible to whoever planted it and visible to whoever
-// holds that Tenant, which is the shape of the bug rather than a
-// mitigation of it.
-//
-// NotFound rather than a refusal, for the reason on `gateHolder.Add`:
-// that a row exists is itself something a caller who may not see it
-// should not be told.
-func (s gateCredential) Add(ctx context.Context, req *rove.CredentialAddRequest) (*rove.Credential, error) {
-	if ref := req.GetTenant(); ref != nil {
-		if _, err := s.Gate.Next().Tenant().Get(ctx, rove.TenantGetRequest_builder{
-			Ref: ref,
-		}.Build()); err != nil {
-			if status.Code(err) == codes.NotFound {
-				return nil, gate.ErrNotFound("Tenant")
-			}
-
-			return nil, err
-		}
-	}
-
-	if ref := req.GetHolder(); ref != nil {
-		if _, err := s.Gate.Next().Holder().Get(ctx, rove.HolderGetRequest_builder{
-			Ref: ref,
-		}.Build()); err != nil {
-			if status.Code(err) == codes.NotFound {
-				return nil, gate.ErrNotFound("Holder")
-			}
-
-			return nil, err
-		}
-	}
-
-	return s.CredentialServiceServer.Add(ctx, req)
-}
-
 type gateCustody struct {
 	Gate
 	rove.CustodyServiceServer
@@ -13497,8 +13337,6 @@ func hidden(key pdid.Id, p *patchpb.Patch) *patchpb.Patch {
 
 	var secret []uint32
 	switch key.Domain() {
-	case CredentialDomain:
-		secret = []uint32{9}
 	case SessionDomain:
 		secret = []uint32{9}
 	}
@@ -13752,36 +13590,6 @@ func subject(ctx context.Context, s bare.Server, key pdid.Id) (uuid.UUID, []byte
 
 			return uuid.Nil(), nil, err
 		}
-
-		b, err := proto.Marshal(row)
-		if err != nil {
-			return uuid.Nil(), nil, err
-		}
-
-		if !row.HasTenant() {
-			return uuid.Nil(), b, nil
-		}
-
-		k, err := entuuid.FromBytes(row.GetTenant().GetId())
-		if err != nil {
-			return uuid.Nil(), nil, err
-		}
-
-		return k, b, nil
-
-	case CredentialDomain:
-		row, err := s.Credential().Get(ctx, rove.CredentialGetRequest_builder{
-			Ref: rove.CredentialRef_builder{Id: key.Bytes()}.Build(),
-		}.Build())
-		if err != nil {
-			if status.Code(err) == codes.NotFound {
-				return uuid.Nil(), []byte{}, nil
-			}
-
-			return uuid.Nil(), nil, err
-		}
-
-		hideCredential(row)
 
 		b, err := proto.Marshal(row)
 		if err != nil {
@@ -15118,70 +14926,6 @@ func (secretBuilder) Build(next rove.Server) (rove.Server, error) {
 	return NewSecret(next), nil
 }
 
-func (s Secret) Credential() rove.CredentialServiceServer {
-	return secretCredential{s, s.Next().Credential()}
-}
-
-type secretCredential struct {
-	Secret
-	rove.CredentialServiceServer
-}
-
-func (s secretCredential) Add(ctx context.Context, req *rove.CredentialAddRequest) (*rove.Credential, error) {
-	v, err := s.CredentialServiceServer.Add(ctx, req)
-
-	return hideCredential(v), err
-}
-
-func (s secretCredential) Get(ctx context.Context, req *rove.CredentialGetRequest) (*rove.Credential, error) {
-	v, err := s.CredentialServiceServer.Get(ctx, req)
-
-	return hideCredential(v), err
-}
-
-func (s secretCredential) Patch(ctx context.Context, req *rove.CredentialPatchRequest) (*rove.Credential, error) {
-	v, err := s.CredentialServiceServer.Patch(ctx, req)
-
-	return hideCredential(v), err
-}
-
-func (s secretCredential) Apply(ctx context.Context, req *rove.CredentialApplyRequest) (*rove.Credential, error) {
-	v, err := s.CredentialServiceServer.Apply(ctx, req)
-
-	return hideCredential(v), err
-}
-
-// hideCredential clears what this entity declared it never answers with.
-//
-// A nil row passes through, because an error is answered with one and the
-// caller of this is handing both on.
-//
-// By field number and through the descriptor, rather than a setter per
-// field, because a setter's argument has a type and this has to hold for
-// every field a row can carry. A `Set<F>(nil)` per secret is what this
-// was, and it compiled only while every secret anybody had declared was
-// `bytes`: a `string` one ended the build in a generated file, and an
-// enum would have needed its own type spelled out here to say zero.
-//
-// Clear is also the truer word. A field with presence is **absent**
-// afterwards rather than present and empty, which is what "never answered
-// with" says; one without presence reads as its zero value either way.
-// And the numbers are the ones `hidden` filters the trail's patch by, so
-// the two cannot come to disagree about which fields they are.
-func hideCredential(v *rove.Credential) *rove.Credential {
-	if v == nil {
-		return nil
-	}
-
-	m := v.ProtoReflect()
-	fs := m.Descriptor().Fields()
-	for _, n := range []protoreflect.FieldNumber{9} {
-		m.Clear(fs.ByNumber(n))
-	}
-
-	return v
-}
-
 func (s Secret) Session() rove.SessionServiceServer {
 	return secretSession{s, s.Next().Session()}
 }
@@ -15580,40 +15324,6 @@ func (s interceptParty) Deactivate(ctx context.Context, req *rove.PartyDeactivat
 func (s interceptParty) Pseudonymize(ctx context.Context, req *rove.PartyPseudonymizeRequest) (*rove.Party, error) {
 	return grpcx.RunUnary(ctx, s.unary, s.PartyServiceServer,
 		rove.PartyService_Pseudonymize_FullMethodName, req, s.PartyServiceServer.Pseudonymize)
-}
-
-func (s Intercept) Credential() rove.CredentialServiceServer {
-	return interceptCredential{s, s.Next().Credential()}
-}
-
-type interceptCredential struct {
-	Intercept
-	rove.CredentialServiceServer
-}
-
-func (s interceptCredential) Add(ctx context.Context, req *rove.CredentialAddRequest) (*rove.Credential, error) {
-	return grpcx.RunUnary(ctx, s.unary, s.CredentialServiceServer,
-		rove.CredentialService_Add_FullMethodName, req, s.CredentialServiceServer.Add)
-}
-
-func (s interceptCredential) Get(ctx context.Context, req *rove.CredentialGetRequest) (*rove.Credential, error) {
-	return grpcx.RunUnary(ctx, s.unary, s.CredentialServiceServer,
-		rove.CredentialService_Get_FullMethodName, req, s.CredentialServiceServer.Get)
-}
-
-func (s interceptCredential) Patch(ctx context.Context, req *rove.CredentialPatchRequest) (*rove.Credential, error) {
-	return grpcx.RunUnary(ctx, s.unary, s.CredentialServiceServer,
-		rove.CredentialService_Patch_FullMethodName, req, s.CredentialServiceServer.Patch)
-}
-
-func (s interceptCredential) Apply(ctx context.Context, req *rove.CredentialApplyRequest) (*rove.Credential, error) {
-	return grpcx.RunUnary(ctx, s.unary, s.CredentialServiceServer,
-		rove.CredentialService_Apply_FullMethodName, req, s.CredentialServiceServer.Apply)
-}
-
-func (s interceptCredential) Erase(ctx context.Context, req *rove.CredentialRef) (*rove.CredentialEraseResponse, error) {
-	return grpcx.RunUnary(ctx, s.unary, s.CredentialServiceServer,
-		rove.CredentialService_Erase_FullMethodName, req, s.CredentialServiceServer.Erase)
 }
 
 func (s Intercept) Session() rove.SessionServiceServer {
@@ -18382,71 +18092,6 @@ func dispatch(ctx context.Context, s rove.Server, op *pdpb.Op) (*anypb.Any, erro
 		}
 
 		res, err := s.Party().Pseudonymize(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-
-		return anypb.New(res)
-
-	case rove.CredentialService_Add_FullMethodName:
-		v := &rove.CredentialAddRequest{}
-		if err := op.GetRequest().UnmarshalTo(v); err != nil {
-			return nil, batch.ErrRequest(m, err)
-		}
-
-		res, err := s.Credential().Add(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-
-		return anypb.New(res)
-
-	case rove.CredentialService_Get_FullMethodName:
-		v := &rove.CredentialGetRequest{}
-		if err := op.GetRequest().UnmarshalTo(v); err != nil {
-			return nil, batch.ErrRequest(m, err)
-		}
-
-		res, err := s.Credential().Get(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-
-		return anypb.New(res)
-
-	case rove.CredentialService_Patch_FullMethodName:
-		v := &rove.CredentialPatchRequest{}
-		if err := op.GetRequest().UnmarshalTo(v); err != nil {
-			return nil, batch.ErrRequest(m, err)
-		}
-
-		res, err := s.Credential().Patch(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-
-		return anypb.New(res)
-
-	case rove.CredentialService_Apply_FullMethodName:
-		v := &rove.CredentialApplyRequest{}
-		if err := op.GetRequest().UnmarshalTo(v); err != nil {
-			return nil, batch.ErrRequest(m, err)
-		}
-
-		res, err := s.Credential().Apply(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-
-		return anypb.New(res)
-
-	case rove.CredentialService_Erase_FullMethodName:
-		v := &rove.CredentialRef{}
-		if err := op.GetRequest().UnmarshalTo(v); err != nil {
-			return nil, batch.ErrRequest(m, err)
-		}
-
-		res, err := s.Credential().Erase(ctx, v)
 		if err != nil {
 			return nil, err
 		}

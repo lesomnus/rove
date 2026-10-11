@@ -118,14 +118,30 @@ cd ts && npm install && npm run build   # or `npm run dev` on :5173, proxied to 
 `init` prints the owner's login; everybody `--demo` makes signs in with
 `demo1234`. Delete `data/` to start over. PostgreSQL is
 `ROVE_DB_DRIVER=pgx ROVE_DB_DSN=...`, and `cli.Migrate` then also installs
-`cli/pg.sql` -- the constraints the schema cannot state.
+`cli/pg.sql` -- the constraints the schema cannot state. The roster in this
+process then needs a database of its own named too:
+`ROVE_AUTH_ROSTER_DB_DRIVER` and `ROVE_AUTH_ROSTER_DB_DSN`.
 
 ## Signing in
 
-A browser signs in at `POST /session` (`server/session`): a password checked
-against the argon2id hash in `Credential`, and a cookie whose session row is in
-the database. `auth.Plain` is not wired; tests mint a session with
-`Server.Sessions.Mint` and send its cookie.
+People, their passwords and whether they may sign in are **roster's**
+(`internal/identity`, design 9.10). `auth.roster.addr` names an external one;
+empty runs one in this process on its own database (`roster.db` beside Rove's
+SQLite file, or `auth.roster.db`), reached over `bufconn`.
+
+A browser signs in at `POST /session` (`server/session`): the password goes to
+roster's `VouchService.Verify`, `server/tenancy` makes Rove's `Tenant` and
+`Holder` for whoever it vouched for on their first sign-in -- **with roster's
+identifiers**, so `Holder.id` is the `sub` -- and the cookie's session row is
+in Rove's database. Every call a session makes asks roster whether the person
+still stands (`identity.Store.Held`, cached `HeldTtl`); a roster that cannot be
+asked serves no session.
+
+Roles stay Rove's (`Holder.role`). On the embedded roster the people screen and
+`rove holder add|password` make logins and set passwords there; on an external
+one they are refused, and are done at roster. `auth.Plain` is not wired; tests
+mint a session with `Server.Sessions.Mint` and send its cookie, and set
+`c.Auth.Roster.Db` to a `pdtest.DB` of its own -- the default is a file.
 
 ## What may be called
 

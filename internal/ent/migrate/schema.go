@@ -416,42 +416,6 @@ var (
 			},
 		},
 	}
-	// CredentialColumns holds the columns for the "credential" table.
-	CredentialColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUuid, Unique: true},
-		{Name: "secret", Type: field.TypeBytes, Nullable: true},
-		{Name: "date_updated", Type: field.TypeTime},
-		{Name: "date_created", Type: field.TypeTime, Nullable: true},
-		{Name: "tenant_id", Type: field.TypeUuid},
-		{Name: "holder_id", Type: field.TypeUuid},
-	}
-	// CredentialTable holds the schema information for the "credential" table.
-	CredentialTable = &schema.Table{
-		Name:       "credential",
-		Columns:    CredentialColumns,
-		PrimaryKey: []*schema.Column{CredentialColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "credential_tenant_tenant",
-				Columns:    []*schema.Column{CredentialColumns[4]},
-				RefColumns: []*schema.Column{TenantColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "credential_holder_holder",
-				Columns:    []*schema.Column{CredentialColumns[5]},
-				RefColumns: []*schema.Column{HolderColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "credential_holder_id",
-				Unique:  true,
-				Columns: []*schema.Column{CredentialColumns[5]},
-			},
-		},
-	}
 	// CustodyColumns holds the columns for the "custody" table.
 	CustodyColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUuid, Unique: true},
@@ -1710,7 +1674,6 @@ var (
 		AuditTable,
 		BookableTable,
 		CountfindingTable,
-		CredentialTable,
 		CustodyTable,
 		CustodylineTable,
 		EventTable,
@@ -1779,11 +1742,6 @@ func init() {
 	CountfindingTable.ForeignKeys[2].RefTable = AssetTable
 	CountfindingTable.Annotation = &entsql.Annotation{
 		Table: "countfinding",
-	}
-	CredentialTable.ForeignKeys[0].RefTable = TenantTable
-	CredentialTable.ForeignKeys[1].RefTable = HolderTable
-	CredentialTable.Annotation = &entsql.Annotation{
-		Table: "credential",
 	}
 	CustodyTable.ForeignKeys[0].RefTable = TenantTable
 	CustodyTable.ForeignKeys[1].RefTable = PartyTable

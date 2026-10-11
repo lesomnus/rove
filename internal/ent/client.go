@@ -18,7 +18,6 @@ import (
 	"github.com/lesomnus/rove/internal/ent/audit"
 	"github.com/lesomnus/rove/internal/ent/bookable"
 	"github.com/lesomnus/rove/internal/ent/countfinding"
-	"github.com/lesomnus/rove/internal/ent/credential"
 	"github.com/lesomnus/rove/internal/ent/custody"
 	"github.com/lesomnus/rove/internal/ent/custodyline"
 	"github.com/lesomnus/rove/internal/ent/event"
@@ -72,8 +71,6 @@ type Client struct {
 	Bookable *BookableClient
 	// CountFinding is the client for interacting with the CountFinding builders.
 	CountFinding *CountFindingClient
-	// Credential is the client for interacting with the Credential builders.
-	Credential *CredentialClient
 	// Custody is the client for interacting with the Custody builders.
 	Custody *CustodyClient
 	// CustodyLine is the client for interacting with the CustodyLine builders.
@@ -148,7 +145,6 @@ func (c *Client) init() {
 	c.Audit = NewAuditClient(c.config)
 	c.Bookable = NewBookableClient(c.config)
 	c.CountFinding = NewCountFindingClient(c.config)
-	c.Credential = NewCredentialClient(c.config)
 	c.Custody = NewCustodyClient(c.config)
 	c.CustodyLine = NewCustodyLineClient(c.config)
 	c.Event = NewEventClient(c.config)
@@ -277,7 +273,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Audit:           NewAuditClient(cfg),
 		Bookable:        NewBookableClient(cfg),
 		CountFinding:    NewCountFindingClient(cfg),
-		Credential:      NewCredentialClient(cfg),
 		Custody:         NewCustodyClient(cfg),
 		CustodyLine:     NewCustodyLineClient(cfg),
 		Event:           NewEventClient(cfg),
@@ -333,7 +328,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Audit:           NewAuditClient(cfg),
 		Bookable:        NewBookableClient(cfg),
 		CountFinding:    NewCountFindingClient(cfg),
-		Credential:      NewCredentialClient(cfg),
 		Custody:         NewCustodyClient(cfg),
 		CustodyLine:     NewCustodyLineClient(cfg),
 		Event:           NewEventClient(cfg),
@@ -438,8 +432,8 @@ func (c *Client) InTx() bool {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Allocation, c.Archived, c.Asset, c.AssetType, c.Attachment, c.Audit,
-		c.Bookable, c.CountFinding, c.Credential, c.Custody, c.CustodyLine, c.Event,
-		c.Fact, c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
+		c.Bookable, c.CountFinding, c.Custody, c.CustodyLine, c.Event, c.Fact,
+		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
 		c.Notification, c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine,
 		c.Reservation, c.ReservationItem, c.Session, c.Stewardship, c.Stock,
 		c.StockMovement, c.Tenant, c.TenantContract, c.TenantDomain, c.TreeLock,
@@ -454,8 +448,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Allocation, c.Archived, c.Asset, c.AssetType, c.Attachment, c.Audit,
-		c.Bookable, c.CountFinding, c.Credential, c.Custody, c.CustodyLine, c.Event,
-		c.Fact, c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
+		c.Bookable, c.CountFinding, c.Custody, c.CustodyLine, c.Event, c.Fact,
+		c.Holder, c.InventoryCount, c.ItemModel, c.Label, c.LegalHold, c.Link,
 		c.Notification, c.Outbox, c.Party, c.Placement, c.Purchase, c.PurchaseLine,
 		c.Reservation, c.ReservationItem, c.Session, c.Stewardship, c.Stock,
 		c.StockMovement, c.Tenant, c.TenantContract, c.TenantDomain, c.TreeLock,
@@ -484,8 +478,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Bookable.mutate(ctx, m)
 	case *CountFindingMutation:
 		return c.CountFinding.mutate(ctx, m)
-	case *CredentialMutation:
-		return c.Credential.mutate(ctx, m)
 	case *CustodyMutation:
 		return c.Custody.mutate(ctx, m)
 	case *CustodyLineMutation:
@@ -1816,171 +1808,6 @@ func (c *CountFindingClient) mutate(ctx context.Context, m *CountFindingMutation
 		return (&CountFindingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown CountFinding mutation op: %q", m.Op())
-	}
-}
-
-// CredentialClient is a client for the Credential schema.
-type CredentialClient struct {
-	config
-}
-
-// NewCredentialClient returns a client for the Credential from the given config.
-func NewCredentialClient(c config) *CredentialClient {
-	return &CredentialClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `credential.Hooks(f(g(h())))`.
-func (c *CredentialClient) Use(hooks ...Hook) {
-	c.hooks.Credential = append(c.hooks.Credential, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `credential.Intercept(f(g(h())))`.
-func (c *CredentialClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Credential = append(c.inters.Credential, interceptors...)
-}
-
-// Create returns a builder for creating a Credential entity.
-func (c *CredentialClient) Create() *CredentialCreate {
-	mutation := newCredentialMutation(c.config, OpCreate)
-	return &CredentialCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Credential entities.
-func (c *CredentialClient) CreateBulk(builders ...*CredentialCreate) *CredentialCreateBulk {
-	return &CredentialCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *CredentialClient) MapCreateBulk(slice any, setFunc func(*CredentialCreate, int)) *CredentialCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &CredentialCreateBulk{err: fmt.Errorf("calling to CredentialClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*CredentialCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &CredentialCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Credential.
-func (c *CredentialClient) Update() *CredentialUpdate {
-	mutation := newCredentialMutation(c.config, OpUpdate)
-	return &CredentialUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *CredentialClient) UpdateOne(_m *Credential) *CredentialUpdateOne {
-	mutation := newCredentialMutation(c.config, OpUpdateOne, withCredential(_m))
-	return &CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneId returns an update builder for the given id.
-func (c *CredentialClient) UpdateOneId(id uuid.UUID) *CredentialUpdateOne {
-	mutation := newCredentialMutation(c.config, OpUpdateOne, withCredentialId(id))
-	return &CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Credential.
-func (c *CredentialClient) Delete() *CredentialDelete {
-	mutation := newCredentialMutation(c.config, OpDelete)
-	return &CredentialDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *CredentialClient) DeleteOne(_m *Credential) *CredentialDeleteOne {
-	return c.DeleteOneId(_m.Id)
-}
-
-// DeleteOneId returns a builder for deleting the given entity by its id.
-func (c *CredentialClient) DeleteOneId(id uuid.UUID) *CredentialDeleteOne {
-	builder := c.Delete().Where(credential.Id(id))
-	builder.mutation.id = &id
-	builder.mutation.SetOp(OpDeleteOne)
-	return &CredentialDeleteOne{builder}
-}
-
-// Query returns a query builder for Credential.
-func (c *CredentialClient) Query() *CredentialQuery {
-	return &CredentialQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeCredential},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Credential entity by its id.
-func (c *CredentialClient) Get(ctx context.Context, id uuid.UUID) (*Credential, error) {
-	return c.Query().Where(credential.Id(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *CredentialClient) GetX(ctx context.Context, id uuid.UUID) *Credential {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryTenant queries the tenant edge of a Credential.
-func (c *CredentialClient) QueryTenant(_m *Credential) *TenantQuery {
-	query := (&TenantClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.Id
-		step := sqlgraph.NewStep(
-			sqlgraph.From(credential.Table, credential.FieldId, id),
-			sqlgraph.To(tenant.Table, tenant.FieldId),
-			sqlgraph.Edge(sqlgraph.M2O, false, credential.TenantTable, credential.TenantColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryHolder queries the holder edge of a Credential.
-func (c *CredentialClient) QueryHolder(_m *Credential) *HolderQuery {
-	query := (&HolderClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.Id
-		step := sqlgraph.NewStep(
-			sqlgraph.From(credential.Table, credential.FieldId, id),
-			sqlgraph.To(holder.Table, holder.FieldId),
-			sqlgraph.Edge(sqlgraph.M2O, false, credential.HolderTable, credential.HolderColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *CredentialClient) Hooks() []Hook {
-	return c.hooks.Credential
-}
-
-// Interceptors returns the client interceptors.
-func (c *CredentialClient) Interceptors() []Interceptor {
-	return c.inters.Credential
-}
-
-func (c *CredentialClient) mutate(ctx context.Context, m *CredentialMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&CredentialCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&CredentialUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&CredentialDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Credential mutation op: %q", m.Op())
 	}
 }
 
@@ -6576,18 +6403,18 @@ func (c *WorkOrderClient) mutate(ctx context.Context, m *WorkOrderMutation) (Val
 type (
 	hooks struct {
 		Allocation, Archived, Asset, AssetType, Attachment, Audit, Bookable,
-		CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder,
-		InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party,
-		Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session,
-		Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain,
-		TreeLock, UsageSnapshot, WorkOrder []ent.Hook
+		CountFinding, Custody, CustodyLine, Event, Fact, Holder, InventoryCount,
+		ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement,
+		Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship,
+		Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock,
+		UsageSnapshot, WorkOrder []ent.Hook
 	}
 	inters struct {
 		Allocation, Archived, Asset, AssetType, Attachment, Audit, Bookable,
-		CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder,
-		InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party,
-		Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session,
-		Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain,
-		TreeLock, UsageSnapshot, WorkOrder []ent.Interceptor
+		CountFinding, Custody, CustodyLine, Event, Fact, Holder, InventoryCount,
+		ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement,
+		Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship,
+		Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock,
+		UsageSnapshot, WorkOrder []ent.Interceptor
 	}
 )

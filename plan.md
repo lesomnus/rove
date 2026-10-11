@@ -87,6 +87,7 @@ pdid 도메인 번호는 한 번 정하면 바꾸거나 재사용하지 않는�
 
 - "외부에 여는 생성 RPC"에 없는 생성 메서드는 `seal`이 닫는다. "(완성)"은 도메인 레이어가 생성 동사를 완성한 것이고, 그 밖의 상태 변경은 새 도메인 RPC다(design 6장·9.8절).
 - 테넌트 행을 가리키는 엣지는 불변으로 두고 `agrees`에 선언한다. 바뀌는 참조(`Asset.parent`, `custodian`, `type`, `model`, `Party.parent`, `Party.account`)에는 pg-extra에 테넌트 일치 트리거를 둔다.
+- 프로토타입이 만든 `Credential`(37)은 비밀번호가 roster로 가면서 지웠다(design 9.10절). 번호는 비워 둔다. 예전 배포의 trail에 남은 ID가 그것을 가리킨다.
 
 ## 5. 마일스톤
 
@@ -119,7 +120,7 @@ MVP(Phase 0 + 1)는 M0~M5이고, 합쳐서 대략 13~16주로 본다.
 ### M2 — 계정·권한·운영자 (약 2주)
 
 - 신원은 roster다(design 9.10절, D26). 프로토타입의 비밀번호·DB 세션(report 결정 3)을 세 단계로 옮긴다.
-  1. **roster에 붙기**: `internal/identity` 하나가 외부 roster(TLS, `rk_`/`rt_`)와 내장 roster(`bufconn`)를 같은 인터페이스로 감싼다. `auth.roster` 설정. Tenant·Holder를 roster의 ID에 고정해 처음 들어올 때 만든다. 비밀번호 로그인은 `VouchService.Verify`로, 세션을 쓰는 호출마다 roster에 사람을 확인한다(짧은 캐시, fail closed). `rove init`과 새 `rove holder add`는 내장 roster에 쓴다. 사람 화면의 로그인 발급·비밀번호 재설정·로그인 중지는 roster 호출이 된다. `Credential`과 `server/password`를 지운다. 기존 배포는 `rove identity migrate`.
+  1. **roster에 붙기**: `internal/identity` 하나가 외부 roster(TLS, `rk_`/`rt_`)와 내장 roster(`bufconn`)를 같은 인터페이스로 감싼다. `auth.roster` 설정. Tenant·Holder를 roster의 ID에 고정해 처음 들어올 때 만든다. 비밀번호 로그인은 `VouchService.Verify`로, 세션을 쓰는 호출마다 roster에 사람을 확인한다(짧은 캐시, fail closed). `rove init`과 새 `rove holder add`는 내장 roster에 쓴다. 사람 화면의 로그인 발급·비밀번호 재설정·로그인 중지는 roster 호출이 된다. 내장 roster에서 로그인 중지·개인정보 삭제·조직 전체 삭제는 roster의 `forget`으로 그 사람을 바로 파기한다(Rove가 roster의 복구를 열지 않으므로 유예는 지연일 뿐이다). `Credential`과 `server/password`를 지운다. 기존 배포는 `rove identity migrate`.
   2. **SSO**: roster issuer의 relying party(`/sso/login`, `/sso/callback`, `/sso/logout`), `auth.sso_only`, 로그인 화면의 SSO 버튼.
   3. **생명주기**: `SyncService/Watch`를 따라가 roster의 중지·모든 곳에서 로그아웃은 세션 종료로, 사람 삭제는 가명화(Party·trail)로 이어 간다.
 - 로그인 단계의 테넌트 선택(테넌트 alias 경로 또는 서브도메인).
@@ -244,17 +245,18 @@ MVP 이후에 파일럿 피드백으로 순서를 다시 정한다.
 
 ## 10. 정해야 할 것
 
-정한 것: 인프라는 self-host(design D21), QR 라벨 도메인은 테넌트마다 설정(D23), 첨부는 로컬 파일시스템으로 시작(D25).
+정한 것: 인프라는 self-host(design D21), QR 라벨 도메인은 테넌트마다 설정(D23), 첨부는 로컬 파일시스템으로 시작(D25). 신원(design 9.10절)에서 네 가지를 2026-10-11에 정했다.
+
+- **역할의 출처**: Rove의 `Holder.role`과 정책 표로 둔다. roster의 역할을 `HolderService/Reaches`로 읽는 것은 SCIM 그룹으로 권한을 주는 고객이 생길 때 다시 본다.
+- **테넌트를 만드는 사람과 탈퇴 순서**: 외부 roster에서는 roster 운영자가 만든다(`roster tenant add`, `roster app install --tenant <alias> rove`). 셀프 가입은 두지 않는다. 그 테넌트의 첫 사람이 처음 로그인할 때 Rove에 테넌트가 생기고 그 사람이 소유자가 된다. 탈퇴는 Rove 내보내기 → Rove 전체 삭제 → roster의 테넌트 정리 순서이고, 마지막은 roster 운영자의 일이다. 내장 roster에서는 `rove tenant purge`가 그 테넌트의 사람을 roster에서도 먼저 파기한다(roster에 테넌트를 통째로 지우는 기능이 아직 없어 테넌트 행은 남는다).
+- **사람 삭제의 방향**: 사람을 지우는 것은 roster의 일이다. Rove의 '개인정보 삭제'는 Rove 쪽(Party, Holder, trail)만 지운다. 내장 roster는 Rove만 쓰므로 거기서는 roster의 사람도 파기한다.
+- **옮길 기존 데이터**: 있으면 `rove identity migrate`로 같은 ID로 옮기고, 비밀번호는 새로 발급해 한 번 보여 준다.
 
 | 결정 | 언제까지 | 내용 |
 | --- | --- | --- |
 | 저장소 공개 여부와 라이선스 | 코드를 올리기 전(M0) | 지금 공개 저장소이고 LICENSE가 없다. 상용 SaaS의 소스를 공개할지, 공개한다면 어떤 라이선스인지 |
 | Rove 기본 도메인 | M2 전 | 앱 호스트, OIDC 리다이렉트 주소, 라벨 CNAME 대상, 기본 하위 도메인. 한 번 정하면 바꾸지 않는다 |
 | 운영 서버와 백업 위치 | M5 전 | 서버를 어디에 둘지(자체 장비, 코로케이션, VPS), 백업을 보낼 다른 장소 |
-| 역할의 출처 | M2 단계 1 전 | Rove의 `Holder.role`과 정책 표(지금, 기본)로 둘지, roster의 역할(메서드 묶음)을 `HolderService/Reaches`로 읽을지(design 9.10절). 뒤쪽은 SCIM 그룹으로 권한을 주는 기업에 맞지만, 권한 화면이 roster 콘솔로 간다 |
-| 테넌트를 만드는 사람과 탈퇴 순서 | M2 단계 1 전 | 외부 roster에서 새 조직을 누가 만드는지(roster 운영자의 `roster tenant add`와 `roster app install rove`로 시작), 셀프 가입을 둘지, 탈퇴 때 Rove의 내보내기·전체 삭제와 roster 테넌트 삭제의 순서 |
-| 사람 삭제의 방향 | M2 단계 3 전 | roster에서 지운 사람을 Rove가 따라 가명화하는 것은 정했다. Rove 사람 화면의 '개인정보 삭제'가 roster의 사람도 지울지 |
-| 옮길 기존 데이터 | M2 단계 1 | 지금 배포에 옮길 사람이 있는지. 있으면 `rove identity migrate`로 옮기고 비밀번호는 새로 발급한다 |
 | 파일럿 | M3 중 | 아래 |
 
 **파일럿에서 정할 것**: 파일럿은 MVP를 실제 업무에 4~8주 써 보는 첫 조직이고, design 1.1절의 가설을 검증하는 대상이다.

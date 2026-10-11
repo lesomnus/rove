@@ -332,184 +332,6 @@ func (b0 Party_builder) Build() *Party {
 	return m0
 }
 
-// Credential is the password a holder signs in with, as an argon2id hash.
-type Credential struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          []byte                 `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Tenant      *Tenant                `protobuf:"bytes,2,opt,name=tenant"`
-	xxx_hidden_Holder      *Holder                `protobuf:"bytes,8,opt,name=holder"`
-	xxx_hidden_Secret      []byte                 `protobuf:"bytes,9,opt,name=secret"`
-	xxx_hidden_DateUpdated *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=date_updated,json=dateUpdated"`
-	xxx_hidden_DateCreated *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=date_created,json=dateCreated"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *Credential) Reset() {
-	*x = Credential{}
-	mi := &file_rove_org_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Credential) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Credential) ProtoMessage() {}
-
-func (x *Credential) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *Credential) GetId() []byte {
-	if x != nil {
-		return x.xxx_hidden_Id
-	}
-	return nil
-}
-
-func (x *Credential) GetTenant() *Tenant {
-	if x != nil {
-		return x.xxx_hidden_Tenant
-	}
-	return nil
-}
-
-func (x *Credential) GetHolder() *Holder {
-	if x != nil {
-		return x.xxx_hidden_Holder
-	}
-	return nil
-}
-
-func (x *Credential) GetSecret() []byte {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *Credential) GetDateUpdated() *timestamppb.Timestamp {
-	if x != nil {
-		return x.xxx_hidden_DateUpdated
-	}
-	return nil
-}
-
-func (x *Credential) GetDateCreated() *timestamppb.Timestamp {
-	if x != nil {
-		return x.xxx_hidden_DateCreated
-	}
-	return nil
-}
-
-func (x *Credential) SetId(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Id = v
-}
-
-func (x *Credential) SetTenant(v *Tenant) {
-	x.xxx_hidden_Tenant = v
-}
-
-func (x *Credential) SetHolder(v *Holder) {
-	x.xxx_hidden_Holder = v
-}
-
-func (x *Credential) SetSecret(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_Secret = v
-}
-
-func (x *Credential) SetDateUpdated(v *timestamppb.Timestamp) {
-	x.xxx_hidden_DateUpdated = v
-}
-
-func (x *Credential) SetDateCreated(v *timestamppb.Timestamp) {
-	x.xxx_hidden_DateCreated = v
-}
-
-func (x *Credential) HasTenant() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Tenant != nil
-}
-
-func (x *Credential) HasHolder() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Holder != nil
-}
-
-func (x *Credential) HasDateUpdated() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_DateUpdated != nil
-}
-
-func (x *Credential) HasDateCreated() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_DateCreated != nil
-}
-
-func (x *Credential) ClearTenant() {
-	x.xxx_hidden_Tenant = nil
-}
-
-func (x *Credential) ClearHolder() {
-	x.xxx_hidden_Holder = nil
-}
-
-func (x *Credential) ClearDateUpdated() {
-	x.xxx_hidden_DateUpdated = nil
-}
-
-func (x *Credential) ClearDateCreated() {
-	x.xxx_hidden_DateCreated = nil
-}
-
-type Credential_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id          []byte
-	Tenant      *Tenant
-	Holder      *Holder
-	Secret      []byte
-	DateUpdated *timestamppb.Timestamp
-	DateCreated *timestamppb.Timestamp
-}
-
-func (b0 Credential_builder) Build() *Credential {
-	m0 := &Credential{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_Tenant = b.Tenant
-	x.xxx_hidden_Holder = b.Holder
-	x.xxx_hidden_Secret = b.Secret
-	x.xxx_hidden_DateUpdated = b.DateUpdated
-	x.xxx_hidden_DateCreated = b.DateCreated
-	return m0
-}
-
 // Session is a signed-in browser. The key itself is never stored: `secret` is
 // its SHA-256, which is what a cookie is looked up by.
 type Session struct {
@@ -530,7 +352,7 @@ type Session struct {
 
 func (x *Session) Reset() {
 	*x = Session{}
-	mi := &file_rove_org_proto_msgTypes[2]
+	mi := &file_rove_org_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -542,7 +364,7 @@ func (x *Session) String() string {
 func (*Session) ProtoMessage() {}
 
 func (x *Session) ProtoReflect() protoreflect.Message {
-	mi := &file_rove_org_proto_msgTypes[2]
+	mi := &file_rove_org_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,19 +644,7 @@ const file_rove_org_proto_rawDesc = "" +
 	"\x04kind\x1a\v\n" +
 	"\tparent_id\x1a\b\n" +
 	"\x06holder\x1a\b\n" +
-	"\x06labels 2(\xf4\x03:\x00\"\x83\x03\n" +
-	"\n" +
-	"Credential\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\fB\v\xea\x82\x16\a\x10@(\x01\x82\x01\x00R\x02id\x12,\n" +
-	"\x06tenant\x18\x02 \x01(\v2\f.rove.TenantB\x06\xf2\x82\x16\x02@\x01R\x06tenant\x12,\n" +
-	"\x06holder\x18\b \x01(\v2\f.rove.HolderB\x06\xf2\x82\x16\x02@\x01R\x06holder\x12%\n" +
-	"\x06secret\x18\t \x01(\fB\r\xea\x82\x16\x03\x82\x01\x00\xaa\xc1\x16\x02\b\x01R\x06secret\x12F\n" +
-	"\fdate_updated\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\a\xea\x82\x16\x03\x8a\x01\x00R\vdateUpdated\x12H\n" +
-	"\fdate_created\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\t\xea\x82\x16\x05@\x01\x82\x01\x00R\vdateCreated:C\xca\xfc\x15\x1c\x12\x02\x10\x01\x1a\x16\x12\x06holder\x1a\n" +
-	"\n" +
-	"\x06holder\x10\b0\x01\x8a\xbb\x16\x1f\b%B\x02\n" +
-	"\x00\"\x17\n" +
-	"\x06tenant\"\rholder.tenant\"\xe7\x04\n" +
+	"\x06labels 2(\xf4\x03:\x00\"\xe7\x04\n" +
 	"\aSession\x12\x1b\n" +
 	"\x02id\x18\x01 \x01(\fB\v\xea\x82\x16\a\x10@(\x01\x82\x01\x00R\x02id\x12,\n" +
 	"\x06tenant\x18\x02 \x01(\v2\f.rove.TenantB\x06\xf2\x82\x16\x02@\x01R\x06tenant\x12,\n" +
@@ -852,39 +662,34 @@ const file_rove_org_proto_rawDesc = "" +
 	"\x06secret\x10\t\x8a\xbb\x16\x1b\b&\"\x17\n" +
 	"\x06tenant\"\rholder.tenantB\x1fZ\x18github.com/lesomnus/rove\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
-var file_rove_org_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_rove_org_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_rove_org_proto_goTypes = []any{
 	(*Party)(nil),                 // 0: rove.Party
-	(*Credential)(nil),            // 1: rove.Credential
-	(*Session)(nil),               // 2: rove.Session
-	nil,                           // 3: rove.Party.LabelsEntry
-	(*Tenant)(nil),                // 4: rove.Tenant
-	(*Holder)(nil),                // 5: rove.Holder
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	(*Session)(nil),               // 1: rove.Session
+	nil,                           // 2: rove.Party.LabelsEntry
+	(*Tenant)(nil),                // 3: rove.Tenant
+	(*Holder)(nil),                // 4: rove.Holder
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_rove_org_proto_depIdxs = []int32{
-	4,  // 0: rove.Party.tenant:type_name -> rove.Tenant
-	3,  // 1: rove.Party.labels:type_name -> rove.Party.LabelsEntry
-	5,  // 2: rove.Party.holder:type_name -> rove.Holder
-	6,  // 3: rove.Party.date_updated:type_name -> google.protobuf.Timestamp
-	6,  // 4: rove.Party.date_erased:type_name -> google.protobuf.Timestamp
-	6,  // 5: rove.Party.date_created:type_name -> google.protobuf.Timestamp
-	4,  // 6: rove.Credential.tenant:type_name -> rove.Tenant
-	5,  // 7: rove.Credential.holder:type_name -> rove.Holder
-	6,  // 8: rove.Credential.date_updated:type_name -> google.protobuf.Timestamp
-	6,  // 9: rove.Credential.date_created:type_name -> google.protobuf.Timestamp
-	4,  // 10: rove.Session.tenant:type_name -> rove.Tenant
-	5,  // 11: rove.Session.holder:type_name -> rove.Holder
-	6,  // 12: rove.Session.date_expires:type_name -> google.protobuf.Timestamp
-	6,  // 13: rove.Session.date_idle:type_name -> google.protobuf.Timestamp
-	6,  // 14: rove.Session.date_updated:type_name -> google.protobuf.Timestamp
-	6,  // 15: rove.Session.date_erased:type_name -> google.protobuf.Timestamp
-	6,  // 16: rove.Session.date_created:type_name -> google.protobuf.Timestamp
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	3,  // 0: rove.Party.tenant:type_name -> rove.Tenant
+	2,  // 1: rove.Party.labels:type_name -> rove.Party.LabelsEntry
+	4,  // 2: rove.Party.holder:type_name -> rove.Holder
+	5,  // 3: rove.Party.date_updated:type_name -> google.protobuf.Timestamp
+	5,  // 4: rove.Party.date_erased:type_name -> google.protobuf.Timestamp
+	5,  // 5: rove.Party.date_created:type_name -> google.protobuf.Timestamp
+	3,  // 6: rove.Session.tenant:type_name -> rove.Tenant
+	4,  // 7: rove.Session.holder:type_name -> rove.Holder
+	5,  // 8: rove.Session.date_expires:type_name -> google.protobuf.Timestamp
+	5,  // 9: rove.Session.date_idle:type_name -> google.protobuf.Timestamp
+	5,  // 10: rove.Session.date_updated:type_name -> google.protobuf.Timestamp
+	5,  // 11: rove.Session.date_erased:type_name -> google.protobuf.Timestamp
+	5,  // 12: rove.Session.date_created:type_name -> google.protobuf.Timestamp
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_rove_org_proto_init() }
@@ -900,7 +705,7 @@ func file_rove_org_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rove_org_proto_rawDesc), len(file_rove_org_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

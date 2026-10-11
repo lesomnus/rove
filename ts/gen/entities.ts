@@ -19,12 +19,12 @@ import { AssetSchema, AttachmentSchema, LabelSchema, TenantDomainSchema, TreeLoc
 import { AssetTypeSchema, ItemModelSchema } from './rove/catalog_pb.js'
 import { AuditSchema } from './rove/payday/audit_pb.js'
 import { CountFindingSchema, InventoryCountSchema } from './rove/count_pb.js'
-import { CredentialSchema, PartySchema, SessionSchema } from './rove/org_pb.js'
 import { CustodySchema, CustodyLineSchema } from './rove/custody_pb.js'
 import { EventSchema, FactSchema, LinkSchema, PlacementSchema, StewardshipSchema } from './rove/history_pb.js'
 import { HolderSchema } from './rove/payday/holder_pb.js'
 import { LegalHoldSchema, NotificationSchema, TenantContractSchema, UsageSnapshotSchema } from './rove/ops_pb.js'
 import { OutboxSchema } from './rove/payday/outbox_pb.js'
+import { PartySchema, SessionSchema } from './rove/org_pb.js'
 import { PurchaseSchema, PurchaseLineSchema, WorkOrderSchema } from './rove/work_pb.js'
 import { StockSchema, StockMovementSchema } from './rove/stock_pb.js'
 import { TenantSchema } from './rove/payday/tenant_pb.js'
@@ -34,12 +34,12 @@ import { AssetService, AttachmentService, LabelService, TenantDomainService, Tre
 import { AssetTypeService, ItemModelService } from './rove/catalog_svc_pb.js'
 import { AuditService } from './rove/payday/audit_svc_pb.js'
 import { CountFindingService, InventoryCountService } from './rove/count_svc_pb.js'
-import { CredentialService, PartyService, SessionService } from './rove/org_svc_pb.js'
 import { CustodyService, CustodyLineService } from './rove/custody_svc_pb.js'
 import { EventService, FactService, LinkService, PlacementService, StewardshipService } from './rove/history_svc_pb.js'
 import { HolderService } from './rove/payday/holder_svc_pb.js'
 import { LegalHoldService, NotificationService, TenantContractService, UsageSnapshotService } from './rove/ops_svc_pb.js'
 import { OutboxService } from './rove/payday/outbox_svc_pb.js'
+import { PartyService, SessionService } from './rove/org_svc_pb.js'
 import { PurchaseService, PurchaseLineService, WorkOrderService } from './rove/work_svc_pb.js'
 import { StockService, StockMovementService } from './rove/stock_svc_pb.js'
 import { TenantService } from './rove/payday/tenant_svc_pb.js'
@@ -135,19 +135,6 @@ export const CountFinding = {
 	key: "id",
 	ids: ["id", "labelId", "observedParentId", "expectedParentId", "recordedBy"],
 	service: CountFindingService,
-} as const satisfies EntityDesc
-
-/** rove.Credential, as the store holds it. */
-export const Credential = {
-	typeName: "rove.Credential",
-	schema: CredentialSchema,
-	domain: 37,
-	version: "dateUpdated",
-	refs: [{ field: "tenant", to: "rove.Tenant" }, { field: "holder", to: "rove.Holder" }],
-	key: "id",
-	ids: ["id"],
-	secrets: ["secret"],
-	service: CredentialService,
 } as const satisfies EntityDesc
 
 /** rove.Custody, as the store holds it. */
@@ -485,5 +472,5 @@ export const WorkOrder = {
 } as const satisfies EntityDesc
 
 /** Every entity of this app, which is what a store is opened over. */
-export const entities = [Allocation, Archived, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Credential, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
+export const entities = [Allocation, Archived, Asset, AssetType, Attachment, Audit, Bookable, CountFinding, Custody, CustodyLine, Event, Fact, Holder, InventoryCount, ItemModel, Label, LegalHold, Link, Notification, Outbox, Party, Placement, Purchase, PurchaseLine, Reservation, ReservationItem, Session, Stewardship, Stock, StockMovement, Tenant, TenantContract, TenantDomain, TreeLock, UsageSnapshot, WorkOrder] as const
 

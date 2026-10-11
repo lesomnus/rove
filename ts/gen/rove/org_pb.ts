@@ -19,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rove/org.proto.
  */
 export const file_rove_org: GenFile = /*@__PURE__*/
-  fileDesc("Cg5yb3ZlL29yZy5wcm90bxIEcm92ZSKHBQoFUGFydHkSFwoCaWQYASABKAxCC+qCFgcQQCgBggEAEiQKBnRlbmFudBgCIAEoCzIMLnJvdmUuVGVuYW50QgbyghYCQAESDAoEbmFtZRgFIAEoCRIMCgRkZXNjGAYgASgJEicKBmxhYmVscxgHIAMoCzIXLnJvdmUuUGFydHkuTGFiZWxzRW50cnkSDAoEa2luZBgIIAEoCRIbCglwYXJlbnRfaWQYCSABKAxCCOqCFgQQQDgBEiQKBmhvbGRlchgKIAEoCzIMLnJvdmUuSG9sZGVyQgbyghYCOAESDQoFZW1haWwYCyABKAkSDQoFcGhvbmUYDCABKAkSOQoMZGF0ZV91cGRhdGVkGA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIH6oIWA4oBABI4CgtkYXRlX2VyYXNlZBgOIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCB+qCFgOSAQASOwoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIJ6oIWBUABggEAEgwKBGNvZGUYECABKAkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ATqbAcr8FT4SAhABGiASBHBhZ2UaEAoMZGF0ZV9jcmVhdGVkEA8aBgoCaWQQARoWEgZob2xkZXIaCgoGaG9sZGVyEAowAYq7FlUICjJPChAKDgoMZGF0ZV9jcmVhdGVkCgYKBAoCaWQaBQoDcmVmGgYKBGtpbmQaCwoJcGFyZW50X2lkGggKBmhvbGRlchoICgZsYWJlbHMgMij0AzoAIs0CCgpDcmVkZW50aWFsEhcKAmlkGAEgASgMQgvqghYHEEAoAYIBABIkCgZ0ZW5hbnQYAiABKAsyDC5yb3ZlLlRlbmFudEIG8oIWAkABEiQKBmhvbGRlchgIIAEoCzIMLnJvdmUuSG9sZGVyQgbyghYCQAESHQoGc2VjcmV0GAkgASgMQg3qghYDggEAqsEWAggBEjkKDGRhdGVfdXBkYXRlZBgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCB+qCFgOKAQASOwoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIJ6oIWBUABggEAOkPK/BUcEgIQARoWEgZob2xkZXIaCgoGaG9sZGVyEAgwAYq7Fh8IJUICCgAiFwoGdGVuYW50Ig1ob2xkZXIudGVuYW50IocECgdTZXNzaW9uEhcKAmlkGAEgASgMQgvqghYHEEAoAYIBABIkCgZ0ZW5hbnQYAiABKAsyDC5yb3ZlLlRlbmFudEIG8oIWAkABEiQKBmhvbGRlchgIIAEoCzIMLnJvdmUuSG9sZGVyQgbyghYCQAESHQoGc2VjcmV0GAkgASgMQg3qghYDggEAqsEWAggBEhYKBWdyYW50GAogASgMQgfqghYDggEAEjgKDGRhdGVfZXhwaXJlcxgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBuqCFgI4ARI1CglkYXRlX2lkbGUYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgbqghYCOAESOQoMZGF0ZV91cGRhdGVkGA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIH6oIWA4oBABI4CgtkYXRlX2VyYXNlZBgOIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCB+qCFgOSAQASOwoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIJ6oIWBUABggEAOj3K/BUaEgIQARoUEgZzZWNyZXQaCgoGc2VjcmV0EAmKuxYbCCYiFwoGdGVuYW50Ig1ob2xkZXIudGVuYW50Qh9aGGdpdGh1Yi5jb20vbGVzb21udXMvcm92ZZIDAggCYghlZGl0aW9uc3DoBw", [file_google_protobuf_timestamp, file_orm, file_payday, file_rove_payday_holder, file_rove_payday_tenant]);
+  fileDesc("Cg5yb3ZlL29yZy5wcm90bxIEcm92ZSKHBQoFUGFydHkSFwoCaWQYASABKAxCC+qCFgcQQCgBggEAEiQKBnRlbmFudBgCIAEoCzIMLnJvdmUuVGVuYW50QgbyghYCQAESDAoEbmFtZRgFIAEoCRIMCgRkZXNjGAYgASgJEicKBmxhYmVscxgHIAMoCzIXLnJvdmUuUGFydHkuTGFiZWxzRW50cnkSDAoEa2luZBgIIAEoCRIbCglwYXJlbnRfaWQYCSABKAxCCOqCFgQQQDgBEiQKBmhvbGRlchgKIAEoCzIMLnJvdmUuSG9sZGVyQgbyghYCOAESDQoFZW1haWwYCyABKAkSDQoFcGhvbmUYDCABKAkSOQoMZGF0ZV91cGRhdGVkGA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIH6oIWA4oBABI4CgtkYXRlX2VyYXNlZBgOIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCB+qCFgOSAQASOwoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIJ6oIWBUABggEAEgwKBGNvZGUYECABKAkaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ATqbAcr8FT4SAhABGiASBHBhZ2UaEAoMZGF0ZV9jcmVhdGVkEA8aBgoCaWQQARoWEgZob2xkZXIaCgoGaG9sZGVyEAowAYq7FlUICjJPChAKDgoMZGF0ZV9jcmVhdGVkCgYKBAoCaWQaBQoDcmVmGgYKBGtpbmQaCwoJcGFyZW50X2lkGggKBmhvbGRlchoICgZsYWJlbHMgMij0AzoAIocECgdTZXNzaW9uEhcKAmlkGAEgASgMQgvqghYHEEAoAYIBABIkCgZ0ZW5hbnQYAiABKAsyDC5yb3ZlLlRlbmFudEIG8oIWAkABEiQKBmhvbGRlchgIIAEoCzIMLnJvdmUuSG9sZGVyQgbyghYCQAESHQoGc2VjcmV0GAkgASgMQg3qghYDggEAqsEWAggBEhYKBWdyYW50GAogASgMQgfqghYDggEAEjgKDGRhdGVfZXhwaXJlcxgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBuqCFgI4ARI1CglkYXRlX2lkbGUYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgbqghYCOAESOQoMZGF0ZV91cGRhdGVkGA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIH6oIWA4oBABI4CgtkYXRlX2VyYXNlZBgOIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCB+qCFgOSAQASOwoMZGF0ZV9jcmVhdGVkGA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIJ6oIWBUABggEAOj3K/BUaEgIQARoUEgZzZWNyZXQaCgoGc2VjcmV0EAmKuxYbCCYiFwoGdGVuYW50Ig1ob2xkZXIudGVuYW50Qh9aGGdpdGh1Yi5jb20vbGVzb21udXMvcm92ZZIDAggCYghlZGl0aW9uc3DoBw", [file_google_protobuf_timestamp, file_orm, file_payday, file_rove_payday_holder, file_rove_payday_tenant]);
 
 /**
  * Party is a person, a team, an organization or a vendor: whoever an asset is
@@ -118,50 +118,6 @@ export const PartySchema: GenMessage<Party> = /*@__PURE__*/
   messageDesc(file_rove_org, 0);
 
 /**
- * Credential is the password a holder signs in with, as an argon2id hash.
- *
- * @generated from message rove.Credential
- */
-export type Credential = Message<"rove.Credential"> & {
-  /**
-   * @generated from field: bytes id = 1;
-   */
-  id: Uint8Array;
-
-  /**
-   * @generated from field: rove.Tenant tenant = 2;
-   */
-  tenant?: Tenant | undefined;
-
-  /**
-   * @generated from field: rove.Holder holder = 8;
-   */
-  holder?: Holder | undefined;
-
-  /**
-   * @generated from field: bytes secret = 9;
-   */
-  secret: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp date_updated = 13;
-   */
-  dateUpdated?: Timestamp | undefined;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp date_created = 15;
-   */
-  dateCreated?: Timestamp | undefined;
-};
-
-/**
- * Describes the message rove.Credential.
- * Use `create(CredentialSchema)` to create a new message.
- */
-export const CredentialSchema: GenMessage<Credential> = /*@__PURE__*/
-  messageDesc(file_rove_org, 1);
-
-/**
  * Session is a signed-in browser. The key itself is never stored: `secret` is
  * its SHA-256, which is what a cookie is looked up by.
  *
@@ -224,5 +180,5 @@ export type Session = Message<"rove.Session"> & {
  * Use `create(SessionSchema)` to create a new message.
  */
 export const SessionSchema: GenMessage<Session> = /*@__PURE__*/
-  messageDesc(file_rove_org, 2);
+  messageDesc(file_rove_org, 1);
 

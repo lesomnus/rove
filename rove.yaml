@@ -41,6 +41,28 @@ watch:
   # hears about a write that landed on another, and nothing reports it.
   broker: memory
 
+# Who people are and how they sign in is roster's (design 9.10). With no
+# `addr`, roster runs in this process on a database of its own -- `roster.db`
+# beside the SQLite file above, or `db:` here, which a PostgreSQL deployment
+# names -- and nothing outside the process can reach it.
+#
+# `addr` is a roster deployment of its own. `key` is what Rove acts with there,
+# as `env:NAME`, `file:PATH` or the key itself: an `rk_` its operator minted
+# (`roster control key add --allow /roster.NominationService/List rove`), which
+# serves every tenant that installed Rove (`roster app install --tenant acme
+# rove`), or an `rt_` of one tenant's.
+#
+# auth:
+#   roster:
+#     addr: roster.example.com:443
+#     key: env:ROSTER_KEY
+#     # ca_file: /etc/rove/roster-ca.pem
+#   # or, in this process on PostgreSQL:
+#   roster:
+#     db:
+#       driver: pgx
+#       dsn: postgres://rove:rove@localhost:5432/roster
+
 # rove's own.
 app:
   # Where a browser reaches the HTTP listener. Its scheme says whether the

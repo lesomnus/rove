@@ -10,10 +10,13 @@ package cmd
 
 import (
 	"net/url"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/lesomnus/payday/config"
 
+	"github.com/lesomnus/rove/internal/identity"
 	"github.com/lesomnus/rove/server/retention"
 )
 
@@ -44,8 +47,37 @@ type Config struct {
 	// know. `trail.Profiles` carries the sentence each number comes from.
 	Audit config.AuditConfig `yaml:"audit"`
 
+	// Auth is who people are (design 9.10).
+	Auth AuthConfig `yaml:"auth"`
+
 	// App is what rove is configured with beyond payday's pieces.
 	App AppConfig `yaml:"app"`
+}
+
+// AuthConfig is how people are known: roster, beside this process or inside
+// it (design 9.10, D26).
+type AuthConfig struct {
+	// Roster is an external roster's address and the key this deployment acts
+	// with there -- or nothing, which runs roster in this process on a
+	// database of its own: `roster.db` beside this one's SQLite file, or
+	// `auth.roster.db`.
+	Roster identity.Config `yaml:"roster"`
+}
+
+// StateDir is the directory this deployment's SQLite file is in, which is
+// where the roster in this process keeps its own; empty for a database that is
+// not a file.
+func (c Config) StateDir() string {
+	if c.Db.Driver != "sqlite3" {
+		return ""
+	}
+	v, _ := strings.CutPrefix(c.Db.Dsn, "file:")
+	v, q, _ := strings.Cut(v, "?")
+	if v == "" || strings.HasPrefix(v, ":memory:") || strings.Contains(q, "mode=memory") {
+		return ""
+	}
+
+	return filepath.Dir(v)
 }
 
 // AppConfig is rove's own part of the configuration.

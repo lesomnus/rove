@@ -105,18 +105,6 @@ func (f CountFindingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CountFindingMutation", m)
 }
 
-// The CredentialFunc type is an adapter to allow the use of ordinary
-// function as Credential mutator.
-type CredentialFunc func(context.Context, *ent.CredentialMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f CredentialFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CredentialMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CredentialMutation", m)
-}
-
 // The CustodyFunc type is an adapter to allow the use of ordinary
 // function as Custody mutator.
 type CustodyFunc func(context.Context, *ent.CustodyMutation) (ent.Value, error)

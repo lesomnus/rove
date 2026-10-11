@@ -43,6 +43,7 @@ func newEnv(t *testing.T) *env {
 	c.Db.Dsn = dsn
 	c.Watch.Broker = "memory"
 	c.App.Files = t.TempDir()
+	c.Auth.Roster.Db.Driver, c.Auth.Roster.Db.Dsn = pdtest.DB(t)
 
 	s, err := cmd.Build(ctx, c)
 	x.NoError(err)

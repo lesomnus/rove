@@ -40,6 +40,11 @@ message PartyMeResponse {
   google.protobuf.Timestamp history_since = 5;
   // How many days back that is, for a person to read. Zero is all of it.
   uint32 history_days = 6 [features.field_presence = IMPLICIT];
+
+  // Whether logins and passwords are made and changed here -- the roster in
+  // this process -- or at a roster of its own, by whoever administers the
+  // tenant there (design 9.10).
+  bool accounts_here = 7 [features.field_presence = IMPLICIT];
 }
 
 message PartyUpdateRequest {
