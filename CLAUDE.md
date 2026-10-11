@@ -139,7 +139,9 @@ asked serves no session.
 
 Roles stay Rove's (`Holder.role`). On the embedded roster the people screen and
 `rove holder add|password` make logins and set passwords there; on an external
-one they are refused, and are done at roster. `auth.Plain` is not wired; tests
+one they are refused, and are done at roster. A deployment from before roster
+runs `rove identity migrate` once: its people go into the embedded roster with
+the identifiers they have, and get new passwords. `auth.Plain` is not wired; tests
 mint a session with `Server.Sessions.Mint` and send its cookie, and set
 `c.Auth.Roster.Db` to a `pdtest.DB` of its own -- the default is a file.
 
