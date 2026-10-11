@@ -1,0 +1,169 @@
+# Working on rove
+
+A [payday](https://github.com/lesomnus/payday) app. Most of it is **generated
+from `proto/`**, so the usual shape of a change is: edit the schema, regenerate,
+then write the part no schema can state.
+
+`README.md` is how to run it, `design.md` why it is shaped this way, and
+`report.md` the decisions the prototype made.
+
+## Regenerate after touching the schema
+
+```sh
+go tool pd gen .          # messages, ent schema, servers, layers
+go tool pd gen --ts .     # and the TypeScript half
+go tool pd gen --check .  # what CI runs: fails if anything moved
+```
+
+A generated file that was not regenerated **compiles perfectly and is wrong**.
+If you edited anything under `proto/`, you are not done until `pd gen --check`
+exits 0.
+
+```sh
+go tool pd doctor .       # what would go wrong, before it does
+```
+
+## Do not edit — regenerate
+
+| | |
+| --- | --- |
+| `*.g.go`, `*.pb.go` | wherever `go_package` puts them |
+| `server/bare/`, `server/pd/`, `internal/ent/` | in whole |
+| `proto/payday/` | in whole — payday's entities, **copied** in |
+| `proto/**/*_svc.g.proto` | the generated contract of an entity |
+| `ts/gen/` | in whole |
+
+**`.g` means a generator wrote it.** Everything else is yours — including
+`proto/app/*.proto`, `proto/ext/**` (overlays), `cmd/`, and `ts/src/`.
+
+To add a field to one of payday's entities, write an **overlay** in
+`proto/ext/payday/`. Editing `proto/payday/` directly is undone by the next
+generation.
+
+## Adding an entity
+
+```sh
+go tool pd entity add --tenanted --watch Widget .
+```
+
+Use this rather than writing the file. It picks a free domain number and writes
+the tenancy out — the two things that are cheap to get wrong and expensive to
+find later.
+
+Field numbers are read by name across every entity:
+
+- **1** key · **2** tenant · **3** *yours, a set smaller than a tenant* ·
+  **4** `alias` · **5** `name` · **6** `desc` · **7** `labels` ·
+  **13/14/15** the timestamps
+- **8–12 and 16+** are yours. An entity that does not want 4–7 **leaves those
+  numbers empty** rather than spending them on something else.
+
+## Writing a layer
+
+A layer embeds `Overlay` — and must also write `WithDriver`, which nothing
+inherits:
+
+```go
+func (s Core) WithDriver(drv dialect.Driver) (api.Server, error) {
+	next, err := enttx.Rebind(s.Next(), drv)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(next), nil
+}
+
+var (
+	_ api.Server               = Core{}
+	_ enttx.Binder[api.Server] = Core{}
+)
+```
+
+Leave it out and **nothing fails until a transaction is opened** — a batch, or a
+multi-write RPC — because `enttx.Rebind` asks at run time. `pd doctor` finds it.
+
+Note it is `enttx.Rebind(s.Next(), ...)` and not `s.Next().WithDriver(...)`:
+`Next()` answers the generated `Server` interface, which deliberately has no
+such method.
+
+**Do not edit the generated `Gate`.** Your authorization goes in your own layer
+in front of it, or into the `gate.Policy` you inject.
+
+## Two servers, and one of them has no wall
+
+`cmd/serve.go` builds `Walled` and `Ungated` (and `Base`, which is `Ungated`
+without the domain layer). `Ungated` is not a privilege — it is an instance the
+wall was never installed on, for work that cannot be done from inside a tenant
+(`init`, resolving who is calling, the background sweeps).
+
+**Never hand `Ungated` to anything a caller can reach.** There is no superuser
+flag to check; the wiring is the whole of the control.
+
+## The wall is a predicate, so it only applies to reads
+
+`Add` has no row to narrow, so it is gated in the generated `Gate` layer
+instead. If you are reasoning about who may create something, that is where it
+is decided.
+
+## Running
+
+```sh
+go run ./cmd/rove init --demo   # the first tenant, its owner, and five teams to try things on
+go run ./cmd/rove serve         # :8080 serves the UI in ts/dist and the API
+go run ./cmd/rove config env    # every variable this can be told through
+
+cd ts && npm install && npm run build   # or `npm run dev` on :5173, proxied to :8080
+```
+
+`init` prints the owner's login; everybody `--demo` makes signs in with
+`demo1234`. Delete `data/` to start over. PostgreSQL is
+`ROVE_DB_DRIVER=pgx ROVE_DB_DSN=...`, and `cli.Migrate` then also installs
+`cli/pg.sql` -- the constraints the schema cannot state. The roster in this
+process then needs a database of its own named too:
+`ROVE_AUTH_ROSTER_DB_DRIVER` and `ROVE_AUTH_ROSTER_DB_DSN`.
+
+## Signing in
+
+People, their passwords and whether they may sign in are **roster's**
+(`internal/identity`, design 9.10). `auth.roster.addr` names an external one;
+empty runs one in this process on its own database (`roster.db` beside Rove's
+SQLite file, or `auth.roster.db`), reached over `bufconn`.
+
+A browser signs in at `POST /session` (`server/session`): the password goes to
+roster's `VouchService.Verify`, `server/tenancy` makes Rove's `Tenant` and
+`Holder` for whoever it vouched for on their first sign-in -- **with roster's
+identifiers**, so `Holder.id` is the `sub` -- and the cookie's session row is
+in Rove's database. Every call a session makes asks roster whether the person
+still stands (`identity.Store.Held`, cached `HeldTtl`); a roster that cannot be
+asked serves no session.
+
+Roles stay Rove's (`Holder.role`). On the embedded roster the people screen and
+`rove holder add|password` make logins and set passwords there; on an external
+one they are refused, and are done at roster. A deployment from before roster
+runs `rove identity migrate` once: its people go into the embedded roster with
+the identifiers they have, and get new passwords. `auth.Plain` is not wired; tests
+mint a session with `Server.Sessions.Mint` and send its cookie, and set
+`c.Auth.Roster.Db` to a `pdtest.DB` of its own -- the default is a file.
+
+## What may be called
+
+`server/policy` is one table of role → RPC, and what is not in it is refused --
+which is also what keeps callers off the history rows only the domain layer
+writes. A new RPC is closed until it is added there.
+
+## The domain layer
+
+`server/domain` sits **above** the gate, completes the generated verbs
+(`Asset.Add`, `Reservation.Add`, ...) and adds the rest. An operation is one
+transaction (`Domain.tx`), records an `Event`, and writes the time rows with the
+state they describe. Read `server/domain/domain.go` first. Its tests
+(`go test ./server/domain`) go through the whole stack; set `PDTEST_POSTGRES` to
+run them on PostgreSQL.
+
+## Reference
+
+- `README.md` — running it, in Korean
+- `design.md`, `plan.md` — the design and the plan; `report.md` — what the
+  prototype decided and why
+- <https://github.com/lesomnus/payday/tree/main/docs> — the guides and the
+  references behind them

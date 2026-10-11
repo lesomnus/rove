@@ -1,0 +1,140 @@
+# What this deployment is configured with.
+#
+# A file, then the environment over the top of it: `ROVE_DB_DSN` beats what
+# is written here. `rove config` prints what came out, and
+# `rove config env` lists every variable there is.
+
+db:
+  driver: sqlite3
+  # WAL and a busy timeout, because the background sweeps write while requests
+  # do, and SQLite has one writer.
+  dsn: "file:data/rove.db?_pragma=foreign_keys(1)&_pragma=journal_mode(wal)&_pragma=busy_timeout(10000)"
+  # A checkout brings its tables up to date as it starts. A deployment says
+  # this on purpose, or migrates before it serves.
+  migrate: true
+
+server:
+  addr: ":50051"
+  # An attachment or an imported sheet is up to 20 MiB, and a page sends it as
+  # base64 inside JSON.
+  max_recv_msg_size: 33554432
+
+  # The second listener, for whatever cannot speak gRPC -- which is every
+  # browser. Delete this block and no port is opened, which is what an app with
+  # no page in front of it should do.
+  #
+  # It is the same server: a call arrives as JSON over POST, is re-encoded and
+  # handed to the handler a gRPC client would have reached, so it goes through
+  # the same interceptors and behind the same wall.
+  http:
+    addr: ":8080"
+    allow_web: true
+    # Which page may call. Nothing here is same-origin only, which is right for
+    # a built UI this server also serves and wrong for `npm run dev` -- that is
+    # 5173, and a different origin.
+    origins: ["http://localhost:5173"]
+
+watch:
+  # Named rather than defaulted, and it is the one field this app is refused for
+  # leaving out. `memory` publishes inside this process, which is right for one
+  # replica and silently wrong for two -- a client watching against one never
+  # hears about a write that landed on another, and nothing reports it.
+  broker: memory
+
+# Who people are and how they sign in is roster's (design 9.10). With no
+# `addr`, roster runs in this process on a database of its own -- `roster.db`
+# beside the SQLite file above, or `db:` here, which a PostgreSQL deployment
+# names -- and nothing outside the process can reach it.
+#
+# `addr` is a roster deployment of its own. `key` is what Rove acts with there,
+# as `env:NAME`, `file:PATH` or the key itself: an `rk_` its operator minted
+# (`roster control key add --allow /roster.NominationService/List rove`), which
+# serves every tenant that installed Rove (`roster app install --tenant acme
+# rove`), or an `rt_` of one tenant's.
+#
+# auth:
+#   roster:
+#     addr: roster.example.com:443
+#     key: env:ROSTER_KEY
+#     # ca_file: /etc/rove/roster-ca.pem
+#   # or, in this process on PostgreSQL:
+#   roster:
+#     db:
+#       driver: pgx
+#       dsn: postgres://rove:rove@localhost:5432/roster
+
+# rove's own.
+app:
+  # Where a browser reaches the HTTP listener. Its scheme says whether the
+  # session cookie needs HTTPS.
+  public_url: http://localhost:8080
+  # The built UI (`cd ts && npm run build`), served at `/`. During
+  # `npm run dev` the page is on :5173 and talks to this server through Vite's
+  # proxy; set `app_url` to it so a scanned label opens there.
+  web: ts/dist
+  # app_url: http://localhost:5173
+  files: data/files
+  labels:
+    # A tenant's default label host is `<tenant>.l.localhost`, which a browser
+    # resolves to this machine. A deployment names its own, such as
+    # `l.rove.example`.
+    suffix: l.localhost
+  session:
+    idle: 24h
+    lifetime: 168h
+  # A room nobody checked into is released this long after it began.
+  no_show_after: 15m
+  sweep: 1m
+
+  # What a tenant's history is kept for (design 8). A tenant's own windows are
+  # its contract's -- `rove contract set --tenant acme --view 365 --keep 730`
+  # -- and these are what a tenant with no contract gets. `apply` is the
+  # deployment saying a window may destroy: off, the view window still
+  # applies to what a tenant reads, and nothing is removed.
+  #
+  # `rove retention plan` says what a pass would take, changing nothing.
+  #
+  # retention:
+  #   apply: false
+  #   view: 8760h
+  #   keep: 17520h
+  #   every: 1h
+
+# How long the trail keeps a row. Every write this app makes is recorded, and
+# **nothing else applies a window**: with no block here the table is kept whole,
+# forever, and it is the one that grows without anybody writing to it.
+#
+# Left out rather than filled in, because a scaffold cannot know what this app
+# is regulated as -- and a wrong number here is the mistake worth being loudest
+# about, since it works: the sweep runs, the table stops growing, every graph
+# improves, and what it is doing is destroying the evidence.
+#
+# `retain` is how long a row stays in the database and `destroy` is how long the
+# archive holds it afterwards. Naming `retain` with nowhere for the rows to go
+# is refused where this process comes up, unless `discard: true` says the
+# deployment means to keep nothing.
+#
+# `profile:` fills both from a named regime -- pci, hipaa, sox, pipa,
+# pipa-sensitive, gdpr, forever -- and `trail.Profiles` carries the sentence
+# each number comes from, so what is written here is arguable rather than
+# arbitrary. Anything set beside a profile wins.
+#
+# `by:` is per kind of thing, keyed by what the schema registered. Obligations
+# are not uniform: what was done to a person eventually has to stop existing,
+# and what a machine did is an operating record with the opposite requirement.
+#
+# With an archive, the database keeps an account of what it holds, and
+# `rove trail verify` checks the two. `checkpoints:` is where every pass leaves
+# what the archive held: on a disk that refuses deletion, and signed with a key
+# mounted as a secret -- or given as the PEM document itself, through
+# ROVE_AUDIT_CHECKPOINTS_KEY.
+#
+# audit:
+#   profile: pipa
+#   archive: /var/lib/rove/audit
+#   checkpoints:
+#     dir: /mnt/worm/rove/checkpoints
+#     key: /run/secrets/checkpoints.pem
+#   by:
+#     holder:
+#       profile: gdpr

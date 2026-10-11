@@ -1,0 +1,179 @@
+// Package cmd is this app's own wiring, and it is short on purpose.
+//
+// Everything that does not change from one app to the next is in payday. What
+// is left is here, and it is deliberately **not** hidden behind a
+// `payday.Serve(cfg)`: the stack, the order of the interceptors and which
+// server the wall is on are the decisions a reader of an app most needs to be
+// able to see, and a framework that hid them would be hiding the only part
+// worth reading.
+package cmd
+
+import (
+	"net/url"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/lesomnus/payday/config"
+
+	"github.com/lesomnus/rove/internal/identity"
+	"github.com/lesomnus/rove/server/retention"
+)
+
+// Name is what this app is called, and it is the only place it is written.
+// The environment prefix and the names of the configuration files are derived
+// from it -- APPTEST_DB_DSN, apptest.yaml -- by the loader `cli` makes with it,
+// so there is nothing to keep in step.
+const Name = "rove"
+
+// Config is what this app is configured with.
+//
+// The framework cannot own this struct, since what an app is configured with is
+// the app's. What it owns is the pieces: each of these is a payday type, and
+// what is written here is only which of them this app has.
+type Config struct {
+	Server config.ServerConfig `yaml:"server"`
+	Db     config.DbConfig     `yaml:"db"`
+	Otel   config.OtelConfig   `yaml:"otel"`
+	Watch  config.WatchConfig  `yaml:"watch"`
+
+	// How long the trail keeps a row, per kind of thing. Every write this app
+	// makes is recorded, and nothing else applies a window, so a deployment
+	// that names none keeps all of it forever -- which is this field left
+	// empty, and is the only honest default: a version upgrade is not the right
+	// thing to decide how long somebody's evidence lasts.
+	//
+	// What the values are is what this app is regulated as, which payday cannot
+	// know. `trail.Profiles` carries the sentence each number comes from.
+	Audit config.AuditConfig `yaml:"audit"`
+
+	// Auth is who people are (design 9.10).
+	Auth AuthConfig `yaml:"auth"`
+
+	// App is what rove is configured with beyond payday's pieces.
+	App AppConfig `yaml:"app"`
+}
+
+// AuthConfig is how people are known: roster, beside this process or inside
+// it (design 9.10, D26).
+type AuthConfig struct {
+	// Roster is an external roster's address and the key this deployment acts
+	// with there -- or nothing, which runs roster in this process on a
+	// database of its own: `roster.db` beside this one's SQLite file, or
+	// `auth.roster.db`.
+	Roster identity.Config `yaml:"roster"`
+}
+
+// StateDir is the directory this deployment's SQLite file is in, which is
+// where the roster in this process keeps its own; empty for a database that is
+// not a file.
+func (c Config) StateDir() string {
+	if c.Db.Driver != "sqlite3" {
+		return ""
+	}
+	v, _ := strings.CutPrefix(c.Db.Dsn, "file:")
+	v, q, _ := strings.Cut(v, "?")
+	if v == "" || strings.HasPrefix(v, ":memory:") || strings.Contains(q, "mode=memory") {
+		return ""
+	}
+
+	return filepath.Dir(v)
+}
+
+// AppConfig is rove's own part of the configuration.
+type AppConfig struct {
+	// PublicUrl is where a browser reaches this server's HTTP listener, such
+	// as http://localhost:8080. Download links are made on it, and its scheme
+	// says whether the session cookie needs HTTPS.
+	PublicUrl string `yaml:"public_url"`
+	// AppUrl is where the UI is: PublicUrl when this server serves the built
+	// UI, and the dev server's address during `npm run dev`. A scanned label
+	// is sent there.
+	AppUrl string `yaml:"app_url"`
+	// Web is a directory holding the built UI, served at `/`. Empty serves
+	// none, which is right while the UI runs on its own dev server.
+	Web string `yaml:"web"`
+
+	// Files is the directory attachments are kept in.
+	Files string `yaml:"files"`
+	// SigningKey signs the short-lived download links. Empty makes one per
+	// process, which means a link stops working when the process restarts.
+	SigningKey string `yaml:"signing_key"`
+
+	Labels  LabelConfig   `yaml:"labels"`
+	Session SessionConfig `yaml:"session"`
+
+	// NoShowAfter is how long after a room reservation begins it is released
+	// when nobody checked in. Zero holds nobody to checking in.
+	NoShowAfter time.Duration `yaml:"no_show_after"`
+	// Sweep is the wait between passes of the background work.
+	Sweep time.Duration `yaml:"sweep"`
+
+	// Retention is the deployment's half of design 8: what a tenant with no
+	// contract keeps, and whether a window destroys anything at all.
+	Retention RetentionConfig `yaml:"retention"`
+}
+
+// RetentionConfig is the plan a tenant with no contract is on, and the switch
+// that lets a keep window destroy.
+//
+// A tenant's own windows are its contract's (`rove contract`). What is here is
+// the deployment's default and its consent.
+type RetentionConfig struct {
+	// Apply lets a keep window destroy what is past it: rove's own history,
+	// and the trail of the writes that made it. Off, which is the default, the
+	// windows are still read -- the view window applies, a dry run answers --
+	// and nothing is removed. Design 8 makes destruction wait until notice,
+	// export, grace and holds are settled, and this is the deployment saying
+	// they are.
+	Apply bool `yaml:"apply"`
+
+	// View and Keep are what a tenant with no contract gets, e.g. `8760h` for
+	// a year. Empty is all of its history shown, and all of it kept.
+	View time.Duration `yaml:"view"`
+	Keep time.Duration `yaml:"keep"`
+
+	// Every is how often what the keep windows no longer reach is taken out of
+	// the history, when Apply lets it be. An hour by default.
+	Every time.Duration `yaml:"every"`
+}
+
+// Defaults is this as what `server/retention` reads.
+func (c RetentionConfig) Defaults() retention.Defaults {
+	return retention.Defaults{View: c.View, Keep: c.Keep}
+}
+
+// LabelConfig is how printed labels are addressed (design 9.9).
+type LabelConfig struct {
+	// Suffix is what a tenant's default label host ends with: a tenant that
+	// asks for `acme` prints `acme.<suffix>`. Empty offers no default
+	// subdomain, and a tenant has labels only with a domain of its own.
+	Suffix string `yaml:"suffix"`
+	// Target is what a custom label domain's CNAME points at.
+	Target string `yaml:"target"`
+}
+
+// SessionConfig is how long a browser stays signed in.
+type SessionConfig struct {
+	// Idle ends a session nobody used for this long.
+	Idle time.Duration `yaml:"idle"`
+	// Lifetime ends any session this long after it began.
+	Lifetime time.Duration `yaml:"lifetime"`
+}
+
+// Public is PublicUrl, parsed, with the default a checkout runs on.
+func (c AppConfig) Public() *url.URL {
+	u, err := url.Parse(c.PublicUrl)
+	if err != nil || u.Host == "" {
+		u, _ = url.Parse("http://localhost:8080")
+	}
+	return u
+}
+
+// App is AppUrl, or the public address when the UI is served from it.
+func (c AppConfig) App() string {
+	if c.AppUrl != "" {
+		return c.AppUrl
+	}
+	return c.Public().String()
+}

@@ -1,0 +1,122 @@
+edition = "2023";
+
+package rove;
+
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+import "payday.proto";
+import "rove/payday/holder.proto";
+import "rove/payday/tenant.proto";
+
+option features.field_presence = IMPLICIT;
+option go_package = "github.com/lesomnus/rove";
+
+// Party is a person, a team, an organization or a vendor: whoever an asset is
+// owned by, managed by or held by. Personal data lives here and nowhere else;
+// history rows name a party by its identifier (design 3.1, D13).
+message Party {
+  bytes id = 1 [(orm.field) = {
+    type: TYPE_UUID
+    key: true
+    default: ""
+  }];
+  Tenant tenant = 2 [(orm.edge) = {immutable: true}];
+
+  string name = 5;
+  string desc = 6;
+  map<string, string> labels = 7;
+
+  // person | team | org | vendor
+  string kind = 8;
+  // The team a person is in, or the organization a team is in.
+  bytes parent_id = 9 [(orm.field) = {
+    type: TYPE_UUID
+    nullable: true
+  }];
+  // The login account, for a person who has one. Named after its target:
+  // a unique index over an edge named otherwise does not generate
+  // (protobuf-orm/protoc-gen-orm-ent#1).
+  Holder holder = 10 [(orm.edge) = {nullable: true}];
+  string email = 11;
+  string phone = 12;
+
+  google.protobuf.Timestamp date_updated = 13 [(orm.field) = {version: {}}];
+  google.protobuf.Timestamp date_erased = 14 [(orm.field) = {erased: {}}];
+  google.protobuf.Timestamp date_created = 15 [(orm.field) = {
+    immutable: true
+    default: ""
+  }];
+
+  // An employee number or a vendor code, free text.
+  string code = 16;
+
+  option (orm.message) = {
+    rpc: {crud: true}
+    indexes: [
+      {
+        name: "page"
+        refs: [{name: "date_created", number: 15}, {name: "id", number: 1}]
+      },
+      {
+        name: "holder"
+        refs: [{name: "holder", number: 10}]
+        unique: true
+      }
+    ]
+  };
+  option (payday.entity) = {
+    domain: 10
+    list: {
+      order: [{field: {name: "date_created"}}, {field: {name: "id"}}]
+      by: [{name: "ref"}, {name: "kind"}, {name: "parent_id"}, {name: "holder"}, {name: "labels"}]
+      size: 50
+      max: 500
+    }
+    watch: {}
+  };
+}
+
+// Domain 37 was `Credential`, a holder's password, until roster held them
+// (design 9.10). It is not for another entity: an identifier in the trail of a
+// deployment from before says what it named.
+
+// Session is a signed-in browser. The key itself is never stored: `secret` is
+// its SHA-256, which is what a cookie is looked up by.
+message Session {
+  bytes id = 1 [(orm.field) = {
+    type: TYPE_UUID
+    key: true
+    default: ""
+  }];
+  Tenant tenant = 2 [(orm.edge) = {immutable: true}];
+
+  Holder holder = 8 [(orm.edge) = {immutable: true}];
+  bytes secret = 9 [
+    (orm.field) = {default: ""},
+    (payday.field) = {secret: true}
+  ];
+  bytes grant = 10 [(orm.field) = {default: ""}];
+  google.protobuf.Timestamp date_expires = 11 [(orm.field) = {nullable: true}];
+  google.protobuf.Timestamp date_idle = 12 [(orm.field) = {nullable: true}];
+
+  google.protobuf.Timestamp date_updated = 13 [(orm.field) = {version: {}}];
+  google.protobuf.Timestamp date_erased = 14 [(orm.field) = {erased: {}}];
+  google.protobuf.Timestamp date_created = 15 [(orm.field) = {
+    immutable: true
+    default: ""
+  }];
+
+  option (orm.message) = {
+    rpc: {crud: true}
+    indexes: [
+      {
+        name: "secret"
+        refs: [{name: "secret", number: 9}]
+      }
+    ]
+  };
+  option (payday.entity) = {
+    domain: 38
+    tenanted: {via: "tenant", agrees: ["holder.tenant"]}
+  };
+}

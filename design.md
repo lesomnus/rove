@@ -56,7 +56,7 @@ Phase 번호는 10장의 구현 단계와 같다.
 | 구매/재무 | 업체, 구매, 영수증, 취득원가, 보증, 처분 / 감가상각 | 2 / 3 |
 | 유지보수 | 고장·수리·RMA, 정기 점검, 작업 지시와 정비 블록 / TCO | 2 / 3 |
 | 현장/자동화 | 모바일 PWA·QR 인쇄 / 오프라인 실사 / RFID·GPS 연동, OS 인벤토리 대조 | 1 / 2 / 3 |
-| 통합/기업 기능 | OIDC 로그인과 역할 / API 토큰·Webhook, SAML·SCIM, 사업장 단위 권한, ERP·HR·캘린더 연동, 고급 보고서 | 0 / 3 |
+| 통합/기업 기능 | roster 로그인(비밀번호·SSO)과 역할 / API 토큰·Webhook, 기업 IdP·SCIM(roster), 사업장 단위 권한, ERP·HR·캘린더 연동, 고급 보고서 | 0 / 3 |
 | 플러그인 | 빌드 시 등록하는 뷰 플러그인 / 백엔드 도메인 모듈 / 서드파티 | 1 / 2–3 / 3 이후 |
 | SaaS 계측 | 테넌트별 일 단위 사용량 스냅샷 / 사용량 원장·Entitlement·과금 | 0 / 3 |
 
@@ -69,9 +69,8 @@ Phase 번호는 10장의 구현 단계와 같다.
 | 엔터티 | 역할 |
 | --- | --- |
 | `Tenant` (payday) | 고객 조직. 데이터·접근·과금의 경계 |
-| `Holder` (payday) | 테넌트 안의 로그인 계정. 여러 테넌트에 속한 사람은 테넌트마다 Holder가 하나씩 있다 |
+| `Holder` (payday) | 테넌트 안의 로그인 계정. 계정 자체는 roster의 것이고, Rove의 Holder는 같은 ID로 처음 들어올 때 생긴다(9.10절). 여러 테넌트에 속한 사람은 테넌트마다 Holder가 하나씩 있다 |
 | `Audit` / `Outbox` (payday) | 모든 쓰기의 시스템 감사 기록(쓰기와 같은 트랜잭션), 발행 큐 |
-| `Identity` | IdP 계정과 Holder의 대응. `(issuer, subject, tenant)` 유일 |
 | `Asset` | 추적 대상의 공통 정체성. `kind` = `ITEM`(실물) / `SPACE`(장소) / `KIT` / `GROUP`(풀·논리 그룹). 관계·QR·첨부·플러그인이 모두 여기에 붙는다 |
 | `AssetType` | 테넌트별 유형, 속성 스키마(버전), 기본 Capability, 단일 상속 |
 | `ItemModel` | 제조사·모델·규격·슬롯 정의. 여러 Asset이 같은 모델을 참조 |
@@ -96,7 +95,7 @@ Phase 번호는 10장의 구현 단계와 같다.
 
 **공간**: 사업장·건물·층·방·구역·선반 같은 모든 장소는 `Asset(kind=SPACE)`이고, 장소 계층은 `Placement` 트리 하나다. 이전 초안의 `Location` 엔터티는 없앴다. 주소와 좌표는 `SpaceProfile`의 값이고, 예약 가능 여부는 `Bookable` 프로파일이 정한다. 과금과 목록에서 공간을 따로 셀지는 `kind`로 구분한다(11장).
 
-**사람과 계정**: `Party`(사람 기록)와 `Holder`(로그인 계정)는 다르다. 자산을 지급받는 직원은 계정이 없어도 된다. 둘을 잇는 것은 `Party.account → Holder`(선택, 하나의 Holder에 하나의 Party)다. 행위자는 사용자만이 아니다. API 토큰, 가져오기 작업, 보존 잡 같은 시스템 작업도 행위자이며, 시스템 작업은 Holder 없이 기록된다. 이력과 Event에는 Party·Holder의 ID만 남기고 이름·이메일을 복사하지 않는다(8.2절).
+**사람과 계정**: `Party`(사람 기록)와 `Holder`(로그인 계정)는 다르다. 자산을 지급받는 직원은 계정이 없어도 된다. 둘을 잇는 것은 `Party.account → Holder`(선택, 하나의 Holder에 하나의 Party)다. 비밀번호와 IdP 계정의 대응은 roster가 갖는다(9.10절). 그래서 Rove에는 `Identity` 엔터티가 없다. 행위자는 사용자만이 아니다. API 토큰, 가져오기 작업, 보존 잡 같은 시스템 작업도 행위자이며, 시스템 작업은 Holder 없이 기록된다. 이력과 Event에는 Party·Holder의 ID만 남기고 이름·이메일을 복사하지 않는다(8.2절).
 
 ### 3.2 관계 규칙
 
@@ -147,7 +146,6 @@ Asset(id, tenant, alias?, name, desc, labels, kind, type, model?, tag, serial?,
 AssetType(id, tenant, parent?, schema, schema_version, capabilities)
 ItemModel(id, tenant, maker, model, slots)
 Party(id, tenant, kind, name, contact, parent?, account?, date_erased)
-Identity(id, tenant, holder, issuer, subject)
 
 Placement(id, tenant, child, parent, mode, slot?, u_from?, u_to?,
           valid_from, valid_to?, event, superseded_at?, superseded_by?, date_created)
@@ -221,8 +219,8 @@ StockMovement(id, tenant, stock, delta, reason, ref_id?, occurred_at)
   3. PostgreSQL에서는 바뀌는 참조(`Asset.parent` 같은 현재 상태 값)에 같은 테넌트인지 확인하는 트리거를 마지막 방어선으로 둔다(9.4절). 복합 FK는 payday의 서버 시작 전 검사가 "스키마 불일치"로 거부하므로 쓸 수 없다(확인함).
 - **RLS는 쓰지 않는다.** payday의 테넌트 경계는 애플리케이션 쿼리 조건이고, 경계 없는 운영자 스택과 여러 테넌트를 보는 운영자 정책이 RLS의 세션 변수 방식과 맞지 않는다. 대신 위의 세 겹과 교차 테넌트 테스트(10장)로 보완한다.
 - **배포를 둘로 나눈다**: 공개 진입점(테넌트 경계 있음, 자기 테넌트만)과 운영자 진입점(내부망, 여러 테넌트를 보는 정책)을 다른 바이너리로 둔다. 공개 바이너리 안에는 "전체 보기" 코드 경로가 없다.
-- **인증**: Phase 0부터 OIDC(Google Workspace, Microsoft Entra)와 브라우저 세션(payday `authoidc`, `authsession`)을 쓴다. 테넌트는 로그인 단계에서 고른다(테넌트 alias 경로 또는 서브도메인). IdP 계정 하나가 여러 테넌트의 Holder에 대응할 수 있으므로 매핑은 `Identity` 엔터티가 갖는다. SAML·SCIM은 Phase 3이다.
-- **권한**: payday에는 역할이 없으므로 Rove가 `gate.Policy`에서 구현한다. Holder에 `role`(`owner`, `admin`, `asset_manager`, `member`, `auditor`)을 덧붙이고, 메서드별 최소 역할 표로 판단한다. 같은 Policy를 batch guard에도 넘긴다(넘기지 않으면 batch 안의 작업이 권한 검사를 건너뛴다). 일반 직원 역할(`member`)은 자산 보기, 셀프 실사, 요청, 인수 확인을 할 수 있다. 사업장 단위 권한은 Phase 3에서 payday 필드 3(Site)으로 도입한다.
+- **인증은 roster가 한다(9.10절, D26).** 사람과 테넌트, 비밀번호, IdP 연결은 roster의 행이고, Rove는 roster가 확인해 준 사람에게 자기 세션을 준다. 비밀번호는 roster에 묻고(`VouchService.Verify`), SSO는 roster의 OIDC issuer에 relying party로 붙는다. 테넌트는 로그인 단계에서 고른다(테넌트 alias 경로 또는 서브도메인). SCIM 프로비저닝과 기업 IdP 연결은 roster의 기능을 쓴다.
+- **권한**: payday에는 역할이 없으므로 Rove가 `gate.Policy`에서 구현한다. Holder에 `role`(`owner`, `admin`, `asset_manager`, `member`, `auditor`)을 덧붙이고, 메서드별 최소 역할 표로 판단한다. 같은 Policy를 batch guard에도 넘긴다(넘기지 않으면 batch 안의 작업이 권한 검사를 건너뛴다). 일반 직원 역할(`member`)은 자산 보기, 셀프 실사, 요청, 인수 확인을 할 수 있다. 사업장 단위 권한은 Phase 3에서 payday 필드 3(Site)으로 도입한다. 역할은 roster로 옮기지 않고 Rove의 것으로 둔다. roster가 주는 권한을 읽는 방식으로 바꿀지는 정할 것이다(9.10절).
 - **역할과 가격 정책을 결합하지 않는다.** 요금제는 한도를 정하고, 권한은 무엇을 할 수 있는지를 정한다.
 - **쓰기는 도메인 작업으로만 한다.** payday는 일반 쓰기(Patch/Apply)를 기본으로 닫는다. Rove의 도메인 작업은 두 가지다.
   1. **생성 동사 완성**: 생성 동사가 이미 뜻하는 일이면, 도메인 레이어가 그 동사를 완성한다(payday의 "completing a generated verb"). 자산 `Add`는 초기 배치·Fact·Event를 함께 써서 등록을 마친다. 자산 `Erase`는 열린 시간 행을 대체해 오입력을 취소한다. Custody `Add`는 담당 행을 열어 지급을 마친다.
@@ -230,7 +228,7 @@ StockMovement(id, tenant, stock, delta, reason, ref_id?, occurred_at)
 - **`seal` 레이어**(9.3절)는 시간 행·Event·할당처럼 도메인 작업만 쓰는 엔터티의 생성 Add/Erase와, 시간 행의 생성 Get/List를 외부 호출에 닫는다. 이력 조회는 조회 창을 적용하는 `Timeline`·`QueryAt`·`AsOf`·`Diff`로만 한다. 설정성 엔터티(`AssetType`, `ItemModel`, `Party`, `Bookable` 정책 등)는 생성 Add/Get/List/Erase를 쓰고, 수정은 짧은 도메인 RPC(예: `AssetTypeService/Update`)로 한다.
 - **동시성과 멱등성**: 현재 상태 행은 payday 버전 필드(`date_updated`)로 낙관적 동시성을 지킨다. 도메인 RPC는 클라이언트가 미리 발급한 pdid를 작업 ID로 받아 Event ID로 쓴다. 재시도하면 이미 있는 Event를 찾아 같은 결과를 돌려준다.
 - **트랜잭션**: 도메인 RPC 하나가 트랜잭션 하나다. payday trail·outbox가 같은 트랜잭션에 기록되므로 데이터와 감사 기록은 함께 성립하거나 함께 취소된다.
-- **연동(Phase 3)**: Webhook은 payday Outbox에서 `Event` 추가만 골라 전달한다. OIDC·SAML·SCIM, 조직 디렉터리, 회계·ERP·HR, 캘린더, 자동 수집 에이전트를 확장 경계로 둔다.
+- **연동(Phase 3)**: Webhook은 payday Outbox에서 `Event` 추가만 골라 전달한다. 조직 디렉터리·SSO·SCIM은 roster가 맡고(9.10절), 회계·ERP·HR, 캘린더, 자동 수집 에이전트를 확장 경계로 둔다.
 
 ## 7. SaaS 과금 준비: 계측과 정책의 분리
 
@@ -299,23 +297,30 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 
 **조회 창이 적용되는 곳**: 타임라인, `QueryAt`·`AsOf`·`Diff`의 대상 시각, 지난 예약·Custody 문서, 이력 내보내기, 이력 기반 집계 리포트. **적용되지 않는 곳**: 현재 상태. 현재 관계의 시작일("2023년부터 지급")과 취득일은 현재 상태의 일부로 보인다.
 
+**구현**(`server/retention`, `server/domain/view.go`): 조직의 조회 창은 계약(`TenantContract`)이 정하고, 계약이 없으면 `app.retention.view`, 그것도 없으면 전부다.
+
+- 창이 시작되기 전에 **끝났거나 대체된** 시간 행은 타임라인에 나오지 않는다. 창이 그 안에서 시작되는 행은 창이 시작될 때의 상태이므로 나온다. Fact는 끝이 따로 없으므로, 창이 시작되기 전에 같은 키의 다음 값으로 바뀐 값이 빠진다. Event는 창 안에서 일어났거나 창 안에서 기록되었거나, 나오는 행을 쓴 것이면 나온다.
+- 창보다 앞선 시각을 묻는 `QueryAt`·`Diff`(대상 시각과 기록 기준 시각 모두)와 이용률 리포트는 `OutOfRange`로 거절한다. 더 긴 계약에서는 같은 요청이 맞는 요청이므로 `InvalidArgument`가 아니다. 달력과 가용 시간은 창이 시작되는 곳부터 답한다.
+- 시간 행(Placement·Link·Stewardship·Fact)은 생성된 Get·List·Watch로 직접 읽을 수 없다(`server/policy`). 도메인 계층이 같은 서버로 시간 행을 대체하므로(오늘 등록 취소한 자산은 몇 년 전에 끝난 행도 대체한다) 저장 계층에서 창으로 좁히면 쓰기에서도 행이 사라진다. 그래서 창을 직접 지키는 이력 조회로만 읽는다.
+- Event, 감사 기록의 이력 종류, **끝난** 문서(마친·취소된 예약과 그 항목, 다 돌려받은 Custody와 그 줄, 닫힌 실사와 그 발견, 끝난 작업, 재고 이동)는 벽 안쪽의 Scope(`domain.View`)가 좁힌다. 아직 열린 문서는 아무리 오래되어도 현재다. 할당(Allocation)은 늦은 반납·늦은 완료가 정리하므로 좁히지 않는다.
+
 ### 8.2 구현상의 핵심 안전장치
 
 - **시간 행 자체가 체크포인트다.** 보존 기준일 전에 끝난 기간 행과, 기준일 전에 대체된 행을 지운다. 기준일에 걸친 행은 남는다. Fact는 (자산, 키)마다 기준일 이전의 마지막 값을 남긴다. 상태를 이벤트 재생으로 만들지 않으므로 "관계 시작 이벤트만 지워져 해석이 꼬이는" 문제가 생기지 않는다. Event는 기준일 전 것을 지우되, 남는 시간 행이 가리키는 Event는 함께 남긴다.
 - **보존 TTL의 대상이 아닌 것**: 현재 상태 엔터티(Asset, Party, 현재 유효한 시간 행), 진행 중인 Custody·예약, 끝나지 않은 실사·분쟁 기록, 취득·처분 기록(Purchase와 처분 Fact), 법적 보존 대상.
-- **payday trail과 맞추기**: payday trail은 모든 쓰기의 값 스냅샷을 담고, 보존 정책은 배포 전체에 도메인(엔터티 종류)별로만 정할 수 있다. 그래서 다음처럼 나눈다.
+- **payday trail과 맞추기**: payday trail은 모든 쓰기의 값 스냅샷을 담는다. payday가 테넌트별 보존을 지원하므로(payday#35) 다음처럼 나눈다.
   1. 제품 이력은 Rove의 시간 행과 Event가 테넌트별 정책으로 보존한다.
-  2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 DB에 90일, 아카이브 파기는 제품의 가장 짧은 보존 기간 이하로 둔다. 그러지 않으면 제품에서 지운 이력이 trail에 값으로 남는다.
-  3. 계정·권한 도메인(Holder, Identity)의 trail과 접근 기록 로그(9.7절)는 payday `pipa` 프로필(최소 1년) 이상으로 보존한다.
+  2. trail에서 이력을 담는 도메인(Asset, Placement, Link, Stewardship, Fact, Event)은 **그 조직의 계약이 정하는 보존 기간**을 따른다. payday가 조직마다 묻고, Rove가 `TenantContract`와 `LegalHold`로 답한다(`server/retention`). 그래서 제품에서 지운 이력이 trail에 값으로 남지 않고, 법적 보존은 둘을 함께 붙든다.
+  3. 계정·권한 도메인(Holder)의 trail과 접근 기록 로그(9.7절)는 payday `pipa` 프로필(최소 1년) 이상으로 보존한다. 로그인과 비밀번호의 기록은 roster의 trail에 있다(9.10절).
   4. trail 용량이 문제가 되면, 그 자체로 기록 시각을 가진 불변 기록인 시간 행·Event의 쓰기를 recorder에서 빼는 것을 검토한다(payday의 "Changing what the trail records").
-- **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party를 대상으로 한 trail 행의 `value`·`patch`를 비우고(DB에 있는 trail은 Rove가 직접 처리), 아카이브는 payday `trail.Forget`으로 지운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.
+- **개인정보**: 이력과 Event에는 Party·Holder ID만 남긴다. 삭제 요청은 다음 순서로 처리한다. Party를 가명화하고, 그 Party와 Holder를 대상으로 한 trail 행의 `value`·`patch`를 DB와 아카이브에서 함께 비운다(payday `trail.Policy.Forget`, 가명화와 같은 트랜잭션). 법적 보존이 걸린 행은 그대로 두고 그 건수를 Event에 남기며, 보존이 풀린 뒤 다시 요청하면 마저 비운다. Holder는 soft erase하여 로그인을 막고, trail의 행위자 ID는 그대로 둔다.
 - **분할**: 시간 행과 Event는 테넌트와 시각 기준으로 지울 수 있게 인덱스를 둔다. 테넌트마다 보존 기간이 다르므로 파티션 통째 삭제는 가장 긴 보존 기간에만 쓸 수 있고, 나머지는 배치 삭제다.
 - 만료 예정 데이터 관리자 대시보드와 사전 알림, 고객 내보내기(CSV/JSON/첨부 패키지) 경로와 유예 기간을 제공한다.
 - 계약 변경(업그레이드·다운그레이드)은 미래 효력, 유예 기간, 기존 데이터의 취급을 명확히 기록한다. 결제가 한 번 실패했다고 바로 삭제하지 않는다.
 - **데이터 분류**: 시간 행과 Event에 분류(업무, 재무, 인사, 보안)를 두어 분류별로 보존 규칙을 다르게 적용한다.
 - **실제 삭제 방식**: 시간 행은 watch하지 않는다. 클라이언트가 `Timeline` 응답을 복제본에 담더라도 보관 기간(기본 7일)이 지나면 사라지고, 보존 삭제 대상은 조회 창 밖의 오래된 행이라 최근에 내려받았을 수 없다. 그래서 보존 잡이 운영자 스택에서 배치 DELETE로 지울 수 있다. watch되는 현재 상태 엔터티는 이 방식으로 지우지 않는다(payday는 앱을 거치지 않은 삭제를 클라이언트가 알 수 없다고 경고한다). 검색 인덱스·캐시도 함께 지운다. 백업과 복제본에서 특정 레코드를 즉시 지울 수는 없으므로 백업 만료 주기와 지연을 계약에 명시한다.
 - `legal_hold`, `retention_exception`, `deletion_job`, `deletion_receipt`와 감사 추적을 마련한다. 삭제 영수증에는 내용 데이터를 남기지 않는다.
-- **테넌트 탈퇴**: payday에서 Tenant는 행이 남아 있으면 지울 수 없다(FK). 탈퇴는 내보내기 → 유예 → 테넌트의 모든 행 삭제 → Tenant 삭제 순서로 한다.
+- **테넌트 탈퇴**: payday에서 Tenant는 행이 남아 있으면 지울 수 없다(FK). 탈퇴는 내보내기 → 유예 → 테넌트의 모든 행 삭제 → Tenant 삭제 순서로 한다. 구현(`server/offboard`, `rove tenant export|purge`): 내보내기는 zip 하나에 종류별 JSON 줄(API가 답하는 모양), 테넌트가 읽을 수 있는 trail(DB와 아카이브), 첨부 파일을 담고, 뺀 것(비밀번호 해시·세션·hold 등)과 이유를 manifest에 적는다. 삭제는 스키마의 FK에서 순서를 읽어(새 엔터티도 자동으로 포함) 한 트랜잭션으로 지우고 Tenant를 마지막에 지운다. trail은 payday `PurgeTenant`가 앞뒤로 한 번씩 지운다. hold가 걸린 테넌트는 거부한다. dry run은 같은 삭제를 하고 되돌린다.
 - 개인정보 보호와 현지 법률의 보존·삭제 의무는 출시 국가별로 법무 검토가 필요하다.
 
 ### 8.3 삭제 작업 단계
@@ -328,6 +333,8 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 ```
 
 삭제 작업은 멱등이고 재시도할 수 있어야 한다. 먼저 `dry-run`으로 영향받는 행 수·용량·복원 가능 범위를 보여 주는 기능을 구현한다.
+
+**구현**(`server/domain/expire.go`, `rove retention plan|run`): 조직마다 한 트랜잭션으로, 보존 창이 시작되기 전에 끝난 것을 지운다. 끝났거나 대체된 시간 행, 같은 키의 다음 값이 창 시작 전에(그리고 그때까지 기록되어) 시작된 Fact, 끝난 문서(마친·취소된 예약과 그 항목·할당, 다 돌려받은 Custody와 그 줄, 닫힌 실사와 그 발견, 끝난 작업과 그 할당), 재고 이동, 그리고 남은 행이 아무것도 가리키지 않는 Event 순서다. 폐기·불용·분실 상태 Fact와 등록(`asset.add`) Event는 취득·처분 기록이라 남는다. hold가 있거나 보존이 무기한이면 아무것도 지우지 않는다. dry run은 같은 삭제를 트랜잭션 안에서 하고 되돌리므로 실제 실행과 행 수까지 같다. 영수증은 `retention.expired` Event이고 종류별 건수와 기준 시각만 담는다. 파괴는 `app.retention.apply`가 켜졌을 때만 일어나며, `serve`가 `app.retention.every`마다 돌린다. trail의 이력 종류는 payday의 pass가 같은 보존 창으로 지운다.
 
 ## 9. 구현 아키텍처
 
@@ -344,7 +351,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 | trail (쓰기와 같은 트랜잭션, 값 스냅샷, 도메인별 보존·아카이브·`Forget`, `pipa` 프로필) | 보안·시스템 감사. 제품 이력과는 보존 정책을 분리(8.2절) |
 | Outbox · Watch | 현재 상태 화면 갱신, Webhook(Phase 3) |
 | pdid (UUIDv8 + 도메인 바이트, 클라이언트에서도 발급) | 멱등 키, batch에서 미리 정한 ID, 오프라인 큐, 여러 종류를 가리키는 참조 열 |
-| `auth`(OIDC·세션·Bearer), `gate.Policy`, batch guard | 로그인과 역할 권한 |
+| `auth`(세션·Bearer), `gate.Policy`, batch guard | 세션과 역할 권한. 사람이 누구인지는 roster가 답한다(9.10절) |
 | `spin` | 홀드 만료, no-show, 연체 알림, 테넌트 도메인 확인, 사용량 스냅샷, 보존 잡 |
 | 두 진입점(경계 있는 스택 / 운영자 스택) | 공개 바이너리와 운영자 바이너리 |
 
@@ -355,7 +362,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 - 범위 조건 질의·검색·그래프 탐색 RPC. 생성 List는 등식 필터만, Watch는 행을 지정하는 방식만 지원한다.
 - 기간 제약(`EXCLUDE`), 테넌트 일치 트리거, 검색 인덱스 같은 PostgreSQL 전용 DDL과, 이것을 ent 마이그레이션과 나눠 적용하는 절차(9.4절).
 - 테넌트별 보존 정책, DB에 있는 trail의 개인정보 삭제.
-- 역할 권한(`gate.Policy`), 여러 테넌트에 걸친 로그인 매핑(`Identity`). payday overlay는 Holder에 필드를 더할 수 있지만 메시지 옵션(인덱스)은 더하지 못하므로, `(issuer, subject, tenant)` 유일성은 Rove 엔터티가 갖는다.
+- 역할 권한(`gate.Policy`). 여러 테넌트에 걸친 로그인 매핑과 IdP 연결은 roster가 갖는다(9.10절).
 - 오프라인 쓰기 큐. payday 클라이언트는 읽기 복제본(메모리 + IndexedDB 미러)이며 쓰기 큐를 갖지 않는다.
 
 ### 9.2 스택과 배포
@@ -373,6 +380,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 - **배포(self-host)**: 클라우드 없이 서버 한 대에 Docker Compose로 올린다.
   - 구성: 리버스 프록시(TLS, ACME), 공개 진입점, 운영자 진입점(내부망·VPN에서만 접근), PostgreSQL, 백업. 이미지는 하나이고 진입점이 둘이다.
   - watch broker는 단일 복제본이므로 `memory`로 시작하고, 복제본을 늘릴 때 PostgreSQL broker로 바꾼다.
+  - roster는 이 구성에서 Rove 프로세스 안에 내장한다(9.10절). 여러 제품이 한 roster를 쓰는 배포에서는 roster(와 그 앞의 Ory Hydra)를 따로 띄우고 Rove가 외부로 붙는다.
 - **백업**: PostgreSQL은 WAL 보관 기반 PITR(pgBackRest 등)로, 첨부 파일은 파일 백업으로 다른 장소에 보낸다. 복구 리허설은 분기마다 한다.
 - **Rove 기본 도메인**: 앱 호스트, OIDC 리다이렉트 주소, 테넌트 라벨 도메인의 CNAME 대상, 기본 하위 도메인이 모두 이 도메인 아래에 있다. 그래서 한 번 정하면 바꾸지 않는다(9.9절).
 
@@ -380,7 +388,7 @@ Tenant/Plan ──> Entitlement/Policy engine ──────────┼�
 
 ```text
 grpc.Server
-  └ 인터셉터: auth(OIDC/세션 → frame) → 테넌트별 제한·호출 계측 → gate.Policy(역할) → watch 발행
+  └ 인터셉터: auth(roster가 확인한 세션 → frame) → 테넌트별 제한·호출 계측 → gate.Policy(역할) → watch 발행
     └ seal   (Rove) 시간 행·Event·할당·문서 줄의 생성 Add/Erase, 시간 행의 생성 Get/List를 외부 호출에 닫음
       └ domain (Rove) 도메인 RPC: 트랜잭션, 잠금, 시간 행 규칙, 충돌·순환 검사, Event 기록
         └ Gate     (payday 생성) Add·Patch가 가리키는 행이 호출자에게 보이는지 확인
@@ -510,11 +518,56 @@ Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 - **도메인 바꾸기**: 인쇄한 라벨의 호스트는 바꿀 수 없다. 그래서 새 도메인을 활성화하면 이전 도메인은 `LEGACY`가 되어 계속 해석되고, 새로 인쇄하는 라벨만 새 도메인을 쓴다. 라벨은 인쇄할 때 쓴 도메인을 기록한다. 이전 도메인을 지우려 하면 그 도메인으로 인쇄한 라벨 수를 보여 주고 확인을 받는다.
 - **제약**: 호스트는 배포 전체에서 유일하고, 테넌트마다 활성 라벨 도메인은 하나다(`purpose = LABEL AND state = ACTIVE` 부분 유일 인덱스).
 
+### 9.10 신원: roster
+
+사람이 누구인지, 어느 테넌트에 속하는지, 어떻게 로그인하는지는 [roster](https://github.com/lesomnus/roster)가 정한다(D26). roster는 사람을 갖는 payday 앱이다. 비밀번호를 잠금·2단계 인증과 함께 확인하고, 외부 IdP(Entra, Google)의 계정을 사람에 잇고, 디렉터리의 SCIM 프로비저닝을 받고, Ory Hydra를 앞에 두고 OIDC issuer가 된다. Rove는 이것을 다시 만들지 않는다. 같은 구조를 shale이 먼저 쓰고 있다(shale `internal/identity`, `docs/10-security.md` 33.1절).
+
+**두 가지 모드**: 같은 코드가 붙는 리스너만 다르다. Rove의 나머지는 어느 모드인지 모른다.
+
+| | 외부(기본) | 내장 |
+| --- | --- | --- |
+| roster | 따로 배포한다. `auth.roster.addr` | Rove 프로세스 안. `auth.roster.addr`가 비어 있으면 이것 |
+| 연결 | gRPC + TLS(`auth.roster.ca_file`) | `bufconn`. 프로세스 밖에서는 붙을 수 없다 |
+| Rove가 내미는 자격 | 배포 키 `rk_`와 `roster-at`, 또는 테넌트 키 `rt_` | 없다. payday Plain으로 호출자가 밝힌 신원을 믿는다. 밖에서 닿지 않으니 성립한다 |
+| roster의 DB | roster의 것 | 따로 둔다. SQLite면 Rove DB 옆의 `roster.db`, PostgreSQL이면 같은 서버의 다른 DB |
+| SSO | roster의 issuer로 | 없다. 비밀번호만 |
+| 테넌트·사람 만들기 | roster에서(`roster tenant add`, `roster app install rove`) | `rove init`, `rove holder add`가 내장 roster에 |
+
+- 외부 roster에서 Rove의 모양은 roster `docs/apps.md`의 A(여러 테넌트를 섬기는 인스턴스 하나, `rk_`)가 기본이다. 테넌트는 그 키를 지명(nominate)한 곳이고, 요청마다 `roster-at`으로 테넌트를 밝힌다. 한 조직이 직접 띄우는 Rove는 C(`rt_`)다. 키의 접두사로 구별하므로 설정은 키 하나다.
+- 내장은 배포를 간편하게 하려는 것이다. 서버 한 대(9.2절)에 roster를 따로 띄우지 않는다. `unix` 소켓은 roster를 다른 프로세스(사이드카)로 뺄 때에만 필요하다. CLI(`rove init` 등)는 내장 roster의 DB를 직접 연다.
+- 내장에서 지킬 것(shale에서 확인됨):
+  1. **frame을 넘기지 않는다.** 두 앱이 payday의 frame 타입을 같이 쓰므로, Rove 요청의 context를 그대로 넘기면 roster가 Rove의 행위자를 자기 사람으로 읽는다. roster에 묻는 context에서는 frame을 뗀다(마감 시각은 가져간다).
+  2. **배포의 문.** 테넌트마다 Rove의 holder(`rove`)와 그 역할을 쓰는 일은 roster의 경계 없는 서버(`Ungated`)로 한다. 이 문은 Rove 프로세스 밖으로 나가지 않는다.
+  3. roster의 spin 루프(정리 작업)는 Rove의 serve가 함께 돌린다.
+
+**Rove에 남는 것과 roster로 가는 것**
+
+- roster로: 사람(계정) 만들기, 비밀번호와 그 재설정, 로그인 중지, 2단계 인증, IdP 연결, SCIM. Rove의 `Credential` 엔터티와 비밀번호 코드(`server/password`)는 없어진다.
+- Rove에: `Tenant`·`Holder` 행(같은 ID), Holder의 `role`, `Party`와 `Party.account → Holder`, 세션(`Session`, DB에 둔다 — report 결정 3), 계약·법적 보존·보존 기간, 가명화.
+
+**행을 roster의 ID에 고정한다**: Rove의 `Tenant`와 `Holder`는 roster의 것과 같은 payday 엔터티이고 같은 ID를 쓴다. 그래서 `Holder.id`가 roster의 `sub`이고, trail의 행위자 ID가 두 앱에서 같다. 행은 roster가 확인해 준 사람이 처음 들어올 때 만든다. 그 테넌트의 첫 행이 생길 때 테넌트 설정(유형 템플릿 복사, 6장)을 한다. 테넌트의 alias와 이름은 roster의 것을 따른다(기본 라벨 하위 도메인이 alias를 쓴다, 9.9절).
+
+**로그인**
+
+- **비밀번호**: `POST /session {tenant, alias, password}`를 받으면 Rove가 roster에 묻고(`VouchService.Verify`), 맞으면 Rove의 세션 쿠키를 준다. Rove는 비밀번호도 그 검증값도 갖지 않는다.
+- **SSO**(외부 roster): Rove의 HTTP 리스너가 roster issuer의 relying party가 된다(roster `docs/relying-party.md`의 `itself` 모양). `GET /sso/login` → issuer → `GET /sso/callback`(state·nonce·PKCE, id_token 검증, `sub` = Holder.id를 테넌트에서 확인) → 같은 세션 쿠키. `auth.sso_only`는 비밀번호 로그인을 끈다.
+- **세션**은 Rove의 DB에 둔다. 지금 당장 끊을 수 있어야 하기 때문이다(report 결정 3). 다만 roster에서 사람이 중지·삭제되거나 "모든 곳에서 로그아웃"되면 Rove의 세션도 끝나야 한다. 그래서 세션을 쓰는 호출마다 roster에 그 사람을 묻고(`HolderService.Get`, 짧게 캐시), 물을 수 없으면 거부한다(fail closed). 나중에 `SyncService/Watch`를 따라가 세션을 끝내는 방식을 더한다.
+
+**Rove의 holder가 roster에서 하는 일**: 비밀번호 확인, 사람·테넌트 읽기, 사람이 가진 권한 묻기(`HolderService/Reaches`), 내장에서는 사람 만들기. shale의 `AgentMethods`와 같은 목록에서 시작한다. 외부 roster에서는 사람을 roster에서 만들므로 더 적게 든다.
+
+**roster에 물을 수 없을 때**: 로그인과 세션을 쓰는 호출이 `UNAVAILABLE`로 거부된다. 실패는 잠깐(5초) 기억해 호출마다 묻지 않는다. 외부 roster의 가용성이 Rove의 가용성이 된다는 뜻이고, 서버 한 대 배포가 내장을 쓰는 이유이기도 하다.
+
+**기존 배포**: roster 이전에 만든 배포는 업그레이드 뒤 `rove identity migrate`를 한 번 돌린다. 테넌트와 사람이 같은 ID로 내장 roster에 들어가고, 비밀번호는 새로 발급해 한 번 보여 준다(shale `identity migrate`와 같다). 비밀번호 검증값은 옮기지 않는다. 두 앱의 형식이 같다는 보장이 없고, 검증값을 들여오는 길은 무엇이든 들여오는 길이 된다.
+
+**테스트**: 내장 roster는 진짜 roster이므로 테스트는 가짜 대신 내장 roster를 띄운다. 외부 모드는 같은 roster를 TCP 리스너와 키로 띄워 같은 테스트를 돈다.
+
+**정한 것**(2026-10-11, plan 10장): 역할은 Rove의 `Holder.role`로 둔다. 외부 roster의 테넌트는 roster 운영자가 만들고(셀프 가입 없음), 테넌트의 첫 사람이 처음 로그인할 때 Rove에 테넌트가 생기며 그 사람이 소유자가 된다. 탈퇴는 Rove 내보내기 → Rove 전체 삭제 → roster의 테넌트 정리 순서다. 사람을 지우는 것은 roster의 일이고, Rove의 '개인정보 삭제'는 Rove 쪽만 지운다. 다만 내장 roster는 Rove만 쓰므로, Rove에서 로그인이 끝나면(로그인 중지, 개인정보 삭제, 테넌트 전체 삭제) roster의 `forget`으로 그 사람을 바로 파기한다. roster의 삭제 유예는 복구(`roster restore`)를 위한 것인데 Rove는 복구를 열지 않으므로, 유예는 지연일 뿐이다. 기존 데이터는 `rove identity migrate`로 옮긴다.
+
 ## 10. 구현 단계 및 검증 기준
 
 **Phase 0 스파이크 — 완료(2026-10-10)**: (1) 마이그레이션은 디렉터리를 나누고 복합 FK 대신 트리거를 쓴다(9.4절). (2) `seal`과 도메인 트랜잭션은 batch 안에서도 동작하며, 도메인 레이어는 Gate 위에 둔다(9.3절). (3) Gate의 엣지 확인과 `agrees`는 다른 테넌트로의 참조를 거부한다(6장). (4) 관리형 DB의 확장 지원을 조사했다. 지금은 self-host이고, 표는 관리형으로 옮길 때 참고한다(9.5절). (5) 테넌트 잠금 행 없이는 동시 순환이 실제로 생긴다(3.2절). 방법과 근거는 [plan.md](plan.md) 1장에 있다.
 
-**Phase 0 — 기반**: payday 앱 골격, OIDC 로그인·세션·`Identity`, 역할 Policy, 공개·운영자 진입점, `Asset`·`AssetType`·`ItemModel`·`Party`, 시간 행(`Placement`·`Stewardship`·`Fact`·`Link`)과 `Event`, 도메인 작업(자산 `Add`·`Erase` 완성, Move, Install, Remove, Assign, SetAttributes, Correct), `Timeline`·`QueryAt`·`AsOf`·`Diff`, `Label`, `Attachment`, 두 갈래 마이그레이션, `UsageSnapshot`. *검증*:
+**Phase 0 — 기반**: payday 앱 골격, roster 신원과 세션(9.10절), 역할 Policy, 공개·운영자 진입점, `Asset`·`AssetType`·`ItemModel`·`Party`, 시간 행(`Placement`·`Stewardship`·`Fact`·`Link`)과 `Event`, 도메인 작업(자산 `Add`·`Erase` 완성, Move, Install, Remove, Assign, SetAttributes, Correct), `Timeline`·`QueryAt`·`AsOf`·`Diff`, `Label`, `Attachment`, 두 갈래 마이그레이션, `UsageSnapshot`. *검증*:
 - 교차 테넌트: 모든 RPC에 다른 테넌트의 ID를 넣으면 NotFound, `agrees` 위반 엣지는 거부.
 - 시간 오라클: 무작위 이동·정정 시퀀스를 생성해 `QueryAt(T)`·`AsOf(T, K)`가 단순 재생 구현의 결과와 같은지 속성 기반 테스트로 확인.
 - 동시성: 같은 자산의 동시 이동 N건 중 하나만 성공, 동시 순환 생성 시도는 거부, 같은 슬롯 동시 장착은 하나만 성공.
@@ -524,7 +577,7 @@ Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 
 **Phase 2 — 예약과 운영**: `Bookable`·`Allocation`·단건 예약(홀드, 승인, buffer, override), 공간 배타 그룹, 키트, 풀 자원 예약, 실사(오프라인 큐 포함), 재고, 작업 지시·정비 블록, 구매, 알림, 기본 리포트, 반복 예약, 도메인 모듈 구조. *검증*: 같은 자원에 대한 동시 예약 100건에서 겹침 0, 키트 구성품 충돌 감지, 재고와 대여 수량의 일관성, 늦게 도착한 오프라인 스캔의 처리, 일괄 작업의 롤백·재시도.
 
-**Phase 3 — SaaS 고도화**: SAML/SCIM, 사업장 단위 권한(필드 3), API 토큰·Webhook, 캘린더 연동(ICS 발행 → 양방향), 보존·삭제 잡과 개인정보 삭제, 사용량 원장·Entitlement·과금, 서드파티 플러그인, RFID/GPS 연동, 회계 내보내기·감가상각. *검증*: 사용량 재계산, 보존 정책 dry-run, 과금 정책 시뮬레이션, 복구 및 법적 보존 예외, 개인정보 삭제 후 trail·아카이브 확인.
+**Phase 3 — SaaS 고도화**: 기업 IdP·SCIM 연결(roster의 기능을 켜는 일), 사업장 단위 권한(필드 3), API 토큰·Webhook, 캘린더 연동(ICS 발행 → 양방향), 보존·삭제 잡과 개인정보 삭제, 사용량 원장·Entitlement·과금, 서드파티 플러그인, RFID/GPS 연동, 회계 내보내기·감가상각. *검증*: 사용량 재계산, 보존 정책 dry-run, 과금 정책 시뮬레이션, 복구 및 법적 보존 예외, 개인정보 삭제 후 trail·아카이브 확인.
 
 **과금 도입 게이트**: (1) 미터 정의와 신뢰성 (2) 고객이 보는 사용량과 백엔드 청구값의 일치 (3) 계획 변경 및 정정 (4) 내보내기·고지·유예 (5) 삭제와 백업 만료 정책 (6) 약관·법률 검토가 모두 끝난 뒤에 제한을 활성화한다.
 
@@ -562,7 +615,7 @@ Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 | D12 | 운영은 PostgreSQL, SQLite는 테스트·데모. PostgreSQL 전용 DDL은 ent와 다른 마이그레이션 디렉터리에 두고 같은 리비전 흐름으로 적용 | 같은 디렉터리에 두면 Plan이 매번 지우려 한다. 규칙은 두 DB에서 같게 두고, DB 제약은 마지막 방어선으로 쓴다 |
 | D13 | 개인정보는 Party에만 두고 이력에는 ID만. 삭제는 가명화 + trail 정리 | 불변 이력에 복사된 개인정보는 나중에 지우기 어렵다 |
 | D14 | 제품 이력(테넌트별 보존)과 payday trail(배포 단위 보존)을 분리 | trail에는 테넌트별 보존이 없고, 값 스냅샷이 제품 삭제를 무력화하지 않게 한다 |
-| D15 | OIDC 로그인은 Phase 0, SAML/SCIM은 Phase 3. 역할은 `gate.Policy` | 직원 셀프서비스에는 처음부터 SSO가 필요하고, 기업 SSO는 유료 기능이다 |
+| D15 | OIDC 로그인은 Phase 0, SAML/SCIM은 Phase 3. 역할은 `gate.Policy`. **로그인 부분은 D26이 대체한다** | 직원 셀프서비스에는 처음부터 SSO가 필요하고, 기업 SSO는 유료 기능이다 |
 | D16 | 계측은 Phase 0에 일 단위 스냅샷만, 원장·Entitlement는 과금 직전 | 원천에서 다시 계산할 수 있으므로 미리 만들 필요가 없다 |
 | D17 | 관계 종류는 Phase 2까지 시스템이 정한 값. 전역 엔터티 없음 | 제약을 정적으로 걸 수 있고, 전역 행의 쓰기 권한 문제를 피한다 |
 | D18 | 자산 번호는 별도 필드(한글 허용), 처분은 상태, Erase는 오입력 취소용 | payday alias 문법과 맞지 않고, 처분한 자산의 번호를 재사용하지 않는다 |
@@ -573,3 +626,4 @@ Retention:    GetPolicy / PreviewExpiry / Export / Hold / ApplyPolicy
 | D23 | QR 라벨 도메인은 테넌트마다 설정한다. 확인된 도메인이 없으면 라벨 기능을 끄고, 바꾼 뒤에도 이전 도메인은 계속 해석한다 | 인쇄한 라벨의 호스트는 바꿀 수 없으므로, 그 결정을 테넌트에게 맡기고 이전 라벨이 깨지지 않게 한다 |
 | D24 | 생성 동사가 뜻하는 일은 도메인 레이어가 그 동사를 완성하고, 새 RPC는 생성 동사가 이름 붙이지 않는 일에만 만든다 | payday가 권하는 방식이고, "제대로 하기"가 "하기" 옆의 두 번째 이름이 되지 않는다 |
 | D25 | 첨부는 저장소 인터페이스 뒤에 두고 로컬 파일시스템으로 시작한다. 서버를 나눌 때 S3 호환 저장소로 옮긴다. MinIO는 쓰지 않는다 | 서버 한 대에서는 별도 저장소가 필요 없다. MinIO 커뮤니티판은 배포를 멈추고 보관 처리되었다 |
+| D26 | 사람·테넌트·로그인은 roster의 것이다. 외부 roster를 기본으로 지원하고, 서버 한 대 배포에서는 같은 프로세스에 내장해 `bufconn`으로 붙인다. Rove는 roster가 확인한 사람에게 자기 세션을 주고, Tenant·Holder 행을 roster의 ID에 고정해 처음 들어올 때 만든다. 역할은 Rove가 정한다 | 비밀번호·잠금·2단계 인증·IdP 연결·SCIM·SSO를 제품마다 다시 만들지 않고, 같은 roster를 쓰는 다른 제품(shale)과 사람이 하나다. 내장은 배포를 간편하게 하고, 같은 코드가 리스너만 바꿔 붙으므로 Rove의 나머지는 어느 모드인지 모른다 |
