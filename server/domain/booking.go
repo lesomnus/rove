@@ -10,6 +10,7 @@ import (
 	"time"
 	"uuid"
 
+	"github.com/lesomnus/payday/past"
 	"github.com/lesomnus/payday/pdid"
 	"github.com/lesomnus/z"
 	"github.com/protobuf-orm/ent/dialect/sql"
@@ -93,7 +94,11 @@ func (s domainBookable) Add(ctx context.Context, req *app.BookableAddRequest) (*
 		if !row.HasId() {
 			row.SetId(pdid.New(pd.BookableDomain).Bytes())
 		}
-		if err := t.begin(nil, "bookable.add", idOf(a.GetId()), t.now, a.GetTag()+" 예약 가능", "", nil); err != nil {
+		if err := t.begin(nil, idOf(a.GetId()), t.now, "", app.BookableAdded_builder{
+			Bookable: row.GetId(),
+			Asset:    a.GetId(),
+			Tag:      a.GetTag(),
+		}.Build()); err != nil {
 			return err
 		}
 		out, err = t.next.Bookable().Add(t.ctx, row)
@@ -141,7 +146,10 @@ func (s domainBookable) Update(ctx context.Context, req *app.BookableUpdateReque
 		if u := req.GetUnits(); u > 0 {
 			patch.SetUnits(u)
 		}
-		if err := t.begin(nil, "bookable.update", idOf(v.GetAsset().GetId()), t.now, "예약 정책 변경", "", nil); err != nil {
+		if err := t.begin(nil, idOf(v.GetAsset().GetId()), t.now, "", app.BookableUpdated_builder{
+			Bookable: v.GetId(),
+			Asset:    v.GetAsset().GetId(),
+		}.Build()); err != nil {
 			return err
 		}
 		out, err = t.next.Bookable().Patch(t.ctx, patch)
@@ -544,17 +552,29 @@ func (s domainReservation) Add(ctx context.Context, req *app.ReservationAddReque
 		// it did to that thing is that thing's to show (design D34). The
 		// first thing was the subject of the only event there was, and the
 		// others had none.
-		said := fmt.Sprintf("예약: %s %s", wants[0].r.asset.Name, begins.Format("01-02 15:04"))
-		if err := t.begin(req.GetOp(), "reservation.add", id, t.now, said, req.GetReason(),
-			map[string]string{"state": state, "for": pdid.Id(who.Id).String(), "occurrences": strconv.Itoa(len(occs))}); err != nil {
+		said := func(r *resource) *app.ReservationAdded {
+			return app.ReservationAdded_builder{
+				Reservation: id.Bytes(),
+				Party:       pdid.Id(who.Id).Bytes(),
+				Status:      state,
+				Occurrences: uint32(len(occs)),
+				BeginsAt:    ts(begins),
+				EndsAt:      ts(ends),
+				AssetName:   r.asset.Name,
+				Override:    override,
+			}.Build()
+		}
+		if err := t.begin(req.GetOp(), id, t.now, req.GetReason(), said(wants[0].r)); err != nil {
 			return err
 		}
-		for _, w := range wants {
-			if err := t.child("reservation.add", pdid.Id(w.r.asset.Id), t.now,
-				fmt.Sprintf("예약: %s %s", w.r.asset.Name, begins.Format("01-02 15:04")), req.GetReason(),
-				map[string]string{"state": state, "for": pdid.Id(who.Id).String(), "reservation": id.String()}, nil); err != nil {
-				return err
-			}
+		kids := make([]past.Child, len(wants))
+		for i, w := range wants {
+			v := said(w.r)
+			v.SetAsset(pdid.Id(w.r.asset.Id).Bytes())
+			kids[i] = past.Child{Event: past.Event{Subject: pdid.Id(w.r.asset.Id), Reason: req.GetReason(), Value: v}}
+		}
+		if _, err := t.op.Batch(t.ctx, kids); err != nil {
+			return err
 		}
 
 		var series []byte
@@ -718,7 +738,7 @@ func occurrences(begins, ends time.Time, rule string) ([][2]time.Time, error) {
 
 // decide moves a reservation from one state to another and frees its time
 // when the new state takes none.
-func (s domainReservation) decide(ctx context.Context, req *app.ReservationDecideRequest, kind string, from []string, to string, check func(t *Tx, r *app.Reservation) error) (*app.Reservation, error) {
+func (s domainReservation) decide(ctx context.Context, req *app.ReservationDecideRequest, said func(reservation []byte, name string, series bool) proto.Message, from []string, to string, check func(t *Tx, r *app.Reservation) error) (*app.Reservation, error) {
 	var out *app.Reservation
 	err := s.tx(ctx, func(t *Tx) error {
 		r, err := t.next.Reservation().Get(t.ctx, app.ReservationGetRequest_builder{Ref: req.GetRef()}.Build())
@@ -766,8 +786,8 @@ func (s domainReservation) decide(ctx context.Context, req *app.ReservationDecid
 					return err
 				}
 			}
-			if t.ev.IsZero() {
-				if err := t.begin(nil, kind, idOf(r.GetId()), t.now, fmt.Sprintf("예약 %s: %s", to, r.GetName()), req.GetReason(), nil); err != nil {
+			if t.op == nil {
+				if err := t.begin(nil, idOf(r.GetId()), t.now, req.GetReason(), said(r.GetId(), r.GetName(), req.GetSeries())); err != nil {
 					return err
 				}
 			}
@@ -892,7 +912,7 @@ func (t *Tx) settleAllocations(rid pdid.Id, state string) error {
 // Confirm turns a hold into what it was held for, before it expires.
 func (s domainReservation) Confirm(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
 	var to string
-	return s.decideTo(ctx, req, "reservation.confirm", []string{resHeld}, &to, func(t *Tx, r *app.Reservation) error {
+	return s.decideTo(ctx, req, []string{resHeld}, &to, func(t *Tx, r *app.Reservation) error {
 		if r.HasExpiresAt() && r.GetExpiresAt().AsTime().Before(t.now) {
 			return failed("임시로 잡아 둔 시간이 지났습니다. 다시 예약하세요")
 		}
@@ -908,7 +928,7 @@ func (s domainReservation) Confirm(ctx context.Context, req *app.ReservationDeci
 	})
 }
 
-func (s domainReservation) decideTo(ctx context.Context, req *app.ReservationDecideRequest, kind string, from []string, to *string, check func(t *Tx, r *app.Reservation) error) (*app.Reservation, error) {
+func (s domainReservation) decideTo(ctx context.Context, req *app.ReservationDecideRequest, from []string, to *string, check func(t *Tx, r *app.Reservation) error) (*app.Reservation, error) {
 	var out *app.Reservation
 	err := s.tx(ctx, func(t *Tx) error {
 		r, err := t.next.Reservation().Get(t.ctx, app.ReservationGetRequest_builder{Ref: req.GetRef()}.Build())
@@ -928,7 +948,11 @@ func (s domainReservation) decideTo(ctx context.Context, req *app.ReservationDec
 		if err := check(t, r); err != nil {
 			return err
 		}
-		if err := t.begin(nil, kind, idOf(r.GetId()), t.now, "예약 확정: "+r.GetName(), req.GetReason(), nil); err != nil {
+		if err := t.begin(nil, idOf(r.GetId()), t.now, req.GetReason(), app.ReservationConfirmed_builder{
+			Reservation: r.GetId(),
+			Name:        r.GetName(),
+			To:          *to,
+		}.Build()); err != nil {
 			return err
 		}
 		patch := app.ReservationPatchRequest_builder{
@@ -973,21 +997,29 @@ func managerOnly(t *Tx, _ *app.Reservation) error {
 }
 
 func (s domainReservation) Approve(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.approve", []string{resRequested}, resConfirmed, managerOnly)
+	return s.decide(ctx, req, func(r []byte, name string, series bool) proto.Message {
+		return app.ReservationApproved_builder{Reservation: r, Name: name, Series: series}.Build()
+	}, []string{resRequested}, resConfirmed, managerOnly)
 }
 
 func (s domainReservation) Reject(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.reject", []string{resRequested, resHeld}, resRejected, managerOnly)
+	return s.decide(ctx, req, func(r []byte, name string, series bool) proto.Message {
+		return app.ReservationRejected_builder{Reservation: r, Name: name, Series: series}.Build()
+	}, []string{resRequested, resHeld}, resRejected, managerOnly)
 }
 
 func (s domainReservation) Cancel(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.cancel", []string{resHeld, resRequested, resConfirmed}, resCancelled, func(t *Tx, r *app.Reservation) error {
+	return s.decide(ctx, req, func(r []byte, name string, series bool) proto.Message {
+		return app.ReservationCancelled_builder{Reservation: r, Name: name, Series: series}.Build()
+	}, []string{resHeld, resRequested, resConfirmed}, resCancelled, func(t *Tx, r *app.Reservation) error {
 		return t.mineOrManager(r)
 	})
 }
 
 func (s domainReservation) CheckIn(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.checkin", []string{resConfirmed}, resInUse, func(t *Tx, r *app.Reservation) error {
+	return s.decide(ctx, req, func(r []byte, name string, series bool) proto.Message {
+		return app.ReservationCheckedIn_builder{Reservation: r, Name: name, Series: series}.Build()
+	}, []string{resConfirmed}, resInUse, func(t *Tx, r *app.Reservation) error {
 		if err := t.mineOrManager(r); err != nil {
 			return err
 		}
@@ -999,7 +1031,9 @@ func (s domainReservation) CheckIn(ctx context.Context, req *app.ReservationDeci
 }
 
 func (s domainReservation) Complete(ctx context.Context, req *app.ReservationDecideRequest) (*app.Reservation, error) {
-	return s.decide(ctx, req, "reservation.complete", []string{resConfirmed, resInUse}, resCompleted, func(t *Tx, r *app.Reservation) error {
+	return s.decide(ctx, req, func(r []byte, name string, series bool) proto.Message {
+		return app.ReservationCompleted_builder{Reservation: r, Name: name, Series: series}.Build()
+	}, []string{resConfirmed, resInUse}, resCompleted, func(t *Tx, r *app.Reservation) error {
 		return t.mineOrManager(r)
 	})
 }
