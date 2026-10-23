@@ -1,0 +1,1304 @@
+{
+  "events": {
+    "rove.AccessReviewed": "access.review",
+    "rove.AccountDeparted": "account.depart",
+    "rove.AssetAdded": "asset.add",
+    "rove.AssetAssigned": "asset.assign",
+    "rove.AssetAttributesSet": "asset.set",
+    "rove.AssetCorrected": "asset.correct",
+    "rove.AssetMoved": "asset.move",
+    "rove.AssetRelated": "asset.relate",
+    "rove.AssetTypeAdded": "type.add",
+    "rove.AssetTypeUpdated": "type.update",
+    "rove.AssetVoided": "asset.void",
+    "rove.AssetsAdded": "asset.add_many",
+    "rove.AttachmentAdded": "attachment.add",
+    "rove.BookableAdded": "bookable.add",
+    "rove.BookableUpdated": "bookable.update",
+    "rove.CountClosed": "count.close",
+    "rove.CountReconciled": "count.reconcile",
+    "rove.CountResolved": "count.resolve",
+    "rove.CountScanned": "count.scan",
+    "rove.CountStarted": "count.start",
+    "rove.CustodyAcknowledged": "custody.acknowledge",
+    "rove.CustodyExtended": "custody.extend",
+    "rove.CustodyIssued": "custody.issue",
+    "rove.CustodyReturned": "custody.return",
+    "rove.InvitationAccepted": "invitation.accept",
+    "rove.InvitationAdded": "invitation.add",
+    "rove.InvitationClaimed": "invitation.claim",
+    "rove.InvitationDenied": "invitation.deny",
+    "rove.InvitationRevoked": "invitation.revoke",
+    "rove.ItemModelAdded": "model.add",
+    "rove.ItemModelUpdated": "model.update",
+    "rove.LabelBound": "label.bind",
+    "rove.LabelUnbound": "label.unbind",
+    "rove.LabelsPrinted": "label.print",
+    "rove.PartyAdded": "party.add",
+    "rove.PartyDeactivated": "party.deactivate",
+    "rove.PartyInvited": "party.invite",
+    "rove.PartyPasswordSet": "party.password",
+    "rove.PartyPseudonymized": "party.pseudonymize",
+    "rove.PartyRoleSet": "party.role",
+    "rove.PartyUpdated": "party.update",
+    "rove.PurchaseAdded": "purchase.add",
+    "rove.PurchaseReceived": "purchase.receive",
+    "rove.ReservationAdded": "reservation.add",
+    "rove.ReservationApproved": "reservation.approve",
+    "rove.ReservationCancelled": "reservation.cancel",
+    "rove.ReservationCheckedIn": "reservation.checkin",
+    "rove.ReservationCompleted": "reservation.complete",
+    "rove.ReservationConfirmed": "reservation.confirm",
+    "rove.ReservationExpired": "reservation.expire",
+    "rove.ReservationNoShow": "reservation.no_show",
+    "rove.ReservationRejected": "reservation.reject",
+    "rove.RetentionExpired": "retention.expired",
+    "rove.StockAdded": "stock.add",
+    "rove.StockAdjusted": "stock.adjust",
+    "rove.StockConsumed": "stock.consume",
+    "rove.StockConverted": "stock.convert",
+    "rove.StockReceived": "stock.receive",
+    "rove.StockTransferred": "stock.transfer",
+    "rove.TenantDomainActivated": "domain.activate",
+    "rove.TenantDomainAdded": "domain.add",
+    "rove.TenantDomainLapsed": "domain.lapse",
+    "rove.TenantDomainRetired": "domain.retire",
+    "rove.TenantDomainVerified": "domain.verify",
+    "rove.WorkOrderCancelled": "work.cancelled",
+    "rove.WorkOrderDone": "work.done",
+    "rove.WorkOrderOpened": "work.open",
+    "rove.WorkOrderUpdated": "work.update",
+    "rove.WorkspaceClosed": "workspace.close",
+    "rove.WorkspaceConfigured": "workspace.configure",
+    "rove.WorkspaceImported": "workspace.import",
+    "rove.WorkspaceRestored": "workspace.restore"
+  },
+  "messages": {
+    "rove.AccessReviewed": {
+      "1": {
+        "json": "review",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "from",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "3": {
+        "json": "to",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "4": {
+        "json": "calls",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "downloads",
+        "kind": "uint32"
+      },
+      "6": {
+        "json": "refused",
+        "kind": "uint32"
+      }
+    },
+    "rove.AccountDeparted": {
+      "1": {
+        "json": "held",
+        "kind": "uint32"
+      },
+      "2": {
+        "json": "ownerless",
+        "kind": "bool"
+      }
+    },
+    "rove.AssetAdded": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "name",
+        "kind": "string"
+      },
+      "4": {
+        "json": "kind",
+        "kind": "string"
+      }
+    },
+    "rove.AssetAssigned": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "role",
+        "kind": "string"
+      },
+      "4": {
+        "json": "party",
+        "kind": "bytes"
+      }
+    },
+    "rove.AssetAttributesSet": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "set",
+        "kind": "string",
+        "list": true
+      },
+      "4": {
+        "json": "cleared",
+        "kind": "string",
+        "list": true
+      }
+    },
+    "rove.AssetCorrected": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "row",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "role",
+        "kind": "string"
+      },
+      "5": {
+        "json": "key",
+        "kind": "string"
+      },
+      "6": {
+        "json": "retract",
+        "kind": "bool"
+      },
+      "7": {
+        "json": "validFrom",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      }
+    },
+    "rove.AssetMoved": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "to",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "toTag",
+        "kind": "string"
+      },
+      "5": {
+        "json": "mode",
+        "kind": "string"
+      },
+      "6": {
+        "json": "slot",
+        "kind": "string"
+      },
+      "7": {
+        "json": "uFrom",
+        "kind": "int32"
+      },
+      "8": {
+        "json": "uTo",
+        "kind": "int32"
+      }
+    },
+    "rove.AssetRelated": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "3": {
+        "json": "target",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "targetTag",
+        "kind": "string"
+      },
+      "5": {
+        "json": "kind",
+        "kind": "string"
+      },
+      "6": {
+        "json": "end",
+        "kind": "bool"
+      },
+      "7": {
+        "json": "required",
+        "kind": "bool"
+      }
+    },
+    "rove.AssetTypeAdded": {
+      "1": {
+        "json": "type",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "kind",
+        "kind": "string"
+      }
+    },
+    "rove.AssetTypeUpdated": {
+      "1": {
+        "json": "type",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      }
+    },
+    "rove.AssetVoided": {
+      "1": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "tag",
+        "kind": "string"
+      }
+    },
+    "rove.AssetsAdded": {
+      "1": {
+        "json": "count",
+        "kind": "uint32"
+      }
+    },
+    "rove.AttachmentAdded": {
+      "1": {
+        "json": "attachment",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "subject",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "name",
+        "kind": "string"
+      },
+      "4": {
+        "json": "contentType",
+        "kind": "string"
+      },
+      "5": {
+        "json": "size",
+        "kind": "uint64"
+      }
+    },
+    "rove.BookableAdded": {
+      "1": {
+        "json": "bookable",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "tag",
+        "kind": "string"
+      }
+    },
+    "rove.BookableUpdated": {
+      "1": {
+        "json": "bookable",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      }
+    },
+    "rove.CountClosed": {
+      "1": {
+        "json": "count",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "scope",
+        "kind": "bytes"
+      }
+    },
+    "rove.CountReconciled": {
+      "1": {
+        "json": "count",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "missing",
+        "kind": "uint32"
+      }
+    },
+    "rove.CountResolved": {
+      "1": {
+        "json": "count",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "finding",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "resolution",
+        "kind": "string"
+      }
+    },
+    "rove.CountScanned": {
+      "1": {
+        "json": "count",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "label",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "space",
+        "kind": "bytes"
+      },
+      "5": {
+        "json": "code",
+        "kind": "string"
+      }
+    },
+    "rove.CountStarted": {
+      "1": {
+        "json": "count",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "scope",
+        "kind": "bytes"
+      }
+    },
+    "rove.CustodyAcknowledged": {
+      "1": {
+        "json": "custody",
+        "kind": "bytes"
+      }
+    },
+    "rove.CustodyExtended": {
+      "1": {
+        "json": "custody",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "due",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      }
+    },
+    "rove.CustodyIssued": {
+      "1": {
+        "json": "custody",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "kind",
+        "kind": "string"
+      },
+      "4": {
+        "json": "lines",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "due",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "6": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "7": {
+        "json": "asset",
+        "kind": "bytes"
+      }
+    },
+    "rove.CustodyReturned": {
+      "1": {
+        "json": "custody",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "to",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "asset",
+        "kind": "bytes"
+      }
+    },
+    "rove.InvitationAccepted": {
+      "1": {
+        "json": "invitation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "role",
+        "kind": "string"
+      },
+      "3": {
+        "json": "holder",
+        "kind": "bytes"
+      }
+    },
+    "rove.InvitationAdded": {
+      "1": {
+        "json": "invitation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "role",
+        "kind": "string"
+      },
+      "3": {
+        "json": "party",
+        "kind": "bytes"
+      }
+    },
+    "rove.InvitationClaimed": {
+      "1": {
+        "json": "invitation",
+        "kind": "bytes"
+      }
+    },
+    "rove.InvitationDenied": {
+      "1": {
+        "json": "invitation",
+        "kind": "bytes"
+      }
+    },
+    "rove.InvitationRevoked": {
+      "1": {
+        "json": "invitation",
+        "kind": "bytes"
+      }
+    },
+    "rove.ItemModelAdded": {
+      "1": {
+        "json": "model",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "maker",
+        "kind": "string"
+      }
+    },
+    "rove.ItemModelUpdated": {
+      "1": {
+        "json": "model",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      }
+    },
+    "rove.LabelBound": {
+      "1": {
+        "json": "label",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "tag",
+        "kind": "string"
+      }
+    },
+    "rove.LabelUnbound": {
+      "1": {
+        "json": "label",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "void",
+        "kind": "bool"
+      }
+    },
+    "rove.LabelsPrinted": {
+      "1": {
+        "json": "batch",
+        "kind": "string"
+      },
+      "2": {
+        "json": "count",
+        "kind": "uint32"
+      },
+      "3": {
+        "json": "assets",
+        "kind": "bytes",
+        "list": true
+      }
+    },
+    "rove.PartyAdded": {
+      "1": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "kind",
+        "kind": "string"
+      }
+    },
+    "rove.PartyDeactivated": {
+      "1": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "holder",
+        "kind": "bytes"
+      }
+    },
+    "rove.PartyInvited": {
+      "1": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "holder",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "role",
+        "kind": "string"
+      }
+    },
+    "rove.PartyPasswordSet": {
+      "1": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "holder",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "own",
+        "kind": "bool"
+      }
+    },
+    "rove.PartyPseudonymized": {
+      "1": {
+        "json": "held",
+        "kind": "uint32"
+      }
+    },
+    "rove.PartyRoleSet": {
+      "1": {
+        "json": "holder",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "role",
+        "kind": "string"
+      },
+      "4": {
+        "json": "by",
+        "kind": "string"
+      }
+    },
+    "rove.PartyUpdated": {
+      "1": {
+        "json": "party",
+        "kind": "bytes"
+      }
+    },
+    "rove.PurchaseAdded": {
+      "1": {
+        "json": "purchase",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "total",
+        "kind": "int64"
+      },
+      "4": {
+        "json": "currency",
+        "kind": "string"
+      },
+      "5": {
+        "json": "lines",
+        "kind": "uint32"
+      },
+      "6": {
+        "json": "vendor",
+        "kind": "bytes"
+      }
+    },
+    "rove.PurchaseReceived": {
+      "1": {
+        "json": "purchase",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "into",
+        "kind": "bytes"
+      }
+    },
+    "rove.ReservationAdded": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "party",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "status",
+        "kind": "string"
+      },
+      "4": {
+        "json": "occurrences",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "beginsAt",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "6": {
+        "json": "endsAt",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "7": {
+        "json": "assetName",
+        "kind": "string"
+      },
+      "8": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "9": {
+        "json": "override",
+        "kind": "bool"
+      }
+    },
+    "rove.ReservationApproved": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "series",
+        "kind": "bool"
+      }
+    },
+    "rove.ReservationCancelled": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "series",
+        "kind": "bool"
+      }
+    },
+    "rove.ReservationCheckedIn": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "series",
+        "kind": "bool"
+      }
+    },
+    "rove.ReservationCompleted": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "series",
+        "kind": "bool"
+      },
+      "4": {
+        "json": "ended",
+        "kind": "bool"
+      }
+    },
+    "rove.ReservationConfirmed": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "to",
+        "kind": "string"
+      }
+    },
+    "rove.ReservationExpired": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "from",
+        "kind": "string"
+      }
+    },
+    "rove.ReservationNoShow": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      }
+    },
+    "rove.ReservationRejected": {
+      "1": {
+        "json": "reservation",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "series",
+        "kind": "bool"
+      }
+    },
+    "rove.RetentionExpired": {
+      "1": {
+        "json": "before",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "2": {
+        "json": "placements",
+        "kind": "uint32"
+      },
+      "3": {
+        "json": "links",
+        "kind": "uint32"
+      },
+      "4": {
+        "json": "stewardships",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "facts",
+        "kind": "uint32"
+      },
+      "6": {
+        "json": "events",
+        "kind": "uint32"
+      },
+      "7": {
+        "json": "reservations",
+        "kind": "uint32"
+      },
+      "8": {
+        "json": "custodies",
+        "kind": "uint32"
+      },
+      "9": {
+        "json": "counts",
+        "kind": "uint32"
+      },
+      "10": {
+        "json": "workOrders",
+        "kind": "uint32"
+      },
+      "11": {
+        "json": "stockMovements",
+        "kind": "uint32"
+      },
+      "12": {
+        "json": "attachments",
+        "kind": "uint32"
+      }
+    },
+    "rove.StockAdded": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "model",
+        "kind": "bytes"
+      },
+      "4": {
+        "json": "space",
+        "kind": "bytes"
+      },
+      "5": {
+        "json": "spaceName",
+        "kind": "string"
+      },
+      "6": {
+        "json": "quantity",
+        "kind": "int64"
+      }
+    },
+    "rove.StockAdjusted": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "delta",
+        "kind": "int64"
+      }
+    },
+    "rove.StockConsumed": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "delta",
+        "kind": "int64"
+      }
+    },
+    "rove.StockConverted": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "quantity",
+        "kind": "int64"
+      }
+    },
+    "rove.StockReceived": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "delta",
+        "kind": "int64"
+      }
+    },
+    "rove.StockTransferred": {
+      "1": {
+        "json": "stock",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "name",
+        "kind": "string"
+      },
+      "3": {
+        "json": "quantity",
+        "kind": "int64"
+      },
+      "4": {
+        "json": "toSpace",
+        "kind": "bytes"
+      },
+      "5": {
+        "json": "toSpaceName",
+        "kind": "string"
+      }
+    },
+    "rove.TenantDomainActivated": {
+      "1": {
+        "json": "domain",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "host",
+        "kind": "string"
+      },
+      "3": {
+        "json": "purpose",
+        "kind": "string"
+      }
+    },
+    "rove.TenantDomainAdded": {
+      "1": {
+        "json": "domain",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "host",
+        "kind": "string"
+      },
+      "3": {
+        "json": "purpose",
+        "kind": "string"
+      },
+      "4": {
+        "json": "source",
+        "kind": "string"
+      }
+    },
+    "rove.TenantDomainLapsed": {
+      "1": {
+        "json": "domain",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "host",
+        "kind": "string"
+      },
+      "3": {
+        "json": "purpose",
+        "kind": "string"
+      },
+      "4": {
+        "json": "failingSince",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "5": {
+        "json": "failures",
+        "kind": "uint32"
+      }
+    },
+    "rove.TenantDomainRetired": {
+      "1": {
+        "json": "domain",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "host",
+        "kind": "string"
+      },
+      "3": {
+        "json": "purpose",
+        "kind": "string"
+      },
+      "4": {
+        "json": "force",
+        "kind": "bool"
+      },
+      "5": {
+        "json": "labels",
+        "kind": "uint32"
+      }
+    },
+    "rove.TenantDomainVerified": {
+      "1": {
+        "json": "domain",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "host",
+        "kind": "string"
+      },
+      "3": {
+        "json": "purpose",
+        "kind": "string"
+      },
+      "4": {
+        "json": "again",
+        "kind": "bool"
+      }
+    },
+    "rove.WorkOrderCancelled": {
+      "1": {
+        "json": "workOrder",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "name",
+        "kind": "string"
+      }
+    },
+    "rove.WorkOrderDone": {
+      "1": {
+        "json": "workOrder",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "name",
+        "kind": "string"
+      },
+      "4": {
+        "json": "cost",
+        "kind": "int64"
+      },
+      "5": {
+        "json": "currency",
+        "kind": "string"
+      }
+    },
+    "rove.WorkOrderOpened": {
+      "1": {
+        "json": "workOrder",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "tag",
+        "kind": "string"
+      },
+      "4": {
+        "json": "name",
+        "kind": "string"
+      },
+      "5": {
+        "json": "kind",
+        "kind": "string"
+      },
+      "6": {
+        "json": "status",
+        "kind": "string"
+      }
+    },
+    "rove.WorkOrderUpdated": {
+      "1": {
+        "json": "workOrder",
+        "kind": "bytes"
+      },
+      "2": {
+        "json": "asset",
+        "kind": "bytes"
+      },
+      "3": {
+        "json": "name",
+        "kind": "string"
+      },
+      "4": {
+        "json": "status",
+        "kind": "string"
+      }
+    },
+    "rove.WorkspaceClosed": {
+      "1": {
+        "json": "by",
+        "kind": "string"
+      },
+      "2": {
+        "json": "destroy",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      }
+    },
+    "rove.WorkspaceConfigured": {
+      "1": {
+        "json": "timezone",
+        "kind": "string"
+      },
+      "2": {
+        "json": "currency",
+        "kind": "string"
+      },
+      "3": {
+        "json": "noShowMinutes",
+        "kind": "int32"
+      },
+      "4": {
+        "json": "keepDays",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "keepFrom",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "6": {
+        "json": "accessKeepDays",
+        "kind": "uint32"
+      },
+      "7": {
+        "json": "accessKeepFrom",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "8": {
+        "json": "restoreDays",
+        "kind": "uint32"
+      }
+    },
+    "rove.WorkspaceImported": {
+      "1": {
+        "json": "exportedAt",
+        "kind": "message",
+        "type": "google.protobuf.Timestamp"
+      },
+      "2": {
+        "json": "manifest",
+        "kind": "string"
+      },
+      "3": {
+        "json": "signedBy",
+        "kind": "string"
+      },
+      "4": {
+        "json": "rows",
+        "kind": "uint32"
+      },
+      "5": {
+        "json": "files",
+        "kind": "uint32"
+      },
+      "6": {
+        "json": "asked",
+        "kind": "string"
+      },
+      "7": {
+        "json": "released",
+        "kind": "string",
+        "list": true
+      },
+      "8": {
+        "json": "unlinked",
+        "kind": "uint32"
+      },
+      "9": {
+        "json": "reopened",
+        "kind": "bool"
+      },
+      "10": {
+        "json": "left",
+        "kind": "uint32",
+        "map": "string"
+      }
+    },
+    "rove.WorkspaceRestored": {
+      "1": {
+        "json": "by",
+        "kind": "string"
+      }
+    }
+  }
+}
