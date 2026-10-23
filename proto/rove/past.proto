@@ -1,0 +1,829 @@
+edition = "2023";
+
+package rove;
+
+import "google/protobuf/timestamp.proto";
+import "payday.proto";
+
+option features.field_presence = IMPLICIT;
+option go_package = "github.com/lesomnus/rove";
+
+// Rove keeps its past in payday's (payday#151): an Event for every operation,
+// domain 17, and a Fact for every field of an asset from a moment on, domain
+// 16 -- the numbers the two tables Rove had took, so that every identifier
+// either ever minted still names the row it did.
+option (payday.app) = {
+  past: {event: 17, fact: 16}
+};
+
+// What an event holds: one message for each kind of operation, by the kind
+// Rove has written it under since it began (design 8.2). An event keeps no
+// sentence; one is made of this when it is read, in the workspace's zone,
+// naming the people in it as they are called then (`server/domain/say.go`).
+//
+// So a message holds what happened and nothing of anybody's: a person or a
+// membership by identifier alone, never a name, an address or a number of
+// theirs. A thing is held by identifier and, where a sentence says it, by what
+// it was called then -- an asset's tag, a reservation's name -- which is a
+// record, and nobody's. Why it was done is the event's own `reason`, in the
+// words of whoever asked: nothing Rove says itself goes there.
+//
+// A row keeps its message as JSON and is read back by name for as long as the
+// workspace keeps its history, which is longer than any build. So a message
+// here is never removed, a field never removed or renamed in JSON, and a kind
+// never changed; `rove/payday/past.lock` holds the schema to it. Adding is
+// always fine -- and a message ships one release before anything writes it,
+// so that the build before can read it once it does.
+//
+// An identifier is the sixteen bytes of a `pdid`. A word out of a vocabulary
+// -- a status, a role -- is a string rather than an enum, whose names a row
+// would be written with too.
+
+// AssetAdded is an asset registered (`asset.add`): by itself, by a stock
+// converted, by a purchase received, or as one of many (`asset.add_many`,
+// whose event is its cause).
+message AssetAdded {
+  option (payday.event) = {kind: "asset.add"};
+
+  bytes asset = 1;
+  string tag = 2;
+  string name = 3;
+  // item | space | kit | group
+  string kind = 4;
+}
+
+// AssetVoided is an asset registered by mistake taken back (`asset.void`): it
+// never was, and its rows say so.
+message AssetVoided {
+  option (payday.event) = {kind: "asset.void"};
+
+  bytes asset = 1;
+  string tag = 2;
+}
+
+// AssetMoved is an asset put somewhere from a moment on, or taken out of
+// where it was (`asset.move`): `to` is nothing then, and so is the rest.
+message AssetMoved {
+  option (payday.event) = {kind: "asset.move"};
+
+  bytes asset = 1;
+  string tag = 2;
+  bytes to = 3;
+  string to_tag = 4;
+  // located | installed | part
+  string mode = 5;
+  string slot = 6;
+  // A rack's positions, inclusive; zero is none.
+  int32 u_from = 7;
+  int32 u_to = 8;
+}
+
+// AssetAttributesSet is what an asset is changed from a moment on
+// (`asset.set`): the fields set and the ones cleared, by the keys Rove writes
+// facts under -- `status`, `attr.cpu`. What each became is the facts the
+// event wrote.
+message AssetAttributesSet {
+  option (payday.event) = {kind: "asset.set"};
+
+  bytes asset = 1;
+  string tag = 2;
+  repeated string set = 3;
+  repeated string cleared = 4;
+}
+
+// AssetAssigned is who owns or manages an asset from a moment on
+// (`asset.assign`), and nobody when the role ended.
+message AssetAssigned {
+  option (payday.event) = {kind: "asset.assign"};
+
+  bytes asset = 1;
+  string tag = 2;
+  // owner | manager
+  string role = 3;
+  bytes party = 4;
+}
+
+// AssetRelated is a relation of one asset to another from a moment on, or its
+// end (`asset.relate`).
+message AssetRelated {
+  option (payday.event) = {kind: "asset.relate"};
+
+  bytes asset = 1;
+  string tag = 2;
+  bytes target = 3;
+  string target_tag = 4;
+  // member_of | connected_to
+  string kind = 5;
+  bool end = 6;
+  bool required = 7;
+}
+
+// AssetCorrected is a time row of an asset said to have been wrong
+// (`asset.correct`): it never held, or held from `valid_from`. The row's
+// identifier says which kind it was; a stewardship's role and a fact's key
+// say which of its kind.
+message AssetCorrected {
+  option (payday.event) = {kind: "asset.correct"};
+
+  bytes asset = 1;
+  string tag = 2;
+  bytes row = 3;
+  string role = 4;
+  string key = 5;
+  bool retract = 6;
+  google.protobuf.Timestamp valid_from = 7;
+}
+
+// AssetsAdded is many assets registered at once (`asset.add_many`), each an
+// AssetAdded of its own whose cause this is (design 9.13, D34).
+message AssetsAdded {
+  option (payday.event) = {kind: "asset.add_many"};
+
+  uint32 count = 1;
+}
+
+// StockAdded is a model kept in a space from now on (`stock.add`), with what
+// was there already.
+message StockAdded {
+  option (payday.event) = {kind: "stock.add"};
+
+  bytes stock = 1;
+  string name = 2;
+  bytes model = 3;
+  bytes space = 4;
+  string space_name = 5;
+  int64 quantity = 6;
+}
+
+// StockReceived, StockConsumed and StockAdjusted are a stock changed by
+// `delta` (`stock.receive`, `stock.consume`, `stock.adjust`).
+message StockReceived {
+  option (payday.event) = {kind: "stock.receive"};
+
+  bytes stock = 1;
+  string name = 2;
+  int64 delta = 3;
+}
+
+message StockConsumed {
+  option (payday.event) = {kind: "stock.consume"};
+
+  bytes stock = 1;
+  string name = 2;
+  int64 delta = 3;
+}
+
+message StockAdjusted {
+  option (payday.event) = {kind: "stock.adjust"};
+
+  bytes stock = 1;
+  string name = 2;
+  int64 delta = 3;
+}
+
+// StockTransferred is a quantity of a stock moved to the same model's stock in
+// another space (`stock.transfer`).
+message StockTransferred {
+  option (payday.event) = {kind: "stock.transfer"};
+
+  bytes stock = 1;
+  string name = 2;
+  int64 quantity = 3;
+  bytes to_space = 4;
+  string to_space_name = 5;
+}
+
+// StockConverted is units of a stock registered as assets of their own
+// (`stock.convert`), each an AssetAdded whose cause this is.
+message StockConverted {
+  option (payday.event) = {kind: "stock.convert"};
+
+  bytes stock = 1;
+  string name = 2;
+  int64 quantity = 3;
+}
+
+// CustodyIssued is things handed over (`custody.issue`): for keeps, or a loan
+// due back. Each asset handed over is an event of its own, whose cause this
+// is, and which holds the asset.
+message CustodyIssued {
+  option (payday.event) = {kind: "custody.issue"};
+
+  bytes custody = 1;
+  bytes party = 2;
+  // issue | loan
+  string kind = 3;
+  uint32 lines = 4;
+  google.protobuf.Timestamp due = 5;
+  // The reservation the hand-over fulfils, when it was a pickup.
+  bytes reservation = 6;
+  bytes asset = 7;
+}
+
+// CustodyAcknowledged is the receiver saying they have it
+// (`custody.acknowledge`).
+message CustodyAcknowledged {
+  option (payday.event) = {kind: "custody.acknowledge"};
+
+  bytes custody = 1;
+}
+
+// CustodyReturned is some or all of what was handed over taken back
+// (`custody.return`), into `to` when it says. Each asset taken back is an
+// event of its own, whose cause this is, and which holds the asset.
+message CustodyReturned {
+  option (payday.event) = {kind: "custody.return"};
+
+  bytes custody = 1;
+  bytes to = 2;
+  bytes asset = 3;
+}
+
+// CustodyExtended is a loan's due date moved (`custody.extend`).
+message CustodyExtended {
+  option (payday.event) = {kind: "custody.extend"};
+
+  bytes custody = 1;
+  google.protobuf.Timestamp due = 2;
+}
+
+// CountStarted is a count of what is under a space begun (`count.start`).
+message CountStarted {
+  option (payday.event) = {kind: "count.start"};
+
+  bytes count = 1;
+  string name = 2;
+  bytes scope = 3;
+}
+
+// CountScanned is something a count saw, and where (`count.scan`): an asset,
+// a label, or a code that named neither.
+message CountScanned {
+  option (payday.event) = {kind: "count.scan"};
+
+  bytes count = 1;
+  bytes asset = 2;
+  bytes label = 3;
+  bytes space = 4;
+  string code = 5;
+}
+
+// CountReconciled is what was expected under a count's space and not seen,
+// marked missing (`count.reconcile`).
+message CountReconciled {
+  option (payday.event) = {kind: "count.reconcile"};
+
+  bytes count = 1;
+  uint32 missing = 2;
+}
+
+// CountResolved is a finding settled (`count.resolve`): moved, lost or
+// ignored.
+message CountResolved {
+  option (payday.event) = {kind: "count.resolve"};
+
+  bytes count = 1;
+  bytes finding = 2;
+  bytes asset = 3;
+  // moved | lost | ignored
+  string resolution = 4;
+}
+
+// CountClosed is a count ended (`count.close`).
+message CountClosed {
+  option (payday.event) = {kind: "count.close"};
+
+  bytes count = 1;
+  string name = 2;
+  bytes scope = 3;
+}
+
+// BookableAdded is an asset made reservable (`bookable.add`).
+message BookableAdded {
+  option (payday.event) = {kind: "bookable.add"};
+
+  bytes bookable = 1;
+  bytes asset = 2;
+  string tag = 3;
+}
+
+// BookableUpdated is how an asset is reserved, changed (`bookable.update`).
+message BookableUpdated {
+  option (payday.event) = {kind: "bookable.update"};
+
+  bytes bookable = 1;
+  bytes asset = 2;
+}
+
+// ReservationAdded is resources reserved (`reservation.add`): a hold, a
+// request, or a confirmed reservation, once or as a series. Each thing it
+// takes is an event of its own, whose cause this is, and which holds the
+// asset and its name.
+message ReservationAdded {
+  option (payday.event) = {kind: "reservation.add"};
+
+  bytes reservation = 1;
+  // Who it is for.
+  bytes party = 2;
+  // held | requested | confirmed
+  string status = 3;
+  uint32 occurrences = 4;
+  google.protobuf.Timestamp begins_at = 5;
+  google.protobuf.Timestamp ends_at = 6;
+  // What it takes, as it was called then: the first thing it takes, or the
+  // one thing an event of its own is about.
+  string asset_name = 7;
+  bytes asset = 8;
+  // Taken over what was booked already, by a manager.
+  bool override = 9;
+}
+
+// ReservationApproved, ReservationRejected, ReservationCancelled,
+// ReservationCheckedIn and ReservationCompleted are a reservation moved on
+// (`reservation.approve`, `.reject`, `.cancel`, `.checkin`, `.complete`), and
+// `series` the ones of its series from it on with it.
+message ReservationApproved {
+  option (payday.event) = {kind: "reservation.approve"};
+
+  bytes reservation = 1;
+  string name = 2;
+  bool series = 3;
+}
+
+message ReservationRejected {
+  option (payday.event) = {kind: "reservation.reject"};
+
+  bytes reservation = 1;
+  string name = 2;
+  bool series = 3;
+}
+
+message ReservationCancelled {
+  option (payday.event) = {kind: "reservation.cancel"};
+
+  bytes reservation = 1;
+  string name = 2;
+  bool series = 3;
+}
+
+message ReservationCheckedIn {
+  option (payday.event) = {kind: "reservation.checkin"};
+
+  bytes reservation = 1;
+  string name = 2;
+  bool series = 3;
+}
+
+// ReservationCompleted is `ended` when nobody asked: its time was over, and
+// the deployment completed it.
+message ReservationCompleted {
+  option (payday.event) = {kind: "reservation.complete"};
+
+  bytes reservation = 1;
+  string name = 2;
+  bool series = 3;
+  bool ended = 4;
+}
+
+// ReservationConfirmed is a hold turned into what it was held for
+// (`reservation.confirm`): confirmed, or a request where an approval is asked.
+message ReservationConfirmed {
+  option (payday.event) = {kind: "reservation.confirm"};
+
+  bytes reservation = 1;
+  string name = 2;
+  // confirmed | requested
+  string to = 3;
+}
+
+// ReservationExpired is a hold nobody confirmed in time, or a request nobody
+// decided before it began (`reservation.expire`), let go by the deployment.
+message ReservationExpired {
+  option (payday.event) = {kind: "reservation.expire"};
+
+  bytes reservation = 1;
+  string name = 2;
+  // held | requested
+  string from = 3;
+}
+
+// ReservationNoShow is a reservation nobody came to, released by the
+// deployment (`reservation.no_show`).
+message ReservationNoShow {
+  option (payday.event) = {kind: "reservation.no_show"};
+
+  bytes reservation = 1;
+  string name = 2;
+}
+
+// TenantDomainAdded is a domain of the workspace's registered (`domain.add`):
+// its own, or a default subdomain of the deployment's.
+message TenantDomainAdded {
+  option (payday.event) = {kind: "domain.add"};
+
+  bytes domain = 1;
+  string host = 2;
+  // app | label
+  string purpose = 3;
+  // custom | default
+  string source = 4;
+}
+
+// TenantDomainVerified is a domain whose DNS checked out (`domain.verify`),
+// `again` when it had lapsed.
+message TenantDomainVerified {
+  option (payday.event) = {kind: "domain.verify"};
+
+  bytes domain = 1;
+  string host = 2;
+  string purpose = 3;
+  bool again = 4;
+}
+
+// TenantDomainActivated is a domain made the one the workspace is on and its
+// labels print with (`domain.activate`).
+message TenantDomainActivated {
+  option (payday.event) = {kind: "domain.activate"};
+
+  bytes domain = 1;
+  string host = 2;
+  string purpose = 3;
+}
+
+// TenantDomainRetired is a domain stopped (`domain.retire`): `labels` is how
+// many labels printed with it stopped opening, which `force` was said for.
+message TenantDomainRetired {
+  option (payday.event) = {kind: "domain.retire"};
+
+  bytes domain = 1;
+  string host = 2;
+  string purpose = 3;
+  bool force = 4;
+  uint32 labels = 5;
+}
+
+// TenantDomainLapsed is the active domain taken out of use by the deployment
+// (`domain.lapse`): its DNS said no `failures` times running, from
+// `failing_since` (rove#155).
+message TenantDomainLapsed {
+  option (payday.event) = {kind: "domain.lapse"};
+
+  bytes domain = 1;
+  string host = 2;
+  string purpose = 3;
+  google.protobuf.Timestamp failing_since = 4;
+  uint32 failures = 5;
+}
+
+// LabelsPrinted is labels made (`label.print`): blank, or one for each of
+// `assets`.
+message LabelsPrinted {
+  option (payday.event) = {kind: "label.print"};
+
+  string batch = 1;
+  uint32 count = 2;
+  repeated bytes assets = 3;
+}
+
+// LabelBound is a label stuck on an asset (`label.bind`).
+message LabelBound {
+  option (payday.event) = {kind: "label.bind"};
+
+  bytes label = 1;
+  bytes asset = 2;
+  string tag = 3;
+}
+
+// LabelUnbound is a label taken off what it was on (`label.unbind`), and
+// voided when it was damaged.
+message LabelUnbound {
+  option (payday.event) = {kind: "label.unbind"};
+
+  bytes label = 1;
+  bytes asset = 2;
+  bool void = 3;
+}
+
+// AttachmentAdded is a file kept for something (`attachment.add`): an asset,
+// a hand-over, a work order, a purchase, a count's finding.
+message AttachmentAdded {
+  option (payday.event) = {kind: "attachment.add"};
+
+  bytes attachment = 1;
+  bytes subject = 2;
+  string name = 3;
+  string content_type = 4;
+  uint64 size = 5;
+}
+
+// PartyAdded is a person, a team, an organization or a vendor kept
+// (`party.add`).
+message PartyAdded {
+  option (payday.event) = {kind: "party.add"};
+
+  bytes party = 1;
+  string kind = 2;
+}
+
+// PartyUpdated is a party's own fields changed (`party.update`).
+message PartyUpdated {
+  option (payday.event) = {kind: "party.update"};
+
+  bytes party = 1;
+}
+
+// PartyInvited is a person given a login (`party.invite`): a membership of
+// the workspace, as `role`.
+message PartyInvited {
+  option (payday.event) = {kind: "party.invite"};
+
+  bytes party = 1;
+  bytes holder = 2;
+  string role = 3;
+}
+
+// PartyRoleSet is what a member may do, changed (`party.role`): by somebody
+// who may, or `by` the deployment -- `succession`, the owner a workspace is
+// handed on to when its last owner's account left, and `operator`, an owner
+// an operator named.
+message PartyRoleSet {
+  option (payday.event) = {kind: "party.role"};
+
+  bytes holder = 1;
+  bytes party = 2;
+  string role = 3;
+  string by = 4;
+}
+
+// PartyPasswordSet is a password changed (`party.password`): the member's
+// own, or somebody else's by an administrator.
+message PartyPasswordSet {
+  option (payday.event) = {kind: "party.password"};
+
+  bytes party = 1;
+  bytes holder = 2;
+  bool own = 3;
+}
+
+// PartyDeactivated is a login ended, the person and their history kept
+// (`party.deactivate`).
+message PartyDeactivated {
+  option (payday.event) = {kind: "party.deactivate"};
+
+  bytes party = 1;
+  bytes holder = 2;
+}
+
+// PartyPseudonymized is a person forgotten in the workspace
+// (`party.pseudonymize`): `held` is how many of the trail's rows a legal
+// hold kept as they were.
+message PartyPseudonymized {
+  option (payday.event) = {kind: "party.pseudonymize"};
+
+  uint32 held = 1;
+}
+
+// AssetTypeAdded and AssetTypeUpdated are a type of asset made, and changed
+// (`type.add`, `type.update`): `name` is what it was called then.
+message AssetTypeAdded {
+  option (payday.event) = {kind: "type.add"};
+
+  bytes type = 1;
+  string name = 2;
+  string kind = 3;
+}
+
+message AssetTypeUpdated {
+  option (payday.event) = {kind: "type.update"};
+
+  bytes type = 1;
+  string name = 2;
+}
+
+// ItemModelAdded and ItemModelUpdated are a maker's model kept, and changed
+// (`model.add`, `model.update`).
+message ItemModelAdded {
+  option (payday.event) = {kind: "model.add"};
+
+  bytes model = 1;
+  string name = 2;
+  string maker = 3;
+}
+
+message ItemModelUpdated {
+  option (payday.event) = {kind: "model.update"};
+
+  bytes model = 1;
+  string name = 2;
+}
+
+// AccountDeparted is an account leaving the workspace (`account.depart`):
+// pseudonymized as a person forgotten is, and a workspace whose last owner it
+// was handed on -- or `ownerless`, with nobody to hand it to.
+message AccountDeparted {
+  option (payday.event) = {kind: "account.depart"};
+
+  uint32 held = 1;
+  bool ownerless = 2;
+}
+
+// WorkspaceConfigured is what the workspace's owner said of its own settings
+// (`workspace.configure`, #144, D36): only what was said, and of a window made
+// shorter, from when it is.
+message WorkspaceConfigured {
+  option (payday.event) = {kind: "workspace.configure"};
+
+  string timezone = 1 [features.field_presence = EXPLICIT];
+  string currency = 2 [features.field_presence = EXPLICIT];
+  int32 no_show_minutes = 3 [features.field_presence = EXPLICIT];
+  uint32 keep_days = 4 [features.field_presence = EXPLICIT];
+  google.protobuf.Timestamp keep_from = 5;
+  uint32 access_keep_days = 6 [features.field_presence = EXPLICIT];
+  google.protobuf.Timestamp access_keep_from = 7;
+  uint32 restore_days = 8 [features.field_presence = EXPLICIT];
+}
+
+// WorkspaceClosed is the workspace closed (`workspace.close`, D29) `by` its
+// owner, an operator, or the deployment when nobody was left in it; and when
+// it is destroyed unless it is restored.
+message WorkspaceClosed {
+  option (payday.event) = {kind: "workspace.close"};
+
+  // owner | operator | deployment
+  string by = 1;
+  google.protobuf.Timestamp destroy = 2;
+}
+
+// WorkspaceRestored is a closed workspace opened again (`workspace.restore`)
+// by its owner or an operator.
+message WorkspaceRestored {
+  option (payday.event) = {kind: "workspace.restore"};
+
+  // owner | operator
+  string by = 1;
+}
+
+// WorkspaceImported is a workspace put back from an export by an operator
+// (`workspace.import`, D34): which export, signed by which key, what it held,
+// and what of it could not be put back as it was.
+message WorkspaceImported {
+  option (payday.event) = {kind: "workspace.import"};
+
+  google.protobuf.Timestamp exported_at = 1;
+  // The digest of the export's manifest.
+  string manifest = 2;
+  // The key the export was signed with.
+  string signed_by = 3;
+  uint32 rows = 4;
+  uint32 files = 5;
+  // The address the export said, when the workspace is at another now; and
+  // the holds on addresses the restore took back.
+  string asked = 6;
+  repeated string released = 7;
+  uint32 unlinked = 8;
+  bool reopened = 9;
+  // What of each kind was left as this deployment had it.
+  map<string, uint32> left = 10;
+}
+
+// InvitationAdded is somebody invited to the workspace (`invitation.add`), as
+// `role` -- and as the person record `party`, when it names one.
+message InvitationAdded {
+  option (payday.event) = {kind: "invitation.add"};
+
+  bytes invitation = 1;
+  string role = 2;
+  bytes party = 3;
+}
+
+// InvitationRevoked, InvitationClaimed and InvitationDenied are an invitation
+// taken back by the workspace, made an account's by the code its mail
+// carried, and said no to (`invitation.revoke`, `.claim`, `.deny`, D30).
+message InvitationRevoked {
+  option (payday.event) = {kind: "invitation.revoke"};
+
+  bytes invitation = 1;
+}
+
+message InvitationClaimed {
+  option (payday.event) = {kind: "invitation.claim"};
+
+  bytes invitation = 1;
+}
+
+message InvitationDenied {
+  option (payday.event) = {kind: "invitation.deny"};
+
+  bytes invitation = 1;
+}
+
+// InvitationAccepted is an invitation said yes to (`invitation.accept`): the
+// membership `holder` made, as `role`.
+message InvitationAccepted {
+  option (payday.event) = {kind: "invitation.accept"};
+
+  bytes invitation = 1;
+  string role = 2;
+  bytes holder = 3;
+}
+
+// WorkOrderOpened is work on an asset opened (`work.open`).
+message WorkOrderOpened {
+  option (payday.event) = {kind: "work.open"};
+
+  bytes work_order = 1;
+  bytes asset = 2;
+  string tag = 3;
+  string name = 4;
+  // repair | inspection | ...
+  string kind = 5;
+  // open | scheduled
+  string status = 6;
+}
+
+// WorkOrderUpdated is a work order changed (`work.update`): its status when
+// it was moved to another.
+message WorkOrderUpdated {
+  option (payday.event) = {kind: "work.update"};
+
+  bytes work_order = 1;
+  bytes asset = 2;
+  string name = 3;
+  string status = 4;
+}
+
+// WorkOrderDone is a work order completed (`work.done`), and what it cost.
+message WorkOrderDone {
+  option (payday.event) = {kind: "work.done"};
+
+  bytes work_order = 1;
+  bytes asset = 2;
+  string name = 3;
+  int64 cost = 4;
+  string currency = 5;
+}
+
+// WorkOrderCancelled is a work order called off (`work.cancelled`).
+message WorkOrderCancelled {
+  option (payday.event) = {kind: "work.cancelled"};
+
+  bytes work_order = 1;
+  bytes asset = 2;
+  string name = 3;
+}
+
+// PurchaseAdded is a purchase recorded with what was bought in it
+// (`purchase.add`): `total` in `currency`'s minor unit.
+message PurchaseAdded {
+  option (payday.event) = {kind: "purchase.add"};
+
+  bytes purchase = 1;
+  string name = 2;
+  int64 total = 3;
+  string currency = 4;
+  uint32 lines = 5;
+  bytes vendor = 6;
+}
+
+// PurchaseReceived is what arrived of a purchase taken in, into a space
+// (`purchase.receive`): each asset it made an AssetAdded whose cause this is.
+message PurchaseReceived {
+  option (payday.event) = {kind: "purchase.receive"};
+
+  bytes purchase = 1;
+  string name = 2;
+  bytes into = 3;
+}
+
+// AccessReviewed is a stretch of the workspace's access record looked over
+// (`access.review`, rove#136), and what it held then.
+message AccessReviewed {
+  option (payday.event) = {kind: "access.review"};
+
+  bytes review = 1;
+  google.protobuf.Timestamp from = 2;
+  google.protobuf.Timestamp to = 3;
+  uint32 calls = 4;
+  uint32 downloads = 5;
+  uint32 refused = 6;
+}
+
+// RetentionExpired is what the workspace's keep window no longer reached,
+// taken (`retention.expired`, design 8.2): how many of what, and from before
+// when -- never what they said.
+message RetentionExpired {
+  option (payday.event) = {kind: "retention.expired"};
+
+  google.protobuf.Timestamp before = 1;
+  uint32 placements = 2;
+  uint32 links = 3;
+  uint32 stewardships = 4;
+  uint32 facts = 5;
+  uint32 events = 6;
+  uint32 reservations = 7;
+  uint32 custodies = 8;
+  uint32 counts = 9;
+  uint32 work_orders = 10;
+  uint32 stock_movements = 11;
+  uint32 attachments = 12;
+}
